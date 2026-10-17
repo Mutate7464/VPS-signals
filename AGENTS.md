@@ -1,0 +1,1 @@
+Short: mission (daily shortlist, no auto-trading), commands (uv sync, uv run pytest), guardrails (no lookahead, no secrets in git, human gate), where to look (rules + skills). This is the single canonical instruction source.
