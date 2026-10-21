@@ -1,20 +1,30 @@
+# ── Secrets & credentials ──
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+*.token
+*credentials*
+.ssh/
+
+# ── Virtual environment ──
 .venv/
+venv/
+
+# ── Personal / sensitive data ──
+# Portfolio holdings (shares, cost basis, entry/exit prices)
+config/holdings.csv
+ibkrdownload/holdings.csv
+data/holdings*.csv
+
+# ── Large binary data (synced from M1 Mac, regenerable) ──
 data/raw/
 data/*.parquet
-logs/
-*.pyc
-__pycache__/
-
-# Synced + synthetic OHLCV data (large binaries; not tracked)
 data/raw_ohlcv/
 data/raw_ohlcv_test/
 
-# Generated pipeline artifacts (regenerable)
+# ── Regenerable artifacts ──
 models/
 reports/*.pdf
 data/features/
@@ -22,3 +32,19 @@ data/train_meta_*.json
 data/metadata_catalog_*.json
 data/sync_manifest.json
 data/dead_letter_tickers.csv
+data/pacing_profile_*.json
+data/audit_ingestion_*.csv
+
+# ── Local config overrides (may contain per-machine settings) ──
+ibkrdownload/settings.yaml
+
+# ── Python / IDE / OS ──
+logs/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
