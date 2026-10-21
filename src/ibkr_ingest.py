@@ -1,162 +1,163 @@
-"""Sprint 1 — Async-paced IBKR OHLCV ingestion engine (runs on Node A / M1 Mac).
+"""Sprint 1 — VPS-side data validation wrapper.
 
-Downloads ADJUSTED_LAST daily bars into partitioned Parquet files under
-`data/raw_ohlcv/market={USD|CAD}/symbol={SYM}.parquet`. Incremental delta
-fetches are computed from the last stored bar date. Rate-limited at 1 request /
-`request_delay_sec` with a `Semaphore(1)`.
+This is the thin VPS copy of ibkr_ingest.py. It validates that synced OHLCV data
+exists and is fresh. The actual IBKR download engine lives in ibkrdownload/ibkr_ingest.py
+and runs on the M1 MacBook Air (where IB Gateway is locally accessible).
 
-NOTE: this module is executed on the M1 MacBook Air (local IB Gateway on
-`127.0.0.1:4001/4002`), NOT on the Linux VPS. It is synced here for completeness.
+Usage (VPS):
+  python src/ibkr_ingest.py --market USD --dry-run     # validate watchlist CSV
+  python src/ibkr_ingest.py --market USD                # audit synced data freshness
 """
 
 import argparse
-import asyncio
 import datetime as dt
+import logging
 from pathlib import Path
 
 import pandas as pd
 import yaml
-from ib_async import IB, Stock, util
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("IBKRIngestVPS")
+
+
+M1_INSTRUCTIONS = """
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  IBKR data download runs on the M1 MacBook Air (IB Gateway is there).       ║
+║                                                                            ║
+║  On the M1 Mac:                                                            ║
+║    cd ibkrdownload                                                         ║
+║    pip install -r requirements.txt                                         ║
+║    python build_watchlist.py              # rebuild watchlists if needed    ║
+║    python ibkr_ingest.py --market USD     # download USD data               ║
+║    python ibkr_ingest.py --market CAD     # download CAD data               ║
+║    python sync_back.py                    # push data back to VPS           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+"""
 
 
 def load_config(config_path: str = "config/settings.yaml") -> dict:
-    with open(config_path, "r") as f:
+    cfg_path = Path(__file__).resolve().parent.parent / config_path
+    with open(cfg_path, "r") as f:
         return yaml.safe_load(f)
 
 
-def compute_duration_str(parquet_path: Path, default_lookback: str = "5 Y") -> str:
-    """If Parquet file exists, compute delta days since last bar; otherwise return full cold lookback."""
-    if not parquet_path.exists():
-        return default_lookback
-    df_existing = pd.read_parquet(parquet_path, columns=["date"])
-    if df_existing.empty:
-        return default_lookback
-    last_date = pd.to_datetime(df_existing["date"]).max().date()
-    delta_days = (dt.date.today() - last_date).days
-    if delta_days <= 0:
-        return "0 D"
-    # Pad by 5 days to overwrite any recent corporate action adjustments
-    return f"{min(delta_days + 5, 365)} D"
-
-
-async def fetch_ticker_ohlcv(ib: IB, row: pd.Series, market_label: str, cfg: dict, sem: asyncio.Semaphore) -> dict:
-    symbol = str(row["symbol"]).strip()
-    currency = str(row["currency"]).strip()
-    exchange = str(row.get("exchange", "SMART")).strip()
-    primary_exch = str(row.get("primary_exchange", "")).strip()
-
-    out_dir = Path(cfg["project"]["base_dir"]) / "data" / "raw_ohlcv" / f"market={market_label}"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    parquet_path = out_dir / f"symbol={symbol}.parquet"
-
-    duration_str = compute_duration_str(parquet_path, cfg["ibkr"]["lookback_cold"])
-
-    if duration_str == "0 D":
-        df_old = pd.read_parquet(parquet_path)
-        return {
-            "symbol": symbol,
-            "market": market_label,
-            "status": "UP_TO_DATE",
-            "rows": len(df_old),
-            "min_date": str(df_old["date"].min()),
-            "max_date": str(df_old["date"].max()),
-        }
-
-    contract = Stock(symbol, exchange, currency, primaryExchange=primary_exch)
-
-    async with sem:
-        try:
-            qualified = await ib.qualifyContractsAsync(contract)
-            if not qualified:
-                return {"symbol": symbol, "market": market_label, "status": "UNQUALIFIED", "rows": 0}
-
-            bars = await ib.reqHistoricalDataAsync(
-                contract,
-                endDateTime="",
-                durationStr=duration_str,
-                barSizeSetting=cfg["ibkr"]["bar_size"],
-                whatToShow=cfg["ibkr"]["what_to_show"],
-                useRTH=cfg["ibkr"]["use_rth"],
-                formatDate=1,
-                timeout=cfg["ibkr"]["timeout_sec"],
-            )
-            await asyncio.sleep(cfg["ibkr"]["request_delay_sec"])
-
-            if not bars:
-                return {"symbol": symbol, "market": market_label, "status": "EMPTY_BARS", "rows": 0}
-
-            df_new = util.df(bars)
-            df_new["date"] = pd.to_datetime(df_new["date"]).dt.date
-            num_cols = ["open", "high", "low", "close", "volume", "average"]
-            for c in num_cols:
-                if c in df_new.columns:
-                    df_new[c] = df_new[c].astype("float32")
-
-            if parquet_path.exists():
-                df_old = pd.read_parquet(parquet_path)
-                df_combined = (
-                    pd.concat([df_old, df_new], ignore_index=True)
-                    .drop_duplicates(subset=["date"], keep="last")
-                    .sort_values("date")
-                    .reset_index(drop=True)
-                )
-            else:
-                df_combined = df_new.sort_values("date").reset_index(drop=True)
-
-            df_combined.to_parquet(parquet_path, index=False, engine="pyarrow")
-
-            return {
-                "symbol": symbol,
-                "market": market_label,
-                "status": "SUCCESS",
-                "rows": len(df_combined),
-                "min_date": str(df_combined["date"].min()),
-                "max_date": str(df_combined["date"].max()),
-            }
-
-        except Exception as exc:
-            await asyncio.sleep(5.0)
-            return {"symbol": symbol, "market": market_label, "status": f"ERROR: {exc}", "rows": 0}
-
-
-async def main_async(market: str, dry_run: bool = False):
-    cfg = load_config()
-    path_map = {
-        "USD": cfg["watchlists"]["usd_path"],
-        "CAD": cfg["watchlists"]["cad_path"],
-        "HOLDINGS": cfg["watchlists"]["holdings_path"],
+def audit_synced_data(base_dir: Path, market: str) -> dict:
+    """Check data/raw_ohlcv/market={USD|CAD}/ for Parquet files and freshness."""
+    ohlcv_dir = base_dir / "data" / "raw_ohlcv" / f"market={market}"
+    stats = {
+        "market": market,
+        "dir_exists": ohlcv_dir.exists(),
+        "file_count": 0,
+        "total_rows": 0,
+        "oldest_date": None,
+        "newest_date": None,
+        "stale_tickers": [],
+        "missing_benchmarks": [],
     }
-    csv_path = Path(cfg["project"]["base_dir"]) / path_map[market]
-    df_watch = pd.read_csv(csv_path)
 
-    if dry_run:
-        print(f"[DRY RUN] Validated {len(df_watch)} rows in {csv_path}")
+    if not ohlcv_dir.exists():
+        return stats
+
+    parquet_files = list(ohlcv_dir.glob("symbol=*.parquet"))
+    stats["file_count"] = len(parquet_files)
+
+    if not parquet_files:
+        return stats
+
+    dates_all = []
+    benchmark_tickers = {"USD": ["SPY", "QQQ"], "CAD": ["XIU", "XIC", "XDIV"]}
+    benchmark_set = set(benchmark_tickers.get(market, []))
+
+    for pq in parquet_files:
+        try:
+            sym = pq.stem.replace("symbol=", "")
+            df = pd.read_parquet(pq, columns=["date"])
+            if df.empty:
+                continue
+            df["date"] = pd.to_datetime(df["date"])
+            stats["total_rows"] += len(df)
+            dates_all.append(df["date"].min())
+            dates_all.append(df["date"].max())
+
+            # Check freshness (< 5 trading days behind is OK)
+            newest = df["date"].max().date()
+            age_days = (dt.date.today() - newest).days
+            if age_days > 7:
+                stats["stale_tickers"].append(f"{sym} ({age_days}d old)")
+
+            # Track benchmarks
+            benchmark_set.discard(sym)
+        except Exception:
+            pass
+
+    stats["missing_benchmarks"] = list(benchmark_set)
+
+    if dates_all:
+        stats["oldest_date"] = str(min(dates_all).date())
+        stats["newest_date"] = str(max(dates_all).date())
+
+    return stats
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="VPS-side data validation wrapper (M1 Mac handles actual IBKR download)"
+    )
+    parser.add_argument("--market", choices=["USD", "CAD", "HOLDINGS"], default=None,
+                        help="Which market to audit (default: all)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Validate watchlist CSV without auditing data")
+    args = parser.parse_args()
+
+    cfg = load_config()
+    base_dir = Path(cfg["project"]["base_dir"])
+
+    # Dry-run: just validate the CSV
+    if args.dry_run:
+        markets = [args.market] if args.market else ["USD", "CAD"]
+        for mkt in markets:
+            mkt_lower = mkt.lower()
+            if mkt == "HOLDINGS":
+                csv_path = base_dir / cfg["watchlists"]["holdings_path"]
+            else:
+                key = "usd_path" if mkt == "USD" else "cad_path"
+                csv_path = base_dir / cfg["watchlists"][key]
+            if csv_path.exists():
+                df = pd.read_csv(csv_path)
+                logger.info("[%s] Watchlist: %d tickers in %s", mkt, len(df), csv_path)
+            else:
+                logger.warning("[%s] Watchlist not found: %s", mkt, csv_path)
         return
 
-    ib = IB()
-    await ib.connectAsync(
-        cfg["ibkr"]["host"], cfg["ibkr"]["port"], clientId=cfg["ibkr"]["client_id"]
-    )
+    # Full audit
+    print(M1_INSTRUCTIONS)
 
-    sem = asyncio.Semaphore(1)
-    audit_rows = []
-    for _, row in df_watch.iterrows():
-        mkt_label = str(row["currency"]).strip().upper()
-        res = await fetch_ticker_ohlcv(ib, row, mkt_label, cfg, sem)
-        audit_rows.append(res)
-        print(f"[{res['market']}] {res['symbol']}: {res['status']} ({res['rows']} rows)")
+    markets = [args.market] if args.market else ["USD", "CAD"]
+    all_empty = True
 
-    ib.disconnect()
+    for mkt in markets:
+        stats = audit_synced_data(base_dir, mkt)
+        print(f"\n── {mkt} ──")
+        print(f"  Directory:  {'✅ exists' if stats['dir_exists'] else '❌ MISSING — run ingest on M1 Mac'}")
+        print(f"  Files:      {stats['file_count']} Parquet files")
+        print(f"  Total rows: {stats['total_rows']:,}")
+        print(f"  Date range: {stats['oldest_date'] or 'N/A'} → {stats['newest_date'] or 'N/A'}")
 
-    df_audit = pd.DataFrame(audit_rows)
-    audit_out = Path(cfg["project"]["base_dir"]) / "data" / f"audit_ingestion_{market}.csv"
-    df_audit.to_csv(audit_out, index=False)
-    print(f"Saved Gate 1 audit summary to {audit_out}")
+        if stats["file_count"] > 0:
+            all_empty = False
+
+        if stats["stale_tickers"]:
+            print(f"  ⚠️  Stale (>7d): {', '.join(stats['stale_tickers'][:10])}")
+            if len(stats["stale_tickers"]) > 10:
+                print(f"       ... and {len(stats['stale_tickers']) - 10} more")
+
+        if stats["missing_benchmarks"]:
+            print(f"  ⚠️  Missing benchmarks: {', '.join(stats['missing_benchmarks'])}")
+
+    if all_empty:
+        print("\n⚠️  No synced data found. Run ingest on the M1 Mac, then sync_back.py.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--market", choices=["USD", "CAD", "HOLDINGS"], required=True)
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
-    asyncio.run(main_async(args.market, args.dry_run))
+    main()

@@ -23,7 +23,15 @@ Operate as a sequential 4-role pipeline. **CRITICAL:** You must STOP and request
 
 ### Role 1: `@data-ingest-agent` (Sprint 1)
 
-- **Objective:** Validate `config/watchlist_300_usd.csv`, `config/watchlist_300_cad.csv`, and `config/holdings.csv`. Connect to local IB Gateway (`127.0.0.1:4001` or `4002`) via `ib_async` and execute incremental Parquet updates.
+- **Objective:** Build canonical watchlists from reference files, download OHLCV data from IBKR, and sync back to VPS.
+- **Architecture:** Two-tier — IBKR download runs on M1 Mac (`ibkrdownload/` kit), validation runs on VPS (`src/ibkr_ingest.py` thin wrapper).
+- **Workflow:**
+  1. **On M1 Mac:** `cd ibkrdownload && pip install -r requirements.txt`
+  2. **Build watchlists:** `python build_watchlist.py` — merges `IV_CD_*.csv`, `TC_CD_*.csv`, `opt.csv` → `watchlist_300_usd.csv` (97 tickers), `watchlist_300_cad.csv` (214 tickers), `sector_map.csv`
+  3. **Download:** `python ibkr_ingest.py --market USD` and `--market CAD` — adaptive pacing with surge-and-settle, calendar-aware gap detection, pacing profile learning
+  4. **Sync back:** `python sync_back.py` — rsync data + configs to VPS via `ssh VPS`
+  5. **On VPS:** `python src/ibkr_ingest.py --market USD` — audits synced data freshness
+- **Key CLI flags:** `--dry-run`, `--limit N`, `--fixgap`, `--client-id N` (parallel markets)
 - **Stop Gate 1:** Output `reports/sprint1_ingestion_audit.md` showing total row counts, date ranges, and any failed ticker contract resolutions. Pause and wait for user approval.
 
 ### Role 2: `@quant-feature-agent` (Sprint 2 & Sprint 3)

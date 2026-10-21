@@ -15,6 +15,16 @@ ibkr:
   request_delay_sec: 1.5
   timeout_sec: 30
 
+  # ---- Adaptive pacing (new in v2) ----
+  requests_per_window: 45      # sliding window max requests
+  window_seconds: 60           # sliding window period in seconds
+  download_concurrency: 3      # starting semaphore size for cruise phase
+  min_concurrency: 1           # floor when throttling due to pacing errors
+  pacing_backoff_sleep: 15.0   # seconds to sleep after a pacing hit
+  pacing_hit_threshold: 3      # consecutive pacing hits before global pause
+  global_pause_sleep: 120.0    # seconds to pause after repeated pacing violations
+  save_every: 25               # save audit progress every N tickers
+
 watchlists:
   usd_path: "config/watchlist_300_usd.csv"
   cad_path: "config/watchlist_300_cad.csv"

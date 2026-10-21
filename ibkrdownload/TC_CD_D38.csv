@@ -1,0 +1,104 @@
+﻿Rank,Exchange,Symbol,Company Name,Sector & Industry,Stock Price,Price Performance 52 Week,Dividend Yield,TC Quantamental Rating®,TC Income Factor Rating,Market Capitalization,Volume 90-Day Average
+1,"TSXV","AFM","Alphamin Resources Corp",Metals & Mining,1.37,47.4%,16.78%,75,68,1.84B,1M
+2,"TSX","LUG","Lundin Gold Inc",Metals & Mining,92.08,11%,6.35%,70,89,22.49B,1M
+3,"TSX","CNQ","Canadian Natural Resources Ltd",Oil & Gas,69.97,60.4%,3.61%,59,56,142.9B,14M
+4,"TSX","WCP","Whitecap Resources Inc",Oil & Gas,18.67,76.1%,3.94%,63,58,22.54B,5M
+5,"TSX","ARG","Amerigo Resources Ltd",Metals & Mining,8.39,250.8%,5.07%,75,89,1.34B,1M
+6,"TSX","MFC","Manulife Financial Corp",Insurance,60.54,36.6%,3.22%,58,63,99.87B,6M
+7,"TSX","FFN","North American Financial 15 Split Corp",Asset Management,9.87,45.4%,13.57%,79,66,700.38M,237K
+8,"TSX","BNS","Bank of Nova Scotia",Banks,129.95,47.7%,3.52%,53,53,157.73B,4M
+9,"TSX","SLF","Sun Life Financial Inc",Insurance,111.60,34.7%,3.4%,55,66,61.47B,2M
+10,"TSX","BIP.UN","Brookfield Infrastructure Partners LP",Utilities - Regulated,49.63,20.4%,4.94%,61,71,23.5B,416K
+11,"TSX","EDV","Endeavour Mining PLC",Metals & Mining,83.95,59%,3.1%,64,67,20.69B,409K
+12,"TSX","PEY","Peyto Exploration & Development Corp",Oil & Gas,24.42,33.3%,5.92%,57,66,5B,1M
+13,"TSX","MER","Meren Energy Inc",Oil & Gas,2.30,29.2%,8.9%,54,65,1.56B,1M
+14,"TSX","BK","Canadian Banc Corp",Asset Management,15.71,52.2%,12.77%,64,61,926.88M,228K
+15,"TSX","CJ","Cardinal Energy Ltd",Oil & Gas,12.12,60.1%,6%,55,63,2.11B,1M
+16,"TSX","FTN","Financial 15 Split Corp",Asset Management,11.50,28.4%,12.95%,76,55,908.32M,207K
+17,"TSX","FRU","Freehold Royalties Ltd",Oil & Gas,17.47,30.8%,6.17%,57,67,2.87B,1M
+18,"TSX","QSR","Restaurant Brands International Inc",Restaurants,109.64,22.6%,3.43%,56,62,37.23B,1M
+19,"TSX","PPL","Pembina Pipeline Corp",Oil & Gas,66.17,22%,4.44%,47,50,38.53B,2M
+20,"TSX","SOBO","South Bow Corp",Oil & Gas,49.71,29.5%,5.63%,53,51,10.42B,1M
+21,"TSX","PXT","Parex Resources Inc",Oil & Gas,28.86,70.2%,5.32%,71,32,2.78B,1M
+22,"TSX","KEY","Keyera Corp",Oil & Gas,54.70,21.5%,4.13%,46,54,16B,1M
+23,"TSX","TRP","TC Energy Corp",Oil & Gas,85.08,16.4%,4.16%,42,45,87.83B,4M
+24,"TSX","GEI","Gibson Energy Inc",Oil & Gas,30.87,17%,5.87%,50,61,5.3B,1M
+25,"TSX","SGY","Surge Energy Inc",Oil & Gas,12.15,78%,4.28%,60,57,1.21B,1M
+26,"TSX","BEP.UN","Brookfield Renewable Partners LP",Utilities - Independent Power Producers,40.95,20.3%,5.16%,50,52,12.64B,318K
+27,"TSX","TPZ","Topaz Energy Corp",Oil & Gas,31.00,20%,4.55%,53,63,4.77B,481K
+28,"TSX","HWX","Headwater Exploration Inc",Oil & Gas,13.85,86.9%,3.55%,54,51,3.21B,1M
+29,"TSX","LFE","Canadian Life Companies Split Corp",Asset Management,8.92,40.6%,13.64%,77,58,191.42M,104K
+30,"TSX","SBC","Brompton Split Banc Corp",Asset Management,12.86,66.6%,9.45%,70,44,470.68M,61K
+31,"TSX","CU","Canadian Utilities Ltd",Utilities - Regulated,49.92,31.2%,3.7%,46,43,13.62B,1M
+32,"TSX","MTL","Mullen Group Ltd",Transportation,25.85,85%,3.28%,53,59,2.46B,249K
+33,"TSX","REI.UN","Riocan Real Estate Investment Trust",REITs,20.69,8.9%,5.61%,50,56,6.01B,1M
+34,"TSX","FTS","Fortis Inc",Utilities - Regulated,75.23,10.2%,3.4%,46,48,38.5B,1M
+35,"TSX","BAM","Brookfield Asset Management Ltd",Asset Management,64.87,-16.4%,4.25%,56,65,104.57B,2M
+36,"TSX","PHX","PHX Energy Services Corp",Oil & Gas,12.31,67.4%,6.38%,46,69,573.89M,123K
+37,"TSX","DIV","Diversified Royalty Corp",Business Services,4.14,12.3%,6.93%,45,71,775.79M,1M
+38,"TSX","DF","Dividend 15 Split Corp II",Asset Management,8.72,30.7%,13.95%,75,43,232.33M,77K
+39,"TSX","BCE","BCE Inc",Telecommunication Services,32.61,-3.2%,5.4%,55,32,30.2B,4M
+40,"TSX","AD.UN","Alaris Equity Partners Income Trust",Asset Management,23.39,22.8%,6.2%,63,56,1.07B,73K
+41,"TSX","WTE","Westshore Terminals Investment Corp",Transportation,41.21,62%,3.64%,44,63,2.55B,90K
+42,"TSX","PIC.A","Premium Income Corp",Asset Management,9.84,75.2%,10.87%,74,36,208.27M,68K
+43,"TSX","CHE.UN","Chemtrade Logistics Income Fund",Chemicals,14.28,13.9%,4.91%,60,61,1.64B,257K
+44,"TSX","CPX","Capital Power Corp",Utilities - Independent Power Producers,59.51,1.8%,4.57%,42,65,9.55B,1M
+45,"TSX","RCI.B","Rogers Communications Inc",Telecommunication Services,50.94,1.3%,3.99%,58,31,27.15B,2M
+46,"TSXV","FISH","Sailfish Royalty Corp",Metals & Mining,5.79,98.3%,3.6%,55,88,456.66M,33K
+47,"TSX","CTC.A","Canadian Tire Corp Ltd",Retail - Cyclical,188.90,8.8%,3.85%,55,56,9.83B,199K
+48,"TSX","EMA","Emera Inc",Utilities - Regulated,68.15,5.2%,4.3%,40,46,20.94B,1M
+49,"TSX","FCR.UN","First Capital REIT",REITs,22.55,16.3%,4%,47,45,4.81B,1M
+50,"TSX","IPO","InPlay Oil Corp",Oil & Gas,18.14,46.2%,5.94%,44,68,502.39M,101K
+51,"TSXV","ALV","Alvopetro Energy Ltd",Oil & Gas,10.96,65.9%,5.51%,59,67,415.98M,42K
+52,"TSX","PMZ.UN","Primaris REIT",REITs,20.93,35.9%,4.21%,53,38,2.47B,257K
+53,"TSX","CRT.UN","CT Real Estate Investment Trust",REITs,16.91,1.9%,5.85%,63,47,4.01B,226K
+54,"TSX","OTEX","Open Text Corp",Software,33.30,-35.2%,4.85%,68,55,7.75B,2M
+55,"TSX","ET","Evertz Technologies Ltd",Hardware,14.93,22.8%,5.49%,55,66,1.12B,32K
+56,"TSX","SIA","Sienna Senior Living Inc",Healthcare Providers & Services,19.95,8.7%,4.72%,51,59,2.2B,365K
+57,"TSX","DHT.UN","DRI Healthcare Trust",Drug Manufacturers,16.91,16.3%,3.53%,57,81,954.59M,69K
+58,"TSX","BIPC","Brookfield Infrastructure Corp",Utilities - Regulated,49.83,-7.4%,4.91%,62,63,6.31B,265K
+59,"TSX","SRU.UN","SmartCentres Real Estate Investment Trust",REITs,26.95,-0.7%,6.91%,52,43,4.56B,293K
+60,"TSX","CHP.UN","Choice Properties Real Estate Investment Trust",REITs,15.07,-1.4%,5.17%,45,42,10.92B,1M
+61,"TSX","CRR.UN","Crombie Real Estate Investment Trust",REITs,15.61,2.3%,5.86%,46,60,2.92B,165K
+62,"TSXV","THX","Thor Explorations Ltd",Metals & Mining,1.27,20%,3.79%,57,47,879.88M,438K
+63,"TSX","ENGH","Enghouse Systems Ltd",Software,17.36,-21%,7.49%,61,80,892.6M,168K
+64,"TSX","PSI","Pason Systems Inc",Oil & Gas,14.52,23.6%,3.53%,43,58,1.14B,274K
+65,"TSX","DIR.UN","Dream Industrial Real Estate Investment Trust",REITs,13.07,4.1%,5.48%,48,41,3.67B,476K
+66,"TSX","GDV","Global Dividend Growth Split Corp",Asset Management,11.16,12.5%,10.79%,70,59,199.02M,25K
+67,"TSX","WJX","Wajax Corp",Industrial Distribution,29.76,25.6%,4.69%,57,55,650.35M,67K
+68,"TSX","SGR.UN","Slate Grocery REIT",REITs,14.95,1.7%,8.11%,57,47,874.73M,122K
+69,"TSX","GRT.UN","Granite Real Estate Investment Trust",REITs,85.53,9.3%,4.17%,55,43,5.29B,78K
+70,"TSX","RSI","Rogers Sugar Inc",Consumer Packaged Goods,6.84,7.1%,5.29%,51,61,874.1M,221K
+71,"TSX","PLZ.UN","Plaza Retail REIT",REITs,5.23,24.8%,5.35%,65,35,577.75M,89K
+72,"TSX","ENS","E Split Corp",Asset Management,16.43,4.8%,10.42%,68,52,336.2M,32K
+73,"TSX","DBM","Doman Building Materials Group Ltd",Industrial Distribution,10.78,12%,5.15%,57,49,956.29M,114K
+74,"NEO","NVON","Novo Nordisk AS CDR (CAD Hedged)",Drug Manufacturers,4.49,-21.6%,4.25%,51,63,262.53B,32K
+75,"TSX","PRQ","Petrus Resources Ltd",Oil & Gas,1.79,21.4%,6.82%,42,64,263.5M,55K
+76,"TSX","MKP","MCAN Financial Group",Banks,21.07,-6.9%,8.13%,49,68,855.52M,68K
+77,"TSX","CCA","Cogeco Communications Inc",Telecommunication Services,58.53,-13.1%,6.91%,41,64,2.4B,136K
+78,"TSX","PRV.UN","PRO Real Estate Investment Trust",REITs,6.54,11.6%,6.86%,50,38,550.7M,149K
+79,"TSX","LBS.PR.A","Life & Banc Split Corp",Asset Management,10.99,-2.9%,6.62%,57,45,1.48B,102K
+80,"TSX","HR.UN","H&R Real Estate Investment Trust",REITs,9.75,-20%,6.19%,49,44,2.56B,1M
+81,"TSX","NXR.UN","Nexus Industrial REIT",REITs,7.37,-5.9%,8.71%,50,49,713.66M,177K
+82,"TSX","SFC","Sagicor Financial Co Ltd",Insurance,8.74,1.7%,4.75%,54,59,1.19B,75K
+83,"TSX","PBH","Premium Brands Holdings Corp",Consumer Packaged Goods,77.58,-18.1%,4.44%,51,61,3.98B,190K
+84,"TSX","APR.UN","Automotive Properties Real Estate Investment Trust",REITs,11.59,-0.1%,7.28%,62,49,635.82M,35K
+85,"TSX","BPF.UN","Boston Pizza Royalties Income Fund",Restaurants,20.68,-5.2%,7.25%,53,75,436.42M,45K
+86,"TSX","NWC","The North West Co Inc",Retail - Defensive,52.23,8.2%,3.25%,45,49,2.44B,122K
+87,"TSX","BTB.UN","BTB Real Estate Investment Trust",REITs,3.64,-2.4%,8.26%,57,53,321.1M,75K
+88,"TSX","KMP.UN","Killam Apartment Real Estate Investment Trust",REITs,17.48,-4.2%,4.14%,50,48,2.08B,303K
+89,"TSX","NPI","Northland Power Inc",Utilities - Independent Power Producers,21.14,-8.5%,3.46%,45,38,5.44B,1M
+90,"TSX","TCL.A","Transcontinental Inc",Packaging & Containers,5.12,-74.3%,10.74%,66,44,442.67M,371K
+91,"TSX","PIF","Polaris Renewable Energy Inc",Utilities - Independent Power Producers,14.03,6.5%,5.8%,60,55,298.18M,38K
+92,"TSX","MTY","MTY Food Group Inc",Restaurants,32.44,-16.2%,4.59%,53,73,736.18M,91K
+93,"TSX","GO.U","Go Residential Real Estate Investment Trust",REITs,8.28,-33.4%,7.77%,74,34,423.39M,143K
+94,"TSX","PRL","Propel Holdings Inc",Credit Services,24.73,-23.2%,4.18%,51,66,961.48M,174K
+95,"TSX","PZA","Pizza Pizza Royalty Corp",Restaurants,11.22,-29.1%,7.21%,52,63,379.96M,87K
+96,"TSX","MFI","Maple Leaf Foods Inc",Consumer Packaged Goods,26.60,-16.8%,3.19%,43,50,3.28B,221K
+97,"TSX","CGO","COGECO Inc",Telecommunication Services,54.87,-12.6%,7.31%,43,66,511.4M,22K
+98,"TSX","LNF","Leon's Furniture Ltd",Retail - Cyclical,24.66,-17%,3.95%,52,63,1.67B,25K
+99,"TSXV","HME","Hemisphere Energy Corp",Oil & Gas,2.24,12.7%,4.5%,44,38,209.24M,183K
+100,"TSX","HLF","High Liner Foods Inc",Consumer Packaged Goods,14.09,-10.6%,4.93%,50,68,397.67M,25K
+101,"TSX","HOM.U","BSR Real Estate Investment Trust",REITs,11.55,-15.4%,4.99%,52,60,529.57M,24K
+102,"TSX","DRM","DREAM Unlimited Corp",Real Estate,17.77,-13%,3.9%,43,62,752.88M,34K
+103,"TSX","MRG.UN","Morguard North American Residential Real Estate Investment Trust",REITs,15.18,-18.2%,5.17%,45,47,796.61M,26K

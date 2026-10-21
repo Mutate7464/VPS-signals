@@ -14,6 +14,8 @@ dependencies = [
     "statsmodels>=0.14",
     "xgboost-cpu>=2.1",
     "matplotlib>=3.8",
+    "ib_async>=0.6",
+    "pandas_market_calendars>=4.4",
 ]
 
 [tool.pytest.ini_options]
