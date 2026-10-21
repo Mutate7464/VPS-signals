@@ -9,3 +9,16 @@ data/*.parquet
 logs/
 *.pyc
 __pycache__/
+
+# Synced + synthetic OHLCV data (large binaries; not tracked)
+data/raw_ohlcv/
+data/raw_ohlcv_test/
+
+# Generated pipeline artifacts (regenerable)
+models/
+reports/*.pdf
+data/features/
+data/train_meta_*.json
+data/metadata_catalog_*.json
+data/sync_manifest.json
+data/dead_letter_tickers.csv
