@@ -1,0 +1,41 @@
+# Local settings for M1 Mac ingest — copy of config/settings.yaml ibkr + project sections.
+# Sync this with the VPS config/settings.yaml when settings change.
+
+project:
+  base_dir: "."            # relative to ibkrdownload/; data/ is created here
+
+ibkr:
+  host: "127.0.0.1"
+  port: 4001               # 4001 = IB Gateway Live, 4002 = IB Gateway Paper, 7496/7497 = TWS
+  client_id: 101
+  lookback_cold: "5 Y"
+  bar_size: "1 day"
+  what_to_show: "ADJUSTED_LAST"
+  use_rth: true
+  request_delay_sec: 1.5
+  timeout_sec: 30
+
+  # Adaptive pacing — aggressive surge-and-settle.
+  # Start fast, hit the ceiling, measure exactly where it is, settle just below it.
+  requests_per_window: 90       # 1.5 req/s (was 30)
+  window_seconds: 60
+  download_concurrency: 6       # 6 parallel (was 2)
+  min_concurrency: 1
+  pacing_backoff_sleep: 8.0     # faster recovery (was 15)
+  pacing_hit_threshold: 6       # tolerate more hits before global pause (was 3)
+  global_pause_sleep: 45.0      # shorter cooldown (was 90)
+  save_every: 25
+  # Index freshness: skip per-file Parquet scans if index is newer than this (minutes)
+  index_max_age_minutes: 60
+  # Proactive batching: insert cooldown between batches when total bars exceed this
+  batch_bars_threshold: 5000
+  batch_cooldown_sec: 120.0
+
+watchlists:
+  usd_path: "watchlist_300_usd.csv"
+  cad_path: "watchlist_300_cad.csv"
+  holdings_path: "holdings.csv"
+
+sync:
+  vps_alias: "VPS"                        # SSH alias for the Hostinger VPS
+  vps_project_path: "~/projects/signals"  # project root on VPS

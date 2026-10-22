@@ -1,0 +1,912 @@
+symbol,market,sector,industry,sub_group,company_name,tc_rating
+A,USD,Medical Diagnostics & Research,,,Agilent Technologies Inc,50
+AA,USD,Metals & Mining,,,Alcoa Corp,59
+AAPL,USD,Hardware,Hardware,Consumer electronics,Apple Inc,52
+ABBV,USD,Drug Manufacturers,,,AbbVie Inc,58
+ABEV,USD,Beverages - Alcoholic,,,Ambev SA,62
+ABNB,USD,Travel & Leisure,,,Airbnb Inc,52
+ACGL,USD,Insurance,,,Arch Capital Group Ltd,52
+ACIW,USD,Software,,,ACI Worldwide Inc,56
+ACN,USD,Software,,,Accenture PLC,62
+ADBE,USD,Software,,,Adobe Inc,62
+ADI,USD,Semiconductors,,,Analog Devices Inc,61
+ADM,USD,Consumer Packaged Goods,,,Archer-Daniels-Midland Co,61
+ADP,USD,Software,,,Automatic Data Processing Inc,58
+ADSK,USD,Software,,,Autodesk Inc,61
+AEG,USD,Insurance,,,Aegon Ltd,64
+AEM,USD,Metals & Mining,,,Agnico Eagle Mines Ltd,64
+AER,USD,Business Services,,,AerCap Holdings NV,51
+AES,USD,Utilities - Regulated,,,The AES Corp,68
+AFL,USD,Insurance,,,Aflac Inc,52
+AFRM,USD,Credit Services,,,Affirm Holdings Inc,58
+AG,USD,Metals & Mining,,,First Majestic Silver Corp,65
+AGI,USD,Metals & Mining,,,Alamos Gold Inc,64
+AGNC,USD,REITs,,,AGNC Investment Corp,66
+ALAB,USD,Semiconductors,,,Astera Labs Inc,56
+ALB,USD,Chemicals,,,Albemarle Corp,52
+ALGN,USD,Medical Devices & Instruments,,,Align Technology Inc,53
+ALL,USD,Insurance,,,Allstate Corp,62
+ALLE,USD,Business Services,,,Allegion PLC,51
+ALLY,USD,Credit Services,,,Ally Financial Inc,54
+ALNY,USD,Biotechnology,,,Alnylam Pharmaceuticals Inc,55
+AMAT,USD,Semiconductors,,,Applied Materials Inc,50
+AMCR,USD,Packaging & Containers,,,Amcor PLC,58
+AMD,USD,Technology,Semiconductors,Semiconductors,ADVANCED MICRO DEVICES INC,0
+AMGN,USD,Drug Manufacturers,,,Amgen Inc,60
+AMH,USD,REITs,,,American Homes 4 Rent,51
+AMKR,USD,Semiconductors,,,Amkor Technology Inc,52
+AMRX,USD,Drug Manufacturers,,,Amneal Pharmaceuticals Inc,61
+AMT,USD,REITs,,,American Tower Corp,60
+AMX,USD,Telecommunication Services,,,America Movil SAB de CV,58
+AMZN,USD,Retail - Cyclical,Retail - Cyclical,Internet retail,Amazon.com Inc,62
+ANET,USD,Hardware,,,Arista Networks Inc,51
+ANF,USD,Retail - Cyclical,,,Abercrombie & Fitch Co,64
+APA,USD,Oil & Gas,,,APA Corp,64
+APH,USD,Hardware,,,Amphenol Corp,53
+APP,USD,Media - Diversified,,,AppLovin Corp,55
+AR,USD,Oil & Gas,,,Antero Resources Corp,57
+ARM,USD,,,,,0
+AS,USD,Travel & Leisure,,,Amer Sports Inc,51
+ASML,USD,Semiconductors,,,ASML Holding NV,57
+ASX,USD,Semiconductors,,,ASE Technology Holding Co Ltd,57
+AU,USD,Metals & Mining,,,Anglogold Ashanti PLC,73
+AUB,USD,Banks,,,Atlantic Union Bankshares Corp,56
+AUGO,USD,Metals & Mining,,,Aura Minerals Inc,75
+AVGO,USD,Semiconductors,,,Broadcom Inc,62
+AVT,USD,Hardware,,,Avnet Inc,55
+B,USD,Metals & Mining,,,Barrick Mining Corp,71
+BA,USD,,,,,0
+BABA,USD,,,,,0
+BAC,USD,Banks,,,Bank of America Corp,54
+BALL,USD,Packaging & Containers,,,Ball Corp,52
+BAM,USD,Asset Management,,,Brookfield Asset Management Ltd,56
+BB,USD,Software,,,BlackBerry Ltd,54
+BBD,USD,Banks,,,Bank Bradesco SA,63
+BBVA,USD,Banks,,,Banco Bilbao Vizcaya Argentaria SA,58
+BBY,USD,Retail - Cyclical,,,Best Buy Co Inc,63
+BCE,USD,Telecommunication Services,,,BCE Inc,54
+BCS,USD,Banks,,,Barclays PLC,61
+BDX,USD,Medical Devices & Instruments,,,Becton Dickinson & Co,59
+BE,USD,Industrial Products,,,Bloom Energy Corp,62
+BEKE,USD,Real Estate,,,KE Holdings Inc,60
+BEN,USD,Asset Management,,,Franklin Templeton Inc,55
+BG,USD,Consumer Packaged Goods,,,Bunge Global SA,59
+BHP,USD,Metals & Mining,,,BHP Group Ltd,54
+BILI,USD,Interactive Media,,,Bilibili Inc,57
+BJ,USD,Retail - Defensive,,,BJ's Wholesale Club Holdings Inc,55
+BKH,USD,Utilities - Regulated,,,Black Hills Corp,50
+BKNG,USD,Travel & Leisure,,,Booking Holdings Inc,52
+BLK,USD,,,,,0
+BMRN,USD,Biotechnology,,,Biomarin Pharmaceutical Inc,51
+BMY,USD,Drug Manufacturers,,,Bristol-Myers Squibb Co,70
+BNS,USD,Banks,,,Bank of Nova Scotia,52
+BNTX,USD,Biotechnology,,,BioNTech SE,52
+BNY,USD,Banks,,,Bank of New York Mellon Corp,51
+BOX,USD,Software,,,Box Inc,51
+BP,USD,Oil & Gas,,,BP PLC,67
+BR,USD,Software,,,Broadridge Financial Solutions Inc,58
+BRK B,USD,,,,,0
+BRK.B,USD,Insurance,,,Berkshire Hathaway Inc,59
+BSBR,USD,Banks,,,Banco Santander (Brasil) SA,52
+BSX,USD,Medical Devices & Instruments,,,Boston Scientific Corp,61
+BSY,USD,Software,,,Bentley Systems Inc,51
+BTG,USD,Metals & Mining,,,B2Gold Corp,72
+BTSG,USD,Healthcare Providers & Services,,,BrightSpring Health Services Inc,60
+BUD,USD,Beverages - Alcoholic,,,Anheuser-Busch InBev SA/NV,65
+BURL,USD,Retail - Cyclical,,,Burlington Stores Inc,54
+BVN,USD,Metals & Mining,,,Compania De Minas Buenaventura SAA,73
+BWA,USD,Vehicles & Parts,,,BorgWarner Inc,54
+BX,USD,Asset Management,,,Blackstone Inc,52
+BZ,USD,Interactive Media,,,Kanzhun Ltd,68
+C,USD,Banks,,,Citigroup Inc,56
+CAI,USD,Biotechnology,,,Caris Life Sciences Inc,64
+CAKE,USD,Restaurants,,,The Cheesecake Factory Inc,52
+CART,USD,Retail - Cyclical,,,Maplebear Inc,55
+CBOE,USD,Capital Markets,,,Cboe Global Markets Inc,57
+CCEP,USD,Beverages - Non-Alcoholic,,,Coca-Cola Europacific Partners PLC,54
+CCJ,USD,,,,,0
+CCK,USD,Packaging & Containers,,,Crown Holdings Inc,65
+CCL,USD,Travel & Leisure,,,Carnival Corporation Ltd,52
+CDE,USD,Metals & Mining,,,Coeur Mining Inc,55
+CDNS,USD,Software,,,Cadence Design Systems Inc,56
+CF,USD,Agriculture,,,CF Industries Holdings Inc,66
+CFG,USD,Banks,,,Citizens Financial Group Inc,52
+CGNX,USD,Hardware,,,Cognex Corp,52
+CGON,USD,Biotechnology,,,CG Oncology Inc,52
+CHDN,USD,Travel & Leisure,,,Churchill Downs Inc,50
+CHKP,USD,Software,,,Check Point Software Technologies Ltd,53
+CHTR,USD,Telecommunication Services,,,Charter Communications Inc,63
+CI,USD,Healthcare Plans,,,The Cigna Group,57
+CIEN,USD,Hardware,,,Ciena Corp,57
+CIG,USD,Utilities - Regulated,,,Cia Energetica DE Minas Gerais - Cemig,55
+CLS,USD,Hardware,,,Celestica Inc,60
+CLX,USD,,,,,0
+CMBT,USD,Oil & Gas,,,CMB.Tech NV,70
+CMC,USD,Industrial Products,,,Commercial Metals Co,63
+CMCSA,USD,,,,,0
+CMG,USD,,,,,0
+CNC,USD,Healthcare Plans,,,Centene Corp,62
+CNO,USD,Insurance,,,CNO Financial Group Inc,53
+CNQ,USD,Oil & Gas,,,Canadian Natural Resources Ltd,63
+COF,USD,Credit Services,,,Capital One Financial Corp,59
+COGT,USD,Biotechnology,,,Cogent Biosciences Inc,51
+COHR,USD,Hardware,,,Coherent Corp,54
+COIN,USD,,,,,0
+COO,USD,Medical Devices & Instruments,,,The Cooper Companies Inc,59
+COP,USD,Oil & Gas,,,ConocoPhillips,58
+CORT,USD,Biotechnology,,,Corcept Therapeutics Inc,53
+CRCL,USD,,,,,0
+CRDO,USD,,,,,0
+CRGY,USD,Oil & Gas,,,Crescent Energy Co,66
+CRM,USD,Software,,,Salesforce Inc,62
+CROX,USD,Manufacturing - Apparel & Accessories,,,Crocs Inc,67
+CRWD,USD,,,,,0
+CRWV,USD,,,,,0
+CSCO,USD,Hardware,,,Cisco Systems Inc,51
+CTAS,USD,Business Services,,,Cintas Corp,50
+CTRE,USD,REITs,,,CareTrust REIT Inc,53
+CTSH,USD,Software,,,Cognizant Technology Solutions Corp,58
+CVE,USD,Oil & Gas,,,Cenovus Energy Inc,65
+CVI,USD,Oil & Gas,,,CVR Energy Inc,53
+CVNA,USD,Vehicles & Parts,,,Carvana Co,51
+CVS,USD,Healthcare Plans,,,CVS Health Corp,56
+CVX,USD,Oil & Gas,,,Chevron Corp,60
+CX,USD,Building Materials,,,Cemex SAB de CV,56
+CYTK,USD,,,,,0
+DAR,USD,Consumer Packaged Goods,,,Darling Ingredients Inc,78
+DB,USD,Banks,,,Deutsche Bank AG,60
+DBX,USD,Software,,,Dropbox Inc,55
+DD,USD,Chemicals,,,DuPont de Nemours Inc,54
+DECK,USD,Manufacturing - Apparel & Accessories,,,Deckers Outdoor Corp,53
+DG,USD,Retail - Defensive,,,Dollar General Corp,57
+DGX,USD,Medical Diagnostics & Research,,,Quest Diagnostics Inc,61
+DHR,USD,Medical Diagnostics & Research,,,Danaher Corp,56
+DINO,USD,Oil & Gas,,,HF Sinclair Corp,69
+DIS,USD,,,,,0
+DLTR,USD,Retail - Defensive,,,Dollar Tree Inc,66
+DOC,USD,REITs,,,Healthpeak Properties Inc,54
+DOCU,USD,Software,,,Docusign Inc,61
+DOX,USD,Software,,,Amdocs Ltd,51
+DPZ,USD,Restaurants,,,Domino's Pizza Inc,53
+DVN,USD,Oil & Gas,,,Devon Energy Corp,57
+DXCM,USD,Medical Devices & Instruments,,,DexCom Inc,71
+EAT,USD,Restaurants,,,Brinker International Inc,59
+EBAY,USD,Retail - Cyclical,,,eBay Inc,53
+EC,USD,Oil & Gas,,,Ecopetrol SA,73
+EGO,USD,Metals & Mining,,,Eldorado Gold Corp,56
+EHC,USD,Healthcare Providers & Services,,,Encompass Health Corp,54
+EIX,USD,Utilities - Regulated,,,Edison International,64
+EMBJ,USD,Aerospace & Defense,,,Embraer SA,68
+EMN,USD,Chemicals,,,Eastman Chemical Co,55
+EMR,USD,Industrial Products,,,Emerson Electric Co,50
+EOG,USD,Oil & Gas,,,EOG Resources Inc,62
+EPAM,USD,Software,,,EPAM Systems Inc,64
+EPRT,USD,REITs,,,Essential Properties Realty Trust Inc,52
+EQH,USD,Asset Management,,,Equitable Holdings Inc,51
+EQNR,USD,Oil & Gas,,,Equinor ASA,68
+EQX,USD,Metals & Mining,,,Equinox Gold Corp,55
+ERIC,USD,Hardware,,,Telefonaktiebolaget L M Ericsson,53
+ES,USD,Utilities - Regulated,,,Eversource Energy,54
+EXEL,USD,Biotechnology,,,Exelixis Inc,69
+EXLS,USD,Software,,,Exlservice Holdings Inc,58
+EXPD,USD,Transportation,,,Expeditors International of Washington Inc,52
+EXPE,USD,Travel & Leisure,,,Expedia Group Inc,66
+F,USD,,,,,0
+FANG,USD,Oil & Gas,,,Diamondback Energy Inc,56
+FAST,USD,Industrial Distribution,,,Fastenal Co,52
+FCX,USD,Metals & Mining,,,Freeport-McMoRan Inc,50
+FERG,USD,Industrial Distribution,,,Ferguson Enterprises Inc,51
+FHN,USD,Banks,,,First Horizon Corp,51
+FIGR,USD,Capital Markets,,,Figure Technology Solutions Inc,58
+FIS,USD,Software,,,Fidelity National Information Services Inc,66
+FISV,USD,Software,,,Fiserv Inc,53
+FIVE,USD,Retail - Cyclical,,,Five Below Inc,70
+FN,USD,Hardware,,,Fabrinet,52
+FORM,USD,Semiconductors,,,FormFactor Inc,52
+FOX,USD,Media - Diversified,,,Fox Corp,53
+FOXA,USD,Media - Diversified,,,Fox Corp,53
+FR,USD,REITs,,,First Industrial Realty Trust Inc,57
+FRO,USD,Oil & Gas,,,Frontline PLC,79
+FSLR,USD,Semiconductors,,,First Solar Inc,58
+FTAI,USD,,,,,0
+FTNT,USD,Software,,,Fortinet Inc,59
+FUTU,USD,Capital Markets,,,Futu Holdings Ltd,60
+G,USD,Software,,,Genpact Ltd,62
+GAP,USD,Retail - Cyclical,,,Gap Inc,68
+GD,USD,Aerospace & Defense,,,General Dynamics Corp,52
+GDDY,USD,Software,,,GoDaddy Inc,62
+GE,USD,Aerospace & Defense,,,GE Aerospace,52
+GEHC,USD,Medical Devices & Instruments,,,GE HealthCare Technologies Inc,55
+GEN,USD,Software,,,Gen Digital Inc,61
+GFI,USD,Metals & Mining,,,Gold Fields Ltd,61
+GGB,USD,Steel,,,Gerdau SA,65
+GGG,USD,Industrial Products,,,Graco Inc,51
+GILD,USD,,,,,0
+GLBE,USD,Retail - Cyclical,,,Global E Online Ltd,63
+GLPI,USD,REITs,,,Gaming and Leisure Properties Inc,57
+GMAB,USD,Biotechnology,,,Genmab AS,59
+GME,USD,Retail - Cyclical,,,GameStop Corp,53
+GMED,USD,Medical Devices & Instruments,,,Globus Medical Inc,59
+GOOG,USD,Interactive Media,,,Alphabet Inc,57
+GOOGL,USD,Interactive Media,,,Alphabet Inc,57
+GRMN,USD,Hardware,,,Garmin Ltd,53
+GS,USD,Capital Markets,,,The Goldman Sachs Group Inc,66
+GTES,USD,Industrial Products,,,Gates Industrial Corp Ltd,64
+HAFN,USD,Transportation,,,Hafnia Ltd,76
+HALO,USD,Biotechnology,,,Halozyme Therapeutics Inc,65
+HAS,USD,Travel & Leisure,,,Hasbro Inc,65
+HBM,USD,Metals & Mining,,,HudBay Minerals Inc,58
+HCA,USD,Healthcare Providers & Services,,,HCA Healthcare Inc,57
+HIG,USD,Insurance,,,The Hartford Insurance Group Inc,57
+HIMS,USD,,,,,0
+HL,USD,Metals & Mining,,,Hecla Mining Co,61
+HLN,USD,Drug Manufacturers,,,Haleon PLC,51
+HMC,USD,Vehicles & Parts,,,Honda Motor Co Ltd,61
+HMY,USD,Metals & Mining,,,Harmony Gold Mining Co Ltd,60
+HNGE,USD,Healthcare Providers & Services,,,Hinge Health Inc,56
+HON,USD,Conglomerates,,,Honeywell International Inc,65
+HOOD,USD,,,,,0
+HPE,USD,Hardware,,,Hewlett Packard Enterprise Co,61
+HPQ,USD,Hardware,,,HP Inc,62
+HRB,USD,Personal Services,,,H & R Block Inc,62
+HSBC,USD,Banks,,,HSBC Holdings PLC,56
+HSIC,USD,Medical Distribution,,,Henry Schein Inc,50
+HST,USD,REITs,,,Host Hotels & Resorts Inc,52
+HSY,USD,Consumer Packaged Goods,,,The Hershey Co,59
+HTHT,USD,Travel & Leisure,,,H World Group Ltd,56
+HUBS,USD,Software,,,HubSpot Inc,60
+HWM,USD,Aerospace & Defense,,,Howmet Aerospace Inc,51
+HXL,USD,Aerospace & Defense,,,Hexcel Corp,56
+IAG,USD,Metals & Mining,,,IAMGOLD Corp,75
+IBIT,USD,,,,ISHARES BITCOIN TRUST ETF,0
+IBKR,USD,Capital Markets,,,Interactive Brokers Group Inc,54
+ICE,USD,Capital Markets,,,Intercontinental Exchange Inc,53
+ICL,USD,Agriculture,,,ICL Group Ltd,51
+INCY,USD,Biotechnology,,,Incyte Corp,71
+INFY,USD,Software,,,Infosys Ltd,64
+ING,USD,Banks,,,ING Groep NV,55
+INGM,USD,Software,,,Ingram Micro Holding Corp,58
+INSM,USD,Biotechnology,,,Insmed Inc,54
+INTC,USD,Technology,Semiconductors,Semiconductors,INTEL CORP,0
+INTU,USD,Software,,,Intuit Inc,55
+INVH,USD,REITs,,,Invitation Homes Inc,56
+IOVA,USD,Biotechnology,,,Iovance Biotherapeutics Inc,64
+IQV,USD,Medical Diagnostics & Research,,,IQVIA Holdings Inc,55
+IRM,USD,REITs,,,Iron Mountain Inc,60
+ISRG,USD,Medical Devices & Instruments,,,Intuitive Surgical Inc,61
+IT,USD,Software,,,Gartner Inc,58
+ITUB,USD,Banks,,,Itau Unibanco Holding SA,55
+IVZ,USD,Asset Management,,,Invesco Ltd,56
+JD,USD,Retail - Cyclical,,,JD.com Inc,57
+JEF,USD,Capital Markets,,,Jefferies Financial Group Inc,55
+JPM,USD,Banks,,,JPMorgan Chase & Co,54
+KEP,USD,Utilities - Regulated,,,Korea Electric Power Corp,52
+KEYS,USD,Hardware,,,Keysight Technologies Inc,63
+KGC,USD,Metals & Mining,,,Kinross Gold Corp,67
+KMX,USD,Vehicles & Parts,,,Carmax Inc,53
+KO,USD,Beverages - Non-Alcoholic,,,Coca-Cola Co,53
+KVUE,USD,Consumer Packaged Goods,,,Kenvue Inc,51
+LAUR,USD,Education,,,Laureate Education Inc,61
+LDOS,USD,Software,,,Leidos Holdings Inc,52
+LHX,USD,Aerospace & Defense,,,L3Harris Technologies Inc,54
+LLY,USD,Drug Manufacturers,,,Eli Lilly and Co,55
+LMT,USD,Aerospace & Defense,,,Lockheed Martin Corp,67
+LNC,USD,Insurance,,,Lincoln National Corp,67
+LNG,USD,Oil & Gas,,,Cheniere Energy Inc,51
+LOGI,USD,Hardware,,,Logitech International SA,62
+LRCX,USD,Semiconductors,,,Lam Research Corp,50
+LTH,USD,Travel & Leisure,,,Life Time Group Holdings Inc,52
+LULU,USD,Retail - Cyclical,,,Lululemon Athletica Inc,52
+LVS,USD,,,,,0
+LYB,USD,Chemicals,,,LyondellBasell Industries NV,55
+LYFT,USD,Software,,,Lyft Inc,61
+LYG,USD,Banks,,,Lloyds Banking Group PLC,52
+M,USD,Retail - Cyclical,,,Macy's Inc,65
+MA,USD,Credit Services,,,MasterCard Inc,55
+MCK,USD,Medical Distribution,,,McKesson Corp,50
+MDLZ,USD,Consumer Packaged Goods,,,Mondelez International Inc,57
+MDT,USD,Medical Devices & Instruments,,,Medtronic PLC,66
+META,USD,,,,,0
+MFC,USD,Insurance,,,Manulife Financial Corp,56
+MFG,USD,Banks,,,Mizuho Financial Group Inc,54
+MGA,USD,Vehicles & Parts,,,Magna International Inc,54
+MGY,USD,Oil & Gas,,,Magnolia Oil & Gas Corp,57
+MHK,USD,Furnishings,,,Mohawk Industries Inc,59
+MKTX,USD,Capital Markets,,,Marketaxess Holdings Inc,52
+MLI,USD,Industrial Products,,,Mueller Industries Inc,54
+MPC,USD,Oil & Gas,,,Marathon Petroleum Corp,67
+MRK,USD,,,,,0
+MRNA,USD,Biotechnology,,,Moderna Inc,53
+MRSH,USD,Insurance,,,Marsh,51
+MRVL,USD,,,,,0
+MS,USD,Capital Markets,,,Morgan Stanley,60
+MSFT,USD,Software,,,Microsoft Corp,56
+MSTR,USD,Technology,Software,Software - Application,STRATEGY INC,0
+MTB,USD,Banks,,,M&T Bank Corp,53
+MTCH,USD,Interactive Media,,,Match Group Inc,60
+MTDR,USD,Oil & Gas,,,Matador Resources Co,59
+MTG,USD,Insurance,,,MGIC Investment Corp,55
+MTSI,USD,Semiconductors,,,MACOM Technology Solutions Holdings Inc,58
+MU,USD,Semiconductors,Semiconductors,Semiconductors,Micron Technology Inc,71
+MUFG,USD,Banks,,,Mitsubishi UFJ Financial Group Inc,58
+MUR,USD,Oil & Gas,,,Murphy Oil Corp,60
+NBIS,USD,,,,,0
+NBIX,USD,Drug Manufacturers,,,Neurocrine Biosciences Inc,58
+NCLH,USD,Travel & Leisure,,,Norwegian Cruise Line Holdings Ltd,59
+NDAQ,USD,Capital Markets,,,Nasdaq Inc,52
+NEE,USD,Utilities - Regulated,,,NextEra Energy Inc,53
+NEM,USD,Metals & Mining,,,Newmont Corp,62
+NFLX,USD,Media - Diversified,Media - Diversified,Entertainment,Netflix Inc,52
+NIQ,USD,Software,,,NIQ Global Intelligence PLC,51
+NKE,USD,,,,,0
+NLY,USD,REITs,,,Annaly Capital Management Inc,66
+NOC,USD,Aerospace & Defense,,,Northrop Grumman Corp,52
+NOW,USD,,,,,0
+NTAP,USD,Software,,,NetApp Inc,60
+NTNX,USD,Software,,,Nutanix Inc,63
+NTR,USD,Agriculture,,,Nutrien Ltd,55
+NTRS,USD,Asset Management,,,Northern Trust Corp,58
+NU,USD,Banks,,,Nu Holdings Ltd,53
+NUE,USD,Steel,,,Nucor Corp,56
+NVDA,USD,Semiconductors,,,NVIDIA Corp,62
+NVT,USD,Industrial Products,,,nVent Electric PLC,56
+NWG,USD,Banks,,,NatWest Group PLC,63
+NXPI,USD,Semiconductors,,,NXP Semiconductors NV,59
+NYT,USD,Media - Diversified,,,New York Times Co,52
+O,USD,REITs,,,Realty Income Corp,52
+OHI,USD,REITs,,,Omega Healthcare Investors Inc,65
+OKTA,USD,Software,,,Okta Inc,51
+OLLI,USD,Retail - Defensive,,,Ollie's Bargain Outlet Holdings Inc,60
+OMC,USD,Media - Diversified,,,Omnicom Group Inc,53
+ONB,USD,Banks,,,Old National Bancorp,56
+ONON,USD,Manufacturing - Apparel & Accessories,,,On Holding AG,55
+OR,USD,Metals & Mining,,,OR Royalties Inc,60
+ORCL,USD,Software,,,Oracle Corp,55
+ORI,USD,Insurance,,,Old Republic International Corp,60
+ORKA,USD,Biotechnology,,,Oruka Therapeutics Inc,59
+OSCR,USD,Healthcare Plans,,,Oscar Health Inc,72
+OTEX,USD,Software,,,Open Text Corp,68
+OUT,USD,REITs,,,Outfront Media Inc,61
+OVV,USD,Oil & Gas,,,Ovintiv Inc,58
+OXY,USD,Oil & Gas,,,Occidental Petroleum Corp,68
+P,USD,Hardware,,,Everpure Inc,56
+PAA,USD,Oil & Gas,,,Plains All American Pipeline LP,70
+PAAS,USD,Metals & Mining,,,Pan American Silver Corp,64
+PAGP,USD,Oil & Gas,,,Plains GP Holdings LP,67
+PATH,USD,Software,,,UiPath Inc,63
+PAYX,USD,Software,,,Paychex Inc,57
+PBF,USD,Oil & Gas,,,PBF Energy Inc,62
+PBR,USD,Oil & Gas,,,Petroleo Brasileiro SA Petrobras,74
+PCG,USD,Utilities - Regulated,,,PG&E Corp,52
+PCVX,USD,Biotechnology,,,Vaxcyte Inc,51
+PDD,USD,Retail - Cyclical,,,PDD Holdings Inc,56
+PEP,USD,Beverages - Non-Alcoholic,,,PepsiCo Inc,57
+PFE,USD,,,,,0
+PFG,USD,Asset Management,,,Principal Financial Group Inc,54
+PGR,USD,Insurance,,,Progressive Corp,50
+PHG,USD,Medical Devices & Instruments,,,Koninklijke Philips NV,66
+PLD,USD,REITs,,,Prologis Inc,54
+PLTR,USD,Software,,,Palantir Technologies Inc,63
+PODD,USD,Medical Devices & Instruments,,,Insulet Corp,68
+PPG,USD,Chemicals,,,PPG Industries Inc,51
+PR,USD,Oil & Gas,,,Permian Resources Corp,61
+PRMB,USD,Beverages - Non-Alcoholic,,,Primo Brands Corp,52
+PRU,USD,Insurance,,,Prudential Financial Inc,63
+PSA,USD,REITs,,,Public Storage,50
+PSX,USD,Oil & Gas,,,Phillips 66,64
+PTC,USD,Software,,,PTC Inc,52
+PYPL,USD,,,,,0
+QCOM,USD,,,,,0
+QGEN,USD,Medical Diagnostics & Research,,,Qiagen NV,56
+QQQ,USD,,,,INVESCO QQQ TRUST UNIT SER 1,0
+QSR,USD,Restaurants,,,Restaurant Brands International Inc,60
+RBLX,USD,,,,,0
+RCI,USD,Telecommunication Services,,,Rogers Communications Inc,57
+RDDT,USD,Interactive Media,,,Reddit Inc,59
+REG,USD,REITs,,,Regency Centers Corp,52
+RELY,USD,Software,,,Remitly Global Inc,73
+RIG,USD,Oil & Gas,,,Transocean Ltd,56
+RIO,USD,Metals & Mining,,,Rio Tinto PLC,57
+RIVN,USD,,,,,0
+RJF,USD,Asset Management,,,Raymond James Financial Inc,57
+RKLB,USD,,,,,0
+RMD,USD,Medical Devices & Instruments,,,ResMed Inc,58
+RNG,USD,Software,,,RingCentral Inc,56
+ROIV,USD,Biotechnology,,,Roivant Sciences Ltd,58
+ROKU,USD,Media - Diversified,,,Roku Inc,63
+ROP,USD,Software,,,Roper Technologies Inc,63
+ROST,USD,Retail - Cyclical,,,Ross Stores Inc,57
+RPM,USD,Chemicals,,,RPM International Inc,50
+RPRX,USD,Biotechnology,,,Royalty Pharma PLC,59
+RTX,USD,Aerospace & Defense,,,RTX Corp,55
+SAP,USD,Software,,,SAP SE,55
+SARO,USD,Aerospace & Defense,,,StandardAero Inc,55
+SBSW,USD,Metals & Mining,,,Sibanye Stillwater Ltd,66
+SCCO,USD,Metals & Mining,,,Southern Copper Corp,62
+SCHW,USD,Capital Markets,,,Charles Schwab Corp,60
+SF,USD,Capital Markets,,,Stifel Financial Corp,60
+SFD,USD,Consumer Packaged Goods,,,Smithfield Foods Inc,59
+SGHC,USD,Travel & Leisure,,,Super Group (SGHC) Ltd,59
+SHC,USD,Medical Diagnostics & Research,,,Sotera Health Co,68
+SHEL,USD,Oil & Gas,,,Shell PLC,68
+SHOP,USD,Software,,,Shopify Inc,54
+SIMO,USD,Semiconductors,,,Silicon Motion Technology Corp,65
+SIRI,USD,Media - Diversified,,,Sirius XM Holdings Inc,57
+SJM,USD,Consumer Packaged Goods,,,J M Smucker Co,61
+SKM,USD,Telecommunication Services,,,SK Telecom Co Ltd,53
+SM,USD,Oil & Gas,,,SM Energy Co,67
+SMCI,USD,Hardware,,,Super Micro Computer Inc,68
+SMFG,USD,Banks,,,Sumitomo Mitsui Financial Group Inc,56
+SMTC,USD,Semiconductors,,,Semtech Corp,53
+SNAP,USD,,,,,0
+SNDK,USD,Hardware,,,SanDisk Corp,64
+SNEX,USD,Capital Markets,,,StoneX Group Inc,51
+SNN,USD,Medical Devices & Instruments,,,Smith & Nephew PLC,58
+SNPS,USD,Software,,,Synopsys Inc,52
+SOFI,USD,,,,,0
+SOLV,USD,Medical Devices & Instruments,,,Solventum Corp,60
+SONY,USD,Hardware,,,Sony Group Corp,59
+SPCX,USD,Industrials,Aerospace and defense,Aerospace and defense,SPACE EXPLORATION TECHNOLOGIES CORP (SPACEX),0
+SPG,USD,REITs,,,Simon Property Group Inc,56
+SPOT,USD,Interactive Media,,,Spotify Technology SA,60
+SQM,USD,Chemicals,,,Sociedad Quimica Y Minera De Chile SA,74
+SSNC,USD,Software,,,SS&C Technologies Holdings Inc,59
+SSRM,USD,Metals & Mining,,,SSR Mining Inc,60
+ST,USD,Hardware,,,Sensata Technologies Holding PLC,51
+STLD,USD,Steel,,,Steel Dynamics Inc,53
+STT,USD,Asset Management,,,State Street Corp,59
+STZ,USD,Beverages - Alcoholic,,,Constellation Brands Inc,65
+SU,USD,Oil & Gas,,,Suncor Energy Inc,65
+SWK,USD,Industrial Products,,,Stanley Black & Decker Inc,62
+SYF,USD,Credit Services,,,Synchrony Financial,51
+SYK,USD,Medical Devices & Instruments,,,Stryker Corp,59
+SYRE,USD,Biotechnology,,,Spyre Therapeutics Inc,60
+T,USD,Telecommunication Services,,,AT&T Inc,60
+TAK,USD,Drug Manufacturers,,,Takeda Pharmaceutical Co Ltd,56
+TAL,USD,Education,,,TAL Education Group,78
+TEAM,USD,Software,,,Atlassian Corp,53
+TECH,USD,Biotechnology,,,Bio-Techne Corp,64
+TECK,USD,Metals & Mining,,,Teck Resources Ltd,69
+TEL,USD,Hardware,,,TE Connectivity PLC,58
+TEM,USD,,,,,0
+TER,USD,Semiconductors,,,Teradyne Inc,54
+TEVA,USD,,,,,0
+TFC,USD,Banks,,,Truist Financial Corp,55
+TGT,USD,Retail - Defensive,,,Target Corp,63
+TGTX,USD,Biotechnology,,,TG Therapeutics Inc,53
+THC,USD,Healthcare Providers & Services,,,Tenet Healthcare Corp,79
+TKO,USD,Media - Diversified,,,TKO Group Holdings Inc,53
+TME,USD,Interactive Media,,,Tencent Music Entertainment Group,58
+TMO,USD,Medical Diagnostics & Research,,,Thermo Fisher Scientific Inc,51
+TMUS,USD,Telecommunication Services,,,T-Mobile US Inc,54
+TOST,USD,Software,,,Toast Inc,60
+TPR,USD,Retail - Cyclical,,,Tapestry Inc,58
+TRI,USD,Business Services,,,Thomson Reuters Corp,55
+TROW,USD,Asset Management,,,T. Rowe Price Group Inc,57
+TRU,USD,Capital Markets,,,TransUnion,51
+TRV,USD,Insurance,,,The Travelers Companies Inc,61
+TSLA,USD,,,,,0
+TSM,USD,Semiconductors,,,Taiwan Semiconductor Manufacturing Co Ltd,64
+TTE,USD,Oil & Gas,,,TotalEnergies SE,60
+TTMI,USD,Hardware,,,TTM Technologies Inc,53
+TWLO,USD,Software,,,Twilio Inc,69
+TWST,USD,Biotechnology,,,Twist Bioscience Corp,55
+TXN,USD,Semiconductors,,,Texas Instruments Inc,53
+TXNM,USD,Utilities - Regulated,,,TXNM Energy Inc,54
+U,USD,,,,,0
+UBER,USD,Software,,,Uber Technologies Inc,59
+UBS,USD,Banks,,,UBS Group AG,54
+UDR,USD,REITs,,,UDR Inc,52
+UGI,USD,Utilities - Regulated,,,UGI Corp,51
+UGP,USD,Oil & Gas,,,Ultrapar Participacoes SA,68
+UMC,USD,Semiconductors,,,United Microelectronics Corp,66
+UNH,USD,Healthcare Plans,,,UnitedHealth Group Inc,50
+URBN,USD,Retail - Cyclical,,,Urban Outfitters Inc,67
+USFD,USD,Retail - Defensive,,,US Foods Holding Corp,51
+V,USD,Credit Services,,,Visa Inc,52
+VALE,USD,Metals & Mining,,,Vale SA,51
+VEEV,USD,Healthcare Providers & Services,,,Veeva Systems Inc,60
+VG,USD,Oil & Gas,,,Venture Global Inc,57
+VIAV,USD,Hardware,,,Viavi Solutions Inc,57
+VICI,USD,REITs,,,VICI Properties Inc,51
+VIPS,USD,Retail - Cyclical,,,Vipshop Holdings Ltd,66
+VIRT,USD,Capital Markets,,,Virtu Financial Inc,51
+VIST,USD,Oil & Gas,,,Vista Energy SAB de CV,60
+VIV,USD,Telecommunication Services,,,Telefonica Brasil SA,60
+VLO,USD,Oil & Gas,,,Valero Energy Corp,65
+VLY,USD,Banks,,,Valley National Bancorp,55
+VNOM,USD,Oil & Gas,,,Viper Energy Inc,55
+VOD,USD,Telecommunication Services,,,Vodafone Group PLC,64
+VRT,USD,Industrial Products,,,Vertiv Holdings Co,54
+VRTX,USD,Biotechnology,,,Vertex Pharmaceuticals Inc,61
+VSXY,USD,Retail - Cyclical,,,Victoria's Secret & Co,65
+VTRS,USD,Drug Manufacturers,,,Viatris Inc,55
+VZ,USD,,,,,0
+WAL,USD,Banks,,,Western Alliance Bancorp,54
+WAY,USD,Healthcare Providers & Services,,,Waystar Holding Corp,57
+WBD,USD,,,,,0
+WDAY,USD,Software,,,Workday Inc,65
+WDC,USD,Hardware,,,Western Digital Corp,62
+WES,USD,Oil & Gas,,,Western Midstream Partners LP,52
+WFC,USD,Banks,,,Wells Fargo & Co,54
+WIT,USD,Software,,,Wipro Ltd,63
+WM,USD,Waste Management,,,Waste Management Inc,51
+WMG,USD,Media - Diversified,,,Warner Music Group Corp,59
+WMS,USD,,,,,0
+WMT,USD,,,,,0
+WPC,USD,REITs,,,W. P. Carey Inc,59
+WPM,USD,Metals & Mining,,,Wheaton Precious Metals Corp,60
+WSM,USD,Retail - Cyclical,,,Williams-Sonoma Inc,54
+WYNN,USD,Travel & Leisure,,,Wynn Resorts Ltd,51
+XOM,USD,Oil & Gas,,,ExxonMobil Holdings Corp,54
+XYZ,USD,,,,,0
+YMM,USD,Software,,,Full Truck Alliance Co Ltd,63
+YPF,USD,Oil & Gas,,,YPF SA,70
+YUM,USD,Restaurants,,,Yum Brands Inc,54
+YUMC,USD,Restaurants,,,Yum China Holdings Inc,63
+ZBH,USD,Medical Devices & Instruments,,,Zimmer Biomet Holdings Inc,60
+ZION,USD,Banks,,,Zions Bancorp NA,63
+ZM,USD,Software,,,Zoom Communications Inc,71
+ZTO,USD,Transportation,,,ZTO Express (Cayman) Inc,62
+ZTS,USD,Drug Manufacturers,,,Zoetis Inc,56
+ZWS,USD,Industrial Products,,,Zurn Elkay Water Solutions Corp,57
+SPY,USD,Benchmark,,,SPY,0
+AAPL,CAD,Hardware,,,Apple Inc CDR (CAD Hedged),52
+AAUC,CAD,Metals & Mining,Metals and mining,Gold,Allied Gold Corp,53
+AAV,CAD,Oil & Gas,,,Advantage Energy Ltd,47
+ABT,CAD,Medical Devices & Instruments,,,Abbott Laboratories CDR (CAD Hedged),46
+ABX,CAD,Metals & Mining,Metals and mining,Gold,Barrick Mining Corp,71
+AC,CAD,Transportation,,,Air Canada,42
+ACB,CAD,,,,,0
+ACO.X,CAD,Utilities - Regulated,,,Atco Ltd,53
+AD.UN,CAD,Asset Management,,,Alaris Equity Partners Income Trust,64
+ADBE,CAD,Software,,,Adobe Inc CDR (CAD Hedged),62
+ADEN,CAD,Industrial Distribution,,,Adentra Inc,55
+AEM,CAD,Metals & Mining,Metals and mining,Gold,Agnico Eagle Mines Ltd,64
+AG,CAD,Metals & Mining,Metals and mining,Silver,First Majestic Silver Corp,65
+AGF.B,CAD,Asset Management,,,AGF Management Ltd,58
+AGI,CAD,Metals & Mining,Metals and mining,Gold,Alamos Gold Inc,64
+ALA,CAD,Oil & Gas,Oil and gas,Oil and gas midstream,AltaGas Ltd,44
+ALS,CAD,Metals & Mining,,,Altius Minerals Corp,59
+AMAT,CAD,Semiconductors,,,Applied Materials Inc CDR (CAD Hedged),50
+AMD,CAD,Semiconductors,,,Advanced Micro Devices Inc CDR (CAD Hedged),49
+AMZN,CAD,Retail - Cyclical,Retail - Cyclical,Internet retail,Amazon.com Inc CDR (CAD Hedged),62
+ANET,CAD,Hardware,,,Arista Networks Inc CDR (CAD Hedged),51
+APM,CAD,Metals & Mining,,,Andean Precious Metals Corp,55
+APR.UN,CAD,REITs,,,Automotive Properties Real Estate Investment Trust,60
+AQN,CAD,Utilities - Regulated,Utilities: regulated,Utilities - Diversified,Algonquin Power & Utilities Corp,42
+ARE,CAD,Construction,,,Aecon Group Inc,44
+ARG,CAD,Metals & Mining,,,Amerigo Resources Ltd,75
+ARIS,CAD,Metals & Mining,,,Aris Mining Corp,78
+ARX,CAD,,,,,0
+ASM,CAD,Metals & Mining,,,Avino Silver & Gold Mines Ltd,61
+ASML,CAD,Semiconductors,,,ASML Holding NV CDR (CAD Hedged),57
+ATD,CAD,Retail - Cyclical,Retail - Cyclical,Specialty retail,Alimentation Couche-Tard Inc,53
+ATH,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Athabasca Oil Corp,42
+ATRL,CAD,Industrials,Construction,Engineering and construction,ATKINSREALIS GROUP INC,0
+ATZ,CAD,Retail - Cyclical,Retail - Cyclical,Apparel retail,Aritzia Inc,62
+AVGO,CAD,Semiconductors,,,Broadcom Inc CDR (CAD Hedged),62
+AYA,CAD,Metals & Mining,Metals and mining,Silver,Aya Gold & Silver Inc,71
+BAM,CAD,Asset Management,Asset management,Asset management,Brookfield Asset Management Ltd,56
+BB,CAD,Software,Software,Software - Infrastructure,BlackBerry Ltd,54
+BBD.B,CAD,Aerospace & Defense,,,Bombardier Inc,57
+BBUC,CAD,Conglomerates,,,Brookfield Business Corp,40
+BCE,CAD,Telecommunication Services,,,BCE Inc,54
+BDGI,CAD,Construction,,,Badger Infrastructure Solutions Ltd,41
+BDT,CAD,Construction,,,Bird Construction Inc,49
+BEP.UN,CAD,Utilities - Independent Power Producers,Utilities: independent power producers,Utilities - Renewable,Brookfield Renewable Partners LP,46
+BHC,CAD,Drug Manufacturers,,,Bausch Health Companies Inc,62
+BIP.UN,CAD,Utilities - Regulated,,,Brookfield Infrastructure Partners LP,55
+BIPC,CAD,Utilities - Regulated,,,Brookfield Infrastructure Corp,51
+BIR,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Birchcliff Energy Ltd,50
+BITF,CAD,,,,,0
+BK,CAD,Asset Management,,,Canadian Banc Corp,56
+BKNG,CAD,Travel & Leisure,,,Booking Holdings Inc CDR (CAD Hedged),42
+BMO,CAD,Financial Services,Banks,Banks - Diversified,BANK OF MONTREAL,0
+BN,CAD,Asset Management,Asset management,Asset management,Brookfield Corp,45
+BNS,CAD,Banks,Banks,Banks - Diversified,Bank of Nova Scotia,52
+BOFA,CAD,Banks,,,Bank of America Corp CDR (CAD Hedged),54
+BRK,CAD,Insurance,,,Berkshire Hathaway Inc CDR (CAD Hedged),59
+BTB.UN,CAD,,,,,0
+BTE,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Baytex Energy Corp,60
+BTO,CAD,Metals & Mining,Metals and mining,Gold,B2Gold Corp,72
+BX,CAD,Asset Management,,,Blackstone Inc CDR (CAD Hedged),52
+BYD,CAD,Vehicles & Parts,,,Boyd Group Services Inc,41
+CAE,CAD,Aerospace & Defense,,,CAE Inc,42
+CAS,CAD,Packaging & Containers,,,Cascades Inc,64
+CATR,CAD,Farm & Heavy Construction Machinery,,,Caterpillar Inc CDR (CAD Hedged),48
+CCL.B,CAD,Packaging & Containers,,,CCL Industries Inc,52
+CCO,CAD,Energy,Other energy sources,Uranium,CAMECO CORP,0
+CDE,CAD,Metals & Mining,,,Coeur Mining Inc,55
+CEU,CAD,Oil & Gas,,,CES Energy Solutions Corp,45
+CF,CAD,Capital Markets,,,Canaccord Genuity Group Inc,48
+CFP,CAD,Forest Products,,,Canfor Corp,45
+CFW,CAD,Oil & Gas,,,Calfrac Well Services Ltd,69
+CG,CAD,Metals & Mining,,,Centerra Gold Inc,64
+CGG,CAD,Metals & Mining,,,China Gold International Resources Corp Ltd,72
+CGO,CAD,,,,,0
+CGX,CAD,Media - Diversified,,,Cineplex Inc,46
+CGY,CAD,Aerospace & Defense,,,Calian Group Ltd,61
+CHE.UN,CAD,Chemicals,,,Chemtrade Logistics Income Fund,64
+CHR,CAD,Transportation,,,Chorus Aviation Inc,50
+CIGI,CAD,Real Estate,,,Colliers International Group Inc,46
+CJ,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Cardinal Energy Ltd,57
+CJT,CAD,Transportation,,,Cargojet Inc,41
+CLS,CAD,Hardware,,,Celestica Inc,60
+CM,CAD,Banks,Banks,Banks - Diversified,Canadian Imperial Bank of Commerce,48
+CNQ,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Canadian Natural Resources Ltd,63
+CNR,CAD,Transportation,,,Canadian National Railway Co,47
+COST,CAD,Retail - Defensive,,,Costco Wholesale Corp CDR (CAD Hedged),45
+CPX,CAD,Utilities,Utilities: independent power producers,Utilities - Independent power producers,CAPITAL POWER CORPORATION,0
+CRM,CAD,Software,,,Salesforce Inc CDR (CAD Hedged),52
+CRON,CAD,Drug Manufacturers,,,Cronos Group Inc,71
+CRR.UN,CAD,REITs,,,Crombie Real Estate Investment Trust,40
+CRT.UN,CAD,REITs,,,CT Real Estate Investment Trust,59
+CRWD,CAD,Software,,,CrowdStrike Holdings Inc CDR (CAD Hedged),40
+CS,CAD,Metals & Mining,,,Capstone Copper Corp,70
+CSCO,CAD,Hardware,,,Cisco Systems Inc CDR (CAD Hedged),51
+CSH.UN,CAD,Real Estate,REITs,REIT - Healthcare facilities,CHARTWELL RETIREMENT RESIDENCES,0
+CSU,CAD,Software,,,Constellation Software Inc,58
+CTC.A,CAD,Retail - Cyclical,,,Canadian Tire Corp Ltd,54
+CU,CAD,Utilities - Regulated,,,Canadian Utilities Ltd,42
+CURA,CAD,Drug Manufacturers,Drug manufacturers,Drug manufacturers - Specialty and generic,Curaleaf Holdings Inc,41
+CVE,CAD,Oil & Gas,Oil and gas,Oil and gas integrated,Cenovus Energy Inc,65
+CVVY,CAD,Oil & Gas,,,Cavvy Energy Ltd,68
+DBM,CAD,Industrial Distribution,,,Doman Building Materials Group Ltd,54
+DCBO,CAD,Software,,,Docebo Inc,47
+DFY,CAD,Insurance,,,Definity Financial Corp,49
+DHT.UN,CAD,Drug Manufacturers,,,DRI Healthcare Trust,64
+DIR.UN,CAD,REITs,,,Dream Industrial Real Estate Investment Trust,44
+DIS,CAD,Media - Diversified,,,The Walt Disney Co CDR (CAD Hedged),44
+DML,CAD,Energy,Other energy sources,Uranium,DENISON MINES CORPORATION,0
+DOL,CAD,Retail - Defensive,Retail: defensive,Discount stores,Dollarama Inc,48
+DPM,CAD,Metals & Mining,,,DPM Metals Inc,63
+DSG,CAD,Software,,,The Descartes Systems Group Inc,57
+DSV,CAD,Metals & Mining,Metals and mining,Silver,Discovery Mining Ltd,71
+DXT,CAD,Business Services,,,Dexterra Group Inc,44
+ECOR,CAD,Metals & Mining,,,Ecora Royalties PLC,57
+EDR,CAD,Metals & Mining,Metals and mining,Silver,Endeavour Silver Corp,59
+EDV,CAD,Metals & Mining,,,Endeavour Mining PLC,66
+EFN,CAD,Business Services,,,Element Fleet Management Corp,46
+EFR,CAD,Other Energy Sources,Other energy sources,Uranium,Energy Fuels Inc,40
+EIF,CAD,Transportation,,,Exchange Income Corp,47
+ELD,CAD,Metals & Mining,Metals and mining,Gold,Eldorado Gold Corp,56
+ELE,CAD,Metals & Mining,,,Elemental Royalty Corp,45
+ELF,CAD,Insurance,,,E-L Financial Corp Ltd,73
+EMA,CAD,Utilities,Utilities: regulated,Utilities - Regulated electric,EMERA INC,0
+EMP.A,CAD,Retail - Defensive,,,Empire Co Ltd,44
+ENB,CAD,Energy,Oil and gas,Oil and gas midstream,ENBRIDGE INC,0
+ENGH,CAD,Software,,,Enghouse Systems Ltd,57
+EPRX,CAD,Biotechnology,,,Eupraxia Pharmaceuticals Inc,57
+EQX,CAD,Metals & Mining,Metals and mining,Gold,Equinox Gold Corp,55
+ERO,CAD,Metals & Mining,,,Ero Copper Corp,68
+ESI,CAD,Oil & Gas,,,Ensign Energy Services Inc,49
+ET,CAD,Hardware,,,Evertz Technologies Ltd,42
+EXE,CAD,Healthcare Providers & Services,,,Extendicare Inc,45
+F,CAD,Vehicles & Parts,,,Ford Motor Co CDR (CAD Hedged),63
+FCR.UN,CAD,REITs,,,First Capital REIT,47
+FDY,CAD,Metals & Mining,,,Faraday Copper Corp,44
+FFH,CAD,Insurance,,,Fairfax Financial Holdings Ltd,44
+FFN,CAD,Asset Management,,,North American Financial 15 Split Corp,69
+FIH.U,CAD,Asset Management,,,Fairfax India Holdings Corp,58
+FISV,CAD,Software,,,Fiserv Inc CDR (CAD Hedged),53
+FM,CAD,Metals & Mining,,,First Quantum Minerals Ltd,60
+FNV,CAD,Metals & Mining,Metals and mining,Gold,Franco-Nevada Corp,61
+FRU,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Freehold Royalties Ltd,59
+FSV,CAD,Real Estate,,,FirstService Corp,43
+FTG,CAD,Aerospace & Defense,,,Firan Technology Group Corp,62
+FTN,CAD,Asset Management,,,Financial 15 Split Corp,68
+FTS,CAD,Utilities - Regulated,Utilities: regulated,Utilities - Regulated electric,Fortis Inc,43
+FTT,CAD,Industrial Distribution,,,Finning International Inc,40
+FVI,CAD,Metals & Mining,Metals and mining,Gold,Fortuna Mining Corp,77
+GAU,CAD,Metals & Mining,,,Galiano Gold Inc,73
+GE,CAD,Aerospace & Defense,,,GE Aerospace CDR (CAD Hedged),52
+GEI,CAD,Oil & Gas,,,Gibson Energy Inc,50
+GEV,CAD,Industrial Products,,,GE Vernova Inc CDR (CAD Hedged),49
+GFR,CAD,Oil & Gas,,,Greenfire Resources Ltd,42
+GGD,CAD,Metals & Mining,,,GoGold Resources Inc,65
+GIB.A,CAD,Software,Software,Information technology services,CGI Inc,57
+GMIN,CAD,Metals & Mining,Metals and mining,Gold,G Mining Ventures Corp,58
+GOOG,CAD,Interactive Media,,,Alphabet Inc CDR (CAD Hedged),57
+GOOS,CAD,Manufacturing - Apparel & Accessories,,,Canada Goose Holdings Inc,48
+GRGD,CAD,Retail - Cyclical,,,Groupe Dynamite Inc,61
+GRT.UN,CAD,REITs,,,Granite Real Estate Investment Trust,50
+GS,CAD,Capital Markets,,,The Goldman Sachs Group Inc CDR (CAD Hedged),66
+GSY,CAD,Credit Services,,,goeasy Ltd,43
+GUD,CAD,Drug Manufacturers,,,KNIGHT THERAPEUTICS Inc,64
+GWO,CAD,Insurance,,,Great-West Lifeco Inc,50
+H,CAD,Utilities - Regulated,,,Hydro One Ltd,46
+HBM,CAD,Metals & Mining,,,HudBay Minerals Inc,58
+HD,CAD,Retail - Cyclical,,,The Home Depot Inc CDR (CAD Hedged),45
+HMMC,CAD,Metals & Mining,,,Hemlo Mining Corp,55
+HON,CAD,Conglomerates,,,Honeywell International Inc CDR (CAD Hedged),65
+HPS.A,CAD,,,,,0
+HR.UN,CAD,REITs,REITs,REIT - Diversified,H&R Real Estate Investment Trust,44
+HSLV,CAD,Metals & Mining,,,Highlander Silver Corp,52
+HSTR,CAD,Metals & Mining,,,Heliostar Metals Ltd,61
+HUT,CAD,Capital Markets,,,Hut 8 Corp,42
+HWX,CAD,Oil & Gas,,,Headwater Exploration Inc,57
+IAG,CAD,Insurance,,,iA Financial Corp Inc,57
+IBM,CAD,Software,,,International Business Machines Corp CDR (CAD Hedged),48
+IE,CAD,Metals & Mining,,,Ivanhoe Electric Inc,41
+IFC,CAD,Insurance,,,Intact Financial Corp,41
+IGM,CAD,Asset Management,Asset management,Asset management,IGM Financial Inc,51
+III,CAD,Metals & Mining,,,Imperial Metals Corp,50
+IMG,CAD,Metals & Mining,Metals and mining,Gold,IAMGOLD Corp,75
+IMO,CAD,Oil & Gas,,,Imperial Oil Ltd,56
+ISO,CAD,Other Energy Sources,,,IsoEnergy Ltd,41
+ISRG,CAD,Medical Devices & Instruments,,,Intuitive Surgical Inc CDR (CAD Hedged),61
+ITH,CAD,Metals & Mining,,,International Tower Hill Mines Ltd,50
+IVN,CAD,Metals & Mining,Metals and mining,Other industrial metals and mining,Ivanhoe Mines Ltd,49
+JPM,CAD,Banks,,,JPMorgan Chase & Co CDR (CAD Hedged),54
+JWEL,CAD,Consumer Packaged Goods,,,Jamieson Wellness Inc,58
+K,CAD,Metals & Mining,Metals and mining,Gold,Kinross Gold Corp,67
+KEL,CAD,Oil & Gas,,,Kelt Exploration Ltd,52
+KEY,CAD,Oil & Gas,Oil and gas,Oil and gas midstream,Keyera Corp,42
+KMP.UN,CAD,REITs,,,Killam Apartment Real Estate Investment Trust,46
+KNT,CAD,Metals & Mining,,,K92 Mining Inc,69
+KXS,CAD,Software,,,Kinaxis Inc,60
+L,CAD,Retail - Defensive,Retail: defensive,Grocery stores,Loblaw Companies Ltd,48
+LAC,CAD,Metals & Mining,Metals and mining,Other industrial metals and mining,Lithium Americas Corp,42
+LAR,CAD,Metals & Mining,,,Lithium Argentina AG,45
+LBS.PR.A,CAD,Asset Management,,,Life & Banc Split Corp,58
+LCFS,CAD,Chemicals,,,Tidewater Renewables Ltd,47
+LLY,CAD,Drug Manufacturers,,,Eli Lilly and Co CDR (CAD Hedged),55
+LNF,CAD,Retail - Cyclical,,,Leon's Furniture Ltd,55
+LNR,CAD,Vehicles & Parts,,,Linamar Corp,66
+LSPD,CAD,Software,Software,Software - Application,Lightspeed Commerce Inc,42
+LUG,CAD,Metals & Mining,Metals and mining,Gold,Lundin Gold Inc,70
+LULU,CAD,Retail - Cyclical,,,Lululemon Athletica Inc CDR (CAD Hedged),52
+LUN,CAD,Metals & Mining,Metals and mining,Copper,Lundin Mining Corp,61
+MA,CAD,Credit Services,,,Mastercard Inc CDR (CAD Hedged),55
+MAL,CAD,Aerospace & Defense,,,Magellan Aerospace Corp,53
+MARI,CAD,Metals & Mining,,,Marimaca Copper Corp,44
+MATR,CAD,Oil & Gas,,,Mattr Corp,43
+MAU,CAD,Metals & Mining,,,Montage Gold Corp,40
+MDA,CAD,Industrials,Aerospace and defense,Aerospace and defense,MDA SPACE LTD,0
+MDI,CAD,Metals & Mining,,,Major Drilling Group International Inc,57
+MER,CAD,Oil & Gas,,,Meren Energy Inc,60
+META,CAD,Interactive Media,,,Meta Platforms Inc CDR (CAD Hedged),41
+MFC,CAD,Insurance,Insurance,Insurance - Life,Manulife Financial Corp,56
+MG,CAD,Vehicles & Parts,,,Magna International Inc,54
+MKP,CAD,Banks,,,MCAN Financial Group,50
+MNO,CAD,Metals & Mining,,,Meridian Mining PLC,50
+MRE,CAD,Vehicles & Parts,,,Martinrea International Inc,55
+MRG.UN,CAD,REITs,,,Morguard North American Residential Real Estate Investment Trust,43
+MRU,CAD,Consumer Defensive,Retail: defensive,Grocery stores,METRO INC,0
+MSA,CAD,Metals & Mining,,,Mineros SA,57
+MSFT,CAD,Software,Software,Software - Infrastructure,Microsoft Corp CDR (CAD Hedged),56
+MTL,CAD,Transportation,,,Mullen Group Ltd,54
+MTY,CAD,Restaurants,,,MTY Food Group Inc,57
+MU,CAD,Semiconductors,Semiconductors,Semiconductors,Micron Technology Inc CDR (CAD Hedged),71
+MUX,CAD,Metals & Mining,,,McEwen Inc,59
+MX,CAD,Chemicals,Chemicals,Chemicals,Methanex Corp,67
+NA,CAD,Banks,Banks,Banks - Diversified,National Bank of Canada,49
+NEO,CAD,Chemicals,,,Neo Performance Materials Inc,55
+NFI,CAD,Vehicles & Parts,Vehicles and parts,Auto manufacturers,NFI Group Inc,57
+NFLX,CAD,Media - Diversified,Media - Diversified,Entertainment,Netflix Inc CDR (CAD Hedged),52
+NGEX,CAD,Metals & Mining,,,NGEx Minerals Ltd,46
+NOA,CAD,,,,,0
+NOWS,CAD,Software,,,ServiceNow Inc CDR (CAD Hedged),48
+NPI,CAD,Utilities - Independent Power Producers,Utilities: independent power producers,Utilities - Renewable,Northland Power Inc,45
+NTR,CAD,Agriculture,Agriculture,Agricultural inputs,Nutrien Ltd,55
+NUAG,CAD,Metals & Mining,,,New Pacific Metals Corp,53
+NVDA,CAD,Semiconductors,,,NVIDIA Corp CDR (CAD Hedged),62
+NWC,CAD,Retail - Defensive,,,The North West Co Inc,50
+NXE,CAD,Other Energy Sources,Other energy sources,Uranium,NexGen Energy Ltd,45
+NXR.UN,CAD,REITs,,,Nexus Industrial REIT,51
+OBE,CAD,Oil & Gas,,,Obsidian Energy Ltd,67
+OGC,CAD,Metals & Mining,,,OceanaGold Corp,72
+ONEX,CAD,Asset Management,,,Onex Corp,40
+OR,CAD,Metals & Mining,Metals and mining,Gold,OR Royalties Inc,60
+ORAC,CAD,Software,,,Oracle Corp CDR (CAD Hedged),55
+ORE,CAD,Metals & Mining,,,Orezone Gold Corp,74
+OTEX,CAD,Software,Software,Software - Application,Open Text Corp,68
+OVV,CAD,Oil & Gas,,,Ovintiv Inc,58
+PAAS,CAD,Metals & Mining,Metals and mining,Gold,Pan American Silver Corp,64
+PBH,CAD,Consumer Packaged Goods,,,Premium Brands Holdings Corp,45
+PD,CAD,,,,,0
+PEP,CAD,Beverages - Non-Alcoholic,,,PepsiCo Inc,43
+PET,CAD,Retail - Cyclical,,,Pet Valu Holdings Ltd,57
+PEY,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Peyto Exploration & Development Corp,58
+PFE,CAD,Drug Manufacturers,,,Pfizer Inc CDR (CAD Hedged),44
+PLTR,CAD,Software,,,Palantir Technologies Inc CDR (CAD Hedged),63
+PMET,CAD,Metals & Mining,,,PMET Resources Inc,40
+PMZ.UN,CAD,REITs,,,Primaris REIT,51
+POU,CAD,Oil & Gas,,,Paramount Resources Ltd,53
+POW,CAD,Insurance,,,Power Corporation of Canada,45
+PPL,CAD,Oil & Gas,,,Pembina Pipeline Corp,45
+PRL,CAD,Credit Services,,,Propel Holdings Inc,49
+PRU,CAD,Metals & Mining,,,Perseus Mining Ltd,55
+PSI,CAD,Oil & Gas,,,Pason Systems Inc,44
+PSK,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,PrairieSky Royalty Ltd,52
+PXT,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Parex Resources Inc,74
+PYPL,CAD,Credit Services,,,PayPal Holdings Inc CDR (CAD Hedged),49
+QBR.B,CAD,Telecommunication Services,,,Quebecor Inc,57
+QCOM,CAD,Semiconductors,,,Qualcomm Inc CDR (CAD Hedged),45
+QSR,CAD,Restaurants,Restaurants,Restaurants,Restaurant Brands International Inc,60
+RAY,CAD,Media - Diversified,,,Stingray Group Inc,45
+RBA,CAD,Business Services,,,RB Global Inc,44
+RCH,CAD,Industrial Products,,,Richelieu Hardware Ltd,50
+RCI.B,CAD,Telecommunication Services,,,Rogers Communications Inc,57
+REI.UN,CAD,REITs,REITs,REIT - Retail,Riocan Real Estate Investment Trust,46
+RFA,CAD,Real Estate,,,RFA Financial Inc,42
+RGSI,CAD,Utilities - Regulated,,,Rockpoint Gas Storage Inc,54
+RIO,CAD,Metals & Mining,,,Rio2 Ltd,51
+RSI,CAD,Consumer Packaged Goods,,,Rogers Sugar Inc,47
+RUS,CAD,Industrial Distribution,,,Russel Metals Inc,57
+RY,CAD,Banks,Banks,Banks - Diversified,Royal Bank of Canada,45
+SCR,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Strathcona Resources Ltd,51
+SCZ,CAD,Metals & Mining,,,Santacruz Silver Mining Ltd,48
+SDE,CAD,Oil & Gas,,,Spartan Delta Corp,49
+SEA,CAD,Metals & Mining,,,Seabridge Gold Inc,57
+SFC,CAD,Insurance,,,Sagicor Financial Co Ltd,68
+SGR.U,CAD,REITs,,,Slate Grocery REIT,55
+SGR.UN,CAD,REITs,,,Slate Grocery REIT,55
+SGY,CAD,Oil & Gas,,,Surge Energy Inc,61
+SHOP,CAD,Software,,,Shopify Inc,54
+SIA,CAD,Healthcare Providers & Services,,,Sienna Senior Living Inc,54
+SII,CAD,Asset Management,,,Sprott Inc,60
+SIS,CAD,Industrial Products,,,Savaria Corp,56
+SJ,CAD,Forest Products,,,Stella-Jones Inc,42
+SKE,CAD,Metals & Mining,,,Skeena Resources Ltd,42
+SLF,CAD,Insurance,,,Sun Life Financial Inc,53
+SMCI,CAD,Hardware,,,Super Micro Computer Inc CDR (CAD Hedged),68
+SOBO,CAD,Oil & Gas,,,South Bow Corp,52
+SOIL,CAD,Oil & Gas,,,Saturn Oil & Gas Inc,63
+SPB,CAD,Utilities,Utilities: regulated,Utilities - Regulated gas,SUPERIOR PLUS CORP,0
+SSRM,CAD,Metals & Mining,,,SSR Mining Inc,60
+STC,CAD,,,,,0
+STN,CAD,Construction,,,Stantec Inc,45
+SU,CAD,Oil & Gas,,,Suncor Energy Inc,65
+SVI,CAD,Real Estate,Real estate,Real estate services,STORAGEVAULT CANADA INC,0
+SVM,CAD,Metals & Mining,Metals and mining,Silver,Silvercorp Metals Inc,58
+SXGC,CAD,Metals & Mining,,,Southern Cross Gold Consolidated Ltd,48
+T,CAD,Communication Services,Telecommunication services,Telecom services,TELUS CORP,0
+TA,CAD,Utilities - Independent Power Producers,Utilities: independent power producers,Utilities - Independent power producers,TransAlta Corp,43
+TD,CAD,Banks,Banks,Banks - Diversified,The Toronto-Dominion Bank,49
+TECK.B,CAD,Metals & Mining,,,Teck Resources Ltd,69
+TFII,CAD,Transportation,,,TFI International Inc,47
+TFPM,CAD,Metals & Mining,,,Triple Flag Precious Metals Corp,62
+TIH,CAD,Industrial Distribution,,,Toromont Industries Ltd,41
+TKO,CAD,Metals & Mining,,,Trekor Metals Ltd,57
+TNZ,CAD,Oil & Gas,,,Tenaz Energy Corp,43
+TOT,CAD,Oil & Gas,,,Total Energy Services Inc,56
+TOU,CAD,Energy,Oil and gas,Oil and gas E&P,TOURMALINE OIL CORP,0
+TOY,CAD,Travel & Leisure,,,Spin Master Corp,51
+TPZ,CAD,Oil & Gas,,,Topaz Energy Corp,52
+TRI,CAD,Business Services,Business services,Specialty business services,Thomson Reuters Corp,55
+TSU,CAD,Insurance,,,Trisura Group Ltd,45
+TVE,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Tamarack Valley Energy Ltd,56
+TVK,CAD,Oil & Gas,,,TerraVest Industries Inc,46
+TXG,CAD,Metals & Mining,Metals and mining,Gold,Torex Gold Resources Inc,66
+UBER,CAD,Software,,,Uber Technologies Inc CDR (CAD Hedged),59
+UNH,CAD,Healthcare Plans,,,UnitedHealth Group Inc CDR (CAD Hedged),50
+USA,CAD,Metals & Mining,,,Americas Gold And Silver Corp,49
+VET,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Vermilion Energy Inc,51
+VFV,CAD,,,,VANGUARD INVESTMENTS CANADA INC S&P 500 INDEX ETF,0
+VISA,CAD,Credit Services,,,Visa Inc CDR (CAD Hedged),52
+VITL.UN,CAD,Real Estate,REITs,REIT - Healthcare facilities,VITAL INFRASTRUCTURE PROPERTY TRUST,0
+VLE,CAD,Oil & Gas,,,Valeura Energy Inc,70
+VMET,CAD,Metals & Mining,,,Versamet Royalties Corp,61
+VNP,CAD,Chemicals,,,5N Plus Inc,52
+VZ,CAD,Telecommunication Services,,,Verizon Communications Inc CDR (CAD Hedged),62
+VZLA,CAD,Metals & Mining,,,Vizsla Silver Corp,41
+WCN,CAD,Waste Management,Waste management,Waste management,Waste Connections Inc,46
+WCP,CAD,Oil & Gas,Oil and gas,Oil and gas E&P,Whitecap Resources Inc,63
+WDO,CAD,Metals & Mining,Metals and mining,Gold,Wesdome Gold Mines Ltd,57
+WELL,CAD,Healthcare Providers & Services,Healthcare providers and services,Medical care facilities,WELL Health Technologies Corp,52
+WGX,CAD,Metals & Mining,,,Westgold Resources Ltd,54
+WJX,CAD,Industrial Distribution,,,Wajax Corp,60
+WPK,CAD,Packaging & Containers,,,Winpak Ltd,54
+WPM,CAD,Metals & Mining,Metals and mining,Gold,Wheaton Precious Metals Corp,60
+WTE,CAD,Transportation,,,Westshore Terminals Investment Corp,44
+X,CAD,Capital Markets,Capital markets,Financial data and stock exchanges,TMX Group Ltd,62
+XGD,CAD,,,,BLACKROCK ASSET MANAGEMENT CA LTD ISHARES S&P/TSX GLOBAL GOLD INDEX ETF,0
+XIU,CAD,,,,BLACKROCK ASSET MANAGEMENT CA LTD ISHARES S&P/TSX 60 INDEX ETF,0
+XOM,CAD,Oil & Gas,,,Exxon Mobil Corp CDR (CAD Hedged),54
+XRE,CAD,,,,BLACKROCK ASSET MANAGEMENT CA LTD ISHARES S&P/TSX CAPPED REIT INDEX ETF,0
+XSP,CAD,,,,BLACKROCK ASSET MANAGEMENT CA LTD ISHARES CORE S&P 500 INDEX ETF (CAD-HEDG,0
+ZCN,CAD,,,,BMO ASSET MANAGEMENT INC S&P/TSX CAPPED COMPOSITE INDEX ETF,0
+XIC,CAD,Benchmark,,,XIC,0
+XDIV,CAD,Benchmark,,,XDIV,0
