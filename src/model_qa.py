@@ -272,7 +272,7 @@ def _mark(ok: bool) -> str:
     return "PASS" if ok else "FAIL"
 
 
-def write_report(results: dict, regime_sources: dict) -> None:
+def write_report(results: dict, regime_sources: dict, last_meta: dict | None = None) -> None:
     lines = [
         "# Sprint 4 — Model QA & Governance (Gate 4)",
         "",
@@ -285,7 +285,12 @@ def write_report(results: dict, regime_sources: dict) -> None:
         "",
     ]
     for market, per_target in results.items():
-        lines += [f"## {market}", "", f"- Regime source: {regime_sources[market]}", "",
+        universe = last_meta.get("universe", {}) if last_meta else {}
+        uni_str = (f"- Universe: **{universe.get('n_symbols', '?')} symbols**, "
+                   f"{universe.get('n_rows', '?'):,} rows, "
+                   f"{universe.get('date_min', '?')} → {universe.get('date_max', '?')}, "
+                   f"source=`{universe.get('source', '?')}`")
+        lines += [f"## {market}", "", uni_str, "", f"- Regime source: {regime_sources[market]}", "",
                   "### Governance metrics", "",
                   "| Target | Base rate | P@K lift (>=1.5) | BSS (>0.05) | PR-AUC lift (>1.35) | IC / t-defl (>0.04 / >2.5) | ROC-AUC | Gate |",
                   "| :--- | ---: | ---: | ---: | ---: | ---: | ---: | :---: |"]
@@ -359,6 +364,19 @@ def main() -> int:
     for mkt in markets:
         oof = pd.read_parquet(DATA_DIR / f"oof_{mkt}.parquet")
         meta = json.loads((DATA_DIR / f"train_meta_{mkt}.json").read_text())
+
+        # Universe header: warn if fixture
+        universe = meta.get("universe", {})
+        source = universe.get("source", "unknown")
+        if source == "fixture":
+            print(f"[model_qa] FATAL: {mkt} model was trained on FIXTURE data ({universe.get('n_symbols', '?')} tickers). "
+                  f"Re-run on real data. Exiting.", file=sys.stderr)
+            sys.exit(3)
+        n_sym = universe.get("n_symbols", oof["symbol"].nunique())
+        k = _k_for(n_sym)
+        if k < 5:
+            print(f"[model_qa] WARNING: {mkt} K={k} (universe {n_sym} tickers) — P@K may be unstable")
+
         regimes, sources[mkt] = regime_series(mkt, oof)
         results[mkt] = [evaluate_target(oof, meta, t, regimes) for t in TARGET_COLUMNS]
         offenders = [r["target"] for r in results[mkt] if r.get("cb05_triggered")]
@@ -366,7 +384,7 @@ def main() -> int:
             halted[mkt] = offenders
             trigger_cb05(mkt, offenders)
 
-    write_report(results, sources)
+    write_report(results, sources, meta if len(markets) == 1 else None)
 
     summary = {
         mkt: {r["target"]: {"gate_pass": r.get("gate_pass", False),
