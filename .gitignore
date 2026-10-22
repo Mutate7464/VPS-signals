@@ -16,7 +16,14 @@ venv/
 # Portfolio holdings (shares, cost basis, entry/exit prices)
 config/holdings.csv
 ibkrdownload/holdings.csv
+IBKRDownload/holdings.csv
 data/holdings*.csv
+
+# ── Generated watchlist & reference data (regenerable from IBKR exports) ──
+IBKRDownload/IV_*.csv
+IBKRDownload/TC_*.csv
+IBKRDownload/watchlist_*.csv
+IBKRDownload/sector_map.csv
 
 # ── Large binary data (synced from M1 Mac, regenerable) ──
 data/raw/
