@@ -24,6 +24,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import logging
+import math
 import sys
 from pathlib import Path
 
@@ -32,6 +34,7 @@ import pandas as pd
 from sklearn.feature_selection import mutual_info_classif
 from statsmodels.tsa.stattools import adfuller
 
+from src.run_logging import log_phase, rss_mb, setup_logging
 from src.state_manager import init_dirs, update_state
 from src.targets import TARGET_COLUMNS
 
@@ -42,6 +45,8 @@ REPORT_PATH = BASE_DIR / "reports" / "sprint3_metadata_selection.md"
 
 VIF_THRESHOLD = 5.0
 MIN_MI_PERCENTILE = 30
+MAX_MI_ROWS = 300_000
+MAX_VIF_ROWS = 500_000
 ADF_SAMPLE_TICKERS = 50
 ADF_P_THRESHOLD = 0.05
 ADF_MIN_OBS = 30
@@ -70,9 +75,11 @@ def train_split(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Timestamp]:
 # --------------------------------------------------------------------------- #
 def adf_analysis(train: pd.DataFrame, feature_cols: list[str]) -> dict:
     results = {}
+    symbols = np.asarray(train["symbol"].unique())
+    rng = np.random.default_rng(42)
+    tickers = list(rng.choice(symbols, size=min(ADF_SAMPLE_TICKERS, len(symbols)), replace=False))
     for feat in feature_cols:
         ps = []
-        tickers = list(train["symbol"].unique())[:ADF_SAMPLE_TICKERS]
         for sym in tickers:
             series = train.loc[train["symbol"] == sym, feat].replace([np.inf, -np.inf], np.nan).dropna()
             series = series.reset_index(drop=True)
@@ -96,25 +103,126 @@ def adf_analysis(train: pd.DataFrame, feature_cols: list[str]) -> dict:
 # --------------------------------------------------------------------------- #
 # Mutual information
 # --------------------------------------------------------------------------- #
-def compute_mi(train: pd.DataFrame, feature_cols: list[str]) -> dict:
+def compute_mi(train: pd.DataFrame, feature_cols: list[str], max_rows: int = MAX_MI_ROWS, logger: logging.Logger | None = None) -> dict:
     sub = train[feature_cols + TARGET_COLUMNS].replace([np.inf, -np.inf], np.nan).dropna()
+    n_full = len(sub)
+
+    # Subsample for tractability on large datasets
+    if n_full > max_rows:
+        rng = np.random.default_rng(42)
+        idx = rng.choice(n_full, size=max_rows, replace=False)
+        sub = sub.iloc[idx]
+        if logger:
+            logger.info("MI subsampled %d -> %d rows", n_full, len(sub))
+
     X = sub[feature_cols].astype("float64").to_numpy()
     mi = {}
     for t in TARGET_COLUMNS:
         y = sub[t].astype("int").to_numpy()
-        vals = mutual_info_classif(X, y, random_state=42)
+        if y.min() == y.max():
+            mi[t] = {f: 0.0 for f in feature_cols}
+            continue
+        vals = mutual_info_classif(X, y, random_state=42, n_jobs=2)
         mi[t] = {f: float(v) for f, v in zip(feature_cols, vals)}
+
+        # MI sanity: warn if MI exceeds label entropy (binary, nats)
+        pos_rate = float(y.mean())
+        if 0 < pos_rate < 1:
+            H = -pos_rate * math.log(pos_rate) - (1 - pos_rate) * math.log(1 - pos_rate)
+            over = [(f, v) for f, v in mi[t].items() if v > H + 0.01]
+            if over and logger:
+                logger.warning("MI_EXCEEDS_ENTROPY %s pos_rate=%.3f H=%.4f features: %s",
+                               t, pos_rate, H, [(f, round(v, 4)) for f, v in over[:5]])
     return mi
 
 
 # --------------------------------------------------------------------------- #
 # VIF pruning (retaining higher-MI member of each collinear pair)
 # --------------------------------------------------------------------------- #
-def compute_vif_pruning(train: pd.DataFrame, feature_cols: list[str], mean_mi: dict) -> tuple[list[str], list[dict]]:
+def compute_vif_pruning(
+    train: pd.DataFrame, feature_cols: list[str], mean_mi: dict,
+    max_rows: int = MAX_VIF_ROWS, logger: logging.Logger | None = None,
+) -> tuple[list[str], list[dict]]:
+    """Iterative VIF pruning, dropping the lowest-MI feature of each collinear pair.
+
+    Computes the correlation matrix ONCE from a ≤ max_rows subsample, then iterates
+    on the matrix in-memory (deleting rows/cols of over-threshold features).
+    """
     remaining = list(feature_cols)
     dropped: list[dict] = []
 
-    # Drop constant (zero-variance) features first — no signal, undefined VIF.
+    # Drop constant (zero-variance) features first.
+    for f in list(remaining):
+        s = train[f].replace([np.inf, -np.inf], np.nan).dropna().to_numpy(dtype="float64")
+        # Use a subsample for std check on large data
+        if len(s) > max_rows:
+            s = np.random.default_rng(42).choice(s, size=max_rows, replace=False)
+        if np.nanstd(s) < 1e-12:
+            dropped.append({"feature": f, "reason": "CONSTANT"})
+            remaining.remove(f)
+
+    if len(remaining) <= 1:
+        return remaining, dropped
+
+    # Build the correlation matrix once from a subsample
+    n_full = len(train)
+    if n_full > max_rows:
+        sub = train[remaining].replace([np.inf, -np.inf], np.nan).dropna()
+        rng = np.random.default_rng(42)
+        idx = rng.choice(len(sub), size=max_rows, replace=False)
+        sub = sub.iloc[idx]
+        if logger:
+            logger.info("VIF subsampled %d -> %d rows", n_full, len(sub))
+    else:
+        sub = train[remaining].replace([np.inf, -np.inf], np.nan).dropna().astype("float64")
+    full_corr = sub.corr().to_numpy()
+
+    # Map feature name -> position in full_corr
+    fmap = {f: i for i, f in enumerate(remaining)}
+    # Working indices (only active features)
+    active = list(range(len(remaining)))
+    active_names = list(remaining)
+
+    guard = 0
+    while len(active) > 1 and guard < len(feature_cols) + 5:
+        guard += 1
+        # Extract sub-matrix for active features
+        n = len(active)
+        idx_map = {old: new for new, old in enumerate(active)}
+        corr_sub = np.full((n, n), 1.0)
+        for i_old in range(n):
+            for j_old in range(i_old + 1, n):
+                oi, oj = active[i_old], active[j_old]
+                corr_sub[i_old, j_old] = full_corr[oi, oj]
+                corr_sub[j_old, i_old] = full_corr[oi, oj]
+        # Compute VIF
+        try:
+            inv = np.linalg.inv(corr_sub)
+        except np.linalg.LinAlgError:
+            inv = np.linalg.pinv(corr_sub)
+        vif = np.diag(inv).astype("float64")
+        over = [(i_old, vif[i_old]) for i_old in range(n) if np.isfinite(vif[i_old]) and vif[i_old] > VIF_THRESHOLD]
+        if not over:
+            break
+        # Among over-threshold features, drop the lowest mean-MI
+        worst_i_old, worst_vif = min(over, key=lambda x: mean_mi.get(active_names[x[0]], 0.0))
+        worst_feat = active_names[worst_i_old]
+        dropped.append({"feature": worst_feat, "reason": "VIF", "vif": float(worst_vif)})
+        # Remove from active lists
+        del active_names[worst_i_old]
+        del active[worst_i_old]
+
+    if logger:
+        logger.info("VIF: %d -> %d surviving (dropped %d)", len(feature_cols), len(active_names), len(dropped))
+
+    return active_names, dropped
+
+
+def _compute_vif_pruning_old(train: pd.DataFrame, feature_cols: list[str], mean_mi: dict) -> tuple[list[str], list[dict]]:
+    """Original VIF pruning (recomputes corr each iteration).  Kept for verification tests."""
+    remaining = list(feature_cols)
+    dropped: list[dict] = []
+
     for f in list(remaining):
         s = train[f].replace([np.inf, -np.inf], np.nan).dropna()
         if s.std() == 0.0:
@@ -136,7 +244,6 @@ def compute_vif_pruning(train: pd.DataFrame, feature_cols: list[str], mean_mi: d
         over = [i for i in range(len(remaining)) if np.isfinite(vif[i]) and vif[i] > VIF_THRESHOLD]
         if not over:
             break
-        # Among over-threshold features, drop the lowest mean-MI (retain higher MI).
         worst = min(over, key=lambda i: mean_mi.get(remaining[i], 0.0))
         dropped.append({"feature": remaining[worst], "reason": "VIF", "vif": float(vif[worst])})
         remaining.pop(worst)
@@ -179,17 +286,33 @@ def whitelist_per_target(surviving: list[str], mi: dict, min_pct: float) -> dict
     return wl
 
 
-def run_market(market: str, vif_threshold: float, min_mi_percentile: float) -> dict:
+def run_market(
+    market: str, vif_threshold: float, min_mi_percentile: float,
+    max_mi_rows: int = MAX_MI_ROWS, max_vif_rows: int = MAX_VIF_ROWS,
+    allow_fixture: bool = False, logger: logging.Logger | None = None,
+) -> dict:
+    if logger is None:
+        logger = logging.getLogger("stat_metadata")
+
     df = load_dataset(market)
     train, cutoff = train_split(df)
     feature_cols = [c for c in df.columns if c not in TARGET_COLUMNS + ["date", "symbol", "market"]]
+    logger.info("loaded %s: %d rows, %d symbols, %d features  cutoff=%s",
+                market, len(df), df["symbol"].nunique(), len(feature_cols), str(cutoff.date()))
 
-    adf = adf_analysis(train, feature_cols)
-    mi = compute_mi(train, feature_cols)
+    with log_phase(logger, "adf"):
+        adf = adf_analysis(train, feature_cols)
+    with log_phase(logger, "mi"):
+        mi = compute_mi(train, feature_cols, max_rows=max_mi_rows, logger=logger)
     mean_mi = {f: float(np.mean([mi[t][f] for t in TARGET_COLUMNS])) for f in feature_cols}
-    surviving, dropped = compute_vif_pruning(train, feature_cols, mean_mi)
+    with log_phase(logger, "vif"):
+        surviving, dropped = compute_vif_pruning(train, feature_cols, mean_mi, max_rows=max_vif_rows, logger=logger)
     flagged = [f for f in feature_cols if adf[f]["flagged"]]
     wl = whitelist_per_target(surviving, mi, min_mi_percentile)
+
+    logger.info("result: %d raw -> %d surviving; %d flagged non-stationary; whitelist sizes: %s",
+                len(feature_cols), len(surviving), len(flagged),
+                {t: len(wl[t]) for t in TARGET_COLUMNS})
 
     # Build the metadata-transformed matrix (surviving features + cs_pct + targets).
     transformed = apply_stationarity_transform(df, [f for f in surviving if f in flagged])
@@ -282,12 +405,21 @@ def main() -> int:
     parser.add_argument("--market", choices=["USD", "CAD", "ALL"], default="ALL")
     parser.add_argument("--vif-threshold", type=float, default=VIF_THRESHOLD)
     parser.add_argument("--min-mi-percentile", type=float, default=MIN_MI_PERCENTILE)
+    parser.add_argument("--max-mi-rows", type=int, default=MAX_MI_ROWS)
+    parser.add_argument("--max-vif-rows", type=int, default=MAX_VIF_ROWS)
+    parser.add_argument("--allow-fixture", action="store_true")
     args = parser.parse_args()
+
+    logger, _log_path, _jsonl_path = setup_logging("stat_metadata", args.market)
 
     markets = ["USD", "CAD"] if args.market == "ALL" else [args.market]
     results = {}
     for mkt in markets:
-        r = run_market(mkt, args.vif_threshold, args.min_mi_percentile)
+        r = run_market(
+            mkt, args.vif_threshold, args.min_mi_percentile,
+            max_mi_rows=args.max_mi_rows, max_vif_rows=args.max_vif_rows,
+            allow_fixture=args.allow_fixture, logger=logger,
+        )
         results[mkt] = r
         print(
             f"[stat_metadata] {mkt}: {r['catalog']['n_features_raw']} raw -> "
