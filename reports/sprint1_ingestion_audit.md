@@ -13,7 +13,7 @@
 
 ### 1.1 Watchlist sources
 
-| Market | opt.csv | IV_CD_V37.csv | TC_CD_D38.csv | Total unique | Benchmarks |
+| Market | IBKRtemp.csv | IV_CD_V37.csv | TC_CD_D38.csv | Total unique | Benchmarks |
 | :--- | ---: | ---: | ---: | ---: | :--- |
 | USD | 95 | — | — | 97 | SPY, QQQ |
 | CAD | 41 | 119 | 103 | 214 | XIU, XIC, XDIV |

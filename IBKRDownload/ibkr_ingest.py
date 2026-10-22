@@ -90,7 +90,6 @@ PACING_LOG_NAME = "pacing_events.jsonl"
 # Retry constants for transient IBKR failures (cancelled queries, empty responses)
 MAX_RETRIES = 2
 RETRY_DELAY_SEC = 30.0
-HMDS_WARMUP_SEC = 5.0
 
 
 # ===================================================================
@@ -136,6 +135,9 @@ class PacingProfile:
     total_pacing_hits: int = 0
     total_requests: int = 0
     avg_latency_ms: float = 0.0
+    # Ramp-up calibration fields
+    ramp_ceiling: int = 0                     # discovered concurrency ceiling
+    ramp_error_type: str = ""                 # what triggered the ceiling (420/162/msg-rate)
 
     @classmethod
     def load(cls, path: Path) -> Optional["PacingProfile"]:
@@ -383,7 +385,12 @@ class IngestDownloader:
         self.min_concurrency = ib_cfg.get("min_concurrency", 1)
         self.pacing_backoff_sleep = ib_cfg.get("pacing_backoff_sleep", 15.0)
         self.pacing_hit_threshold = ib_cfg.get("pacing_hit_threshold", 3)
+        self.hmds_cancel_threshold = ib_cfg.get("hmds_cancel_threshold", 3)
         self.global_pause_sleep = ib_cfg.get("global_pause_sleep", 120.0)
+        self.qualify_batch_size = ib_cfg.get("qualify_batch_size", 25)
+        self.qualify_batch_delay = ib_cfg.get("qualify_batch_delay_sec", 2.0)
+        self.hmds_warmup_probe = ib_cfg.get("hmds_warmup_probe_sec", 10.0)
+        self.hmds_warmup_poll = ib_cfg.get("hmds_warmup_poll_sec", 1.0)
         self.save_every = ib_cfg.get("save_every", 25)
 
         self.base_dir = Path(cfg["project"]["base_dir"])
@@ -414,6 +421,21 @@ class IngestDownloader:
         self._pace_lock = asyncio.Lock()
         self._pacing_hits_total = 0
 
+        # HMDS cancellation tracking (counts consecutive cancels for pacing)
+        self._consecutive_hmds_cancels = 0
+        self._hmds_cancel_total = 0
+
+        # ── Ramp-up calibration state ──
+        self.ramp_probe_batch = ib_cfg.get("ramp_probe_batch", 5)
+        self.ramp_confirm_mult = ib_cfg.get("ramp_confirm_multiplier", 2)
+        self.ramp_profile_max_age = ib_cfg.get("ramp_profile_max_age_days", 3)
+        self._ramp_level = 15                 # current concurrency under test
+        self._ramp_successes = 0             # successes at current level
+        self._ramp_ceiling: Optional[int] = None  # discovered safe max
+        self._ramp_confirm_successes = 0     # successes during confirm
+        self._ramp_confirm_needed = 0        # target successes for confirm
+        self._ramp_retries_at_level = 0      # retries (IGNORE errors) at current level
+
         # Progress counters
         self.total = self.completed = self.loaded = self.failed = self.skipped = 0
         self.start_time: Optional[float] = None
@@ -428,7 +450,7 @@ class IngestDownloader:
         profile_path = PROFILE_DIR / f"pacing_profile_{self.market.lower()}.json"
         self.profile = PacingProfile.load(profile_path)
         self.profile_path = profile_path
-        self._phase = "discovery"  # discovery | cruise | cleanup
+        self._ramp_phase = "init"  # init | ramp | confirm | cruise | abort
 
         # Trading calendars
         self.trading_days_nyse = None
@@ -501,7 +523,31 @@ class IngestDownloader:
     def _on_ib_error(self, reqId, errorCode, errorString, contract):
         symbol = contract.symbol if contract else f"reqId:{reqId}"
 
-        # Pacing errors
+        # ── Gateway message-rate warning (code 0) ──────────────────────────
+        # "Approaching max rate of 50 messages per second (44)"
+        # This is the root cause of cascading HMDS cancellations.
+        # Treat it as a hard pacing signal — throttle immediately.
+        if errorCode == 0 and "max rate" in errorString.lower():
+            logger.warning("[gateway] 🔴 MSG-RATE: %s", errorString)
+            self._log_pacing_event(
+                "msg_rate_warning", symbol="", error_code=errorCode,
+                error_msg=errorString,
+                concurrency_before=self.concurrency, concurrency_after=self.concurrency,
+            )
+            # In ramp/confirm: msg-rate warning is a hard ceiling signal
+            if self._ramp_phase in ("ramp", "confirm") and not self._ramp_ceiling:
+                self._ramp_set_ceiling("msg_rate")
+            elif self._ramp_phase == "confirm" and self._ramp_ceiling:
+                self._ramp_ceiling = max(1, self._ramp_ceiling - 1)
+                self._ramp_confirm_successes = 0
+                self.concurrency = self._ramp_ceiling
+                self.sem = asyncio.Semaphore(self.concurrency)
+                logger.warning("⚠️ Confirm ceiling failed (msg-rate) → %d", self._ramp_ceiling)
+            else:
+                asyncio.create_task(self._on_pacing_hit())
+            return
+
+        # ── Pacing errors (420 or 162 with pacing/limited keyword) ─────────
         is_pacing = (errorCode == 420) or (
             errorCode == 162 and ("pacing" in errorString.lower() or "limited" in errorString.lower())
         )
@@ -515,11 +561,35 @@ class IngestDownloader:
             asyncio.create_task(self._on_pacing_hit())
             return
 
-        # Historical Market Data Service cancellations (error 162 variant)
-        # IBKR gateway cancels historical data queries under message-rate pressure.
-        # These are transient — retry after backoff.
+        # ── HMDS cancellations (162 "Historical Market Data Service") ──────
+        # These are NOT transient network failures — they mean the HMDS farm
+        # is saturated.  Count consecutive cancels and treat them as a pacing
+        # signal to throttle concurrency.
         if errorCode == 162 and "historical market data" in errorString.lower():
-            logger.error("[%s] Historical data query cancelled by IBKR: %s", symbol, errorString)
+            self._consecutive_hmds_cancels += 1
+            self._hmds_cancel_total += 1
+            logger.error("[%s] HMDS cancelled (consecutive=%d/%d total=%d): %s",
+                         symbol, self._consecutive_hmds_cancels,
+                         self.hmds_cancel_threshold, self._hmds_cancel_total, errorString)
+            self._log_pacing_event(
+                "hmds_cancel", symbol=symbol, error_code=errorCode,
+                error_msg=errorString,
+                concurrency_before=self.concurrency, concurrency_after=self.concurrency,
+            )
+            if self._consecutive_hmds_cancels >= self.hmds_cancel_threshold:
+                logger.warning("🔴 HMDS cancel threshold reached (%d consecutive) — triggering pacing backoff",
+                               self._consecutive_hmds_cancels)
+                # In ramp/confirm: treat as hard error → set ceiling
+                if self._ramp_phase in ("ramp", "confirm") and not self._ramp_ceiling:
+                    self._ramp_set_ceiling("hmds_cancel")
+                elif self._ramp_phase == "confirm" and self._ramp_ceiling:
+                    self._ramp_ceiling = max(1, self._ramp_ceiling - 1)
+                    self._ramp_confirm_successes = 0
+                    self.concurrency = self._ramp_ceiling
+                    self.sem = asyncio.Semaphore(self.concurrency)
+                    logger.warning("⚠️ Confirm ceiling failed (HMDS) → %d", self._ramp_ceiling)
+                else:
+                    asyncio.create_task(self._on_pacing_hit())
             self.ticker_status[symbol] = {
                 "error": f"IBKR cancelled: {errorString}",
                 "transient_fail": True,
@@ -546,7 +616,7 @@ class IngestDownloader:
                 "symbol": symbol,
                 "error_code": error_code,
                 "error_msg": error_msg,
-                "phase": self._phase,
+                "phase": self._ramp_phase,
                 "concurrency_before": concurrency_before,
                 "concurrency_after": concurrency_after,
                 "consecutive_hits": self._consecutive_pacing,
@@ -564,11 +634,30 @@ class IngestDownloader:
             self._pacing_hits_total += 1
             prev_c = self.concurrency
 
+            # ── Ramp/confirm phase: hard error → set ceiling immediately ──
+            if self._ramp_phase in ("ramp", "confirm") and not self._ramp_ceiling:
+                # In ramp: this IS the ceiling discovery
+                self._ramp_set_ceiling("pacing_hit")
+                return
+            if self._ramp_phase == "confirm" and self._ramp_ceiling:
+                # Ceiling was wrong — drop it
+                self._ramp_ceiling = max(1, self._ramp_ceiling - 1)
+                self._ramp_confirm_successes = 0
+                self.concurrency = self._ramp_ceiling
+                self.sem = asyncio.Semaphore(self.concurrency)
+                logger.warning("⚠️ Confirm ceiling failed → %d", self._ramp_ceiling)
+                if self._ramp_ceiling == 0:
+                    logger.error("❌ ABORT: even concurrency=1 fails")
+                    self._ramp_phase = "abort"
+                return
+
+            # ── Cruise phase: standard reactive backoff ──
             if self._consecutive_pacing >= self.pacing_hit_threshold:
                 logger.warning("🔴 GLOBAL_PAUSE %.0fs  reason=consecutive_hits>=%d  concurrency→%d",
                                self.global_pause_sleep, self.pacing_hit_threshold, self.min_concurrency)
                 await asyncio.sleep(self.global_pause_sleep)
                 self._consecutive_pacing = 0
+                self._consecutive_hmds_cancels = 0
                 self.concurrency = self.min_concurrency
                 self.sem = asyncio.Semaphore(self.concurrency)
                 self._log_pacing_event(
@@ -590,6 +679,7 @@ class IngestDownloader:
 
     def _reset_pacing(self):
         self._consecutive_pacing = 0
+        self._consecutive_hmds_cancels = 0  # reset HMDS counter on success
         # If we were in discovery phase and got successful downloads,
         # gradually restore concurrency toward starting level
         if self.concurrency < self.download_concurrency and self._consecutive_pacing == 0:
@@ -603,6 +693,88 @@ class IngestDownloader:
                     "restore", symbol="", concurrency_before=prev_c,
                     concurrency_after=self.concurrency,
                 )
+
+    # ------------------------------------------------------------------
+    # Ramp-up calibration — methodical concurrency discovery
+    # ------------------------------------------------------------------
+    def _ramp_is_hard_error(self, error_code: int, error_msg: str) -> bool:
+        """Classify an error as 'hard' (defines ceiling) vs 'soft' (ignore for ramp)."""
+        # Message-rate warning: gateway pipe limit
+        if error_code == 0 and "max rate" in error_msg.lower():
+            return True
+        # Pacing violation: explicit IBKR backoff
+        if error_code == 420:
+            return True
+        # HMDS cancel with pacing keyword: same as 420
+        if error_code == 162 and ("pacing" in error_msg.lower() or "limited" in error_msg.lower()):
+            return True
+        # Permissions, empty responses, network errors: ticker-specific, ignore
+        return False
+
+    def _ramp_set_ceiling(self, trigger: str):
+        """A hard error occurred — set the ramp ceiling to the previous safe level."""
+        ceiling = max(1, self._ramp_level - 1)
+        self._ramp_ceiling = ceiling
+        self._ramp_phase = "confirm"
+        self._ramp_confirm_successes = 0
+        self._ramp_confirm_needed = self.ramp_probe_batch * self.ramp_confirm_mult
+        self.concurrency = ceiling
+        self.sem = asyncio.Semaphore(self.concurrency)
+        logger.warning("🔴 Ramp ceiling: %d  trigger=%s  (error at level %d)  → confirm with %d tickers",
+                       ceiling, trigger, self._ramp_level, self._ramp_confirm_needed)
+
+    def _ramp_bump(self):
+        """All probe_batch tickers succeeded at current level — try higher."""
+        self._ramp_level += 1
+        self._ramp_successes = 0
+        self._ramp_retries_at_level = 0
+        self.concurrency = self._ramp_level
+        self.sem = asyncio.Semaphore(self.concurrency)
+        logger.info("⬆ Ramp: concurrency → %d", self._ramp_level)
+
+    def _ramp_handle_success(self):
+        """Called on each SUCCESS during ramp/confirm phases."""
+        if self._ramp_phase == "ramp":
+            self._ramp_successes += 1
+            self._ramp_retries_at_level = 0
+            if self._ramp_successes >= self.ramp_probe_batch:
+                self._ramp_bump()
+        elif self._ramp_phase == "confirm":
+            self._ramp_confirm_successes += 1
+            if self._ramp_confirm_successes >= self._ramp_confirm_needed:
+                self._ramp_phase = "cruise"
+                logger.info("✅ Ceiling confirmed: concurrency=%d  (profile saved)", self._ramp_ceiling)
+                # Persist to profile
+                if self.profile is None:
+                    self.profile = PacingProfile(market=self.market)
+                self.profile.safe_concurrency = self._ramp_ceiling
+                self.profile.ramp_ceiling = self._ramp_ceiling
+                self.profile.last_updated = dt.date.today().isoformat()
+                self.profile.save(self.profile_path)
+
+    def _ramp_handle_retry(self):
+        """Called when a ticker fails with an IGNORE error (permission, empty, network).
+        Counts toward a retry limit per level to prevent infinite loops."""
+        if self._ramp_phase in ("ramp", "confirm"):
+            self._ramp_retries_at_level += 1
+            max_retries = self.ramp_probe_batch * 3
+            if self._ramp_retries_at_level >= max_retries:
+                logger.warning("⚠️ Ramp: %d retries at level %d — forced ceiling",
+                               self._ramp_retries_at_level, self._ramp_level)
+                if self._ramp_phase == "ramp":
+                    self._ramp_set_ceiling("retry_limit")
+                else:
+                    # In confirm, drop ceiling by 1
+                    self._ramp_ceiling = max(1, (self._ramp_ceiling or 1) - 1)
+                    if self._ramp_ceiling == 0:
+                        logger.error("❌ ABORT: even concurrency=1 fails")
+                        self._ramp_phase = "abort"
+                    else:
+                        self._ramp_confirm_successes = 0
+                        self.concurrency = self._ramp_ceiling
+                        self.sem = asyncio.Semaphore(self.concurrency)
+                        self._ramp_retries_at_level = 0
+                        logger.warning("⚠️ Confirm failed — retrying at %d", self._ramp_ceiling)
 
     # ------------------------------------------------------------------
     # Watchlist loading
@@ -1076,11 +1248,18 @@ class IngestDownloader:
     # Batch qualification
     # ------------------------------------------------------------------
     async def _qualify_contracts(self, df_plan: pd.DataFrame) -> set:
-        """Batch-qualify all contracts. Returns set of symbols that passed."""
+        """Staggered contract qualification — avoids message-rate storms.
+
+        Firing 300+ qualifyContractsAsync messages simultaneously saturates
+        the IBKR gateway 50 msg/sec limit, which triggers cascading HMDS
+        cancellations.  We chunk into batches of qualify_batch_size with
+        a delay between batches.
+        """
         to_download = df_plan[df_plan["query_type"] != "Skip"]
         if to_download.empty:
             return set()
 
+        # Build all contracts up-front
         contracts = []
         symbols_in_order = []
         for _, row in to_download.iterrows():
@@ -1094,20 +1273,44 @@ class IngestDownloader:
             contracts.append(c)
             symbols_in_order.append(row["symbol"])
 
-        logger.info("Batch-qualifying %d contracts...", len(contracts))
-        try:
-            qualified = await self.ib.qualifyContractsAsync(*contracts)
-            passed = set()
-            for contract, sym in zip(contracts, symbols_in_order):
-                if contract.conId > 0:
-                    passed.add(sym)
-                else:
-                    logger.warning("[%s] ❌ Contract qualification failed — skipping", sym)
-            logger.info("Qualified: %d/%d contracts", len(passed), len(contracts))
-            return passed
-        except Exception as e:
-            logger.error("Batch qualification error: %s", e)
-            return set(symbols_in_order)  # fallback: try all
+        # Staggered qualification in batches.
+        # Use smaller batches during ramp to avoid polluting the calibration.
+        if self._ramp_phase in ("ramp", "confirm"):
+            batch_size = min(self.qualify_batch_size, 10)
+        else:
+            batch_size = self.qualify_batch_size
+        passed: set[str] = set()
+
+        for i in range(0, len(contracts), batch_size):
+            batch_contracts = contracts[i:i + batch_size]
+            batch_symbols = symbols_in_order[i:i + batch_size]
+            batch_num = i // batch_size + 1
+            total_batches = (len(contracts) + batch_size - 1) // batch_size
+
+            if total_batches > 1:
+                logger.info("Qualifying batch %d/%d (%d contracts) ...",
+                             batch_num, total_batches, len(batch_contracts))
+            else:
+                logger.info("Qualifying %d contracts ...", len(batch_contracts))
+
+            try:
+                qualified = await self.ib.qualifyContractsAsync(*batch_contracts)
+                for contract, sym in zip(batch_contracts, batch_symbols):
+                    if contract.conId > 0:
+                        passed.add(sym)
+                    else:
+                        logger.warning("[%s] ❌ Contract qualification failed — skipping", sym)
+            except Exception as e:
+                logger.error("Qualification batch %d error: %s — falling back (try-all)", batch_num, e)
+                passed.update(batch_symbols)
+
+            # Pause between batches to avoid gateway message-rate saturation
+            if i + batch_size < len(contracts):
+                await asyncio.sleep(self.qualify_batch_delay)
+
+        logger.info("Qualified: %d/%d contracts (%d batches)",
+                     len(passed), len(contracts), total_batches)
+        return passed
 
     # ------------------------------------------------------------------
     # Main run
@@ -1142,27 +1345,56 @@ class IngestDownloader:
             logger.error("ib_async not installed. Install on M1 Mac: pip install ib_async")
             return
 
-        # 2. Load pacing profile
-        if self.profile and not self.profile.is_stale():
-            logger.info("Loaded pacing profile: throughput=%.1f req/min  concurrency=%d  (age: %s days)",
+        # 2. Load pacing profile and initialize ramp
+        ramp_from_profile = False
+        if self.profile and not self.profile.is_stale(max_age_days=self.ramp_profile_max_age):
+            logger.info("Loaded pacing profile: throughput=%.1f req/min  concurrency=%d  ramp_ceiling=%d  (age: %s days)",
                          self.profile.discovered_throughput, self.profile.safe_concurrency,
+                         self.profile.ramp_ceiling,
                          (dt.date.today() - dt.date.fromisoformat(self.profile.last_updated)).days)
-            self.concurrency = self.profile.safe_concurrency
-            self.sem = asyncio.Semaphore(self.concurrency)
-            self.limiter = RateLimiter(int(self.profile.safe_rate_per_minute), 60)
-            self._phase = "cruise"
-        else:
-            if self.profile:
-                logger.info("Pacing profile stale (>7 days) — running discovery phase")
+            if self.profile.ramp_ceiling and self.profile.ramp_ceiling >= 1:
+                # Start just below known ceiling, probe to confirm
+                self._ramp_level = self.profile.ramp_ceiling
+                self._ramp_ceiling = self.profile.ramp_ceiling
+                self._ramp_phase = "confirm"
+                self._ramp_confirm_needed = self.ramp_probe_batch * self.ramp_confirm_mult
+                self.concurrency = max(1, self._ramp_ceiling - 1)
+                self.sem = asyncio.Semaphore(self.concurrency)
+                self.limiter = RateLimiter(int(self.profile.safe_rate_per_minute), 60)
+                ramp_from_profile = True
+                logger.info("Ramp: starting at %d (ceiling=%d from profile) → confirm phase",
+                             self.concurrency, self._ramp_ceiling)
             else:
-                logger.info("No pacing profile found — running discovery phase")
-            self._phase = "discovery"
-            # Aggressive surge: start at 10 concurrent + 150 req/min to find real ceiling fast.
-            # The engine will auto-throttle on pacing hits and learn the sustainable rate.
-            self.concurrency = min(self.download_concurrency + 4, 10)
-            self.sem = asyncio.Semaphore(self.concurrency)
-            self.limiter = RateLimiter(150, 60)
-            logger.info("Discovery phase (aggressive): concurrency=%d  rate_limiter=150/min", self.concurrency)
+                # Profile exists but no ramp ceiling — use legacy safe_concurrency
+                self.concurrency = self.profile.safe_concurrency
+                self.sem = asyncio.Semaphore(self.concurrency)
+                self.limiter = RateLimiter(int(self.profile.safe_rate_per_minute), 60)
+                self._ramp_phase = "cruise"
+
+        if not ramp_from_profile:
+            if self.profile:
+                logger.info("Pacing profile stale (>%d days) or missing ramp ceiling — full recalibrate",
+                             self.ramp_profile_max_age)
+            else:
+                logger.info("No pacing profile found — full ramp calibration")
+            # Small watchlist (< probe_batch * 2)? Skip ramp, run conservatively
+            if len(df_watch) < self.ramp_probe_batch * 2:
+                logger.info("Small watchlist (%d tickers) — skipping ramp, concurrency=1", len(df_watch))
+                self._ramp_ceiling = 1
+                self._ramp_phase = "cruise"
+                self.concurrency = 1
+                self.sem = asyncio.Semaphore(1)
+                self.limiter = RateLimiter(30, 60)
+            else:
+                self._ramp_phase = "ramp"
+                manual_start = (self.cfg.get("ibkr", {}).get("ramp_start_concurrency", 0) or 0)
+                self._ramp_level = manual_start if manual_start > 0 else 1
+                self._ramp_successes = 0
+                self._ramp_ceiling = None
+                self.concurrency = self._ramp_level
+                self.sem = asyncio.Semaphore(self.concurrency)
+                self.limiter = RateLimiter(30, 60)  # gentle rate limit during ramp
+                logger.info("Ramp calibration: starting at concurrency=%d", self._ramp_level)
 
         # 3. Build download plan
         df_plan = self._build_download_plan(df_watch)
@@ -1178,11 +1410,12 @@ class IngestDownloader:
             return
         logger.info("Connected to IBKR %s:%d (clientId=%d)", self.ib_host, self.ib_port, self.client_id)
 
-        # 5. HMDS farm warm-up — the historical data farm starts inactive and
-        #    needs time to activate. Without this wait, early queries get
-        #    "Historical Market Data Service error: API historical data query cancelled".
-        logger.info("Waiting %.0fs for HMDS historical data farm to activate...", HMDS_WARMUP_SEC)
-        await asyncio.sleep(HMDS_WARMUP_SEC)
+        # 5. HMDS farm warm-up — wait for the historical data farm to activate.
+        # The farm starts inactive and IBKR sends message 2106 when ready.
+        # A blind sleep is the simplest approach; polling would require
+        # parsing the IB message stream which ib_async doesn't expose simply.
+        logger.info("Waiting %.0fs for HMDS historical data farm to activate...", self.hmds_warmup_probe)
+        await asyncio.sleep(self.hmds_warmup_probe)
         logger.info("HMDS farm warm-up complete")
 
         # 6. Connection warm-up probe
@@ -1232,8 +1465,8 @@ class IngestDownloader:
         # Proactive batch planning: if total bars exceed threshold, warn and plan cooldowns
         total_bars = int(to_download["days_needed"].sum())
         batch_count = max(1, total_bars // self.batch_bars_threshold)
-        logger.info("Starting download: %d tickers  phase=%s  concurrency=%d  est_bars=%d  batches=%d",
-                     self.total, self._phase, self.concurrency, total_bars, batch_count)
+        logger.info("Starting download: %d tickers  ramp=%s  concurrency=%d  est_bars=%d  batches=%d",
+                     self.total, self._ramp_phase, self.concurrency, total_bars, batch_count)
         if batch_count > 1:
             logger.info("Proactive batching: %d batches planned (~%d bars each), %.0fs cooldown between",
                          batch_count, self.batch_bars_threshold, self.batch_cooldown_sec)
@@ -1245,9 +1478,6 @@ class IngestDownloader:
         ]
 
         audit_rows = []
-        discovery_requests = 0
-        discovery_start = time.monotonic()
-        first_pacing_seen = False
         pacing_hits_before_batch = 0
         batch_num = 1
         bars_in_batch = 0
@@ -1259,7 +1489,6 @@ class IngestDownloader:
 
             if res["status"] == "SUCCESS":
                 self.loaded += 1
-                discovery_requests += 1
                 # Update index with fresh metadata
                 self.index.update(
                     symbol=sym, market=self.market,
@@ -1276,30 +1505,29 @@ class IngestDownloader:
 
             audit_rows.append(res)
 
-            # Phase transition: discovery → cruise
-            if self._phase == "discovery" and self._pacing_hits_total > 0 and not first_pacing_seen:
-                first_pacing_seen = True
-                elapsed_min = (time.monotonic() - discovery_start) / 60.0
-                if elapsed_min > 0 and discovery_requests > 0:
-                    throughput = discovery_requests / elapsed_min
-                    logger.info("--- Phase transition: discovery → cruise ---")
-                    logger.info("Discovered throughput: %.1f req/min  pacing_hits: %d",
-                                throughput, self._pacing_hits_total)
-                    self._phase = "cruise"
-                    # Update rate limiter to 80% of discovered
-                    safe_rate = int(throughput * 0.80)
-                    self.limiter = RateLimiter(max(safe_rate, 5), 60)
-                    logger.info("Cruise: rate_limiter=%d/min  concurrency=%d", safe_rate, self.concurrency)
+            # ── Ramp calibration: bump on success, handle retries ──
+            if res["status"] == "SUCCESS":
+                self._ramp_handle_success()
+            elif res["status"] in ("FAILED", "PERM_FAIL"):
+                # Check if this was a hard error already handled by callbacks,
+                # or a soft error (permission/empty/network) that should count as retry
+                if not self._ramp_is_hard_error(0, res.get("error", "")):
+                    self._ramp_handle_retry()
+
+            # ── Abort check ──
+            if self._ramp_phase == "abort":
+                logger.error("❌ ABORT: ramp calibration failed at concurrency=1")
+                self.ib.disconnect()
+                return
 
             # Progress
             elapsed = time.monotonic() - self.start_time
             pct = (self.completed / self.total * 100)
             rate = self.completed / (elapsed / 60) if elapsed > 0 else 0
             logger.info(
-                "[%3d/%d - %5.1f%%] %s → %s  (rate: %.0f/min  conc:%d  pace:%d/%d)",
+                "[%3d/%d - %5.1f%%] %s → %s  (rate: %.0f/min  conc:%d  ramp:%s)",
                 self.completed, self.total, pct, sym, res["status"],
-                rate, self.concurrency,
-                self.limiter.current_count, self.requests_per_window,
+                rate, self.concurrency, self._ramp_phase,
             )
 
             # Incremental save with batch summary
@@ -1342,6 +1570,10 @@ class IngestDownloader:
             requests=self.loaded,
             avg_latency_ms=avg_latency,
         )
+        # Persist ramp ceiling if discovered
+        if self._ramp_ceiling:
+            self.profile.ramp_ceiling = self._ramp_ceiling
+            self.profile.ramp_error_type = "ramp_calibrated"
         self.profile.save(self.profile_path)
 
         # 12. Disconnect
@@ -1362,9 +1594,9 @@ class IngestDownloader:
         avg_lat = (sum(self._latencies) / len(self._latencies)) if self._latencies else 0
         logger.info(
             "── Batch %d/%d complete (saved) ──  ✅%d ❌%d ⛔%d  "
-            "pacing_hits=%d  avg_lat=%.0fms  rate=%.0f/min  conc=%d  phase=%s",
+            "pacing_hits=%d  avg_lat=%.0fms  rate=%.0f/min  conc=%d  ramp=%s",
             batch_num, batch_size, success, failed, perm_fail,
-            pacing_hits_batch, avg_lat * 1000, rate, self.concurrency, self._phase,
+            pacing_hits_batch, avg_lat * 1000, rate, self.concurrency, self._ramp_phase,
         )
 
     def _final_pacing_report(self):
@@ -1383,16 +1615,19 @@ class IngestDownloader:
             f"Successful:        {self.loaded:>6}",
             f"Failed:            {self.failed:>6}",
             f"Pacing hits:       {self._pacing_hits_total:>6}  ({hit_pct:.1f}%)",
+            f"HMDS cancels:      {self._hmds_cancel_total:>6}",
             f"Avg latency:       {avg_lat_s * 1000:>6.0f} ms",
             f"Throughput:        {throughput:>6.1f} req/min",
             f"Final concurrency: {self.concurrency:>6}",
-            f"Phase:             {self._phase:>11}",
+            f"Ramp phase:        {self._ramp_phase:>11}",
+            f"Ramp ceiling:      {str(self._ramp_ceiling):>11}",
         ]
 
         if self.profile:
             lines.extend([
                 f"Profile concurrency: {self.profile.safe_concurrency}",
                 f"Profile rate:        {self.profile.safe_rate_per_minute:.0f}/min",
+                f"Profile ramp ceil:   {self.profile.ramp_ceiling}",
             ])
 
         lines.append("═" * 55)

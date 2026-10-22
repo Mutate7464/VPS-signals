@@ -5,7 +5,7 @@ Input convention (files placed in `ibkrdownload/`):
   IV_US_*.csv   — US IV screen (same format, US exchanges)
   TC_CD_*.csv   — Canadian TC Quantamental screen (Sector & Industry column)
   TC_US_*.csv   — US TC Quantamental screen (same format, US exchanges)
-  opt.csv       — IBKR API watchlist export (DES,SYMBOL,STK,SMART/EXCHANGE format)
+  IBKRtemp.csv  — IBKR API watchlist export (DES,SYMBOL,STK,SMART/EXCHANGE format)
 
 Outputs:
   config/watchlist_300_usd.csv   — symbol,sec_type,exchange,primary_exchange,currency
@@ -14,6 +14,7 @@ Outputs:
 """
 
 import argparse
+import csv as csv_mod
 import glob
 import logging
 import os
@@ -45,7 +46,7 @@ EXCHANGE_MAP = {
 # Exchanges to exclude (non-primary Canadian exchanges)
 EXCLUDE_EXCHANGES = {"TSXV", "NEO", "VENTURE", "AEQS"}
 
-# Known US primary exchanges for well-known symbols (opt.csv only stores SMART/AMEX)
+# Known US primary exchanges for well-known symbols (IBKRtemp.csv only stores SMART/AMEX)
 KNOWN_US_EXCHANGES = {
     "A": "NYSE", "AAPL": "NASDAQ", "ABBV": "NYSE", "ACN": "NYSE", "ADBE": "NASDAQ",
     "ADI": "NASDAQ", "ADP": "NASDAQ", "ADSK": "NASDAQ", "AEP": "NASDAQ", "ALAB": "NASDAQ",
@@ -145,7 +146,7 @@ def _parse_opt_csv(filepath: str) -> pd.DataFrame:
             sym_clean = _normalize_symbol(symbol)
             if not sym_clean or primary == "VALUE":
                 continue  # skip invalid entries
-            rows.append({"symbol_raw": sym_clean, "exchange_raw": primary, "sector": None, "industry": None, "sub_group": None, "company_name": None, "source": "opt"})
+            rows.append({"symbol_raw": sym_clean, "exchange_raw": primary, "sector": None, "industry": None, "sub_group": None, "company_name": None, "source": "IBKRtemp"})
     return pd.DataFrame(rows)
 
 
@@ -185,45 +186,93 @@ def _parse_iv_csv(filepath: str, market: str) -> pd.DataFrame:
 
 
 def _parse_tc_csv(filepath: str, market: str) -> pd.DataFrame:
-    """Parse TC (Quantamental) CSV file.
+    """Parse TC (Quantamental) CSV file using csv.reader for proper quoted-field handling.
 
-    Expected columns: Rank, Exchange, Symbol, Company Name, Sector & Industry, ...
+    Handles embedded commas in Sector & Industry fields like "Furnishings, Fixtures & Appliances".
+    Preserves TC Quantamental Rating® for downstream XGBoost sorting under memory constraints.
     """
+    rows = []
     try:
-        df = pd.read_csv(filepath)
+        with open(filepath, "r", newline="") as f:
+            reader = csv_mod.reader(f)
+            header = next(reader, None)
+            if header is None:
+                return pd.DataFrame()
+
+            # Build column index map (strip BOM + whitespace)
+            col_idx: dict[str, int] = {}
+            for i, h in enumerate(header):
+                key = h.strip().replace("\ufeff", "").replace("\u00ae", "")  # strip BOM and ®
+                col_idx[key] = i
+
+            # Locate key columns by case-insensitive substring match
+            def _find_col(*needles: str) -> Optional[str]:
+                for key in col_idx:
+                    kl = key.lower()
+                    for n in needles:
+                        if n.lower() in kl:
+                            return key
+                return None
+
+            sym_key = _find_col("symbol", "ticker")
+            exch_key = _find_col("exchange", "exch")
+            sector_key = _find_col("sector")
+            rating_key = _find_col("rating")
+            company_key = _find_col("company")
+
+            if sym_key is None:
+                logger.warning("No Symbol/Ticker column in %s", filepath)
+                return pd.DataFrame()
+
+            for row in reader:
+                if len(row) <= col_idx[sym_key]:
+                    continue
+                sym_clean = _normalize_symbol(row[col_idx[sym_key]])
+                if not sym_clean:
+                    continue
+
+                # Exchange
+                exchange_raw = None
+                if exch_key and len(row) > col_idx[exch_key]:
+                    exchange_raw = _normalize_exchange(row[col_idx[exch_key]])
+                if exchange_raw is None:
+                    exchange_raw = "TSE" if market == "CAD" else None
+
+                # Sector (embedded commas handled by csv.reader quoting)
+                sector = None
+                if sector_key and len(row) > col_idx[sector_key]:
+                    val = row[col_idx[sector_key]].strip()
+                    if val and val.lower() not in ("", "nan", "none"):
+                        sector = val
+
+                # TC Quantamental Rating®
+                tc_rating = None
+                if rating_key and len(row) > col_idx[rating_key]:
+                    try:
+                        tc_rating = int(row[col_idx[rating_key]].strip())
+                    except (ValueError, TypeError):
+                        tc_rating = None
+
+                # Company name
+                company_name = None
+                if company_key and len(row) > col_idx[company_key]:
+                    company_name = row[col_idx[company_key]].strip()
+
+                rows.append({
+                    "symbol_raw": sym_clean,
+                    "exchange_raw": exchange_raw,
+                    "sector": sector,
+                    "industry": None,
+                    "sub_group": None,
+                    "company_name": company_name,
+                    "tc_rating": tc_rating,
+                    "source": os.path.basename(filepath),
+                })
     except Exception as e:
-        logger.warning(f"Failed to parse {filepath}: {e}")
+        logger.warning("Failed to parse %s: %s", filepath, e)
         return pd.DataFrame()
 
-    sym_col = "Symbol" if "Symbol" in df.columns else ("Ticker" if "Ticker" in df.columns else None)
-    if sym_col is None:
-        logger.warning(f"No Symbol/Ticker column in {filepath}")
-        return pd.DataFrame()
-
-    df["symbol_raw"] = df[sym_col].apply(_normalize_symbol)
-    df = df.dropna(subset=["symbol_raw"])
-
-    exch_col = "Exchange" if "Exchange" in df.columns else ("Exch" if "Exch" in df.columns else None)
-    if exch_col:
-        df["exchange_raw"] = df[exch_col].apply(_normalize_exchange)
-    else:
-        df["exchange_raw"] = "TSE" if market == "CAD" else None
-
-    # Sector & Industry is a combined field like "Metals & Mining"
-    if "Sector & Industry" in df.columns:
-        df["sector_industry"] = df["Sector & Industry"].astype(str).str.strip()
-        # Try to split on common separators — but keep as sector, leave industry blank
-        df["sector"] = df["sector_industry"].replace(["nan", "None", ""], None)
-        df["industry"] = None
-    else:
-        df["sector"] = None
-        df["industry"] = None
-
-    df["sub_group"] = None
-    df["company_name"] = df.get("Company Name", pd.Series(dtype=str))
-    df["source"] = os.path.basename(filepath)
-
-    return df[["symbol_raw", "exchange_raw", "sector", "industry", "sub_group", "company_name", "source"]]
+    return pd.DataFrame(rows)
 
 
 def _resolve_exchange(row: pd.Series, market: str) -> tuple:
@@ -263,6 +312,7 @@ def _merge_and_deduplicate(df_all: pd.DataFrame) -> pd.DataFrame:
             "industry": _first_non_null(group["industry"]),
             "sub_group": _first_non_null(group["sub_group"]),
             "company_name": _first_non_null(group["company_name"]),
+            "tc_rating": _first_non_null_numeric(group["tc_rating"] if "tc_rating" in group.columns else pd.Series(dtype=float)),
             "sources": ", ".join(sorted(set(group["source"].astype(str)))),
         }
         results.append(row)
@@ -278,12 +328,24 @@ def _first_non_null(series: pd.Series) -> Optional[str]:
     return None
 
 
+def _first_non_null_numeric(series: pd.Series) -> Optional[float]:
+    """Return the first non-null numeric value in a series."""
+    for val in series:
+        if pd.notna(val):
+            return float(val)
+    return None
+
+
 def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
     """Build the watchlist and sector map for a given market (USD or CAD).
 
     Returns (watchlist_df, sector_df).
+
+    Reference CSV files are resolved from the script's own directory so the
+    kit is self-contained — just copy the folder anywhere and run.
     """
-    ibkr_dir = Path(base_dir) / "ibkrdownload"
+    script_dir = Path(__file__).resolve().parent
+    ibkr_dir = script_dir  # self-contained: reference files live alongside the script
     market_lower = market.lower()
 
     all_rows = []
@@ -308,13 +370,13 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
         if not df.empty:
             all_rows.append(df)
 
-    # --- Parse opt.csv (shared across markets) ---
-    opt_path = ibkr_dir / "opt.csv"
+    # --- Parse IBKRtemp.csv (shared across markets) ---
+    opt_path = ibkr_dir / "IBKRtemp.csv"
     if opt_path.exists():
-        logger.info(f"  Parsing opt.csv")
+        logger.info(f"  Parsing IBKRtemp.csv")
         df_opt = _parse_opt_csv(str(opt_path))
         if not df_opt.empty:
-            # Filter opt.csv rows by market based on exchange
+            # Filter IBKRtemp.csv rows by market based on exchange
             df_opt = df_opt.dropna(subset=["exchange_raw"])
             if market == "CAD":
                 df_opt = df_opt[df_opt["exchange_raw"].isin(["TSE", "TSX", "TSXV", "NEO"])]
@@ -349,15 +411,15 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
     df_merged["primary_exchange"] = resolved.apply(lambda r: r["primary_exchange"])
     df_merged["currency"] = resolved.apply(lambda r: r["currency"])
 
-    # Fix US exchanges: opt.csv exports everything as SMART/AMEX regardless of real exchange.
+    # Fix US exchanges: IBKRtemp.csv exports everything as SMART/AMEX regardless of real exchange.
     # Use KNOWN_US_EXCHANGES to correct primary_exchange for well-known symbols.
     if market == "USD":
         for idx, row in df_merged.iterrows():
             sym = row["symbol"]
             if sym in KNOWN_US_EXCHANGES:
                 df_merged.at[idx, "primary_exchange"] = KNOWN_US_EXCHANGES[sym]
-            elif row["primary_exchange"] == "AMEX" and row["sources"] == "opt":
-                # Unknown US ticker from opt.csv only — default to NASDAQ
+            elif row["primary_exchange"] == "AMEX" and row["sources"] == "IBKRtemp":
+                # Unknown US ticker from IBKRtemp.csv only — default to NASDAQ
                 df_merged.at[idx, "primary_exchange"] = "NASDAQ"
 
     # --- Add benchmark tickers ---
@@ -367,7 +429,7 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
     for b in benchmarks:
         if b["symbol"] not in existing_symbols:
             logger.info(f"  Adding benchmark: {b['symbol']}")
-            new_row = {
+            new_row = pd.Series({
                 "symbol": b["symbol"],
                 "exchange_raw": b["primary_exchange"],
                 "primary_exchange": b["primary_exchange"],
@@ -376,8 +438,9 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
                 "industry": None,
                 "sub_group": None,
                 "company_name": b["symbol"],
+                "tc_rating": None,
                 "sources": "benchmark",
-            }
+            }, index=df_merged.columns)  # align columns to avoid FutureWarning
             df_merged = pd.concat([df_merged, pd.DataFrame([new_row])], ignore_index=True)
 
     # --- Build watchlist CSV ---
@@ -387,6 +450,7 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
         "exchange": "SMART",
         "primary_exchange": df_merged["primary_exchange"],
         "currency": df_merged["currency"],
+        "tc_rating": df_merged["tc_rating"].fillna(0).astype(int) if "tc_rating" in df_merged.columns else 0,
     })
 
     # --- Build sector map ---
@@ -397,26 +461,36 @@ def build_watchlist(market: str, base_dir: str, dry_run: bool = False) -> tuple:
         "industry": df_merged["industry"].fillna(""),
         "sub_group": df_merged["sub_group"].fillna(""),
         "company_name": df_merged["company_name"].fillna(""),
+        "tc_rating": df_merged["tc_rating"].fillna(0).astype(int) if "tc_rating" in df_merged.columns else 0,
     })
 
-    # --- Write outputs ---
+    # --- Write outputs (dual: config/ for VPS + script dir for M1 Mac ingest) ---
     config_dir = Path(base_dir) / "config"
+    ibkr_dir_out = script_dir  # local outputs alongside the script
     watchlist_path = config_dir / f"watchlist_300_{market_lower}.csv"
+    watchlist_path_local = ibkr_dir_out / f"watchlist_300_{market_lower}.csv"
     sector_path = config_dir / "sector_map.csv"
+    sector_path_local = ibkr_dir_out / "sector_map.csv"
 
     if not dry_run:
+        config_dir.mkdir(parents=True, exist_ok=True)
+        ibkr_dir_out.mkdir(parents=True, exist_ok=True)
         watchlist.to_csv(watchlist_path, index=False)
+        watchlist.to_csv(watchlist_path_local, index=False)
         logger.info(f"  Wrote {len(watchlist)} tickers → {watchlist_path}")
+        logger.info(f"  Wrote {len(watchlist)} tickers → {watchlist_path_local}")
 
         # For sector_map, merge both markets into one file
         if sector_path.exists() and market == "CAD":
-            # Append to existing USD sector map
             existing = pd.read_csv(sector_path)
             sector_map = pd.concat([existing, sector_map], ignore_index=True)
         sector_map.to_csv(sector_path, index=False)
+        sector_map.to_csv(sector_path_local, index=False)
         logger.info(f"  Wrote {len(sector_map)} sector rows → {sector_path}")
+        logger.info(f"  Wrote {len(sector_map)} sector rows → {sector_path_local}")
     else:
         logger.info(f"  [DRY RUN] Would write {len(watchlist)} tickers → {watchlist_path}")
+        logger.info(f"  [DRY RUN] Would write {len(watchlist)} tickers → {watchlist_path_local}")
 
     return watchlist, sector_map
 

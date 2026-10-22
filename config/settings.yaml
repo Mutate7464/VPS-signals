@@ -6,7 +6,7 @@ project:
 
 ibkr:
   host: "127.0.0.1"
-  port: 4002          # 4002 = IB Gateway Paper, 4001 = IB Gateway Live, 7496/7497 = TWS
+  port: 4001          # 4001 = IB Gateway Live, 4002 = IB Gateway Paper, 7496/7497 = TWS
   client_id: 101
   lookback_cold: "5 Y"
   bar_size: "1 day"

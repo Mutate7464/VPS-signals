@@ -1,0 +1,13 @@
+{
+  "market": "USD",
+  "discovered_throughput": 0.0,
+  "safe_concurrency": 2,
+  "safe_rate_per_minute": 45.0,
+  "last_updated": "2026-10-22",
+  "total_runs": 0,
+  "total_pacing_hits": 0,
+  "total_requests": 0,
+  "avg_latency_ms": 0.0,
+  "ramp_ceiling": 2,
+  "ramp_error_type": ""
+}
