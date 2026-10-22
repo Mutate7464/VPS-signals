@@ -13,10 +13,13 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
+import gc
 import subprocess
 import sys
 from pathlib import Path
+from typing import Iterator
 
 import numpy as np
 import pandas as pd
@@ -285,6 +288,79 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------------------------------------- #
 # Data loading + dataset building
 # --------------------------------------------------------------------------- #
+class FixtureFallbackError(RuntimeError):
+    """Raised when the real data directory has no parquet and fixture fallback is disallowed."""
+
+
+def load_quarantine(market: str) -> set[str]:
+    """Return the set of ticker symbols quarantined for `market` from `data/dead_letter_tickers.csv`."""
+    dl = BASE_DIR / "data" / "dead_letter_tickers.csv"
+    if not dl.exists():
+        return set()
+    with open(dl, newline="") as f:
+        return {row["symbol"] for row in csv.DictReader(f) if row.get("market", "").upper() == market.upper()}
+
+
+def iter_market_symbols(
+    market: str,
+    min_date: dt.date | str | None = None,
+    allow_fixture: bool = False,
+) -> Iterator[tuple[str, pd.DataFrame]]:
+    """Yield (symbol, df) for each non-quarantined ticker in the market.
+
+    - `date` is converted to datetime64[ns].
+    - Tickers with < 125 rows are skipped.
+    - If `min_date` is provided, data is read from `min_date - 250 calendar days`
+      to allow warm-up for rolling features; the caller should trim to `>= min_date`
+      after feature and target computation.
+    - If the real data directory has no parquet and `allow_fixture` is False,
+      `FixtureFallbackError` is raised.
+    """
+    mkt = market.upper()
+    if isinstance(min_date, str):
+        min_date = dt.date.fromisoformat(min_date)
+    if min_date is not None:
+        read_from = min_date - dt.timedelta(days=250)
+    else:
+        read_from = None
+
+    quar = load_quarantine(mkt)
+    mdir = RAW_DIR / f"market={mkt}"
+    real_files = sorted(mdir.glob("*.parquet")) if mdir.exists() else []
+
+    if not real_files:
+        if allow_fixture:
+            mdir = FIXTURE_DIR / f"market={mkt}"
+            real_files = sorted(mdir.glob("*.parquet")) if mdir.exists() else []
+        else:
+            raise FixtureFallbackError(
+                f"No data for market={mkt} in {RAW_DIR} and fixture fallback is disallowed. "
+                f"Use --allow-fixture to permit test data."
+            )
+
+    yielded = 0
+    for p in real_files:
+        symbol = p.stem.split("=", 1)[-1]
+        if symbol in quar:
+            continue
+        df = pd.read_parquet(p)
+        if len(df) < 125:
+            continue
+        df["date"] = pd.to_datetime(df["date"]).astype("datetime64[ns]")
+        df = df.sort_values("date").reset_index(drop=True)
+        if read_from is not None:
+            df = df[df["date"] >= pd.Timestamp(read_from)]
+        if len(df) < 125:
+            continue
+        df["symbol"] = symbol
+        df["market"] = mkt
+        yielded += 1
+        yield symbol, df
+
+    if yielded == 0:
+        raise RuntimeError(f"No valid tickers for market={mkt} after quarantine and min-row filter")
+
+
 def load_market_frame(market: str) -> pd.DataFrame:
     """Load raw OHLCV for a market (real synced data if present, else fixture)."""
     mdir = RAW_DIR / f"market={market}"
@@ -303,8 +379,16 @@ def load_market_frame(market: str) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
-def build_market_dataset(market: str):
-    """Load -> features + targets -> drop undefined-label rows -> int8 targets."""
+def build_market_dataset(market: str, min_date: dt.date | str | None = None, allow_fixture: bool = False):
+    """Load -> features + targets -> drop undefined-label rows -> int8 targets.
+
+    When `min_date` is provided, uses streaming symbol iteration to keep memory low
+    and avoid a giant raw concatenation.  When `min_date` is None, uses the legacy
+    `load_market_frame` path (one big concat — suitable for fixtures and tests).
+    """
+    if min_date is not None:
+        return _build_market_dataset_streaming(market, min_date, allow_fixture)
+    # Legacy path: all-at-once load from fixture or raw
     df = load_market_frame(market)
     if df.empty:
         return None, []
@@ -325,6 +409,55 @@ def build_market_dataset(market: str):
     merged = merged.dropna(subset=TARGET_COLUMNS)
     for c in TARGET_COLUMNS:
         merged[c] = merged[c].astype("int8")
+    return merged, TARGET_COLUMNS
+
+
+def _build_market_dataset_streaming(market: str, min_date: dt.date | str, allow_fixture: bool):
+    """Streaming path: iterate symbols one at a time, compute features+targets, keep only labelled rows.
+
+    Memory: never holds more than 1 ticker's raw data + all trimmed labelled rows.
+    `gc.collect()` is called every 50 symbols.
+    """
+    import logging
+    from src.run_logging import log_phase, rss_mb
+
+    logger = logging.getLogger("feature_engine_streaming")
+    if not logger.handlers:
+        logger.addHandler(logging.StreamHandler())
+        logger.setLevel(logging.INFO)
+
+    if isinstance(min_date, str):
+        min_date = dt.date.fromisoformat(min_date)
+    min_ts = pd.Timestamp(min_date)
+
+    parts: list[pd.DataFrame] = []
+    sym_count = 0
+    for symbol, raw_df in iter_market_symbols(market, min_date=min_date, allow_fixture=allow_fixture):
+        sym_count += 1
+        f = compute_features(raw_df)
+        t = compute_targets(raw_df)
+        combined = pd.concat([f, t], axis=1)
+        combined["symbol"] = symbol
+        combined["market"] = market
+        # Trim rows to >= min_date (features were computed with warmup data)
+        combined = combined[combined["date"] >= min_ts]
+        # Drop rows where any target is NaN
+        combined = combined.dropna(subset=TARGET_COLUMNS)
+        if len(combined) > 0:
+            parts.append(combined)
+        if sym_count % 50 == 0:
+            gc.collect()
+            logger.info("[feature_engine] %s: %d symbols processed  rss=%.0fMB", market, sym_count, rss_mb())
+
+    if not parts:
+        return None, []
+
+    merged = pd.concat(parts, ignore_index=True)
+    # Cast targets to int8
+    for c in TARGET_COLUMNS:
+        merged[c] = merged[c].astype("int8")
+    logger.info("[feature_engine] %s: streaming complete — %d symbols, %d labeled rows  rss=%.0fMB", market, sym_count, len(merged), rss_mb())
+    gc.collect()
     return merged, TARGET_COLUMNS
 
 
@@ -369,6 +502,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--market", choices=["USD", "CAD", "ALL"], default="ALL")
     parser.add_argument("--validate-leakage", action="store_true")
+    parser.add_argument("--min-date", default=None, help="Earliest date to keep (YYYY-MM-DD). Data is read from 250d earlier for warmup.")
+    parser.add_argument("--allow-fixture", action="store_true", help="Permit fixture test data if real data is missing.")
     args = parser.parse_args()
 
     if args.validate_leakage:
@@ -387,7 +522,7 @@ def main() -> int:
 
     summaries = {}
     for mkt in markets:
-        merged, target_cols = build_market_dataset(mkt)
+        merged, target_cols = build_market_dataset(mkt, min_date=args.min_date, allow_fixture=args.allow_fixture)
         if merged is None or merged.empty:
             print(f"[feature_engine] {mkt}: no data available, skipping.")
             continue
