@@ -31,10 +31,25 @@ Windows [5,10,20,50,100] unless noted: RSI (5/14/21) + slope · BB %B ×5 · BB 
 
 1. **Compute features once.** `xgb_trainer.build_panel` joins the persisted `data/features/features_USD.parquet` on (date, symbol) instead of recomputing. Saves ~4 h per full run.
 2. **Vectorize the two `.rolling().apply()` blocks** (`hurst_{20,50,100}`, `entropy_{10,20}`) with stride-batched numpy per ticker (equivalent values within tolerance; stride=5 for hurst). Feature stage target: < 45 min.
-3. **Add ~18 range/fib features** (all vectorized): swing high/low + range position `(c−ll)/(hh−ll)` for 20/50/100; range width `(hh−ll)/close` for 20/50/100; range compression `rw20/rw100`; pct-from-252d-high / low; Donchian breakout flag (close > prior hh20); fib distances to 38.2/50/61.8% retracement of the 50d swing (3 signed distance features); gap_% (open/prev_close−1) z-scored. Raw total ≈ **81**.
+3. **Add fib/range feature block over FIBONACCI-scaled windows** (admin spec 2026-10-23): base window = **3 trading days**, multipliers **1,2,3,5,8,13,21,34** → windows **[3, 6, 9, 15, 24, 39, 63, 102]** (smallest 3d, largest 102d < 1 yr). All features XGBoost-compliant: float32, dimensionless (ratios / [0,1] positions / z-scores / binary flags — no raw prices or dollar volumes), NaN only in warmup, division-by-zero guarded:
+   - `range_pos_f{3,6,9,15,24,39,63,102}` = (close − rolling_low)/(rolling_high − rolling_low) ∈ [0,1] — 8
+   - `range_width_f{3,6,9,15,24,39,63,102}` = (hh − ll)/close — 8
+   - `range_compression_f{6_39, 15_102}` = short width / long width — 2
+   - `pct_from_high_f102`, `pct_from_low_f102` — 2
+   - `donchian_break_f6`, `donchian_break_f15` (close > PRIOR window high; binary) — 2
+   - `fib_dist_f{15,39,102}` = (close − nearest retracement level)/range_width, levels {38.2%, 50%, 61.8%} of the window swing; 0 when range ≈ 0 — 3
+   - `gap_z` = z-scored (open/prev_close − 1) — 1
+   Total +26 → **raw = 89**.
 4. **Relax selection:** `vif_threshold` 5.0 → 10.0; `min_mi_percentile` 30 → 15 (CLI flags already exist). Target whitelist ≥ 30 features/target (E2: 19).
 5. **Placebo seeds 1 → 3** (budget allows; strengthens CB-05).
 6. E2 hyper-parameters stay frozen (E3 is still an ablation, not a tuning exercise).
+
+### XGBoost compliance audit (verified in code 2026-10-23)
+
+- Trees are invariant to monotone rescaling → no standardization needed; the requirements are: float32, no ±inf, NaN confined to warmup, and **cross-ticker comparability** (no absolute-price/dollar values).
+- Existing 63: all scale-free — RSI/%B/ADX bounded indices; vwap/obv z-scores; yang-zhang log-ratios; ATR%/kalman_spread_atr ratios; hurst/entropy dimensionless; amihud = |ret|/dollar-vol (ratio). **One exception: `frac_diff_close` is still in price units** — usable only through its per-date `_cs_pct` rank; flagged for the `cs_pct_only`/`no_static` ablation sets in E3.
+- Trainer (`xgb_trainer.py`): ADF-flagged features get rolling z-score; **every whitelisted feature also enters as a per-date cross-sectional percentile (`_cs_pct`, bounded [0,1])** — targets train on `wl + wl_cs_pct`. float32 enforced.
+- New fib/range features comply by construction: range_pos ∈ [0,1], widths/compression = price-relative ratios, fib distances normalized by range width (0-guard when range ≈ 0), breakout/gap binary or z-scored. Division-by-zero guarded; no raw prices or dollar volumes.
 
 ## STEPS
 
@@ -43,9 +58,9 @@ Windows [5,10,20,50,100] unless noted: RSI (5/14/21) + slope · BB %B ×5 · BB 
 - Acceptance: `tests/test_feature_vectorized.py` — vectorized vs reference on 2 synthetic tickers: corr > 0.999 (hurst stride-tolerance), max abs diff < 1e-6 (entropy). Timing test: 10 tickers × 5y under 30 s.
 - Verify: `uv run pytest tests/test_feature_vectorized.py -q`
 
-### [ ] Step 2 — Add range/fib feature block
-- Change: new `_range_fib_features(df)` in `feature_engine.py`; wire into `compute_features`; config `features.range_fib: true`.
-- Acceptance: raw feature count == 81 on fixture; no NaN explosion (< 5% beyond warmup); leakage tests pass.
+### [ ] Step 2 — Add range/fib feature block (Fibonacci windows, admin spec)
+- Change: new `_range_fib_features(df)` in `feature_engine.py` (windows [3,6,9,15,24,39,63,102], features per DESIGN DECISIONS 3); wire into `compute_features`; config `features.range_fib: true`.
+- Acceptance: raw feature count == 89 on fixture; every new feature float32, dimensionless, NaN confined to warmup (< window bars per ticker), no ±inf; leakage tests pass.
 - Verify: `uv run pytest tests/test_leakage.py tests/test_range_fib.py -q`
 
 ### [ ] Step 3 — Trainer joins persisted features (no recompute)
@@ -55,7 +70,7 @@ Windows [5,10,20,50,100] unless noted: RSI (5/14/21) + slope · BB %B ×5 · BB 
 
 ### [ ] Step 4 — Rebuild Sprint 2–3 on USD with expanded set + relaxed thresholds
 - Change: none beyond steps 1–3; run with `--vif-threshold 10 --min-mi-percentile 15`.
-- Acceptance: features parquet 81 float32 cols, ≥ 500 symbols; catalog `n_features_raw == 81`; whitelist ≥ 30/target; peak RSS < 3 GB; feature stage < 45 min (proves Hurst fix).
+- Acceptance: features parquet 89 float32 cols, ≥ 500 symbols; catalog `n_features_raw == 89`; whitelist ≥ 30/target; peak RSS < 3 GB; feature stage < 45 min (proves Hurst fix).
 - Verify: `uv run python -m src.feature_engine --market USD --min-date 2016-01-01 && uv run python -m src.stat_metadata --market USD --vif-threshold 10 --min-mi-percentile 15 && grep -E "raw|whitelist" reports/sprint3_metadata_selection.md`
 
 ### [ ] Step 5 — E4 first (cheapest): metric/target alignment on the E2 oof
@@ -64,7 +79,7 @@ Windows [5,10,20,50,100] unless noted: RSI (5/14/21) + slope · BB %B ×5 · BB 
 - Verify: `uv run python scripts/diag_signal.py --exp e4 --market USD && grep -E "Verdict|H3" reports/diag_D002_e4.md`
 
 ### [ ] Step 6 — E3 ablation matrix (trains on column subsets of ONE persisted panel)
-- Change: `xgb_trainer --feature-set {full81, vif28, mi19, cs_pct_only, no_static, fib_only}` (column masks; no recompute).
+- Change: `xgb_trainer --feature-set {full89, vif28, mi19, cs_pct_only, no_static, fib_only}` (column masks; no recompute).
 - Runs: 6 sets × 4 targets × (1 real + 3 placebo) × 5 folds + final ≈ 6× E2 fit cost ≈ 1.5–2 h.
 - Acceptance: `reports/diag_D002_e3.md` — per set × target: ROC-AUC, PR-AUC lift, P@K lift, deflated IC t, placebo z; H2 verdict (any set reaches deflated t > 2.5 where baseline doesn't).
 - Verify: `uv run python scripts/diag_signal.py --exp e3 --market USD && grep -E "Verdict|H2" reports/diag_D002_e3.md`
@@ -101,3 +116,4 @@ Peak RSS projected < 3 GB (vs 5.5 GB available). Riskiest step: 3 (join correctn
 
 | Time | Step | Outcome | Concern? |
 |---|---|---|---|
+| 2026-10-23 ~20:00 | admin | Plan approved: all DESIGN DECISIONS accepted except #3, which is replaced by the Fibonacci-window spec (windows 3×[1,2,3,5,8,13,21,34] = [3,6,9,15,24,39,63,102]); all features must be XGBoost-compliant — float32, dimensionless/normalized (no absolute-price values), bounded ranges, NaN in warmup only. Build may start Steps 1–4. | none |
