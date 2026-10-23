@@ -45,6 +45,15 @@ FRAC_DIFF_WINDOW = 100
 FIB_WINDOWS = [3, 6, 9, 15, 24, 39, 63, 102]
 FIB_LEVELS = (0.382, 0.5, 0.618)  # retracement fractions of the window swing
 RANGE_FIB_ENABLED = True
+FIB_FEATURE_NAMES = (
+    [f"range_pos_f{w}" for w in FIB_WINDOWS]
+    + [f"range_width_f{w}" for w in FIB_WINDOWS]
+    + ["donchian_break_f6", "donchian_break_f15"]
+    + ["range_compression_f6_39", "range_compression_f15_102"]
+    + ["pct_from_high_f102", "pct_from_low_f102"]
+    + [f"fib_dist_f{w}" for w in (15, 39, 102)]
+    + ["gap_z"]
+)
 
 
 # --------------------------------------------------------------------------- #

@@ -259,8 +259,8 @@ def build_panel(
 
         if use_join:
             f_sub = f_all[f_all["symbol"] == symbol]
-            keep_f = [c for c in surviving if c in f_sub.columns]
-            f_sub = f_sub[["date"] + keep_f]
+            feat_cols_all = [c for c in f_all.columns if c not in ("date", "symbol", "market")]
+            f_sub = f_sub[["date"] + feat_cols_all]
             t_sub = t_all[t_all["symbol"] == symbol][["date"] + TARGET_COLUMNS]
             combined = (
                 base.merge(f_sub, on="date", how="inner")
@@ -273,10 +273,7 @@ def build_panel(
                       "feature rows — persisted parquets may be stale vs min_date")
         else:
             f = compute_features(g)
-            # Keep only date + surviving features
-            keep_f = [c for c in surviving if c in f.columns]
-            f = f[["date"] + keep_f] if "date" in f.columns else f[keep_f]
-
+            # Keep the full feature matrix (E3 ablation masks select subsets later)
             t = compute_targets(g)
             combined = pd.concat([f, t], axis=1)
             combined["symbol"] = symbol
@@ -323,9 +320,46 @@ def build_panel(
     return panel
 
 
-def target_features(catalog: dict, target: str) -> list[str]:
+def target_features(
+    catalog: dict, target: str, feature_set: str = "full",
+    panel_cols: set[str] | None = None,
+) -> list[str]:
+    """Feature columns for a target under an E3 ablation mask.
+
+    full        — the Gate-3 whitelist for the target (E2-faithful baseline)
+    no_static   — whitelist minus ADF-flagged (non-stationary) features
+    fib_only    — all Fibonacci-window range features present in the panel
+    legacy19    — union of the E2-era whitelists (VIF-5 / MI-30 catalog)
+    cs_pct_only — whitelist features, cross-sectional percentile ranks only
+    """
+    cols = panel_cols if panel_cols is not None else set()
     wl = catalog["whitelist_per_target"][target]
-    return wl + [f"{c}_cs_pct" for c in wl]
+
+    def _existing(names: list[str]) -> list[str]:
+        return [f for f in names if cols is None or f in cols]
+
+    if feature_set == "no_static":
+        base = [f for f in wl if not catalog["stationarity"].get(f, {}).get("flagged")]
+    elif feature_set == "fib_only":
+        from src.feature_engine import FIB_FEATURE_NAMES
+        base = _existing(FIB_FEATURE_NAMES)
+    elif feature_set == "legacy19":
+        base = _existing(LEGACY_WHITELIST_UNION)
+    elif feature_set == "cs_pct_only":
+        base = _existing(wl)
+        return [f"{f}_cs_pct" for f in base]
+    else:  # full
+        base = _existing(wl)
+    return base + [f"{f}_cs_pct" for f in base if cols is None or f"{f}_cs_pct" in cols]
+
+
+LEGACY_WHITELIST_UNION = [
+    "adx_100", "adx_20", "adx_5", "amihud_10", "amihud_20", "amihud_50",
+    "atr_pct_100", "bb_width_10", "bb_width_5", "entropy_10", "entropy_20",
+    "frac_diff_close", "hurst_20", "kama_er_10", "kama_er_100", "kama_er_20",
+    "kama_er_5", "kama_er_50", "obv_zscore_50", "rsi_14", "rsi_14_slope_5",
+    "vwap_zscore_10", "vwap_zscore_5", "yangzhang_100",
+]
 
 
 # --------------------------------------------------------------------------- #
@@ -394,6 +428,7 @@ def train_market(
     allow_fixture: bool = False, min_date: str | None = None,
     min_avail_mb: float = 1000.0, resume: bool = False,
     xgb_verbose: bool = False, recompute_features: bool = False,
+    feature_set: str = "full",
 ) -> dict:
     import logging as _logging_mod
 
@@ -408,9 +443,10 @@ def train_market(
     splitter = PurgedWalkForwardSplit(n_splits=n_splits, embargo_td=embargo_td)
 
     target_list = targets if targets else list(TARGET_COLUMNS)
+    suffix = "" if feature_set == "full" else f"_{feature_set}"
     # --resume: skip targets already in meta
     if resume:
-        meta_path = DATA_DIR / f"train_meta_{market}.json"
+        meta_path = DATA_DIR / f"train_meta_{market}{suffix}.json"
         if meta_path.exists():
             existing_meta = json.loads(meta_path.read_text())
             done_targets = set(existing_meta.get("targets", {}).keys())
@@ -440,7 +476,7 @@ def train_market(
                 universe["date_min"], universe["date_max"], universe["source"])
 
     # Load or initialize meta
-    meta_path = DATA_DIR / f"train_meta_{market}.json"
+    meta_path = DATA_DIR / f"train_meta_{market}{suffix}.json"
     if resume and meta_path.exists():
         meta = json.loads(meta_path.read_text())
     else:
@@ -450,14 +486,15 @@ def train_market(
             "n_splits": n_splits,
             "embargo_td": embargo_td,
             "n_placebo_seeds": placebo_seeds,
+            "feature_set": feature_set,
             "latest_date": str(pd.Timestamp(latest_date).date()),
             "universe": universe,
             "targets": {},
         }
 
     # Load or initialize OOF
-    oof_path = DATA_DIR / f"oof_{market}.parquet"
-    preds_path = DATA_DIR / f"predictions_{market}_latest.parquet"
+    oof_path = DATA_DIR / f"oof_{market}{suffix}.parquet"
+    preds_path = DATA_DIR / f"predictions_{market}{suffix}_latest.parquet"
     if resume and oof_path.exists():
         oof = pd.read_parquet(oof_path)
         preds = pd.read_parquet(preds_path)
@@ -472,7 +509,8 @@ def train_market(
         logger.info("=== target: %s ===", target)
         check_memory(logger, min_avail_mb)
 
-        feats = target_features(catalog, target)
+        panel_cols = set(labeled.columns)
+        feats = target_features(catalog, target, feature_set=feature_set, panel_cols=panel_cols)
         # Ensure features exist in the panel (some may have been dropped)
         feats = [f for f in feats if f in labeled.columns]
         if not feats:
@@ -573,6 +611,9 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true", help="Skip targets already in train_meta JSON")
     parser.add_argument("--recompute-features", action="store_true",
                         help="Ignore persisted features/targets parquets; recompute in-loop (legacy path)")
+    parser.add_argument("--feature-set", default="full",
+                        choices=["full", "no_static", "fib_only", "legacy19", "cs_pct_only"],
+                        help="E3 ablation mask over the panel columns (default full = Gate-3 whitelist)")
     args = parser.parse_args()
     target_list = [t.strip() for t in args.targets.split(",")] if args.targets else None
 
@@ -584,6 +625,7 @@ def main() -> int:
             allow_fixture=args.allow_fixture, min_date=args.min_date,
             min_avail_mb=args.min_avail_mb, resume=args.resume,
             xgb_verbose=args.xgb_verbose, recompute_features=args.recompute_features,
+            feature_set=args.feature_set,
         )
     update_state("EP-04", "training", {"markets": markets, "embargo_td": args.embargo, "n_splits": args.n_splits})
     return 0
