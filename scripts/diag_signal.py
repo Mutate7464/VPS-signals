@@ -359,15 +359,145 @@ def run_e2(market: str) -> int:
     return 0
 
 
+def run_e5(market: str) -> int:
+    """E5 — unpredictability floor: ridge/logit on 5 classic factors vs fwd ATR return.
+
+    Factors (all dimensionless): 12-1 momentum, 1-month reversal, 20d volatility,
+    Amihud illiquidity (20d), log average dollar volume (size/liquidity proxy).
+    Purged walk-forward (5 folds, 20d embargo, same splitter as the trainer).
+    """
+    from sklearn.linear_model import Ridge, LogisticRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+    from src.feature_engine import iter_market_symbols, wilder_atr
+    from src.xgb_trainer import PurgedWalkForwardSplit
+
+    FACTORS = ["mom_12_1", "rev_1m", "vol_20", "amihud_20", "log_dollar_vol_20"]
+    parts = []
+    for symbol, raw_df in iter_market_symbols(market, min_date="2016-01-01", allow_fixture=False):
+        g = raw_df.sort_values("date").reset_index(drop=True)
+        close = g["close"].astype("float64")
+        ret = close.pct_change()
+        dollar_vol = (close * g["volume"].astype("float64")) + 1e-12
+        f = pd.DataFrame({
+            "date": g["date"],
+            "symbol": symbol,
+            "mom_12_1": (close.shift(21) / close.shift(252) - 1.0),
+            "rev_1m": (close / close.shift(21) - 1.0),
+            "vol_20": ret.rolling(20, min_periods=20).std(ddof=1),
+            "amihud_20": (ret.abs() / dollar_vol).rolling(20, min_periods=20).mean(),
+            "log_dollar_vol_20": np.log(dollar_vol).rolling(20, min_periods=20).mean(),
+        })
+        close_a = close.to_numpy()
+        atr = wilder_atr(g).astype("float64").to_numpy()
+        for h in (15, 20):
+            fwd = np.full(len(close_a), np.nan)
+            if len(close_a) > h:
+                fwd[:-h] = close_a[h:]
+            f[f"fwd_atr_ret_{h}"] = ((fwd - close_a) / (atr + 1e-12)).astype("float32")
+        parts.append(f)
+    panel = pd.concat(parts, ignore_index=True)
+    panel = panel.dropna(subset=FACTORS)
+    for t in ("fwd_atr_ret_15", "fwd_atr_ret_20"):
+        panel = panel.dropna(subset=[t])
+
+    dates_unique = panel["date"].unique()
+    splitter = PurgedWalkForwardSplit(n_splits=5, embargo_td=20)
+    splits = list(splitter.split(dates_unique))
+
+    lines: list[str] = []
+    w = lines.append
+    w(f"# D-002 / E5 — Unpredictability floor ({market})")
+    w("")
+    w(f"- Generated (UTC): {pd.Timestamp.now('UTC').strftime('%Y-%m-%dT%H:%M:%SZ')}")
+    w(f"- Factors: {', '.join(FACTORS)} · ridge (continuous `fwd_atr_ret`) + logistic (binary `y_15d_high`) · "
+      "5-fold purged WF, 20d embargo")
+    w("")
+    w("## Single-factor per-date Spearman rank-IC")
+    w("")
+    w("| Factor | mean IC | t | % dates |")
+    w("| :--- | ---: | ---: | ---: |")
+    fac_ic = {}
+    for fac in FACTORS:
+        ranks = panel.groupby("date")[[fac, "fwd_atr_ret_15"]].rank()
+        ranks["date"] = panel["date"].to_numpy()
+        ics = ranks.groupby("date").apply(lambda x: x[fac].corr(x["fwd_atr_ret_15"])).dropna()
+        t_stat = ics.mean() / (ics.std(ddof=1) / np.sqrt(len(ics))) if len(ics) > 2 and ics.std(ddof=1) > 0 else np.nan
+        fac_ic[fac] = (float(ics.mean()), float(t_stat))
+        w(f"| `{fac}` | {ics.mean():+.4f} | {t_stat:+.2f} | {len(ics)} |")
+    w("")
+
+    # Multivariate ridge / logistic with purged WF
+    X_all = panel[FACTORS].to_numpy(dtype="float32")
+    date_codes, _ = pd.factorize(panel["date"])
+
+    results = {}
+    for target_name, model_kind, model_fn in (
+        ("fwd_atr_ret_15", "ridge", lambda: make_pipeline(StandardScaler(), Ridge(alpha=100.0))),
+        ("fwd_atr_ret_20", "ridge", lambda: make_pipeline(StandardScaler(), Ridge(alpha=100.0))),
+        ("fwd_atr_ret_15", "logit_median_split", None),
+    ):
+        if model_kind == "logit_median_split":
+            y_bin = (panel["fwd_atr_ret_15"] > panel.groupby("date")["fwd_atr_ret_15"].transform("median")).astype("int8")
+            y = y_bin.to_numpy()
+            model_fn = lambda: make_pipeline(StandardScaler(), LogisticRegression(max_iter=500, C=0.1))
+        else:
+            y = panel[target_name].to_numpy(dtype="float32")
+        oof_pred = np.full(len(panel), np.nan)
+        for tr_idx, val_idx in splits:
+            tr_rows = np.isin(date_codes, tr_idx)
+            va_rows = np.isin(date_codes, val_idx)
+            m = model_fn()
+            m.fit(X_all[tr_rows], y[tr_rows])
+            oof_pred[va_rows] = m.predict(X_all[va_rows])
+        mask = np.isfinite(oof_pred) & np.isfinite(panel["fwd_atr_ret_15"].to_numpy())
+        sub = pd.DataFrame({
+            "date": panel["date"].to_numpy()[mask],
+            "pred": oof_pred[mask],
+            "real": panel["fwd_atr_ret_15"].to_numpy()[mask],
+        })
+        ranks = sub.groupby("date")[["pred", "real"]].rank()
+        ranks["date"] = sub["date"].to_numpy()
+        ics = ranks.groupby("date").apply(lambda x: x["pred"].corr(x["real"])).dropna()
+        t_stat = ics.mean() / (ics.std(ddof=1) / np.sqrt(len(ics))) if len(ics) > 2 and ics.std(ddof=1) > 0 else np.nan
+        results[target_name] = (float(ics.mean()), float(t_stat), model_kind)
+        w(f"- {model_kind} `{target_name}` oof rank-IC: {ics.mean():+.4f} (t = {t_stat:+.2f}, {len(ics)} dates)")
+
+    w("")
+    w("## Verdict")
+    w("")
+    max_t = float(np.nanmax([abs(v[1]) for v in fac_ic.values()] or [0.0]))
+    ridge_t = float(np.nanmax([abs(results["fwd_atr_ret_15"][1]), abs(results["fwd_atr_ret_20"][1])] or [0.0]))
+    if max_t < 2.0 and ridge_t < 2.0:
+        verdict = ("**FLOOR CONFIRMED.** No classic factor (single or multivariate) reaches |t| >= 2 on the "
+                   "continuous forward ATR return: 5-factor predictability at these horizons is statistically "
+                   "indistinguishable from zero on this universe. Given E4 fired H3, this bounds how far "
+                   "classic-factor structure can explain the model's IC — the E4 signal is not a trivial factor bet.")
+    else:
+        verdict = (f"**FLOOR BREACHED** (max single-factor |t| = {max_t:.2f}, ridge |t| = {ridge_t:.2f}): classic "
+                   "factors DO predict the continuous forward ATR return on this universe. A trivial factor bet "
+                   "cannot be excluded as the source of E4's IC; any E3/H3 redesign must be tested against these "
+                   "factors as a baseline.")
+    w(f"Verdict: {verdict}")
+
+    out = REPORTS / "diag_D002_e5.md"
+    out.write_text("\n".join(lines) + "\n")
+    print(f"wrote {out}")
+    print("verdict:", "FLOOR CONFIRMED" if (max_t < 2.0 and ridge_t < 2.0) else "FLOOR BREACHED")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--exp", choices=["e2", "e4"], required=True)
+    ap.add_argument("--exp", choices=["e2", "e4", "e5"], required=True)
     ap.add_argument("--market", default="USD")
     args = ap.parse_args()
     if args.market != "USD":
         raise SystemExit("only --market USD is implemented")
     if args.exp == "e4":
         return run_e4(args.market)
+    if args.exp == "e5":
+        return run_e5(args.market)
     return run_e2(args.market)
 
 
