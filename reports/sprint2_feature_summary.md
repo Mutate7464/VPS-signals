@@ -1,14 +1,14 @@
 # Sprint 2 — Feature Engineering & Target Summary (Gate 2)
 
-- Generated (UTC): 2026-10-23T08:43:48.074306+00:00
+- Generated (UTC): 2026-10-23T19:36:43.983075+00:00
 
 ## USD
 
 - Ticker count: **508**
 - Labeled rows: **533017**
-- Feature columns: **63**
+- Feature columns: **89**
 - Feature dtype: `float32` | Target dtype: `int8`
-- Mean NaN fraction across features: **0.93%**
+- Mean NaN fraction across features: **0.90%**
 
 ### Target class balance
 
