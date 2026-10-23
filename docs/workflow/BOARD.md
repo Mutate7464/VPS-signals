@@ -2,13 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-22 (v2 board)
+**Last updated:** 2026-10-23 (v2 board)
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **EXECUTING** — Steps 1–7 done, Step 4 running in bg (feature_engine PID 557122); Step 8 pending human launch | 2026-10-22 | Build agent completed Steps 1–7 (7 commits). Human launching Step 8 when Step 4 finishes. | `reports/sprint4_model_qa.md`, `docs/plans/2026-10-22-WI-002-e2-full-universe-rerun.md` |
+| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **QA/GATE** — Steps 1–9 done; E2 ran clean on real universe (508 sym, 1.24M rows, oof acceptance met) but **Gate 4 FAIL on all 4 targets**. Verdict: **E2 NULL — H1 NOT CONFIRMED** → decision matrix points to E3/E4/E5. STOPPED for human review (admin picks fork). | 2026-10-22 | Admin review of `reports/diag_D002_e2.md` verdict | `reports/diag_D002_e2.md`, `reports/sprint4_model_qa.md` (regenerated 2026-10-23), plan EXECUTION LOG |
 | WI-003 | Ingest Phase 1 validation runs + CAD download | G-002 | **DONE** | 2026-10-22 | 546 USD + 350 CAD synced (~97-98% coverage); verifier PASS (824/896 ok, leakage PASS, 72 quarantined); audit CSVs are failure-log style, true failure rate ≈1-2.5% from coverage | `reports/sprint1_ingestion_audit.md` (regenerated 2026-10-22) |
 
 ## DONE

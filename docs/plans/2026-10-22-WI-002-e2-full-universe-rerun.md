@@ -117,9 +117,10 @@ universe size and show whether Gate 4 metrics change vs the 5-ticker fixture run
   Monitor from a second SSH session: `tail -f logs/xgb_trainer_USD_*.log`; `free -m`.
 - Acceptance: exit 0; `reports/sprint4_model_qa.md` header shows USD universe ≥ 500 tickers; `data/oof_USD.parquet` ≥ 1.0M rows; `logs/e2_run.out` records peak RSS < 4.5 GB per stage and wall time; hermes-gateway `active` afterwards;
   `NO_LEARNING` on ≤ 25% of folds (else explain in report).
+- **DEVIATION (admin-approved 2026-10-23 04:29 UTC, logged by Hermes):** oof acceptance amended to **≥ 400K rows and ≥ 500 symbols**. Rationale: oof ⊆ labeled rows, and the real feature build produced 533,017 labeled rows (508 tickers) vs the plan's 1.0M+ assumption, which was written against the 1.3M raw-row projection. The ≥500-symbol and NO_LEARNING criteria are unchanged.
 - Verify: `tail -n 40 logs/e2_run.out; systemctl --user is-active hermes-gateway; uv run python -c "import pandas as pd;o=pd.read_parquet('data/oof_USD.parquet');print(len(o),o.symbol.nunique());assert o.symbol.nunique()>=500"`
 
-### [ ] Step 9 — E2 analysis report + board update
+### [x] Step 9 — E2 analysis report + board update
 - Change: `scripts/diag_signal.py --exp e2` (read-only) reads `data/oof_USD.parquet`, `data/train_meta_USD.json`, Gate 4 report, the training log; writes `reports/diag_D002_e2.md`: fixture-vs-real table for 4 targets ×
   (ROC-AUC, BSS, P@K lift, PR-AUC lift, deflated IC t); fold `best_iteration` distribution; `NO_LEARNING` count; SHAP dominance; `MI_EXCEEDS_ENTROPY` warnings; the ADR decision-matrix row that applies
   (H1 confirmed ⇔ any target passes ≥ 3 of 5 gates; else proceed to E3/E4/E5); survivorship caveat; list of deviations (window, quarantine, subsampled MI/VIF, placebo seeds = 1).
@@ -146,6 +147,9 @@ universe size and show whether Gate 4 metrics change vs the 5-ticker fixture run
 | 22:52 | 6 | PASS — 4/4 trainer tests (build_panel, smoke run, memory guard, purged WF) + import check | Monkeypatch treadmill for fixture-path testing. build_panel correctly rejects fixture fallback when real dir populated. |
 | 23:00 | 7 | PASS — QA header tests (2/2) + launcher dry-run/service-test/simulate-fail + bash syntax | `model_qa FAILED` in dry-run expected (fixture catalog mismatch); trap preserves exit code; hermes round-trip verified. |
 | 23:03 | 7 | **COMMITTED** — git log `cb1baae` | Steps 1–7 complete; Step 8 needs human to launch after Step 4 finishes |
+| 04:29 | admin (Hermes) | Step 8 launch authorized — full launcher. DEVIATION: oof acceptance amended to >=400K rows & >=500 symbols (1.0M unachievable: oof subset of 533,017 labeled rows). Pre-launch checks green: features fresh 02:57, 508 tickers, class balance sane. | none |
+| 13:06 | 8 (human) | **PASS** — E2 run exit 0 in 4h17m; peak RSS 2.34 GB (< 4.5 GB); hermes-gateway + opencode restarted active. Universe 508 sym / 1,240,275 rows; oof 1,240,275 rows / 508 symbols; NO_LEARNING 4/40 folds (2 real, both y_20d_down) ≤ 25%. **Gate 4 FAIL on all 4 targets** (ROC-AUC 0.48–0.54). | Gate stays FAIL — verdict in Step 9 report |
+| 18:56 | 9 | **PASS** — `scripts/diag_signal.py --exp e2` written; `reports/diag_D002_e2.md`: fixture-vs-real table, best_iter distributions, NO_LEARNING=0 MI_EXCEEDS_ENTROPY, SHAP ok, survivorship caveat, deviations. **Verdict: E2 NULL — H1 NOT CONFIRMED** (0/4 targets ≥3/5 gates) → matrix points to E3/E4/E5. Board moved to QA/GATE. | STOP for human review (admin decides E3/E4/E5 fork) |
 
 ## OUT OF SCOPE
 - Hyper-parameter, label-definition, whitelist-threshold, or model changes (E3–E5 / later ADRs).
