@@ -458,9 +458,19 @@ def train_market(
                             recompute_features=recompute_features)
 
     latest_date = panel["date"].max()
-    labeled = panel.dropna(subset=TARGET_COLUMNS).reset_index(drop=True)
-    infer = panel[panel["date"] == latest_date].reset_index(drop=True)
+    # Slim the panel to the union of E3 ablation masks + bookkeeping columns
+    # before training (the full 89-col panel x2 copies contributed to the OOM
+    # kill of the first E3 attempt on this 8 GB host).
+    from src.feature_engine import FIB_FEATURE_NAMES
+    keep_cols = (set(catalog["surviving_features"]) | set(FIB_FEATURE_NAMES) | set(LEGACY_WHITELIST_UNION)
+                 | set(TARGET_COLUMNS)
+                 | {"date", "symbol", "market", "close", "fwd_atr_ret_15", "fwd_atr_ret_20"})
+    slim = panel[[c for c in panel.columns if c in keep_cols]]
+    labeled = slim.dropna(subset=TARGET_COLUMNS).reset_index(drop=True)
+    infer = slim[slim["date"] == latest_date].reset_index(drop=True)
     dates = labeled["date"].to_numpy()
+    del panel, slim
+    gc.collect()
 
     universe = {
         "n_symbols": int(labeled["symbol"].nunique()),
