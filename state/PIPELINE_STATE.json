@@ -21,7 +21,7 @@
       "markets": {
         "USD": {
           "n_features": 89,
-          "n_rows": 533017
+          "n_rows": 1240275
         }
       }
     },
@@ -68,6 +68,6 @@
       "top_n": 30
     }
   },
-  "last_updated_utc": "2026-10-23T19:47:26.892004+00:00",
+  "last_updated_utc": "2026-10-23T20:21:32.217043+00:00",
   "last_error": null
 }
