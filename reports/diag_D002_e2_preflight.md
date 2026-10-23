@@ -1,6 +1,6 @@
 # E2 Pre-flight Audit (USD)
 
-Generated: 2026-10-22T22:19:33.311338+00:00
+Generated: 2026-10-23T04:33:06.379422+00:00
 
 - source: `/home/yycuser/projects/signals/data/raw_ohlcv/market=USD`
 - tickers: 509 (quarantined excluded: 37)
@@ -12,7 +12,7 @@ Generated: 2026-10-22T22:19:33.311338+00:00
 - projected labeled rows: 1308470
 - projected feature-only RAM: 314 MB
 - projected full panel RAM: 679 MB
-- MemAvailable: 4825 MB / 7941 MB
+- MemAvailable: 6719 MB / 7941 MB
 - budget 4.5 GB: OK
 
 ## Quarantine list (USD)

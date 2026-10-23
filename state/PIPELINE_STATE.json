@@ -1,44 +1,38 @@
 {
-  "current_sprint": "EP-05",
+  "current_sprint": "EP-04",
   "gates_approved": {
     "gate_1": true,
     "gate_2": true,
     "gate_3": true,
-    "gate_4": true,
-    "gate_5": true
+    "gate_4": false,
+    "gate_5": false
   },
   "checkpoints": {
     "gate_1": {
-      "dry_run": true,
-      "parquet_files_audited": 10,
-      "ok": 10,
-      "quarantined": 0,
-      "cb01": 0,
-      "cb02": 0,
+      "dry_run": false,
+      "parquet_files_audited": 896,
+      "ok": 824,
+      "quarantined": 72,
+      "cb01": 70,
+      "cb02": 2,
       "leakage_harness_passed": true
     },
     "gate_2": {
       "markets": {
         "USD": {
           "n_features": 63,
-          "n_rows": 1400
-        },
-        "CAD": {
-          "n_features": 63,
-          "n_rows": 1400
+          "n_rows": 533017
         }
       }
     },
     "gate_3": {
       "markets": {
-        "USD": 10,
-        "CAD": 9
+        "USD": 28
       }
     },
     "training": {
       "markets": [
-        "USD",
-        "CAD"
+        "USD"
       ],
       "embargo_td": 20,
       "n_splits": 5
@@ -48,37 +42,19 @@
         "USD": {
           "y_15d_high": {
             "gate_pass": false,
-            "placebo_auc": 0.49693879509574146
+            "placebo_auc": 0.5002349673757817
           },
           "y_15d_low": {
             "gate_pass": false,
-            "placebo_auc": 0.48811562423767463
+            "placebo_auc": 0.49943759477286165
           },
           "y_20d_up": {
             "gate_pass": false,
-            "placebo_auc": 0.4945643786401604
+            "placebo_auc": 0.4991753133865524
           },
           "y_20d_down": {
             "gate_pass": false,
-            "placebo_auc": 0.4894814388920395
-          }
-        },
-        "CAD": {
-          "y_15d_high": {
-            "gate_pass": false,
-            "placebo_auc": 0.5055429441914496
-          },
-          "y_15d_low": {
-            "gate_pass": false,
-            "placebo_auc": 0.491524294417213
-          },
-          "y_20d_up": {
-            "gate_pass": false,
-            "placebo_auc": 0.49586899867758927
-          },
-          "y_20d_down": {
-            "gate_pass": false,
-            "placebo_auc": 0.502133092379778
+            "placebo_auc": 0.4996251697370473
           }
         }
       },
@@ -92,6 +68,6 @@
       "top_n": 30
     }
   },
-  "last_updated_utc": "2026-10-21T03:03:05.591038+00:00",
+  "last_updated_utc": "2026-10-23T13:06:50.890644+00:00",
   "last_error": null
 }
