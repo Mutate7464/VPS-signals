@@ -36,6 +36,7 @@ features:
   hurst_windows: [20, 50, 100]
   frac_diff_d: 0.40
   atr_window: 20
+  range_fib: true   # Fibonacci-window range features (WI-002 E3; windows 3x[1,2,3,5,8,13,21,34])
 
 targets:
   high_15d_horizon: 15

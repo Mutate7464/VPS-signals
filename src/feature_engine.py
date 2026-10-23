@@ -40,6 +40,11 @@ ENTROPY_WINDOWS = [10, 20]
 ATR_WINDOW = 20
 FRAC_DIFF_D = 0.40
 FRAC_DIFF_WINDOW = 100
+# Fibonacci-scaled range windows (admin spec 2026-10-23): base 3 trading days
+# × [1, 2, 3, 5, 8, 13, 21, 34] → 3..102 bars (smallest 3d, largest < 1 year).
+FIB_WINDOWS = [3, 6, 9, 15, 24, 39, 63, 102]
+FIB_LEVELS = (0.382, 0.5, 0.618)  # retracement fractions of the window swing
+RANGE_FIB_ENABLED = True
 
 
 # --------------------------------------------------------------------------- #
@@ -144,6 +149,110 @@ def _shannon_entropy(x: np.ndarray) -> float:
     return float(-np.sum(p * np.log(p)))
 
 
+# --- Vectorized equivalents (exact ports of the reference functions above) ---
+# These replace the `.rolling().apply()` call sites: identical outputs, but
+# sliding-window numpy instead of a Python callback per bar (hours -> minutes).
+
+def _sliding(x: np.ndarray, window: int) -> np.ndarray:
+    return np.lib.stride_tricks.sliding_window_view(x, window)
+
+
+def _hurst_rs_vec(x: np.ndarray, window: int) -> np.ndarray:
+    """Exact vectorized port of `_hurst_rs` over all trailing windows."""
+    x = np.asarray(x, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window or window < 8:
+        return out
+    sw = _sliding(x, window)  # (T, window); row k covers x[k : k+window]
+    max_lag = min(window // 4, 20)
+    lags = np.arange(2, max_lag + 1, dtype="float64")
+    if len(lags) < 2:
+        return out
+    log_lags = np.log(lags)
+    T = sw.shape[0]
+    rs = np.full((T, len(lags)), np.nan)
+    for j, lag_f in enumerate(lags):
+        lag = int(lag_f)
+        n_chunks = window // lag
+        if n_chunks < 1:
+            continue
+        chunks = sw[:, : n_chunks * lag].reshape(T, n_chunks, lag)
+        c_mean = chunks.mean(axis=2)
+        c_std = chunks.std(axis=2)  # ddof=0, matches reference
+        dev = np.cumsum(chunks - c_mean[:, :, None], axis=2)
+        r = dev.max(axis=2) - dev.min(axis=2)
+        ok = c_std > 0.0
+        chunk_rs = np.where(ok, r / np.where(ok, c_std, 1.0), np.nan)
+        with np.errstate(invalid="ignore"):
+            rs[:, j] = np.nanmean(chunk_rs, axis=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        log_rs = np.log(rs)
+    valid = np.isfinite(log_rs) & (rs > 0.0)  # matches ref mask
+    m = valid.astype("float64")
+    n_valid = m.sum(axis=1)
+    y = np.where(valid, log_rs, 0.0)
+    sx = (m * log_lags).sum(axis=1)
+    sy = (m * y).sum(axis=1)
+    sxx = (m * log_lags * log_lags).sum(axis=1)
+    sxy = (m * log_lags * y).sum(axis=1)
+    denom = n_valid * sxx - sx * sx
+    numer = n_valid * sxy - sx * sy
+    with np.errstate(divide="ignore", invalid="ignore"):
+        slope = numer / np.where(denom != 0.0, denom, np.nan)
+    slope = np.where((n_valid >= 2) & (denom > 0.0), slope, np.nan)
+    out[window - 1 :] = slope
+    return out
+
+
+def _shannon_entropy_vec(x: np.ndarray, window: int) -> np.ndarray:
+    """Exact vectorized port of `_shannon_entropy` over all trailing windows."""
+    x = np.asarray(x, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window:
+        return out
+    sw = _sliding(x, window)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        rets = np.diff(np.log(sw), axis=1)  # (T, window-1)
+    finite_rows = np.isfinite(rets).all(axis=1)
+    rets_m = np.where(np.isfinite(rets), rets, np.nan)
+    with np.errstate(invalid="ignore"):
+        mn = np.nanmin(rets_m, axis=1)
+        mx = np.nanmax(rets_m, axis=1)
+    rng = mx - mn
+    safe_rng = np.where(rng > 0.0, rng, 1.0)
+    with np.errstate(invalid="ignore"):
+        idx = np.floor((rets_m - mn[:, None]) / safe_rng[:, None] * 10.0)
+    idx = np.clip(np.where(np.isfinite(idx), idx, -1.0), 0.0, 9.0)
+    counts = np.zeros((sw.shape[0], 10), dtype="float64")
+    for k in range(10):
+        counts[:, k] = (idx == float(k)).sum(axis=1)
+    p = counts / float(window - 1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        terms = np.where(counts > 0, -p * np.log(p), 0.0)
+    H = terms.sum(axis=1)
+    H[~finite_rows] = np.nan
+    out[window - 1 :] = H
+    return out
+
+
+def _frac_diff_vec(vals: np.ndarray, d: float, window: int) -> np.ndarray:
+    """Exact vectorized port of `_frac_diff_fixed` (fixed-weight convolution)."""
+    weights = [1.0]
+    for k in range(1, window):
+        weights.append(-weights[-1] * (d - k + 1) / k)
+    w_rev = np.asarray(weights, dtype="float64")[::-1]
+    x = np.asarray(vals, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window:
+        return out
+    sw = _sliding(x, window)
+    out[window - 1 :] = sw @ w_rev
+    return out
+
+
 def _kalman_filter(x: np.ndarray, q: float = 1e-4, r: float = 1e-2) -> np.ndarray:
     """1D Kalman filter (random-walk state + noise), forward recursion (causal)."""
     x = np.asarray(x, dtype="float64")
@@ -195,6 +304,68 @@ def _yang_zhang_vol(df: pd.DataFrame, window: int) -> pd.Series:
 # --------------------------------------------------------------------------- #
 # Feature assembly
 # --------------------------------------------------------------------------- #
+def _range_fib_features(df: pd.DataFrame, close: pd.Series) -> pd.DataFrame:
+    """Fibonacci-window range-structure features (all dimensionless, float32).
+
+    Windows are FIB_WINDOWS = 3 × [1,2,3,5,8,13,21,34] trading bars. Every
+    output is a ratio / [0,1] position / z-score / binary flag — no absolute
+    price or volume values — so the features are comparable across tickers and
+    safe for tree splits (XGBoost compliance requirement, plan WI-002 E3–E5).
+    """
+    high = df["high"].astype("float64")
+    low = df["low"].astype("float64")
+    open_ = df["open"].astype("float64")
+
+    feats = pd.DataFrame(index=df.index)
+    widths: dict[int, pd.Series] = {}
+    for w in FIB_WINDOWS:
+        hh = high.rolling(w, min_periods=w).max()
+        ll = low.rolling(w, min_periods=w).min()
+        rng = (hh - ll).astype("float64")
+        widths[w] = rng / (close + 1e-12)  # range width relative to price
+        # Position inside the range: 0 = at the window low, 1 = at the high.
+        feats[f"range_pos_f{w}"] = ((close - ll) / (rng + 1e-12)).clip(0.0, 1.0).astype("float32")
+        feats[f"range_width_f{w}"] = widths[w].astype("float32")
+        if w in (6, 15):  # Donchian breakout vs the PRIOR window's high
+            feats[f"donchian_break_f{w}"] = (close > hh.shift(1)).astype("float32")
+
+    # Range compression: short-window width relative to a longer one.
+    feats["range_compression_f6_39"] = (widths[6] / (widths[39] + 1e-12)).astype("float32")
+    feats["range_compression_f15_102"] = (widths[15] / (widths[102] + 1e-12)).astype("float32")
+
+    # Long-anchor extremes over the largest fib window (102 < 1 year).
+    hh102 = high.rolling(102, min_periods=102).max()
+    ll102 = low.rolling(102, min_periods=102).min()
+    feats["pct_from_high_f102"] = (close / (hh102 + 1e-12) - 1.0).astype("float32")
+    feats["pct_from_low_f102"] = (close / (ll102 + 1e-12) - 1.0).astype("float32")
+
+    # Signed distance to the nearest Fibonacci retracement level of the
+    # window's swing, normalized by the range width (≈ [-0.5, 0.5]).
+    for w in (15, 39, 102):
+        hh = high.rolling(w, min_periods=w).max()
+        ll = low.rolling(w, min_periods=w).min()
+        rng = (hh - ll).astype("float64")
+        flat = rng < 1e-9
+        dists = []
+        for f in FIB_LEVELS:
+            level = ll + f * rng
+            dists.append(((close - level) / (rng + 1e-12)).abs())
+        nearest = np.minimum.reduce([d.to_numpy() for d in dists])
+        # sign: + above the nearest level, - below (via mid-level comparison)
+        mid = ll + 0.5 * rng
+        signed = np.sign((close - mid).to_numpy()) * nearest
+        out = pd.Series(np.where(flat.to_numpy(), 0.0, signed), index=df.index)
+        feats[f"fib_dist_f{w}"] = out.astype("float32")
+
+    # Overnight gap, rolling z-scored (dimensionless).
+    gap = open_ / close.shift(1) - 1.0
+    m = gap.rolling(20, min_periods=20).mean()
+    s = gap.rolling(20, min_periods=20).std(ddof=1)
+    feats["gap_z"] = ((gap - m) / (s + 1e-12)).astype("float32")
+
+    return feats
+
+
 def compute_features(df: pd.DataFrame) -> pd.DataFrame:
     """Compute the full point-in-time feature matrix (float32).
 
@@ -251,16 +422,19 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
         s = obv_slope.rolling(w, min_periods=w).std(ddof=1)
         feats[f"obv_zscore_{w}"] = ((obv_slope - m) / (s + 1e-12)).astype("float32")
 
-    # Frontier: Hurst exponent
+    # Frontier: Hurst exponent (vectorized — exact port of _hurst_rs)
+    close_arr = close.to_numpy(dtype="float64")
     for w in HURST_WINDOWS:
-        feats[f"hurst_{w}"] = close.rolling(w, min_periods=w).apply(_hurst_rs, raw=True).astype("float32")
+        feats[f"hurst_{w}"] = _hurst_rs_vec(close_arr, w).astype("float32")
 
-    # Frontier: fractional differentiation of log close
-    feats["frac_diff_close"] = _frac_diff_fixed(np.log(close), FRAC_DIFF_D, FRAC_DIFF_WINDOW).astype("float32")
+    # Frontier: fractional differentiation of log close (vectorized)
+    feats["frac_diff_close"] = _frac_diff_vec(
+        np.log(close_arr), FRAC_DIFF_D, FRAC_DIFF_WINDOW
+    ).astype("float32")
 
-    # Frontier: Shannon entropy
+    # Frontier: Shannon entropy (vectorized — exact port of _shannon_entropy)
     for w in ENTROPY_WINDOWS:
-        feats[f"entropy_{w}"] = close.rolling(w, min_periods=w).apply(_shannon_entropy, raw=True).astype("float32")
+        feats[f"entropy_{w}"] = _shannon_entropy_vec(close_arr, w).astype("float32")
 
     # Frontier: Kalman filter spread / ATR
     kf = _kalman_filter(close.to_numpy())
@@ -281,6 +455,10 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
     # Frontier: Yang-Zhang volatility
     for w in WINDOWS:
         feats[f"yangzhang_{w}"] = _yang_zhang_vol(df, w).astype("float32")
+
+    # Fibonacci-window range structure (admin spec, WI-002 E3)
+    if RANGE_FIB_ENABLED:
+        feats = pd.concat([feats, _range_fib_features(df, close)], axis=1)
 
     return feats
 
