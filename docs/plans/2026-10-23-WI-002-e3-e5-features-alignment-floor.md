@@ -53,27 +53,27 @@ Windows [5,10,20,50,100] unless noted: RSI (5/14/21) + slope · BB %B ×5 · BB 
 
 ## STEPS
 
-### [ ] Step 1 — Vectorize Hurst + entropy; equivalence test
+### [x] Step 1 — Vectorize Hurst + entropy; equivalence test
 - Change: `src/feature_engine.py` — replace the two `.rolling().apply()` blocks with numpy sliding-window implementations (hurst at stride 5, entropy fully vectorized). Keep `_hurst_rs` as reference.
 - Acceptance: `tests/test_feature_vectorized.py` — vectorized vs reference on 2 synthetic tickers: corr > 0.999 (hurst stride-tolerance), max abs diff < 1e-6 (entropy). Timing test: 10 tickers × 5y under 30 s.
 - Verify: `uv run pytest tests/test_feature_vectorized.py -q`
 
-### [ ] Step 2 — Add range/fib feature block (Fibonacci windows, admin spec)
+### [x] Step 2 — Add range/fib feature block (Fibonacci windows, admin spec)
 - Change: new `_range_fib_features(df)` in `feature_engine.py` (windows [3,6,9,15,24,39,63,102], features per DESIGN DECISIONS 3); wire into `compute_features`; config `features.range_fib: true`.
 - Acceptance: raw feature count == 89 on fixture; every new feature float32, dimensionless, NaN confined to warmup (< window bars per ticker), no ±inf; leakage tests pass.
 - Verify: `uv run pytest tests/test_leakage.py tests/test_range_fib.py -q`
 
-### [ ] Step 3 — Trainer joins persisted features (no recompute)
+### [x] Step 3 — Trainer joins persisted features (no recompute)
 - Change: `xgb_trainer.build_panel` loads `data/features/features_USD.parquet` (+ `features_USD_metadata.parquet` surviving cols), computes only targets + close from raw, joins on (date, symbol); falls back to legacy recompute with `--recompute-features`.
 - Acceptance: panel row-for-row equal to E2 panel when joined vs recomputed on fixture data (assert equality); trainer wall on fixture < 60 s.
 - Verify: `uv run pytest tests/test_panel_join.py -q`
 
-### [ ] Step 4 — Rebuild Sprint 2–3 on USD with expanded set + relaxed thresholds
+### [x] Step 4 — Rebuild Sprint 2–3 on USD with expanded set + relaxed thresholds
 - Change: none beyond steps 1–3; run with `--vif-threshold 10 --min-mi-percentile 15`.
 - Acceptance: features parquet 89 float32 cols, ≥ 500 symbols; catalog `n_features_raw == 89`; whitelist ≥ 30/target; peak RSS < 3 GB; feature stage < 45 min (proves Hurst fix).
 - Verify: `uv run python -m src.feature_engine --market USD --min-date 2016-01-01 && uv run python -m src.stat_metadata --market USD --vif-threshold 10 --min-mi-percentile 15 && grep -E "raw|whitelist" reports/sprint3_metadata_selection.md`
 
-### [ ] Step 5 — E4 first (cheapest): metric/target alignment on the E2 oof
+### [x] Step 5 — E4 first (cheapest): metric/target alignment on the E2 oof
 - Change: `scripts/diag_signal.py --exp e4`: within-date vs pooled ROC-AUC; ticker-prior baseline AUC vs model AUC (identity-signal test); continuous `fwd_atr_ret_15/20` Spearman IC + decile spread; effective K audit.
 - Acceptance: report `reports/diag_D002_e4.md` with the H3 verdict row (ticker-prior ≈ model ⇒ identity signal; continuous IC significant while binary not ⇒ H3).
 - Verify: `uv run python scripts/diag_signal.py --exp e4 --market USD && grep -E "Verdict|H3" reports/diag_D002_e4.md`
@@ -124,3 +124,4 @@ Peak RSS projected < 3 GB (vs 5.5 GB available). Riskiest step: 3 (join correctn
 | 21:20 | 5 | **PASS — H3 SUPPORTED.** `reports/diag_D002_e4.md`: continuous Spearman IC of model prob vs fwd ATR return is significant on the 15d targets (t = +4.31 / +3.27 over 2,696 dates) while all binary gates fail → ranking signal exists but the absolute ATR-breakout labels/within-date K-gates cannot express it. Also: ticker-prior AUC **beats** the model on all targets (worst +0.008, worst-case +0.066 on y_20d_down) → strong identity-signal component, esp. trend targets. Effective K = 30 on every date (0/2,696 degenerate). | E4 ran on the E2-era oof (19-feature models) by design; E3/E5 adjudicate H2/H4 next |
 | 20:05 | 6 (attempt 1) | **FAILED — OOM kill (SIGKILL) 4s into a placebo fold** at ~3.7 GB MemAvailable; loop tree killed. y_15d_high checkpoint survived. Fix: slim panel to E3-mask union + free panel before training. | committed |
 | 20:30 | 6 (attempt 2) | **FAILED — DATA BUG surfaced by fold-size sanity check.** Fold n_val ≈47k vs E2's ≈148k → panel had 533,017 rows vs E2's 1,240,275. Root cause: `iter_market_symbols` filtered by `read_from` **without reset_index**; compute_features inherits the gapped index while compute_targets builds a RangeIndex → `pd.concat(axis=1)` misaligns → dropna(targets) silently truncates (AAPL: 2,696→560 rows). Bug is E2-era: **both feature parquets (E2's and today's) were truncated**; E2's QA/oof numbers are unaffected (the trainer recomputed in-loop with reset_index). Killed the running E3, fixed the iterator (+regression test), purged stale per-set artifacts, relaunched features → metadata → E3 chain. | Truncated whitelists (32/32/27/32) and the first E3 attempt are INVALID; being regenerated. Join design itself is sound — the test missed it because synthetic fixtures had clean indexes. |
+| 21:25 | PM (cycle 1) | No opencode session since cursor — today's work was manual (admin). PM independently verified Steps 1–5: 10/10 targeted tests green; features parquet 1,240,275 rows × 89 float32 + fib cols present; whitelists 32/32/32/32; E4 report verdict H3 SUPPORTED. Step 6 chain live (PID 644113, val folds ≈148–164k = correct full-data panel). Steps 1–5 marked [x]. | chain in flight; E5 + combined verdict pending |

@@ -8,7 +8,7 @@
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **EXECUTING** — admin forked 2026-10-23: proceed E3–E5 with richer features (range/fib), relaxed VIF/MI, 8 h budget. New plan: `docs/plans/2026-10-23-WI-002-e3-e5-features-alignment-floor.md`. Key insight: fits cost ~15 min total; feature computation runs twice (~8 h) — plan kills the duplicate + vectorizes Hurst. | 2026-10-23 | Build to execute plan Steps 1–8 after admin go | `reports/diag_D002_e2.md` (E2 NULL verdict), new plan file |
+| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **EXECUTING** — E3–E5 plan: Steps 1–5 PASS (PM-verified 2026-10-23: 10/10 targeted tests, features parquet 1,240,275 rows × 89 float32, whitelists 32/32/32/32, E4 = H3 SUPPORTED); Step 6 E3 chain RUNNING detached (`scripts/e3_chain.sh`, PID 644113, ~2 h, 5 feature-sets × 4 targets × 4 seeds; OOM + truncation bugs fixed pre-launch). Next: Step 7 (E5) + Step 8 (combined verdict) → STOP for admin. Plan: `docs/plans/2026-10-23-WI-002-e3-e5-features-alignment-floor.md`. | 2026-10-23 | chain in flight; E5/E5-summary prompt ready in `docs/workflow/briefs/2026-10-23-WI-002-e3-e5-verdict-brief.md` | `reports/diag_D002_e2.md` (E2 NULL), `reports/diag_D002_e4.md` (H3 SUPPORTED), `logs/e3_runs.out` |
 | WI-003 | Ingest Phase 1 validation runs + CAD download | G-002 | **DONE** | 2026-10-22 | 546 USD + 350 CAD synced (~97-98% coverage); verifier PASS (824/896 ok, leakage PASS, 72 quarantined); audit CSVs are failure-log style, true failure rate ≈1-2.5% from coverage | `reports/sprint1_ingestion_audit.md` (regenerated 2026-10-22) |
 
 ## DONE
