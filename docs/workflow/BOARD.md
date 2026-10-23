@@ -8,7 +8,7 @@
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **QA/GATE** — Steps 1–9 done; E2 ran clean on real universe (508 sym, 1.24M rows, oof acceptance met) but **Gate 4 FAIL on all 4 targets**. Verdict: **E2 NULL — H1 NOT CONFIRMED** → decision matrix points to E3/E4/E5. STOPPED for human review (admin picks fork). | 2026-10-22 | Admin review of `reports/diag_D002_e2.md` verdict | `reports/diag_D002_e2.md`, `reports/sprint4_model_qa.md` (regenerated 2026-10-23), plan EXECUTION LOG |
+| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **EXECUTING** — admin forked 2026-10-23: proceed E3–E5 with richer features (range/fib), relaxed VIF/MI, 8 h budget. New plan: `docs/plans/2026-10-23-WI-002-e3-e5-features-alignment-floor.md`. Key insight: fits cost ~15 min total; feature computation runs twice (~8 h) — plan kills the duplicate + vectorizes Hurst. | 2026-10-23 | Build to execute plan Steps 1–8 after admin go | `reports/diag_D002_e2.md` (E2 NULL verdict), new plan file |
 | WI-003 | Ingest Phase 1 validation runs + CAD download | G-002 | **DONE** | 2026-10-22 | 546 USD + 350 CAD synced (~97-98% coverage); verifier PASS (824/896 ok, leakage PASS, 72 quarantined); audit CSVs are failure-log style, true failure rate ≈1-2.5% from coverage | `reports/sprint1_ingestion_audit.md` (regenerated 2026-10-22) |
 
 ## DONE
