@@ -18,6 +18,17 @@
 
 ## Your tasks
 
+0. **Step 6 report — E3 ablation summary (generator does NOT exist yet).**
+   `scripts/diag_signal.py` only implements `--exp e2|e4|e5`; `--exp e3` must be
+   written (plan Step 6 Change section). It reads the per-set artifacts the chain
+   produced — `data/oof_USD.parquet` (full), `data/oof_USD_no_static.parquet`,
+   `data/oof_USD_fib_only.parquet`, `data/oof_USD_legacy19.parquet`,
+   `data/oof_USD_cs_pct_only.parquet`, each with `train_meta_USD[_<set>].json` —
+   and produces `reports/diag_D002_e3.md`: per set × target ROC-AUC, PR-AUC lift,
+   P@K lift, deflated IC t, placebo z; H2 verdict (any set reaches deflated t > 2.5
+   where the legacy19/full baseline doesn't). Follow the existing `run_e4` structure
+   and the report-parsing conventions already in the file. Keep memory slim: load
+   oof parquets one at a time, cast float32, drop each before the next.
 1. **Step 7 — E5:** `uv run python scripts/diag_signal.py --exp e5 --market USD`
    (code committed at 27ae4d5: ridge/logistic on 5 classic factors — mom_12_1, rev_1m,
    vol_20, amihud, size-proxy — vs `fwd_atr_ret_15/20`, purged WF t-stats, n_jobs=2).
@@ -39,6 +50,7 @@
 
 ## QA hooks (PM will run these)
 
+- `grep -E "Verdict|H2" reports/diag_D002_e3.md`
 - `grep -E "Verdict|H4" reports/diag_D002_e5.md`
 - `grep -E "H2|H3|H4" reports/diag_D002_summary.md`
 - Plan file ends with a STATUS line.

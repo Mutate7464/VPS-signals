@@ -4,6 +4,25 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-23 — Cycle 2 (WI-002 Build precheck closed out)
+- Ingest: opencode planner session 21:13 "WI-002 e3–e5 alignment steps 7–8". Build ran
+  the precheck, wrote log row `7 (precheck) BLOCKED` + plan `STATUS: BLOCKED`, and did
+  NOT start E5 — correct per the brief's precondition (chain still holds ~2 GB RAM).
+  Not a failure; no restart needed. Uncommitted plan/state changes left in the tree.
+- Verify: chain still RUNNING and healthy — 3/5 feature-sets complete (full 20:43–21:21,
+  no_static 21:21–22:02, fib_only 22:02–22:35), legacy19 in flight (y_20d_up placebos
+  done 23:02), cs_pct_only last; ~38 min/set → ETA ≈ 23:50 UTC. Placebo NO_LEARNING
+  warnings = expected. Artifacts confirmed: per-set `data/oof_USD[_<set>].parquet`,
+  `train_meta_USD[_<set>].json`, `predictions_*_latest.parquet`.
+- Finding: **`scripts/diag_signal.py` has no `--exp e3`** — Step 6's report generator
+  doesn't exist yet (e2/e4/e5 only). Writing it is part of the remaining Build work.
+  Brief patched with task 0 (E3 report generator + artifact paths + memory-slim rules).
+- Docs: board row refreshed, brief updated, plan STATUS/log row committed as-is.
+- Next: when `logs/e3_runs.out` shows `=== E3 CHAIN COMPLETE ===` → paste the brief
+  prompt into opencode Build → run PM cycle to verify Steps 6–8 → QA/GATE human stop.
+- cursor: session-since 2026-10-23 21:30 UTC (cycle 2 consumed the 21:13 planner session;
+  next cycle ingests anything newer)
+
 ## 2026-10-23 — Cycle 1 (WI-002 E3–E5 interim)
 - Ingest: **no opencode sessions since cursor** (last Build session ended 10-22 23:05).
   Today's Steps 1–6 work was done manually by the admin (commits 263f175→0b6bbf3, all
