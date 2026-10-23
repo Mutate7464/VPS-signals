@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "reports"
@@ -138,23 +139,121 @@ def gate_passes(cell: str) -> int:
     return 0 if "FAIL" in cell.upper() else 1
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--exp", choices=["e2"], required=True)
-    ap.add_argument("--market", default="USD")
-    args = ap.parse_args()
-    if args.exp != "e2" or args.market != "USD":
-        raise SystemExit("only --exp e2 --market USD is implemented")
+def run_e4(market: str) -> int:
+    """E4 — metric/target alignment diagnostics on the existing E2 oof (read-only).
 
+    Tests: (a) pooled vs within-date AUC, (b) ticker-prior baseline vs model
+    (identity-signal test), (c) continuous fwd ATR return Spearman IC + decile
+    spread, (d) effective-K audit. Verdict per ADR D-002 decision matrix.
+    """
+    from sklearn.metrics import roc_auc_score
+
+    oof = pd.read_parquet(DATA / f"oof_{market}.parquet")
+    oof["date"] = pd.to_datetime(oof["date"])
+    horizon = {"y_15d_high": 15, "y_15d_low": 15, "y_20d_up": 20, "y_20d_down": 20}
+
+    lines: list[str] = []
+    w = lines.append
+    w(f"# D-002 / E4 — Metric/target alignment diagnostics ({market})")
+    w("")
+    w(f"- Generated (UTC): {pd.Timestamp.now('UTC').strftime('%Y-%m-%dT%H:%M:%SZ')}")
+    w("- Source: `data/oof_USD.parquet` from the E2 run (read-only); predictions `p_<target>`, labels `y_<target>`")
+    w("- Ticker prior = past-only expanding mean of the label per symbol (no look-ahead)")
+    w("")
+    w("| Target | Pooled AUC | Within-date AUC | Ticker-prior AUC | Prior − Model | Cont. IC (mean) | IC t | D10−D1 spread (ATR) |")
+    w("| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+
+    results = {}
+    for t in TARGETS:
+        h = horizon[t]
+        d = oof[["date", "symbol", f"y_{t}", f"p_{t}", f"fwd_atr_ret_{h}"]].copy()
+        d.columns = ["date", "symbol", "y", "p", "fwd"]
+        d = d.dropna(subset=["y", "p"])
+
+        pooled = roc_auc_score(d["y"], d["p"])
+
+        def _date_auc(g: pd.DataFrame) -> float:
+            if g["y"].nunique() < 2:
+                return np.nan
+            return roc_auc_score(g["y"], g["p"])
+
+        per_date = d.groupby("date")[["y", "p"]].apply(_date_auc).dropna()
+        within = float(per_date.mean())
+
+        d = d.sort_values(["symbol", "date"])
+        d["prior"] = d.groupby("symbol")["y"].transform(lambda s: s.shift(1).expanding().mean())
+        dp = d.dropna(subset=["prior"])[["date", "y", "prior"]].rename(columns={"prior": "p"})
+        prior_per_date = dp.groupby("date")[["y", "p"]].apply(_date_auc).dropna()
+        prior = float(prior_per_date.mean()) if len(prior_per_date) else np.nan
+
+        df_ = d[np.isfinite(d["fwd"])].copy()
+        ranks = df_.groupby("date")[["p", "fwd"]].rank()
+        ranks["date"] = df_["date"].to_numpy()
+        ics = ranks.groupby("date").apply(lambda x: x["p"].corr(x["fwd"])).dropna()
+        ic_mean, ic_n = float(ics.mean()), int(len(ics))
+        ic_t = ic_mean / (ics.std(ddof=1) / np.sqrt(ic_n)) if ic_n > 2 and ics.std(ddof=1) > 0 else np.nan
+
+        df_["decile"] = np.ceil(df_.groupby("date")["p"].rank(pct=True) * 10).clip(1, 10)
+        dec = df_.groupby("decile")["fwd"].mean()
+        spread = float(dec.get(10, np.nan) - dec.get(1, np.nan))
+
+        results[t] = {"within": within, "prior": prior, "ic_t": ic_t}
+        w(f"| `{t}` | {pooled:.3f} | {within:.3f} | {prior:.3f} | {prior - within:+.3f} "
+          f"| {ic_mean:+.4f} | {ic_t:+.2f} | {spread:+.4f} |")
+
+    w("")
+    # Effective-K audit
+    sizes = oof.groupby("date").size()
+    k = np.minimum(30, np.maximum(1, (sizes * 0.1).astype(int)))
+    w(f"Effective K: min={k.min()}, median={int(k.median())}, max={k.max()}; "
+      f"dates with K<5: {(k < 5).sum()}/{len(k)}")
+    w("")
+
+    identity_targets = [t for t in TARGETS
+                        if np.isfinite(results[t]["prior"]) and abs(results[t]["prior"] - results[t]["within"]) < 0.02]
+    ic_targets = [t for t in TARGETS if np.isfinite(results[t]["ic_t"]) and abs(results[t]["ic_t"]) > 2.0]
+
+    w("## Verdict")
+    w("")
+    if len(identity_targets) == len(TARGETS):
+        verdict = ("**IDENTITY SIGNAL — H3/E4 FIRES.** Within-date model AUC ≈ ticker-prior AUC on all targets: "
+                   "the model largely re-learns per-ticker base rates (cross-sectional ranking adds nothing). "
+                   "Per the matrix: target redesign (cross-sectional ranks / relative labels) is the indicated fix.")
+    elif ic_targets:
+        verdict = (f"**CONTINUOUS SIGNAL PRESENT, BINARY GATES BLIND — H3 SUPPORTED** "
+                   f"(|deflated-IC t| > 2 on {', '.join(ic_targets)} while all binary gates fail): "
+                   "ranking information exists in the continuous forward ATR return but the absolute ATR-breakout "
+                   "labels/within-date K-gates cannot express it. Per the matrix: target/metric redesign (H3).")
+    else:
+        verdict = ("**E4 NULL — H3 NOT SUPPORTED.** Ticker prior does not explain model AUC and no significant "
+                   "continuous IC exists in the E2 oof: the misalignment hypothesis alone does not rescue E2. "
+                   "Adjudication moves to E3 (feature sets) and E5 (unpredictability floor).")
+    w(f"Verdict: {verdict}")
+    w("")
+    w("| ADR row | Applies? | Basis |")
+    w("| :--- | :--- | :--- |")
+    w(f"| E4 → H3 (target/metric redesign) | {'**YES**' if (len(identity_targets) == len(TARGETS) or ic_targets) else 'no'} | "
+      f"identity targets: {len(identity_targets)}/4; |IC t|>2: {', '.join(ic_targets) or 'none'} |")
+    w("| E3 → H2 / E5 → H4 | adjudicated next | see their reports |")
+
+    out = REPORTS / f"diag_D002_e4.md"
+    out.write_text("\n".join(lines) + "\n")
+    print(f"wrote {out}")
+    print(f"verdict: {'H3 SUPPORTED' if (len(identity_targets) == len(TARGETS) or ic_targets) else 'E4 NULL - H3 NOT SUPPORTED'}")
+    return 0
+
+
+def run_e2(market: str) -> int:
+    """E2 — fixture-vs-real diagnostics report (Step 9 of the E2 plan)."""
     real_text = (REPORTS / "sprint4_model_qa.md").read_text()
     fix_text = fixture_report_text()
     real, fix = parse_gate4(real_text), parse_gate4(fix_text)
     real_cb, fix_cb = parse_cb05(real_text), parse_cb05(fix_text)
     shap = parse_shap(real_text)
-    train_meta = json.loads((DATA / f"train_meta_{args.market}.json").read_text())
+    train_meta = json.loads((DATA / f"train_meta_{market}.json").read_text())
     universe = train_meta.get("universe", {})
     log_stats = parse_training_log(sorted(LOGS.glob("xgb_trainer_USD_*.log"))[-1])
-    oof = pd.read_parquet(DATA / f"oof_{args.market}.parquet", columns=["date", "symbol"])
+    oof = pd.read_parquet(DATA / f"oof_{market}.parquet", columns=["date", "symbol"])
 
     # ADR decision matrix: H1 confirmed iff any target passes >= 3 of 5 gates
     # (the 4 governance threshold cells + CB-05 clear). Count the 4 table cells;
@@ -258,6 +357,18 @@ def main() -> int:
     print(f"wrote {OUT}")
     print(f"verdict: {'H1 CONFIRMED' if h1_targets else 'E2 NULL - H1 NOT CONFIRMED'}")
     return 0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--exp", choices=["e2", "e4"], required=True)
+    ap.add_argument("--market", default="USD")
+    args = ap.parse_args()
+    if args.market != "USD":
+        raise SystemExit("only --market USD is implemented")
+    if args.exp == "e4":
+        return run_e4(args.market)
+    return run_e2(args.market)
 
 
 if __name__ == "__main__":
