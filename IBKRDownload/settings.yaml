@@ -44,7 +44,7 @@ ibkr:
   ramp_probe_batch: 5            # tickers per concurrency level during ramp
   ramp_confirm_multiplier: 2     # confirm with 2× probe_batch at ceiling
   ramp_profile_max_age_days: 3   # re-ramp if profile older than this
-  ramp_start_concurrency: 0      # manual override: starting concurrency (0=auto→1)
+  ramp_start_concurrency: 3      # manual override: starting concurrency (0=auto→1)
 
 watchlists:
   usd_path: "watchlist_300_usd.csv"

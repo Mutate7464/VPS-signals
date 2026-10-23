@@ -22,7 +22,10 @@ import yaml
 def load_config() -> dict:
     cfg_path = Path(__file__).resolve().parent / "settings.yaml"
     with open(cfg_path) as f:
-        return yaml.safe_load(f)
+        cfg = yaml.safe_load(f)
+    # Resolve base_dir relative to settings.yaml's parent dir, NOT CWD
+    cfg["project"]["_base_dir"] = cfg_path.parent.resolve()
+    return cfg
 
 
 def rsync(src: str, dst: str, dry_run: bool = False, delete: bool = False) -> bool:
@@ -49,7 +52,7 @@ def main():
     vps_alias = sync_cfg.get("vps_alias", "VPS")
     vps_path = sync_cfg.get("vps_project_path", "~/projects/signals")
 
-    base_dir = Path(cfg["project"]["base_dir"]).resolve()
+    base_dir = cfg["project"]["_base_dir"]
     vps_target = f"{vps_alias}:{vps_path}"
 
     print(f"Syncing from: {base_dir}")
@@ -74,23 +77,23 @@ def main():
         print("── OHLCV data ──  (empty — nothing to sync)")
 
     # ---- 2. Pacing profiles ----
-    pacing_src = base_dir / "data" / "pacing_profile_*.json"
     pacing_dir = base_dir / "data"
-    if pacing_dir.exists() and list(pacing_dir.glob("pacing_profile_*.json")):
+    pacing_files = sorted(pacing_dir.glob("pacing_profile_*.json")) if pacing_dir.exists() else []
+    if pacing_files:
         print("── Pacing profiles ──")
-        src = str(base_dir / "data" / "pacing_profile_*.json")
         dst = f"{vps_target}/data/"
-        if not rsync(src, dst, dry_run=args.dry_run):
-            errors.append("Pacing profiles")
+        for pf in pacing_files:
+            if not rsync(str(pf), dst, dry_run=args.dry_run):
+                errors.append(f"Pacing: {pf.name}")
 
     # ---- 3. Audit CSVs ----
-    audit_files = list(base_dir.glob("data/audit_ingestion_*.csv"))
+    audit_files = sorted(base_dir.glob("data/audit_ingestion_*.csv"))
     if audit_files:
         print("── Audit logs ──")
-        src = str(base_dir / "data" / "audit_ingestion_*.csv")
         dst = f"{vps_target}/data/"
-        if not rsync(src, dst, dry_run=args.dry_run):
-            errors.append("Audit logs")
+        for af in audit_files:
+            if not rsync(str(af), dst, dry_run=args.dry_run):
+                errors.append(f"Audit: {af.name}")
 
     if args.data_only:
         print("\n--data-only: skipping config sync")
@@ -99,6 +102,11 @@ def main():
         print("── Watchlists ──")
         for wl in ["watchlist_300_usd.csv", "watchlist_300_cad.csv", "holdings.csv"]:
             local_wl = base_dir / wl
+            # Fallback: holdings.csv may live in OldList/
+            if not local_wl.exists() and wl == "holdings.csv":
+                oldlist_wl = base_dir / "OldList" / wl
+                if oldlist_wl.exists():
+                    local_wl = oldlist_wl
             if local_wl.exists():
                 dst = f"{vps_target}/config/{wl}"
                 if not rsync(str(local_wl), dst, dry_run=args.dry_run):

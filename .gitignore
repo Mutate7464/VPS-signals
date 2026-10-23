@@ -30,6 +30,7 @@ data/raw/
 data/*.parquet
 data/raw_ohlcv/
 data/raw_ohlcv_test/
+IBKRDownload/data/raw_ohlcv/
 
 # ── Regenerable artifacts ──
 models/
