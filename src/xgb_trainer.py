@@ -195,17 +195,50 @@ def load_catalog(market: str) -> dict:
     return json.loads((DATA_DIR / f"metadata_catalog_{market}.json").read_text())
 
 
+def _load_persisted_artifacts(market: str) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
+    """Load the persisted Sprint-2 features/targets parquets, or (None, None)."""
+    f_path = DATA_DIR / "features" / f"features_{market}.parquet"
+    t_path = DATA_DIR / "features" / f"targets_{market}.parquet"
+    if not (f_path.exists() and t_path.exists()):
+        return None, None
+    try:
+        f_all = pd.read_parquet(f_path)
+        t_all = pd.read_parquet(t_path)
+    except Exception:
+        return None, None
+    return f_all, t_all
+
+
 def build_panel(
     market: str, catalog: dict, allow_fixture: bool = False, min_date: str | None = None,
+    recompute_features: bool = False,
 ) -> pd.DataFrame:
     """Build the panel using streaming symbol iteration.
 
-    Per symbol: compute features+targets, keep only *surviving* feature columns
-    plus labels, fwd_atr_ret columns and identifiers.  Casts float32 immediately.
+    Default path: JOIN the persisted Sprint-2 `features_{mkt}.parquet` /
+    `targets_{mkt}.parquet` on (symbol, date) and compute only `close` +
+    `fwd_atr_ret_{15,20}` from raw (fast — no rolling.apply). This removes the
+    ~4 h full feature recompute measured in the E2 run (plan WI-002 E3–E5,
+    Step 3). `--recompute-features` (or fixture runs) falls back to the legacy
+    in-loop `compute_features()` path. The persisted parquets must have been
+    built with `min_date` <= the trainer's `min_date`.
+
+    Per symbol: keep only *surviving* feature columns plus labels,
+    fwd_atr_ret columns and identifiers.  Casts float32 immediately.
     `symbol` is stored as a category column.
     """
     surviving = catalog["surviving_features"]
     flagged = [c for c in surviving if catalog["stationarity"].get(c, {}).get("flagged")]
+
+    use_join = (not recompute_features) and (not allow_fixture)
+    f_all = t_all = None
+    if use_join:
+        f_all, t_all = _load_persisted_artifacts(market)
+        if f_all is None or any(c not in f_all.columns for c in surviving):
+            use_join = False
+            f_all = t_all = None
+            print(f"[xgb_trainer] persisted features/targets unavailable or stale for {market}; "
+                  "falling back to in-loop feature computation")
 
     parts: list[pd.DataFrame] = []
     sym_count = 0
@@ -213,25 +246,43 @@ def build_panel(
         sym_count += 1
         g = raw_df.sort_values("date").reset_index(drop=True)
 
-        f = compute_features(g)
-        # Keep only date + surviving features
-        keep_f = [c for c in surviving if c in f.columns]
-        f = f[["date"] + keep_f] if "date" in f.columns else f[keep_f]
-
-        t = compute_targets(g)
-        combined = pd.concat([f, t], axis=1)
-        combined["symbol"] = symbol
-        combined["market"] = market
-
-        # fwd ATR return columns (used for evaluation)
         close = g["close"].astype("float64").to_numpy()
         atr = wilder_atr(g).astype("float64").to_numpy()
+        base = pd.DataFrame({"date": g["date"]})
         for h in (15, 20):
             fwd = np.full(len(close), np.nan)
             if len(close) > h:
                 fwd[:-h] = close[h:]
-            combined[f"fwd_atr_ret_{h}"] = ((fwd - close) / (atr + 1e-12)).astype("float32")
-        combined["close"] = close.astype("float32")
+            base[f"fwd_atr_ret_{h}"] = ((fwd - close) / (atr + 1e-12)).astype("float32")
+        base["close"] = close.astype("float32")
+        base_cols = ["fwd_atr_ret_15", "fwd_atr_ret_20", "close"]
+
+        if use_join:
+            f_sub = f_all[f_all["symbol"] == symbol]
+            keep_f = [c for c in surviving if c in f_sub.columns]
+            f_sub = f_sub[["date"] + keep_f]
+            t_sub = t_all[t_all["symbol"] == symbol][["date"] + TARGET_COLUMNS]
+            combined = (
+                base.merge(f_sub, on="date", how="inner")
+                .merge(t_sub, on="date", how="inner")
+            )
+            combined["symbol"] = symbol
+            combined["market"] = market
+            if len(combined) < 0.98 * len(f_sub):
+                print(f"[xgb_trainer] WARN: {symbol}: join kept {len(combined)}/{len(f_sub)} "
+                      "feature rows — persisted parquets may be stale vs min_date")
+        else:
+            f = compute_features(g)
+            # Keep only date + surviving features
+            keep_f = [c for c in surviving if c in f.columns]
+            f = f[["date"] + keep_f] if "date" in f.columns else f[keep_f]
+
+            t = compute_targets(g)
+            combined = pd.concat([f, t], axis=1)
+            combined["symbol"] = symbol
+            combined["market"] = market
+            for c in base_cols:
+                combined[c] = base[c].to_numpy()
 
         # Trim to min_date (data was read from min_date-250d for warmup)
         if min_date is not None:
@@ -242,9 +293,13 @@ def build_panel(
         if len(combined) > 0:
             parts.append(combined)
 
-        del g, f, t, combined
+        del g, combined
         if sym_count % 50 == 0:
             gc.collect()
+
+    if f_all is not None:
+        del f_all, t_all
+        gc.collect()
 
     if not parts:
         raise RuntimeError(f"No labeled rows for market={market}")
@@ -338,7 +393,7 @@ def train_market(
     placebo_seeds: int = 1, targets: list[str] | None = None,
     allow_fixture: bool = False, min_date: str | None = None,
     min_avail_mb: float = 1000.0, resume: bool = False,
-    xgb_verbose: bool = False,
+    xgb_verbose: bool = False, recompute_features: bool = False,
 ) -> dict:
     import logging as _logging_mod
 
@@ -363,7 +418,8 @@ def train_market(
             logger.info("resume: done=%s remaining=%s", sorted(done_targets), target_list)
 
     with log_phase(logger, "build_panel"):
-        panel = build_panel(market, catalog, allow_fixture=allow_fixture, min_date=min_date)
+        panel = build_panel(market, catalog, allow_fixture=allow_fixture, min_date=min_date,
+                            recompute_features=recompute_features)
 
     latest_date = panel["date"].max()
     labeled = panel.dropna(subset=TARGET_COLUMNS).reset_index(drop=True)
@@ -515,6 +571,8 @@ def main() -> int:
     parser.add_argument("--min-avail-mb", type=float, default=1000.0, help="Abort if MemAvailable drops below this")
     parser.add_argument("--xgb-verbose", action="store_true")
     parser.add_argument("--resume", action="store_true", help="Skip targets already in train_meta JSON")
+    parser.add_argument("--recompute-features", action="store_true",
+                        help="Ignore persisted features/targets parquets; recompute in-loop (legacy path)")
     args = parser.parse_args()
     target_list = [t.strip() for t in args.targets.split(",")] if args.targets else None
 
@@ -525,7 +583,7 @@ def main() -> int:
             placebo_seeds=args.placebo_seeds, targets=target_list,
             allow_fixture=args.allow_fixture, min_date=args.min_date,
             min_avail_mb=args.min_avail_mb, resume=args.resume,
-            xgb_verbose=args.xgb_verbose,
+            xgb_verbose=args.xgb_verbose, recompute_features=args.recompute_features,
         )
     update_state("EP-04", "training", {"markets": markets, "embargo_td": args.embargo, "n_splits": args.n_splits})
     return 0
