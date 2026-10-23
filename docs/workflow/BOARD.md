@@ -25,7 +25,7 @@
 | WI | Title | Goal | Size | Gate |
 |---|---|---|---|---|
 | WI-004 | Ingest Phase 2 pacing restore (aggressive targets) | G-002 | S | deferred to next week by admin (2026-10-22); gate 1/3 clean runs |
-| WI-008 | Quarantine triage (72 tickers: 70 CB-01 extreme returns, 2 CB-02 short history) + BRK.B/ELE empty-response fix | G-002 | S/M | before next training run |
+| WI-008 | Quarantine triage (72 tickers: 70 CB-01 extreme returns, 2 CB-02 short history) + BRK.B/ELE empty-response fix | G-002 | S/M | before next training run — **triage analysis DONE 2026-10-23**: 2 rows already clean (stale), ~44 corp-action level-step artifacts, ~26 flagged genuine-vol (several actually restructuring artifacts — needs per-case verification); BRK.B resolved (downloads as `BRK B`, in universe); ELE missing — needs Mac re-download. Execution plan pending admin decision. | `reports/wi008_quarantine_triage.md` |
 | WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | model signal restored (WI-002) |
 
 ## Column policies
