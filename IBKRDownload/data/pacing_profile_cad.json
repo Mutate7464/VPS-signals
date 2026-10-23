@@ -1,0 +1,13 @@
+{
+  "market": "CAD",
+  "discovered_throughput": 4.50979233472546,
+  "safe_concurrency": 1,
+  "safe_rate_per_minute": 3.607833867780368,
+  "last_updated": "2026-10-22",
+  "total_runs": 2,
+  "total_pacing_hits": 0,
+  "total_requests": 114,
+  "avg_latency_ms": 23139884.685475513,
+  "ramp_ceiling": 1,
+  "ramp_error_type": "ramp_calibrated"
+}

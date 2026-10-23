@@ -1,0 +1,2 @@
+symbol,market,status,rows,min_date,max_date,error,query_type,duration_used,primary_exchange,currency
+BRK.B,USD,FAILED,0,,,Empty response (no bars returned),Bulk,20 Y,NYSE,USD

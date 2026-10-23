@@ -1,0 +1,73 @@
+{
+  "current_sprint": "EP-04",
+  "gates_approved": {
+    "gate_1": true,
+    "gate_2": true,
+    "gate_3": true,
+    "gate_4": false,
+    "gate_5": false
+  },
+  "checkpoints": {
+    "gate_1": {
+      "dry_run": false,
+      "parquet_files_audited": 896,
+      "ok": 824,
+      "quarantined": 72,
+      "cb01": 70,
+      "cb02": 2,
+      "leakage_harness_passed": true
+    },
+    "gate_2": {
+      "markets": {
+        "USD": {
+          "n_features": 63,
+          "n_rows": 533017
+        }
+      }
+    },
+    "gate_3": {
+      "markets": {
+        "USD": 28
+      }
+    },
+    "training": {
+      "markets": [
+        "USD"
+      ],
+      "embargo_td": 20,
+      "n_splits": 5
+    },
+    "gate_4": {
+      "summary": {
+        "USD": {
+          "y_15d_high": {
+            "gate_pass": false,
+            "placebo_auc": 0.5002349673757817
+          },
+          "y_15d_low": {
+            "gate_pass": false,
+            "placebo_auc": 0.49943759477286165
+          },
+          "y_20d_up": {
+            "gate_pass": false,
+            "placebo_auc": 0.4991753133865524
+          },
+          "y_20d_down": {
+            "gate_pass": false,
+            "placebo_auc": 0.4996251697370473
+          }
+        }
+      },
+      "cb05_halted": {}
+    },
+    "gate_5": {
+      "markets": [
+        "USD",
+        "CAD"
+      ],
+      "top_n": 30
+    }
+  },
+  "last_updated_utc": "2026-10-23T13:06:50.890644+00:00",
+  "last_error": null
+}

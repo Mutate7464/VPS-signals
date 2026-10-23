@@ -1,0 +1,56 @@
+# Local settings for M1 Mac ingest — copy of config/settings.yaml ibkr + project sections.
+# Sync this with the VPS config/settings.yaml when settings change.
+
+project:
+  base_dir: "."            # relative to ibkrdownload/; data/ is created here
+
+ibkr:
+  host: "127.0.0.1"
+  port: 4001               # 4001 = IB Gateway Live, 4002 = IB Gateway Paper, 7496/7497 = TWS
+  client_id: 101
+  lookback_cold: "5 Y"
+  bar_size: "1 day"
+  what_to_show: "ADJUSTED_LAST"
+  use_rth: true
+  request_delay_sec: 1.5
+  timeout_sec: 30
+
+  # Adaptive pacing — calibrated from IBKR API log analysis.
+  # Key finding: gateway enforces 50 msg/sec across ALL message types
+  # (not just historical requests). Contract qualification + parallel
+  # downloads easily saturate this. Settings reflect that headroom.
+  requests_per_window: 60       # 1 req/s — leaves headroom for non-historical msgs
+  window_seconds: 60
+  download_concurrency: 3       # 3 parallel (was 6 — caused HMDS saturation)
+  min_concurrency: 1
+  pacing_backoff_sleep: 8.0
+  pacing_hit_threshold: 4       # global pause after 4 consecutive hits (was 6)
+  hmds_cancel_threshold: 3      # consecutive HMDS cancels → treat as pacing hit
+  global_pause_sleep: 60.0      # longer cooldown — 60s lets HMDS farm drain queue
+  save_every: 25
+  # Contract qualification: stagger into batches to avoid message-rate storm
+  qualify_batch_size: 25        # max contracts per qualifyContractsAsync call
+  qualify_batch_delay_sec: 2.0  # pause between qualification batches
+  # HMDS farm readiness: verify farm is active before firing requests
+  hmds_warmup_probe_sec: 10.0   # max wait for HMDS farm to report OK
+  hmds_warmup_poll_sec: 1.0     # poll interval while waiting
+  # Index freshness: skip per-file Parquet scans if index is newer than this (minutes)
+  index_max_age_minutes: 60
+  # Proactive batching: insert cooldown between batches when total bars exceed this
+  batch_bars_threshold: 5000
+  batch_cooldown_sec: 120.0
+  # Ramp-up calibration: start at concurrency 1, probe upward until errors
+  # define the ceiling. Replaces aggressive surge-and-crash discovery.
+  ramp_probe_batch: 5            # tickers per concurrency level during ramp
+  ramp_confirm_multiplier: 2     # confirm with 2× probe_batch at ceiling
+  ramp_profile_max_age_days: 3   # re-ramp if profile older than this
+  ramp_start_concurrency: 3      # manual override: starting concurrency (0=auto→1)
+
+watchlists:
+  usd_path: "watchlist_300_usd.csv"
+  cad_path: "watchlist_300_cad.csv"
+  holdings_path: "holdings.csv"
+
+sync:
+  vps_alias: "VPS"                        # SSH alias for the Hostinger VPS
+  vps_project_path: "~/projects/signals"  # project root on VPS

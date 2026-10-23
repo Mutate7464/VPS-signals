@@ -1,0 +1,69 @@
+project:
+  name: "quant-screener-mvp"
+  base_dir: "/home/yycuser/projects/signals"
+  n_jobs: 2  # Strictly pinned for Hostinger KVM2 (2 vCPU / 8 GB RAM)
+  float_dtype: "float32"
+
+ibkr:
+  host: "127.0.0.1"
+  port: 4001          # 4001 = IB Gateway Live, 4002 = IB Gateway Paper, 7496/7497 = TWS
+  client_id: 101
+  lookback_cold: "5 Y"
+  bar_size: "1 day"
+  what_to_show: "ADJUSTED_LAST"
+  use_rth: true
+  request_delay_sec: 1.5
+  timeout_sec: 30
+
+  # ---- Adaptive pacing (new in v2) ----
+  requests_per_window: 45      # sliding window max requests
+  window_seconds: 60           # sliding window period in seconds
+  download_concurrency: 3      # starting semaphore size for cruise phase
+  min_concurrency: 1           # floor when throttling due to pacing errors
+  pacing_backoff_sleep: 15.0   # seconds to sleep after a pacing hit
+  pacing_hit_threshold: 3      # consecutive pacing hits before global pause
+  global_pause_sleep: 120.0    # seconds to pause after repeated pacing violations
+  save_every: 25               # save audit progress every N tickers
+
+watchlists:
+  usd_path: "config/watchlist_300_usd.csv"
+  cad_path: "config/watchlist_300_cad.csv"
+  holdings_path: "config/holdings.csv"
+
+features:
+  windows: [5, 10, 20, 50, 100]
+  rsi_windows: [5, 14, 21]
+  hurst_windows: [20, 50, 100]
+  frac_diff_d: 0.40
+  atr_window: 20
+
+targets:
+  high_15d_horizon: 15
+  low_15d_horizon: 15
+  trend_20d_horizon: 20
+  trend_min_r2: 0.60
+  trend_atr_mult: 2.0
+
+modeling:
+  n_splits: 5
+  embargo_td: 20
+  vif_threshold: 5.0
+  train_start: "2016-01-01"  # earliest date for labeled rows (data read from 250d earlier for warmup)
+  xgb_params:
+    n_estimators: 400
+    max_depth: 4
+    learning_rate: 0.03
+    subsample: 0.8
+    colsample_bytree: 0.7
+    min_child_weight: 20
+    reg_alpha: 1.0
+    reg_lambda: 5.0
+    tree_method: "hist"
+    n_jobs: 2
+    random_state: 42
+
+reporting:
+  top_n_low_15d: 30
+  top_n_up_20d: 30
+  chart_lookback_bars: 120
+  batch_gc_size: 10

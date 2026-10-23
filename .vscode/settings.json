@@ -1,0 +1,19 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.venv/**": true,
+    "**/data/**": true,
+    "**/models/**": true,
+    "**/reports/**": true,
+    "**/logs/**": true
+  },
+  "search.exclude": {
+    "**/.venv": true,
+    "**/data": true,
+    "**/models": true,
+    "**/reports": true
+  },
+  "python.analysis.indexing": false,
+  "python.analysis.autoSearchPaths": false,
+  "python.analysis.diagnosticMode": "openFilesOnly"
+}
