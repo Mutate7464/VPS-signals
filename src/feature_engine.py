@@ -534,9 +534,13 @@ def iter_market_symbols(
         if len(df) < 125:
             continue
         df["date"] = pd.to_datetime(df["date"]).astype("datetime64[ns]")
-        df = df.sort_values("date").reset_index(drop=True)
+        df = df.sort_values("date")
         if read_from is not None:
             df = df[df["date"] >= pd.Timestamp(read_from)]
+        df = df.reset_index(drop=True)  # clean 0..n-1 index — callers compute
+        # features on df.index and targets on a RangeIndex; an index with gaps
+        # silently misaligns pd.concat([features, targets], axis=1) (the
+        # 533,017-row truncation bug found in the E3 rebuild, 2026-10-23).
         if len(df) < 125:
             continue
         df["symbol"] = symbol
