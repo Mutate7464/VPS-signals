@@ -516,12 +516,16 @@ def run_e5(market: str) -> int:
     from sklearn.linear_model import Ridge, LogisticRegression
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
-    from src.feature_engine import iter_market_symbols, wilder_atr
+    sys.path.insert(0, str(ROOT))
+    from src.feature_engine import iter_market_symbols
+    from src.targets import wilder_atr
     from src.xgb_trainer import PurgedWalkForwardSplit
 
     FACTORS = ["mom_12_1", "rev_1m", "vol_20", "amihud_20", "log_dollar_vol_20"]
     parts = []
-    for symbol, raw_df in iter_market_symbols(market, min_date="2016-01-01", allow_fixture=False):
+    # read from 2015 so the 252-trading-day mom_12_1 lookback has full warmup
+    # by 2016-01-01; rows before 2016 are dropped via the NaN warmup below.
+    for symbol, raw_df in iter_market_symbols(market, min_date="2015-01-01", allow_fixture=False):
         g = raw_df.sort_values("date").reset_index(drop=True)
         close = g["close"].astype("float64")
         ret = close.pct_change()
@@ -557,8 +561,8 @@ def run_e5(market: str) -> int:
     w(f"# D-002 / E5 — Unpredictability floor ({market})")
     w("")
     w(f"- Generated (UTC): {pd.Timestamp.now('UTC').strftime('%Y-%m-%dT%H:%M:%SZ')}")
-    w(f"- Factors: {', '.join(FACTORS)} · ridge (continuous `fwd_atr_ret`) + logistic (binary `y_15d_high`) · "
-      "5-fold purged WF, 20d embargo")
+    w(f"- Factors: {', '.join(FACTORS)} · ridge (continuous `fwd_atr_ret`) + logistic (binary = within-date "
+      "median split of `fwd_atr_ret_15`) · 5-fold purged WF, 20d embargo")
     w("")
     w("## Single-factor per-date Spearman rank-IC")
     w("")
@@ -594,6 +598,8 @@ def run_e5(market: str) -> int:
         for tr_idx, val_idx in splits:
             tr_rows = np.isin(date_codes, tr_idx)
             va_rows = np.isin(date_codes, val_idx)
+            if not tr_rows.any() or not va_rows.any():
+                continue
             m = model_fn()
             m.fit(X_all[tr_rows], y[tr_rows])
             oof_pred[va_rows] = m.predict(X_all[va_rows])
@@ -607,14 +613,14 @@ def run_e5(market: str) -> int:
         ranks["date"] = sub["date"].to_numpy()
         ics = ranks.groupby("date").apply(lambda x: x["pred"].corr(x["real"])).dropna()
         t_stat = ics.mean() / (ics.std(ddof=1) / np.sqrt(len(ics))) if len(ics) > 2 and ics.std(ddof=1) > 0 else np.nan
-        results[target_name] = (float(ics.mean()), float(t_stat), model_kind)
+        results[f"{model_kind}:{target_name}"] = (float(ics.mean()), float(t_stat), model_kind)
         w(f"- {model_kind} `{target_name}` oof rank-IC: {ics.mean():+.4f} (t = {t_stat:+.2f}, {len(ics)} dates)")
 
     w("")
     w("## Verdict")
     w("")
     max_t = float(np.nanmax([abs(v[1]) for v in fac_ic.values()] or [0.0]))
-    ridge_t = float(np.nanmax([abs(results["fwd_atr_ret_15"][1]), abs(results["fwd_atr_ret_20"][1])] or [0.0]))
+    ridge_t = float(np.nanmax([abs(results["ridge:fwd_atr_ret_15"][1]), abs(results["ridge:fwd_atr_ret_20"][1])] or [0.0]))
     if max_t < 2.0 and ridge_t < 2.0:
         verdict = ("**FLOOR CONFIRMED.** No classic factor (single or multivariate) reaches |t| >= 2 on the "
                    "continuous forward ATR return: 5-factor predictability at these horizons is statistically "
