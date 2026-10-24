@@ -1,6 +1,6 @@
 # D-003 — Technical Trading Approach with IBKR Constraints
 
-**Status:** proposed
+**Status:** accepted (admin pivot decision 2026-10-24 — WI-002 gate closed, direction moved to WI-009)
 **Date:** 2026-10-24
 
 ## Context

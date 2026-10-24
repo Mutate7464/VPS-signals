@@ -12,6 +12,7 @@ Implement contrastive/pairwise learning for asset ranking with top-10 trade reco
 - Verified on this VPS: `torch 2.14.1+cpu` installs on Python 3.14 (CPU wheel); smoke test — 50 epochs × 4096 pairs × 89-dim in 0.40 s, peak RSS 0.33 GB, `torch.set_num_threads(2)`; ~810 MB disk. Usable for small tabular Siamese towers inside the guardrails (2 threads, float32, bounded batches).
 - Optimization rules if torch is chosen: CPU-only wheel (no CUDA), `torch.set_num_threads(2)`, float32 tensors, per-date pair sampling streamed in batches (never materialize O(N²) pairs), embed dim ≤ 64.
 - Alternative (no new framework): xgboost `rank:pairwise` on pairwise-difference features Δ(a,b) — xgboost-cpu is already a dependency. Cheaper, less flexible for embedding-based contrast. Planner picks; either passes guardrails.
+- Dependency note: torch is NOT yet in `pyproject.toml` — add it pinned to the CPU index (`[[tool.uv.index]] name = "pytorch-cpu"`, url `https://download.pytorch.org/whl/cpu`, `explicit = true`, + `[tool.uv.sources]`), else uv pulls the CUDA wheel (~2.5 GB + nvidia deps) from PyPI. Smoke-verified equivalent: `uv pip install torch --index-url https://download.pytorch.org/whl/cpu` → torch 2.14.1+cpu, 810 MB.
 
 ## Reviewer pass (integrated into this run — not a separate item)
 At QA, invoke the reviewer subagent via the Task tool twice:
@@ -21,6 +22,7 @@ Also fold in the one-line run_e5 fix under Deviations: evaluate the logit with `
 
 ## E5 context (why pairwise/relative is the right target)
 PM probe (2026-10-24, replicates the report to ±0.0001): the ridge/logit sign flip is a **target-definition artifact, not a contradiction**. Ridge optimizes pooled continuous *magnitude* — its vol_20 loading (+0.066) is a between-date regime effect that within-date evaluation strips; the logit optimizes within-date *direction* (median split) and follows the within-date univariate directions. Their loadings disagree in sign on the liquidity/vol cluster (ridge: vol +0.066 / amihud −0.006 / logdv −0.007; logit: vol −0.037 / amihud −0.041 / logdv +0.016). Cleanest statements are the single-factor within-date ICs: mom_12_1 +5.54, vol_20 −4.72. Design implication: train and evaluate in RELATIVE (within-date pairwise/rank) space, with score-based rank-IC — never class-label IC.
+Tooling caveat: `scripts/diag_signal.py` is USD-locked (`only --market USD is implemented`) — do NOT route the CAD factor baseline through `--exp e5 --market CAD`; compute the five E5 factors inside the new module (or extend the script) with within-date rank-IC on CAD. Note the E5 numbers cited above are USD — the CAD factor baseline must be recomputed and may differ.
 
 ## Acceptance Criteria
 1. Pairwise framework ranks any two assets (relative outperformance), consistent ordering across the CAD universe
