@@ -51,9 +51,12 @@ Verdict: **E2 NULL — H1 NOT CONFIRMED** (0/4 targets pass ≥3/5 gates on the 
 | ADR row | Applies? | Basis |
 | :--- | :--- | :--- |
 | E2 passes → H1 (tune) | no | best target has 0/4 governance gates passing |
-| E3 → H2 (replace MI/VIF selection) | next | real whitelist is 19 features/target (vs 7 in fixture); MI now sane; still no signal |
-| E4 → H3 (target/metric redesign) | next | regime stability and calibration look healthy; identity-signal concern untested on real data |
-| E5 → H4 (little signal in OHLCV @ 15–20d) | next | placebo-clean null on 1.24M rows is consistent with H4 |
+| E3 → H2 (replace MI/VIF selection) | no | deflated IC t > 2.5 reached by E2-faithful baselines too (`full`, `legacy19` on 15d targets); ablation isolates no feature-set fix — `reports/diag_D002_e3.md` |
+| E4 → H3 (target/metric redesign) | **YES** | continuous IC significant on 15d targets (t +4.31/+3.27) while all binary gates fail; ticker-prior AUC beats model on all 4 targets — `reports/diag_D002_e4.md` |
+| E5 → H4 (little signal in OHLCV @ 15–20d) | no (floor BREACHED) | mom_12_1 t +5.54, vol_20 t −4.72, amihud_20 t −3.37 on continuous fwd ATR return; factor structure IS present — `reports/diag_D002_e5.md` |
+
+> **E3–E5 adjudication appended 2026-10-24** — combined verdict and synthesis:
+> `reports/diag_D002_summary.md`. H3 fires; H2/H4 do not.
 
 ## Caveats and deviations
 
