@@ -8,6 +8,7 @@ ADR decision-matrix verdict. Reads only; never writes outside reports/.
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import re
 import subprocess
@@ -137,6 +138,152 @@ def fmt_t(cell: str) -> str:
 def gate_passes(cell: str) -> int:
     """Number of PASS verdicts in one governance cell (0 or 1)."""
     return 0 if "FAIL" in cell.upper() else 1
+
+
+E3_SETS = ["full", "no_static", "fib_only", "legacy19", "cs_pct_only"]
+E3_BASELINE_SETS = {"full", "legacy19"}
+IC_T_H2 = 2.5  # deflated IC t threshold for the H2 verdict (plan Step 6)
+
+
+def run_e3(market: str) -> int:
+    """E3 — feature-set ablation matrix report (Step 6 of the WI-002 plan).
+
+    Reads one oof parquet per feature-set at a time (data/oof_USD[_<set>].parquet
+    with 1 real + 3 placebo prediction columns per target) and reports per
+    set × target: ROC-AUC, PR-AUC lift, P@K lift, deflated IC t, placebo z.
+    H2 verdict: any non-baseline set reaches deflated IC t > 2.5 where the
+    full/legacy19 baselines don't.
+    """
+    from sklearn.metrics import roc_auc_score, average_precision_score
+
+    horizon = {"y_15d_high": 15, "y_15d_low": 15, "y_20d_up": 20, "y_20d_down": 20}
+    n_placebo = 3
+
+    lines: list[str] = []
+    w = lines.append
+    w(f"# D-002 / E3 — Feature-set ablation matrix ({market})")
+    w("")
+    w(f"- Generated (UTC): {pd.Timestamp.now('UTC').strftime('%Y-%m-%dT%H:%M:%SZ')}")
+    w("- Source: per-set `data/oof_{MKT}[_<set>].parquet` (1 real + 3 placebo seeds), E2-frozen hyper-parameters")
+    w("- PR-AUC lift = PR-AUC / pos-rate; P@K lift = within-date top-10% precision / base rate;")
+    w("  deflated IC t = (real mean per-date Spearman IC − mean placebo IC) / se(real IC);")
+    w("  placebo z = (real ROC-AUC − mean placebo AUC) / std(placebo AUC)")
+    w("")
+
+    missing = []
+    rows = []  # (set, target, metrics...)
+    for fs in E3_SETS:
+        suffix = "" if fs == "full" else f"_{fs}"
+        oof_path = DATA / f"oof_{market}{suffix}.parquet"
+        if not oof_path.exists():
+            missing.append(fs)
+            continue
+        oof = pd.read_parquet(oof_path)
+        oof["date"] = pd.to_datetime(oof["date"])
+        for t in TARGETS:
+            h = horizon[t]
+            cols = ["date", "symbol", f"y_{t}", f"p_{t}", f"fwd_atr_ret_{h}"] + \
+                   [f"p_{t}_pl{i}" for i in range(n_placebo)]
+            if not set(cols).issubset(oof.columns):
+                continue  # target not yet completed in this (possibly mid-run) oof
+            d = oof[cols].copy()
+            d.columns = ["date", "symbol", "y", "p", "fwd"] + [f"pl{i}" for i in range(n_placebo)]
+            for c in d.columns[2:]:
+                d[c] = d[c].astype("float32")
+            d = d.dropna(subset=["y", "p"])
+
+            auc = roc_auc_score(d["y"], d["p"])
+            pos = float(d["y"].mean())
+            pr_lift = average_precision_score(d["y"], d["p"]) / pos if pos > 0 else np.nan
+
+            # within-date P@K (top decile) lift
+            d["k"] = np.ceil(d.groupby("date")["p"].rank(pct=True) * 10).clip(1, 10)
+
+            def _pk(x: pd.DataFrame) -> float:
+                base = x["y"].mean()
+                if base <= 0 or not (x["k"] == 10).any():
+                    return np.nan
+                return float(x.loc[x["k"] == 10, "y"].mean()) / base
+
+            pk = d.groupby("date").apply(_pk).dropna()
+            pk_lift = float(pk.mean()) if len(pk) else np.nan
+
+            # per-date Spearman IC vs continuous forward ATR return
+            df_ = d[np.isfinite(d["fwd"])]
+            ranks = df_.groupby("date")[["p", "fwd"]].rank()
+            ranks["date"] = df_["date"].to_numpy()
+            ics = ranks.groupby("date").apply(lambda x: x["p"].corr(x["fwd"])).dropna()
+            ic_mean = float(ics.mean())
+            ic_se = float(ics.std(ddof=1) / np.sqrt(len(ics))) if len(ics) > 2 else np.nan
+            pl_ic = []
+            for i in range(n_placebo):
+                sub = df_[["date", f"pl{i}", "fwd"]].copy()
+                sub["prk"] = sub.groupby("date")[f"pl{i}"].rank()
+                sub["frk"] = sub.groupby("date")["fwd"].rank()
+                ic_i = sub.groupby("date").apply(lambda x: x["prk"].corr(x["frk"])).dropna()
+                pl_ic.append(float(ic_i.mean()))
+            defl_t = (ic_mean - float(np.mean(pl_ic))) / ic_se if ic_se and np.isfinite(ic_se) else np.nan
+
+            # placebo AUC z
+            pl_auc = [roc_auc_score(d["y"], d[f"pl{i}"]) for i in range(n_placebo)]
+            pz = (auc - float(np.mean(pl_auc))) / float(np.std(pl_auc, ddof=1)) if np.std(pl_auc, ddof=1) > 0 else np.nan
+
+            rows.append((fs, t, auc, pr_lift, pk_lift, defl_t, pz))
+        del oof
+        gc.collect()
+
+    if not rows:
+        print("ERROR: no oof artifacts found for any E3 feature-set")
+        return 1
+
+    w("| Set | Target | ROC-AUC | PR-AUC lift | P@K lift | Deflated IC t | Placebo z |")
+    w("| :--- | :--- | ---: | ---: | ---: | ---: | ---: |")
+    for fs, t, auc, pr_lift, pk_lift, defl_t, pz in rows:
+        w(f"| `{fs}` | `{t}` | {auc:.3f} | {pr_lift:.3f} | {pk_lift:.3f} "
+          f"| {defl_t:+.2f} | {pz:+.1f} |")
+    w("")
+
+    base_hit = [f"{fs}/{t}" for fs, t, _, _, _, dt, _ in rows
+                if fs in E3_BASELINE_SETS and np.isfinite(dt) and dt > IC_T_H2]
+    nonbase_hit = [f"{fs}/{t}" for fs, t, _, _, _, dt, _ in rows
+                   if fs not in E3_BASELINE_SETS and np.isfinite(dt) and dt > IC_T_H2]
+
+    w("## Verdict")
+    w("")
+    if nonbase_hit and not base_hit:
+        verdict = (f"**H2 SUPPORTED — feature-set signal.** Non-baseline set(s) reach deflated IC t > {IC_T_H2} "
+                   f"({', '.join(nonbase_hit)}) while the full/legacy19 baselines do not: a richer/different "
+                   "feature set carries ranking signal the E2-era set lacks. Per the matrix: feature-set "
+                   "expansion (H2) is the indicated fix.")
+    elif base_hit or nonbase_hit:
+        verdict = (f"**H2 PARTIALLY OBSERVED.** Deflated IC t > {IC_T_H2} on: {', '.join(base_hit + nonbase_hit)} "
+                   "— signal exists but is not exclusive to a new feature set (baseline reaches it too); "
+                   "the ablation does not isolate a feature-set fix.")
+    else:
+        verdict = (f"**H2 NOT SUPPORTED.** No set × target reaches deflated IC t > {IC_T_H2}: neither the E2-faithful "
+                   "baselines nor any ablation feature set carries significant deflated ranking signal. "
+                   "Adjudication moves to E5 (unpredictability floor).")
+    w(f"Verdict: {verdict}")
+    w("")
+    w("| ADR row | Applies? | Basis |")
+    w("| :--- | :--- | :--- |")
+    h2_yes = "**YES**" if (nonbase_hit and not base_hit) else "no"
+    w(f"| E3 → H2 (feature-set redesign) | {h2_yes} | non-baseline t>{IC_T_H2}: {', '.join(nonbase_hit) or 'none'}; "
+      f"baseline t>{IC_T_H2}: {', '.join(base_hit) or 'none'} |")
+    w("| E4 → H3 | adjudicated | see `reports/diag_D002_e4.md` |")
+    w("| E5 → H4 | adjudicated next | see `reports/diag_D002_e5.md` |")
+    if missing:
+        w("")
+        w(f"**WARNING: oof artifacts missing for feature-set(s): {', '.join(missing)} "
+          "— this report is INCOMPLETE and must be regenerated after the chain finishes.**")
+
+    out = REPORTS / "diag_D002_e3.md"
+    out.write_text("\n".join(lines) + "\n")
+    print(f"wrote {out}")
+    print(f"verdict: {'H2 SUPPORTED' if (nonbase_hit and not base_hit) else 'H2 NOT/PARTIALLY SUPPORTED'}")
+    if missing:
+        print(f"WARNING: missing sets: {', '.join(missing)}")
+    return 0
 
 
 def run_e4(market: str) -> int:
@@ -489,11 +636,13 @@ def run_e5(market: str) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--exp", choices=["e2", "e4", "e5"], required=True)
+    ap.add_argument("--exp", choices=["e2", "e3", "e4", "e5"], required=True)
     ap.add_argument("--market", default="USD")
     args = ap.parse_args()
     if args.market != "USD":
         raise SystemExit("only --market USD is implemented")
+    if args.exp == "e3":
+        return run_e3(args.market)
     if args.exp == "e4":
         return run_e4(args.market)
     if args.exp == "e5":
