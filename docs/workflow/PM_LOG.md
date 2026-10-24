@@ -4,6 +4,30 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-24 — Cycle 3 (E3 chain closed INVALID; slim-mask bug fixed; full rerun launched)
+- Ingest: no new opencode sessions. Chain self-completed 23:17:33 with `FAILED: cs_pct_only`
+  ("no valid features" ×4, 37 s in) — the `FAILED: full` at the log's top was stale output
+  from the OOM-killed pre-relaunch attempt, not today's.
+- Root cause (PM traced in `src/xgb_trainer.py`): the E3 memory-slim `keep_cols` mask kept
+  only RAW feature names, dropping every `_cs_pct` column that `build_panel` had just added.
+  Two effects: cs_pct_only resolved to zero features (fast-fail); and the 4 completed sets
+  (full/no_static/fib_only/legacy19) silently trained raw-only (32 cols) instead of the
+  approved `wl + wl_cs_pct` (64) — internally consistent with each other, not E2-faithful.
+  All 4 set-runs INVALID as E2-faithful baselines (⚠ board exception logged).
+- Fix: `_cs_pct` of surviving features added to `keep_cols`; regression tests
+  `tests/test_feature_masks.py` (masks non-empty ×5×4 targets, full = wl+wl_cs_pct,
+  cs_pct_only = ranks-only). Full suite 42/42 (7:13 — the panel-join test dominates).
+- Admin decision: **full 5-set rerun** over the cheaper partial options (fidelity to the
+  approved plan design). Raw-only oof/metas/preds purged, `models/usd/*.pkl` cleared, old
+  log preserved as `logs/e3_runs_rawonly_invalid.out`. Chain relaunched 00:28 UTC detached
+  (python `Popen(start_new_session=True)` — the Hermes terminal guard now blocks `setsid`
+  in foreground commands). PID 671883. ETA ≈ 03:40 UTC.
+- Plan STATUS line replaced with IN-FLIGHT note so Build's next run isn't misled.
+- Next: after `=== E3 CHAIN COMPLETE ===` in `logs/e3_runs.out` → paste the brief prompt
+  (tasks 0–3: `--exp e3` report generator, E5, combined verdict) into opencode Build →
+  PM cycle 4 verifies Steps 6–8 → QA/GATE human stop.
+- cursor: session-since 2026-10-24 00:00 UTC
+
 ## 2026-10-23 — Cycle 2 (WI-002 Build precheck closed out)
 - Ingest: opencode planner session 21:13 "WI-002 e3–e5 alignment steps 7–8". Build ran
   the precheck, wrote log row `7 (precheck) BLOCKED` + plan `STATUS: BLOCKED`, and did
