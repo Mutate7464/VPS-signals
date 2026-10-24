@@ -2,29 +2,29 @@
 
 > **Update this file at the END of every working session.** Anyone (agent or admin) starting cold reads this first, then `docs/README.md` for the doc map. **For what-now/what-next, see `workflow/BOARD.md`** (the kanban); this file is state, the board is the queue.
 
-- **Last Updated (UTC):** 2026-10-24 ~23:20 UTC (PM cycle 4: WI-002 Steps 6–8 verified against artifacts; QA/GATE stands — admin gate decision pending)
+- **Last Updated (UTC):** 2026-10-24 ~23:45 UTC (PM cycle 5: WI-002 closed — admin pivot to WI-009; repo cleanup + tech_approach integrated week-based)
 - **Execution mode (from 2026-10-22):** admin drives work directly in VS Code + opencode; **Hermes verifies results and maintains the board/handover**. Phase 2 pacing deferred to next week by admin.
-- **Current Phase:** **WI-002 E3–E5 completed, WI-009 technical approach in DESIGN.** E3 chain finished 07:02 UTC with all 5 sets using E2-faithful 64-column masks. Combined verdict: **H3 SUPPORTED** (labels/metric misaligned — continuous IC t +4.31 while all binary gates fail; ticker-prior beats model), **H2 NOT SUPPORTED** (baselines reach deflated t>2.5 too — features not the binding constraint), **H4 NOT SUPPORTED** (floor BREACHED: mom t +5.54, vol t −4.72 on continuous fwd ATR return — factor structure present). Admin decision pending: target/metric redesign (H3 fix, factor-controlled) vs stop. New technical approach work item WI-009 created for contrastive learning implementation using only IBKR technical data.
+- **Current Phase:** **WI-009 in PLAN (do-next); WI-002 closed 2026-10-24 by admin gate decision: pivot to WI-009.** E3–E5 verdicts stand (H3 yes / H2 no / H4 no): signal exists in continuous fwd-ATR-return space; binary labels/within-date gates are blind to it; classic factors are present — so the pivot goes to D-003 Option 2 (hybrid technical-factor, contrastive pairwise ranking for top-10 recommendations, IBKR technical data only), with E5's factors as mandatory baselines. tech_approach docs restructured to week-based `YYYY-WW` (2026-W44) and committed; the draft WI-009 plan needs a planner pass (per-step verification commands, D-003 scope reconciliation, reuse of the 89 existing features, PyTorch-on-8GB-VPS decision) before Build.
 
 ## Reconciled state (2026-10-24, supersedes the 2026-10-23 entry below)
 
 | Item | Status | Evidence |
 |---|---|---|
-| WI-002 E3-E5 diagnostic cycle | Completed 2026-10-24 | `reports/diag_D002_summary.md`, `reports/diag_D002_e3.md`, `reports/diag_D002_e4.md`, `reports/diag_D002_e5.md` |
+| WI-002 E3-E5 diagnostic cycle | Closed 2026-10-24 — gate decision: pivot to WI-009 | `reports/diag_D002_summary.md`, e2–e5 reports; PM cycle 4 verification (ee6f93e) |
 | WI-003 ingest Phase 1 + CAD | Done | `reports/sprint1_ingestion_audit.md` (546 USD + 350 CAD, ~97-98% coverage) |
 | Gate 4 | **Still FAIL** (all 4 targets, real universe) | `reports/sprint4_model_qa.md` |
 | WI-008 quarantine triage | Analysis done 2026-10-23: of 72 dead-letter rows, 2 already clean (stale), ~44 show corp-action level-step signatures, ~26 flagged genuine-vol but several are actually restructuring artifacts (OVV/WES 2020-03-09) — per-case verification still needed | `reports/wi008_quarantine_triage.md` |
 | BRK.B | **Resolved in data**: downloaded as `symbol=BRK B.parquet` (5,026 rows, 2006–2026, in the 508-ticker universe); audit CSV row stale | `IBKRDownload/data/audit_ingestion_usd.csv` (outdated) |
 | ELE (CAD) | **Missing entirely** — empty response, no parquet, not in dead-letter list | `IBKRDownload/data/audit_ingestion_cad.csv` |
 | Screener PDFs | Still structural demo only (WI-001 QA exception stands) | `reports/screener_*_20261021.pdf` |
-| WI-009 Technical Approach | Design phase complete, system preparation verified | `docs/workflow/designs/D-003-technical-trading-approach.md`, `docs/tech_approach/2026/W44/briefs/contrastive-learning-brief.md`, `docs/tech_approach/2026/W44/plans/contrastive-learning-plan.md` |
-| Model Escalation Config | Implementation verified and ready | Configuration files updated with `google/gemini-4-argon`, all human gating preserved |
+| WI-009 Technical Approach | Design accepted (admin pivot 2026-10-24); draft plan awaiting planner pass | `docs/workflow/designs/D-003-technical-trading-approach.md`, `docs/tech_approach/2026-W44/briefs/contrastive-learning-brief.md`, `docs/tech_approach/2026-W44/plans/contrastive-learning-plan.md` |
+| Model Escalation Config | Final state verified via `opencode debug agents`: Build base `deepseek-v4.1-flash`; escalation v4.1-pro → gemini-4-argon → opus-5.5 (human-gated) | `~/.config/opencode/opencode.jsonc`, `~/.config/opencode/instructions/escalation.md`, consolidated record `docs/human/interventions/2026-10-24-opencode-build-model-escalation.md` |
 
 ## Open items (admin decisions / next actions)
 
-1. **WI-002 Gate Decision:** Approve target/metric redesign (H3 fix, factor-controlled) vs stop. All diagnostic evidence in `reports/diag_D002_summary.md`.
+1. **WI-009 planner pass → EXECUTING** — paste the cycle-5 Build prompt (PM cycle report) into opencode; refine the draft plan to workflow-contract format, then execute.
 
-2. **WI-009 Approval:** Review technical approach design (D-003) and move to READY for implementation. System preparation verified and ready.
+2. **PyTorch vs sklearn-style implementation on the 8 GB VPS** — decide at planning time (repo is sklearn/xgboost today; guardrails n_jobs≤2, float32, bounded memory).
 
 3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
 

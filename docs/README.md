@@ -39,6 +39,7 @@
 | `workflow/designs/` | Design decisions as ADRs (`D-##`: Context / Options / Decision / Consequences / Status) | per-item |
 | `workflow/retros/` | Weekly retro notes (`YYYY-WW.md`) | weekly |
 | `plans/` | Execution plans (`YYYY-MM-DD-WI-##-<slug>.md`); Build executes from the plan named on the board | per-task |
+| `tech_approach/` | Week-based technical-approach workspace (`YYYY-WW/briefs|plans|reports`, e.g. `2026-W44/`) — home of the WI-009+ contrastive/hybrid line; plans there are contract-valid when the board row names that path (workflow-contract exception 2026-10-24) | per-week |
 | `ingest/` | IBKR ingest kit docs: `ib4-changelog.md` (code audit trail), `ib4-optimization-plan.md` (phases + validation checklist), `ibkrdownload.md` (pacing engine deep-dive) | maintained |
 
 ### Generated evidence (not docs — never hand-edit)
@@ -48,13 +49,14 @@
 
 ### Human stream (`docs/human/` — for reading, NOT for agent context)
 - `GUIDE.md` — narrated project + workflow guide, glossary, learning path. Agents never load it. Regenerate via the **scribe** subagent whenever the agent stream changes materially.
+- `human/interventions/` — dated intervention records; consolidated, one record per event (model-change saga consolidated 2026-10-24).
 - Rule: agent-facing docs must stay terse (context cost); explanatory prose belongs here. If an ID appears in the human stream, it's expanded in plain language on first use.
 
 ### Agent operating system (how the agents themselves work)
 - Root `AGENTS.md` — project guardrails, sprint pipeline, model escalation protocol (canonical)
 - `.agents/rules/` — env-split, no-live-trading, quant-ml guardrails
-- `.agents/skills/` — gate-brief (gate→human briefing template), discord-brief, quant-investigator, signal-evaluator (last three are unexpanded stubs — frontmatter added 2026-10-22 so they're discoverable; bodies still one line)
-- Agent workforce (opencode): **Build** = DeepSeek V4 Pro (execute, 150-step cap) → **reviewer** = DeepSeek V4 Flash (pre-commit + leakage + gate-compliance review) → **Plan** = Claude Sonnet 5.5 (writes `docs/plans/` files) → **guide** = Sonnet 5.5 (mentor, read-only) → **scribe** = flash (maintains `docs/human/`) → **troubleshooter** = Claude Opus 5.5 (escalation-only, read-only, evidence-bundle required). Verify with `opencode debug agents`.
+- `.agents/skills/` — gate-brief (gate→human briefing template) is the only body-bearing project skill; the three former stubs (discord-brief, quant-investigator, signal-evaluator) were deleted 2026-10-23
+- Agent workforce (opencode): **Build** = DeepSeek V4.1-Flash (base; escalation_models → V4.1-Pro → Gemini 4 Argon → Opus 5.5, human-gated) → **reviewer** = DeepSeek V4 Flash (pre-commit + leakage + gate-compliance review) → **planner** = Qwen3 Coder (writes plan files) → **triage** = Qwen3-Coder-Next (independent log diagnostician) → **guide** = Sonnet 5.5 (mentor, read-only) → **scribe** = flash (maintains `docs/human/`) → **troubleshooter** = GLM-5.3 (escalation tier 1, read-only, evidence-bundle required). Verify with `opencode debug agents`.
 
 ## 3. Known doc discrepancies (fixed points of confusion)
 1. ~~SESSION_HANDOVER said "ingest NOT run" (2026-10-21 23:40) while Sprint 1–5 reports exist (2026-10-21) and the optimization plan shows a 454-file USD baseline~~ → **resolved 2026-10-22**, see SESSION_HANDOVER for the reconciled state.
@@ -67,3 +69,4 @@
 - Every working session ends with a `SESSION_HANDOVER.md` refresh (agent-to-admin handover).
 - Every code change gets a `ingest/ib4-changelog.md` entry (ingest) or a plan-file Deviations note (pipeline); optimization *decisions and gates* live in `ingest/ib4-optimization-plan.md`.
 - Plan files are named `YYYY-MM-DD-WI-##-<slug>.md` and kept after execution (audit trail), including Deviations.
+- Technical-approach work items (WI-009 series) keep briefs/plans/reports under `docs/tech_approach/YYYY-WW/`; the plan named in the board's EXECUTING row is the contract location. Conventional items keep using `docs/plans/`.

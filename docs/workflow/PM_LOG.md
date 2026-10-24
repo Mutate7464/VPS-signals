@@ -4,6 +4,34 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-24 — Cycle 5 (admin gate decision: pivot to WI-009; cleanup; tech_approach integrated)
+- Admin direction (verbatim): "perform clean up first. will pivot direction toward WI-009 / revew
+  docs/tech_approach docs and integrate. / review file strucutre and associated docucs. / workflow is
+  weekbased YY-Weeknum / communication style is middle manager (confirm previous work saved properly)".
+  WI-002 gate → DONE (pivot to WI-009, D-003 Option 2); WI-009 = do-next.
+- Previous work confirmed saved: ee6f93e (8 files — PM_LOG cycle 4, board, handover, RISKS, report v2s,
+  pipeline state).
+- Cleanup: `PM_LOG.md.tmp` junk deleted; D-004 deduped (stale gemini-pro-1.5 variant replaced by the
+  gemini-4-argon version under the canonical name); 9 model-escalation intervention variants
+  consolidated into one record (`2026-10-24-opencode-build-model-escalation.md`;
+  wi009-preparation-checklist kept, paths updated); WI-003 row moved ACTIVE → DONE table.
+- Integration: tech_approach flattened to week-based `YYYY-WW` (2026/W44 → 2026-W44; W45 → 2026-W45) per
+  admin convention; all path references updated (board, handover, plan Steps 1+4, W44-summary, prep
+  checklist); tech_approach added to the docs/README router; router's stale agent-workforce and
+  stub-skill lines refreshed to live config; workflow contract amended — board-named plans may live
+  under `docs/tech_approach/YYYY-WW/plans/` (WI-009 series).
+- WI-009 review findings (handed to the planner pass): plan is contrastive-only while D-003 selects
+  Option 2 hybrid — reconcile scope; no per-step verification commands (contract gap); EXECUTION LOG has
+  a TBD placeholder row; Step 2 rebuilds RSI/MACD/BB/ATR that already exist in `src/feature_engine.py`
+  (89 features — reuse, don't rebuild); PyTorch/TensorFlow proposal on the 8 GB VPS needs an explicit
+  decision (repo is sklearn/xgboost; n_jobs≤2, float32, bounded memory).
+- Board: WI-002 → DONE (gate: pivot), WI-009 → PLAN (do-next, planner pass), WI-003 → DONE table;
+  header → cycle 5.
+- Cursor: no new opencode sessions since ses_e94a5448 — unchanged.
+- Next: admin pastes the cycle-5 Build prompt → planner refines the plan → EXECUTING → PM cycle 6
+  verifies.
+- cursor: session-since ses_e94a5448affehPb2n3CBkUg4S4 (unchanged)
+
 ## 2026-10-24 — Cycle 4 (WI-002 Steps 6–8 verified; QA/GATE stands; admin gate decision is the pick)
 - Ingest: one session past cursor — `ses_e94a5448` ("WI-002 e3-e5 alignment floor", 55 msgs, planner agent
   on GLM-5.3, no child sessions; reviewer did NOT run on the d957d43/d5c5441 code changes). Trivial "OK"
