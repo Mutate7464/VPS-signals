@@ -30,6 +30,21 @@
 - Cursor: no new opencode sessions since ses_e94a5448 — unchanged.
 - Next: admin pastes the cycle-5 Build prompt → planner refines the plan → EXECUTING → PM cycle 6
   verifies.
+- Addendum (same cycle; admin: "expand on open risks, integrate before wunning 009 / is pytorch usable
+  wrt VPS, options/optimization? alt? / integrate review pass into current run / expand on E5 / switch
+  CAD dataset for next sprint/build"). Executed and verified by PM probes:
+  (1) PyTorch usable on this VPS — torch 2.14.1+cpu installs on Python 3.14 (CPU wheel); smoke test 50
+  epochs × 4096 pairs × 89-dim = 0.40 s, peak RSS 0.33 GB, threads capped at 2, 810 MB disk. Alt offered:
+  xgboost rank:pairwise on pairwise-difference features (existing dependency). (2) E5 sign flip
+  root-caused — probe reproduces the report exactly (ridge +0.0083/t+2.25, logit −0.0080/t−2.78; no
+  keying bug); driver is target definition: ridge = pooled continuous magnitude (vol_20 +0.066 loading
+  is a between-date regime effect), logit = within-date direction; loadings flip sign on the
+  liquidity/vol cluster; with predict_proba the logit is −0.0055 (t −1.67, ns) — class-label eval
+  overstated it. run_e5 one-line predict_proba fix folded into WI-009 Deviations. (3) Reviewer pass
+  integrated into the WI-009 run (retro d957d43/d5c5441 + pre-commit). (4) Dataset switched to CAD —
+  stale 2026-10-21 CAD features/targets/catalog (432 KB vs USD 503 MB; predates fib expansion AND the
+  R-08 index fix) flagged for rebuild as plan Step 0; ELE missing. Brief rewritten with all constraints
+  (dataset, framework, reviewer, E5); Build prompt v2 issued.
 - cursor: session-since ses_e94a5448affehPb2n3CBkUg4S4 (unchanged)
 
 ## 2026-10-24 — Cycle 4 (WI-002 Steps 6–8 verified; QA/GATE stands; admin gate decision is the pick)

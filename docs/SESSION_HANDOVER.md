@@ -2,9 +2,9 @@
 
 > **Update this file at the END of every working session.** Anyone (agent or admin) starting cold reads this first, then `docs/README.md` for the doc map. **For what-now/what-next, see `workflow/BOARD.md`** (the kanban); this file is state, the board is the queue.
 
-- **Last Updated (UTC):** 2026-10-24 ~23:45 UTC (PM cycle 5: WI-002 closed — admin pivot to WI-009; repo cleanup + tech_approach integrated week-based)
+- **Last Updated (UTC):** 2026-10-25 ~00:25 UTC (PM cycle 5 + addendum: WI-002 closed — pivot to WI-009; CAD dataset switch; torch verified; E5 root-caused; repo cleanup + tech_approach integrated week-based)
 - **Execution mode (from 2026-10-22):** admin drives work directly in VS Code + opencode; **Hermes verifies results and maintains the board/handover**. Phase 2 pacing deferred to next week by admin.
-- **Current Phase:** **WI-009 in PLAN (do-next); WI-002 closed 2026-10-24 by admin gate decision: pivot to WI-009.** E3–E5 verdicts stand (H3 yes / H2 no / H4 no): signal exists in continuous fwd-ATR-return space; binary labels/within-date gates are blind to it; classic factors are present — so the pivot goes to D-003 Option 2 (hybrid technical-factor, contrastive pairwise ranking for top-10 recommendations, IBKR technical data only), with E5's factors as mandatory baselines. tech_approach docs restructured to week-based `YYYY-WW` (2026-W44) and committed; the draft WI-009 plan needs a planner pass (per-step verification commands, D-003 scope reconciliation, reuse of the 89 existing features, PyTorch-on-8GB-VPS decision) before Build.
+- **Current Phase:** **WI-009 in PLAN (do-next); WI-002 closed 2026-10-24 by admin gate decision: pivot to WI-009.** E3–E5 verdicts stand (H3 yes / H2 no / H4 no): signal exists in continuous fwd-ATR-return space; binary labels/within-date gates are blind to it; classic factors are present — so the pivot goes to D-003 Option 2 (hybrid technical-factor, contrastive pairwise ranking for top-10 recommendations, IBKR technical data only), with E5's factors as mandatory baselines. **Dataset switched to CAD (admin 2026-10-24):** stale 2026-10-21 CAD features/targets/catalog must be rebuilt as plan Step 0 (they predate the fib expansion and the R-08 index fix); ELE missing. Framework: PyTorch CPU PM-verified usable on this VPS (torch 2.14.1+cpu, 0.40 s smoke, 0.33 GB, 2 threads); E5 sign flip root-caused (target-definition artifact — see RISKS R-04). tech_approach docs restructured to week-based `YYYY-WW` (2026-W44); the draft WI-009 plan needs a planner pass (per-step verification commands, D-003 scope reconciliation, reuse of the 89 existing features) before Build.
 
 ## Reconciled state (2026-10-24, supersedes the 2026-10-23 entry below)
 
@@ -22,9 +22,9 @@
 
 ## Open items (admin decisions / next actions)
 
-1. **WI-009 planner pass → EXECUTING** — paste the cycle-5 Build prompt (PM cycle report) into opencode; refine the draft plan to workflow-contract format, then execute.
+1. **WI-009 planner pass → EXECUTING** — paste the cycle-5 Build prompt v2 (PM cycle report) into opencode; refine the draft plan to workflow-contract format on **CAD** (admin switch 2026-10-24 — stale 2026-10-21 CAD features/targets/catalog must be rebuilt as plan Step 0), then execute.
 
-2. **PyTorch vs sklearn-style implementation on the 8 GB VPS** — decide at planning time (repo is sklearn/xgboost today; guardrails n_jobs≤2, float32, bounded memory).
+2. **Framework: PyTorch CPU verified usable** (PM probe 2026-10-24: torch 2.14.1+cpu on Python 3.14; 0.40 s smoke, 0.33 GB RSS, 2 threads, 810 MB disk) — planner picks torch (Siamese pairwise) or xgboost `rank:pairwise`; either fits guardrails. E5 sign flip root-caused (target-definition artifact; class-label eval overstated it — logit −0.0055/t−1.67 with proper scores); one-line `predict_proba` fix folded into WI-009 Deviations.
 
 3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
 
