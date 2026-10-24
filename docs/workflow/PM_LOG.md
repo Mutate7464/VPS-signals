@@ -4,6 +4,33 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-24 — Cycle 4 (WI-002 Steps 6–8 verified; QA/GATE stands; admin gate decision is the pick)
+- Ingest: one session past cursor — `ses_e94a5448` ("WI-002 e3-e5 alignment floor", 55 msgs, planner agent
+  on GLM-5.3, no child sessions; reviewer did NOT run on the d957d43/d5c5441 code changes). Trivial "OK"
+  session (00:54 UTC, 3 msgs) — no work. Plan EXECUTION LOG rows 07:10/07:21/07:30 carry wrong hours:
+  mtimes + commit 0af95cb (17:22:57 UTC) put the work at ~17:10–19:00 UTC.
+- Verify (PM ran): chain-complete marker in logs/e3_runs.out 07:02:11 (7,202 s, 1,240,275 labeled rows =
+  full panel); e3/e5 report runs EXIT=0; reports match board claims — E3: deflated IC t legacy19 +4.11,
+  full +3.54, 20d flat → H2 not a feature-set fix; E5: mom +5.54, vol −4.72, amihud −3.37, ridge oof
+  t +2.25/+2.05 → floor BREACHED; e2 ADR matrix updated; summary one-line verdicts traced. The 18:55–18:56
+  regeneration changed only timestamps (e3/e5) — verdicts stable.
+- Finding: tree dirty after 0af95cb (report v2s, board WI-009 row, handover rewrite left uncommitted);
+  untracked: interventions/, tech_approach/, designs D-003 + D-004×2, junk `PM_LOG.md.tmp` (19-line
+  assistant artifact — delete candidate). PM docs + verified report v2s committed this cycle; untracked
+  dirs left to their owning work items.
+- Docs: BOARD header → 2026-10-24; RISKS R-04 updated with the E3–E5 adjudication (+ E5 ridge/logit
+  sign-flip caveat); handover Last Updated refreshed. WI-003 still sits in the ACTIVE table with column
+  DONE (pre-existing placement; flagged to admin, not moved).
+- Pick: **WI-002 admin gate decision** — factor-controlled target/metric redesign (H3 fix) vs stop. No
+  Build handoff written (next step is human); the redesign brief comes from cycle 5 if approved. WI-009
+  in DESIGN (D-003 review → READY) is the second queued decision.
+- Admin feedback since last cycle (verbatim, ops-lane, no board impact): "confirm current opencode setup.
+  is it working right now?" — TUI was dead (tmux send-keys first-char mangling), relaunched; "Build =
+  qwen/qwen3-coder to deepseek flash. review setup and docs to fix/align" — agent.build.model →
+  openrouter/deepseek/deepseek-v4.1-flash, verified via `opencode debug agents`; triage prompt + skill
+  aligned.
+- cursor: session-since ses_e94a5448affehPb2n3CBkUg4S4
+
 ## 2026-10-24 — Cycle 3 (E3 chain closed INVALID; slim-mask bug fixed; full rerun launched)
 - Ingest: no new opencode sessions. Chain self-completed 23:17:33 with `FAILED: cs_pct_only`
   ("no valid features" ×4, 37 s in) — the `FAILED: full` at the log's top was stale output

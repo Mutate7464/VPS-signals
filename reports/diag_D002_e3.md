@@ -1,6 +1,6 @@
 # D-002 / E3 — Feature-set ablation matrix (USD)
 
-- Generated (UTC): 2026-10-24T17:14:23Z
+- Generated (UTC): 2026-10-24T18:55:05Z
 - Source: per-set `data/oof_{MKT}[_<set>].parquet` (1 real + 3 placebo seeds), E2-frozen hyper-parameters
 - PR-AUC lift = PR-AUC / pos-rate; P@K lift = within-date top-10% precision / base rate;
   deflated IC t = (real mean per-date Spearman IC − mean placebo IC) / se(real IC);

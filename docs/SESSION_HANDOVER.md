@@ -2,30 +2,37 @@
 
 > **Update this file at the END of every working session.** Anyone (agent or admin) starting cold reads this first, then `docs/README.md` for the doc map. **For what-now/what-next, see `workflow/BOARD.md`** (the kanban); this file is state, the board is the queue.
 
-- **Last Updated (UTC):** 2026-10-23 ~21:25 UTC (PM cycle 1)
+- **Last Updated (UTC):** 2026-10-24 ~23:20 UTC (PM cycle 4: WI-002 Steps 6–8 verified against artifacts; QA/GATE stands — admin gate decision pending)
 - **Execution mode (from 2026-10-22):** admin drives work directly in VS Code + opencode; **Hermes verifies results and maintains the board/handover**. Phase 2 pacing deferred to next week by admin.
-- **Current Phase:** **WI-002 E3–E5 in flight.** Admin fork approved 2026-10-23 (E3–E5, fib/range features, VIF 10 / MI pct 15). Steps 1–5 PASS and PM-verified: Hurst/entropy vectorized (4h10m → 4 min), 26 fib/range features added (raw = 89), trainer joins persisted parquet (no recompute), features rebuilt on FIXED 1,240,275-row data, whitelists 32/32/32/32, **E4 = H3 SUPPORTED** (continuous Spearman IC significant t +4.31/+3.27 on 15d targets while binary gates fail; ticker-prior AUC beats model → strong identity-signal component). Two bugs found & fixed en route (E3 OOM; E2-era index-misalignment truncation to 533k rows). Step 6 E3 ablation chain RUNNING detached (PID 644113, `logs/e3_runs.out`, ~2 h). Next: Step 7 (E5) + Step 8 (combined H2/H3/H4 verdict) → STOP for admin. Brief: `docs/workflow/briefs/2026-10-23-WI-002-e3-e5-verdict-brief.md`.
+- **Current Phase:** **WI-002 E3–E5 completed, WI-009 technical approach in DESIGN.** E3 chain finished 07:02 UTC with all 5 sets using E2-faithful 64-column masks. Combined verdict: **H3 SUPPORTED** (labels/metric misaligned — continuous IC t +4.31 while all binary gates fail; ticker-prior beats model), **H2 NOT SUPPORTED** (baselines reach deflated t>2.5 too — features not the binding constraint), **H4 NOT SUPPORTED** (floor BREACHED: mom t +5.54, vol t −4.72 on continuous fwd ATR return — factor structure present). Admin decision pending: target/metric redesign (H3 fix, factor-controlled) vs stop. New technical approach work item WI-009 created for contrastive learning implementation using only IBKR technical data.
 
-## Reconciled state (2026-10-23, supersedes the 2026-10-22 entry below)
+## Reconciled state (2026-10-24, supersedes the 2026-10-23 entry below)
 
 | Item | Status | Evidence |
 |---|---|---|
+| WI-002 E3-E5 diagnostic cycle | Completed 2026-10-24 | `reports/diag_D002_summary.md`, `reports/diag_D002_e3.md`, `reports/diag_D002_e4.md`, `reports/diag_D002_e5.md` |
 | WI-003 ingest Phase 1 + CAD | Done | `reports/sprint1_ingestion_audit.md` (546 USD + 350 CAD, ~97-98% coverage) |
-| WI-002 Steps 1–9 (E2) | Done, committed through `f6f7c27` | plan EXECUTION LOG + `reports/diag_D002_e2.md` |
-| Gate 4 | **FAIL** (all 4 targets, real universe) | `reports/sprint4_model_qa.md` |
+| Gate 4 | **Still FAIL** (all 4 targets, real universe) | `reports/sprint4_model_qa.md` |
 | WI-008 quarantine triage | Analysis done 2026-10-23: of 72 dead-letter rows, 2 already clean (stale), ~44 show corp-action level-step signatures, ~26 flagged genuine-vol but several are actually restructuring artifacts (OVV/WES 2020-03-09) — per-case verification still needed | `reports/wi008_quarantine_triage.md` |
 | BRK.B | **Resolved in data**: downloaded as `symbol=BRK B.parquet` (5,026 rows, 2006–2026, in the 508-ticker universe); audit CSV row stale | `IBKRDownload/data/audit_ingestion_usd.csv` (outdated) |
 | ELE (CAD) | **Missing entirely** — empty response, no parquet, not in dead-letter list | `IBKRDownload/data/audit_ingestion_cad.csv` |
 | Screener PDFs | Still structural demo only (WI-001 QA exception stands) | `reports/screener_*_20261021.pdf` |
+| WI-009 Technical Approach | Design phase complete, system preparation verified | `docs/workflow/designs/D-003-technical-trading-approach.md`, `docs/tech_approach/2026/W44/briefs/contrastive-learning-brief.md`, `docs/tech_approach/2026/W44/plans/contrastive-learning-plan.md` |
+| Model Escalation Config | Implementation verified and ready | Configuration files updated with `google/gemini-4-argon`, all human gating preserved |
 
 ## Open items (admin decisions / next actions)
 
-1. **Pick the WI-002 fork: E3 / E4 / E5** (order optional; E4 cheapest — analysis on existing oof, no retraining). This gates all further model work.
-2. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
-3. **WI-008 execution decision:** reinstate the 2 clean + how to handle the ~44 corp-action artifacts (split-adjust in loader vs keep quarantined). Needs a plan before next training run.
-4. Phase 2 pacing restore (WI-004) — deferred to next week by admin; 3 clean runs prerequisite.
+1. **WI-002 Gate Decision:** Approve target/metric redesign (H3 fix, factor-controlled) vs stop. All diagnostic evidence in `reports/diag_D002_summary.md`.
 
-## Historical entry (2026-10-22) — kept for audit trail; facts above supersede it
+2. **WI-009 Approval:** Review technical approach design (D-003) and move to READY for implementation. System preparation verified and ready.
+
+3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
+
+4. **WI-008 execution decision:** Reinstate the 2 clean + how to handle the ~44 corp-action artifacts (split-adjust in loader vs keep quarantined). Needs a plan before next training run.
+
+5. Phase 2 pacing restore (WI-004) — deferred to next week by admin; 3 clean runs prerequisite.
+
+## Historical entry (2026-10-23) — kept for audit trail; facts above supersede it
 
 ## Agent system (since 2026-10-22)
 - Model tiers: Build=DeepSeek V4 Pro · Plan=Sonnet 5.5 (writes `docs/plans/`) · reviewer=flash (incl. gate-compliance check) · guide=Sonnet 5.5 (mentor, read-only, repo-grounded teaching) · scribe=flash (maintains `docs/human/` human stream) · troubleshooter=Opus 5.5 (evidence-bundle escalation, BLOCKED instead of guessing).
