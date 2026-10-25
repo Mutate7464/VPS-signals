@@ -17,13 +17,13 @@ Produce a leakage-safe CAD 20-trading-day continuous forecast whose distribution
 
 ## STEPS
 
-### Step 0 — Verify inputs and target definitions
+### Step 0 — [x] Verify inputs and target definitions
 (a) Add `scripts/check_wi009c_inputs.py` to assert feature/target alignment, 701,599 target rows, 89 feature columns of `float32`, all five existing binary target columns, and `y_20d_stay` base rate within 0.5 percentage points of 44.8%; print the continuous 20d target and ATR/price columns used by the route. Do not alter source data.
 (b) Acceptance: the checker passes on the stated CAD artifacts and explicitly names the continuous target and threshold inputs used by later steps.
 (c) Verify: `uv run python scripts/check_wi009c_inputs.py && grep -E "701599|y_20d_stay|continuous target|ATR" reports/wi009c_inputs.txt`
 (d) STOP: if counts, alignment, dtype, base rate, or target/threshold definitions differ, record the observed values and stop; do not rebuild or silently substitute targets.
 
-### Step 1 — Cheap five-factor logistic probe
+### Step 1 — [x] Cheap five-factor logistic probe
 (a) Add `scripts/probe_wi009c.py`: score only E5 `mom_12_1`, `rev_1m`, `vol_20`, `amihud_20`, and `log_dollar_vol_20` against each existing binary target (`y_20d_up`, `y_20d_down`, `y_20d_stay`, `y_20d_high`, `y_20d_low`) using purged chronological CV with the 20td gap. Compare score-based within-date IC to the best single-factor baseline and apply the existing skill-bar threshold/same-sign clause. Write `reports/wi009c_probe.md`; no 89-feature model or robustness variant here.
 (b) Acceptance: report contains all five targets, fold/date counts, per-factor and logistic metrics, leakage-safe split evidence, and an explicit pass/negative result per target; no class-label scores substitute for probabilities.
 (c) Verify: `uv run python scripts/probe_wi009c.py --market CAD && grep -E "y_20d_(up|down|stay|high|low)|same-sign|negative result|purge" reports/wi009c_probe.md`
@@ -62,5 +62,13 @@ Produce a leakage-safe CAD 20-trading-day continuous forecast whose distribution
 ## EXECUTION LOG
 | Time | Step | Outcome | Concerns |
 |---|---:|---|---|
+| 06:19 | step 0 | PASS — added `scripts/check_wi009c_inputs.py`; wrote `reports/wi009c_inputs.txt`. Verify ran clean (exit 0): `features_CAD.parquet` 701599 rows / 89 float32 feature cols; `targets_CAD.parquet` 701599 rows / 5 int8 labels; (date,symbol) alignment dates identical=True, symbols identical=True, 0 dup keys; `y_20d_stay` base rate 44.84% (0.04pp from 44.8%, tolerance 0.5pp). Checker names the route inputs: continuous target `fwd_atr_ret_20 = (close.shift(-20) - close) / wilder_atr_20` (derived per symbol from raw OHLCV, not a parquet column) and ATR/price col `atr_pct_20` = wilder_atr_20/close (99.75% finite); thresholds TREND_ATR_MULT=2.0 (ATR-dollar), STAY_RET_MAX=0.05 (relative). No source data altered. | Plan Step 1(a) names the 20d labels `y_20d_high`/`y_20d_low`; the artifacts actually contain `y_15d_high`/`y_15d_low` (schema + `src.targets.TARGET_COLUMNS`). Used the real columns; the plan's `y_20d_high/low` grep alternates match nothing (steps 0/1 greps still exit 0). |
+| 06:21 | step 1 | NEGATIVE RESULT (recorded, not hidden) — added `scripts/probe_wi009c.py`; full CAD run wrote `reports/wi009c_probe.md`. Verify ran clean (exit 0). Panel 677,313 rows · 2691 dates · 313 symbols; five E5 factors only, logistic OOF probabilities via `PurgedWalkForwardSplit(5, embargo_td=20)` keyed by `date_positions`. OOF logit IC vs best single factor (same rows/dates, same-sign + |IC|≥ clause): `y_15d_high` +0.0001 vs `vol_20` +0.0288; `y_15d_low` +0.0304 vs +0.0288 (sign NO); `y_20d_up` +0.0123 vs `vol_20` +0.0307 (sign NO); `y_20d_down` -0.0231 vs +0.0307 (sign NO); `y_20d_stay` -0.0355 vs `rev_1m` +0.0669. **0/5 targets clear the bar** → labels not demonstrated learnable. Fold evidence: all 15 folds gap=20td, `purge_ok` OK. | (1) Per Step 1(d) STOP clause: no 89-feature spend, no optional candidates; the continuous baseline is limited to the same five factors. (2) Build assumption documented in the report: binary labels are scored against the aligned continuous forward move with `TARGET_DIRECTION` sign, and `y_20d_stay` against `-|fwd_atr_ret_20|` (the plan fixes the bar, not the per-label reference); class-label IC is never used. (3) Admin-adopted clause (a) is `same sign AND |IC| ≥`; `src.models.skill_bar` implements the strict-|IC| magnitude test, so `≥` is applied on top in the probe without editing the module (reuse preserved; differs only on exact ties). |
 
-STATUS: PLAN
+## Deviations
+
+- **Target names.** The plan's Step 1(a) lists `y_20d_high`/`y_20d_low`; the CAD artifact carries `y_15d_high`/`y_15d_low` (`TARGET_COLUMNS`, and WI-009c research doc line 25 lists the same five labels). Treated as a naming slip in the plan, not a missing artifact — the real five columns were probed. Step 0 was NOT stopped because the actual artifacts match the plan's Step 0 acceptance criteria (five existing binary target columns, counts, dtype, base rate) exactly.
+- **Probe reference metric (Build assumption).** The plan fixes the skill-bar bar but not how a *binary* label maps onto the score-based IC. Chosen mapping, documented in `reports/wi009c_probe.md`: `TARGET_DIRECTION`-signed `fwd_atr_ret_{15,20}` per label, `-|fwd_atr_ret_20|` for `y_20d_stay`. Flagged for the Planner in case Step 2's reference must follow a different convention.
+- **Board state.** `docs/workflow/BOARD.md` has WI-009c in READY, not EXECUTING; this session executed steps 0–1 on explicit admin instruction and did not touch the board (PM owns board updates).
+
+STATUS: DONE (steps 0-1) | evidence: `uv run python scripts/check_wi009c_inputs.py && grep -E "701599|y_20d_stay|continuous target|ATR" reports/wi009c_inputs.txt` (exit 0, STEP 0 CHECKER: PASS) and `uv run python scripts/probe_wi009c.py --market CAD && grep -E "y_20d_(up|down|stay|high|low)|same-sign|negative result|purge" reports/wi009c_probe.md` (exit 0, 0/5 targets clear the skill bar — documented negative result, Step 1(d) STOP clause applies: no 89-feature spend)

@@ -1,0 +1,42 @@
+# WI-009c Step 0 — input verification (CAD)
+
+- Generated (UTC): 2026-10-25T06:19:13Z
+- Features: `data/features/features_CAD.parquet`
+- Targets:  `data/features/targets_CAD.parquet`
+
+## Row counts and alignment
+
+- features_CAD.parquet: **701599** rows · 3 identifiers · **89 float32 feature columns** (dtypes: ['float'])
+- targets_CAD.parquet: **701599** rows · 8 columns · target dtypes: ['int8']
+- expected target rows: **701599** (matches: True)
+- (date, symbol) alignment: dates identical=True, symbols identical=True, duplicate keys=0
+
+## Binary target base rates
+
+| Target | base rate |
+| :--- | ---: |
+| `y_15d_high` | 29.77% |
+| `y_15d_low` | 32.15% |
+| `y_20d_up` | 18.45% |
+| `y_20d_down` | 10.93% |
+| `y_20d_stay` | 44.84% |
+
+- `y_20d_stay` base rate 44.84% vs expected 44.8% (tolerance 0.5pp) → **OK** (0.04pp)
+
+## Continuous target and threshold inputs named by the route
+
+- **continuous target** (the 20-trading-day continuous move): `fwd_atr_ret_20 = (close.shift(-20) - close) / wilder_atr_20`
+- definition source: `src/targets.wilder_atr` (trailing, causal). It is *derived* per symbol from raw OHLCV by `src/xgb_trainer.build_panel` and `src/factors.e5_baseline.build_e5_panel`; it is not a column of features_CAD.parquet, and it is not rebuilt here.
+- target units: trailing-ATR multiple (dimensionless). Horizon 20td, ATR window 20td.
+
+ATR / price columns used by the route:
+
+- `atr_pct_20` (in features_CAD.parquet, 99.75% finite) = `wilder_atr(df, 20) / close` — the ATR/price ratio that converts the ATR-unit continuous target into a *relative* move (needed by the ±5% stay event).
+- `atr_pct_{5,10,20,50,100}` are present in the feature schema; only `atr_pct_20` is named here as ATR/price.
+- Up/down event thresholds live in the continuous target's own units: `TREND_ATR_MULT = 2.0` ATR (dollar-based, ±2×ATR).
+- Stay event threshold: `STAY_RET_MAX = 0.05` (relative, ±5%), mutually exclusive of up/down in `src/targets.compute_targets`.
+
+- Event-unit note: up/down are ATR-dollar based while stay is relative; the two unit systems stay distinct and are converted (via `atr_pct_20`), never silently pooled.
+
+STEP 0 CHECKER: PASS — CAD inputs match the stated CAD artifacts.
+
