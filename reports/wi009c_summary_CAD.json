@@ -1,0 +1,162 @@
+{
+  "market": "CAD",
+  "generated_utc": "2026-10-25T10:01:12.785350+00:00",
+  "run_record": "reports/wi009c_regression_CAD.json",
+  "run_generated_utc": "2026-10-25T09:37:29.623154+00:00",
+  "probe_report": "reports/wi009c_probe.md",
+  "targets": [
+    {
+      "target": "y_15d_high",
+      "ic": 0.0001,
+      "t": 0.04,
+      "same_sign": true,
+      "clause_a": "FAIL",
+      "clause_b": "FAIL",
+      "skill_bar": "NEGATIVE RESULT"
+    },
+    {
+      "target": "y_15d_low",
+      "ic": 0.0304,
+      "t": 6.86,
+      "same_sign": false,
+      "clause_a": "FAIL",
+      "clause_b": "PASS",
+      "skill_bar": "NEGATIVE RESULT"
+    },
+    {
+      "target": "y_20d_up",
+      "ic": 0.0123,
+      "t": 3.15,
+      "same_sign": false,
+      "clause_a": "FAIL",
+      "clause_b": "FAIL",
+      "skill_bar": "NEGATIVE RESULT"
+    },
+    {
+      "target": "y_20d_down",
+      "ic": -0.0231,
+      "t": -5.19,
+      "same_sign": false,
+      "clause_a": "FAIL",
+      "clause_b": "FAIL",
+      "skill_bar": "NEGATIVE RESULT"
+    },
+    {
+      "target": "y_20d_stay",
+      "ic": -0.0355,
+      "t": -10.06,
+      "same_sign": true,
+      "clause_a": "FAIL",
+      "clause_b": "PASS",
+      "skill_bar": "NEGATIVE RESULT"
+    }
+  ],
+  "n_labels_cleared": 0,
+  "n_targets": 5,
+  "continuous_baseline": {
+    "n_oof_rows": 434470,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "folds_total": 5,
+    "masses": {
+      "mean_p_up": 0.28402742011361587,
+      "mean_p_down": 0.2132456480718335,
+      "mean_p_stay": 0.4634376361904655,
+      "mean_p_stay_exclusive": 0.40727610122843305,
+      "mean_sum_up_down_stay": 0.9607107043759149,
+      "mean_overlap_up_stay": 0.0299139141894895,
+      "mean_overlap_down_stay": 0.02624762015352746,
+      "realized_rate_up": 0.30495776463277097,
+      "realized_rate_down": 0.18475613966441873,
+      "realized_rate_stay": 0.4673809469008217,
+      "realized_rate_stay_exclusive": 0.4082813542937372
+    },
+    "calibration": {
+      "up": {
+        "n": 434470,
+        "mean_predicted": 0.28402742011361587,
+        "realized_rate": 0.30495776463277097,
+        "bias": -0.020930344519155097,
+        "brier": 0.2138350337517507
+      },
+      "down": {
+        "n": 434470,
+        "mean_predicted": 0.2132456480718335,
+        "realized_rate": 0.18475613966441873,
+        "bias": 0.028489508407414765,
+        "brier": 0.15651684779258682
+      },
+      "stay": {
+        "n": 434470,
+        "mean_predicted": 0.4634376361904655,
+        "realized_rate": 0.4673809469008217,
+        "bias": -0.003943310710356196,
+        "brier": 0.2246832984932584
+      },
+      "stay_exclusive": {
+        "n": 434470,
+        "mean_predicted": 0.40727610122843305,
+        "realized_rate": 0.4082813542937372,
+        "bias": -0.0010052530653041347,
+        "brier": 0.23476834979071656
+      }
+    },
+    "skill": {
+      "model_ic": 0.00011381508108395793,
+      "model_t": 0.027590428639330696,
+      "n_dates": 1615,
+      "best_factor": "vol_20",
+      "best_abs_ic": 0.030664031724385126,
+      "same_sign": false,
+      "pass_a": false,
+      "pass_b": false,
+      "passed": false
+    }
+  },
+  "shortlist": {
+    "path": "reports/wi009c_shortlist_CAD.csv",
+    "n_rows": 20,
+    "ordered_by_composite_desc": true,
+    "symbol_tie_break_ok": true,
+    "composite_max_abs_error": 1.1102230246251565e-16
+  },
+  "robustness": {
+    "path": "reports/wi009c_robustness.md",
+    "n_not_run": 3,
+    "n_go": 0,
+    "options": [
+      "regime",
+      "stacking",
+      "dynamic feature"
+    ]
+  },
+  "contrastive_candidate": {
+    "step1_permits_feature_spend": false,
+    "artifact_train_max_date": "2026-05-28",
+    "embargo_td": 20,
+    "run": false,
+    "fold_safe": null,
+    "offenders": [],
+    "status": "NOT RUN",
+    "reason": "Step 1 gate (plan Step 1(d)): no label cleared the unchanged skill bar, so the 89-feature spend and all optional candidates stay gated; the contrastive score is an 89-feature model output, so it is omitted and documented, not run.",
+    "market": "CAD",
+    "provenance": [
+      "artifact cutoff established from reports/wi009b_train_CAD.json: train_dates[-1] = 2026-05-28 (2585 training dates)",
+      "WI-009b validation window 2026-06-26 \u2192 2026-09-22",
+      "`models/contrastive_ranker_wi009b.pt` carries no cutoff metadata (state_dict/input_dim/embed_dim/feature_cols only)",
+      "artifact present: models/contrastive_ranker_wi009b.pt"
+    ],
+    "artifact": "models/contrastive_ranker_wi009b.pt"
+  },
+  "reproducibility": {
+    "mass_tolerance": 2e-05,
+    "problems": [],
+    "composite_max_abs_error": 5.21540641784668e-08
+  },
+  "human_gate": "claim/use decision left to the human gate; no gate marked passed"
+}

@@ -1,0 +1,787 @@
+{
+  "market": "CAD",
+  "generated_utc": "2026-10-25T10:01:03.693450+00:00",
+  "smoke": true,
+  "config": {
+    "n_splits": 5,
+    "embargo_td": 20,
+    "calib_fraction": 0.2,
+    "alpha": 100.0,
+    "max_dates": 60,
+    "features": [
+      "e5_mom_12_1",
+      "e5_rev_1m",
+      "e5_vol_20",
+      "e5_amihud_20",
+      "e5_log_dollar_vol_20"
+    ],
+    "continuous_target": "fwd_atr_ret_20",
+    "atr_price_column": "atr_pct_20",
+    "up_mult": 2.0,
+    "down_mult": -2.0,
+    "stay_ret_max": 0.05
+  },
+  "panel": {
+    "n_rows": 18780,
+    "n_symbols": 313,
+    "n_dates": 60,
+    "date_min": "2026-06-26",
+    "date_max": "2026-09-22"
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "skipped": "purge emptied the fit or calibration block",
+      "n_val_dates": 7
+    },
+    {
+      "fold": 1,
+      "skipped": "purge emptied the fit or calibration block",
+      "n_val_dates": 7
+    },
+    {
+      "fold": 2,
+      "skipped": "purge emptied the fit or calibration block",
+      "n_val_dates": 7
+    },
+    {
+      "fold": 3,
+      "skipped": "purge emptied the fit or calibration block",
+      "n_val_dates": 7
+    },
+    {
+      "fold": 4,
+      "n_fit_rows": 1565,
+      "n_cal_rows": 2191,
+      "n_val_rows": 2504,
+      "n_fit_dates": 5,
+      "n_cal_dates": 7,
+      "n_val_dates": 8,
+      "fit_min": "2026-06-26",
+      "fit_max": "2026-07-03",
+      "cal_min": "2026-08-04",
+      "cal_max": "2026-08-12",
+      "val_min": "2026-09-11",
+      "val_max": "2026-09-22",
+      "gap_fit_cal": 20,
+      "gap_fit_val": 47,
+      "gap_cal_val": 20,
+      "purge_ok": true,
+      "resid_mean": -0.4996237955860571,
+      "resid_std": 3.228752161391508
+    }
+  ],
+  "n_oof_rows": 2504,
+  "n_viable_folds": 1,
+  "residual_quantiles": {
+    "n": 2191,
+    "mean": -0.4996237955860571,
+    "std": 3.228752161391508,
+    "q01": -7.354448771476745,
+    "q05": -5.3496498465538025,
+    "q25": -2.838653266429901,
+    "q50": -0.8368008136749268,
+    "q75": 1.8476962745189667,
+    "q95": 4.883395284414291,
+    "q99": 6.9296441018581385
+  },
+  "calibration_masses": {
+    "mean_p_up": 0.3213352474470787,
+    "mean_p_down": 0.2472841263198417,
+    "mean_p_stay": 0.3838480977218741,
+    "mean_p_stay_exclusive": 0.3416508939416696,
+    "mean_sum_up_down_stay": 0.9524674714887944,
+    "mean_overlap_up_stay": 0.024500461516252226,
+    "mean_overlap_down_stay": 0.0176967422639523,
+    "realized_rate_up": 0.23761980830670926,
+    "realized_rate_down": 0.22963258785942492,
+    "realized_rate_stay": 0.46166134185303515,
+    "realized_rate_stay_exclusive": 0.4217252396166134
+  },
+  "calibration": {
+    "up": {
+      "n": 2504,
+      "mean_predicted": 0.3213352474470787,
+      "realized_rate": 0.23761980830670926,
+      "bias": 0.08371543914036944,
+      "brier": 0.18280122211302396,
+      "bins": [
+        {
+          "bin": 1,
+          "n": 248,
+          "lo": 0.02784116841624829,
+          "hi": 0.20812414422638065,
+          "mean_predicted": 0.16504836501229367,
+          "realized_rate": 0.07258064516129033
+        },
+        {
+          "bin": 2,
+          "n": 253,
+          "lo": 0.20812414422638065,
+          "hi": 0.25221360109539026,
+          "mean_predicted": 0.23107466224565823,
+          "realized_rate": 0.09486166007905138
+        },
+        {
+          "bin": 3,
+          "n": 250,
+          "lo": 0.25221360109539026,
+          "hi": 0.28795070743952533,
+          "mean_predicted": 0.2694240073026016,
+          "realized_rate": 0.18
+        },
+        {
+          "bin": 4,
+          "n": 247,
+          "lo": 0.28795070743952533,
+          "hi": 0.31857599269739845,
+          "mean_predicted": 0.30269024736823624,
+          "realized_rate": 0.27530364372469635
+        },
+        {
+          "bin": 5,
+          "n": 252,
+          "lo": 0.31857599269739845,
+          "hi": 0.3372889091738932,
+          "mean_predicted": 0.3271319177298182,
+          "realized_rate": 0.27380952380952384
+        },
+        {
+          "bin": 6,
+          "n": 233,
+          "lo": 0.3372889091738932,
+          "hi": 0.3546325878594249,
+          "mean_predicted": 0.3459862135971777,
+          "realized_rate": 0.33047210300429186
+        },
+        {
+          "bin": 7,
+          "n": 267,
+          "lo": 0.3546325878594249,
+          "hi": 0.3765403925148334,
+          "mean_predicted": 0.3655010196633487,
+          "realized_rate": 0.3146067415730337
+        },
+        {
+          "bin": 8,
+          "n": 248,
+          "lo": 0.3765403925148334,
+          "hi": 0.39205842081241443,
+          "mean_predicted": 0.38461227013736543,
+          "realized_rate": 0.31451612903225806
+        },
+        {
+          "bin": 9,
+          "n": 255,
+          "lo": 0.39205842081241443,
+          "hi": 0.4065267001369239,
+          "mean_predicted": 0.39971183361523516,
+          "realized_rate": 0.26666666666666666
+        },
+        {
+          "bin": 10,
+          "n": 251,
+          "lo": 0.4065267001369239,
+          "hi": 0.45184847101780007,
+          "mean_predicted": 0.4189558516277201,
+          "realized_rate": 0.2549800796812749
+        }
+      ]
+    },
+    "down": {
+      "n": 2504,
+      "mean_predicted": 0.2472841263198417,
+      "realized_rate": 0.22963258785942492,
+      "bias": 0.017651538460416782,
+      "brier": 0.16702830904685043,
+      "bins": [
+        {
+          "bin": 1,
+          "n": 246,
+          "lo": 0.09995435874030123,
+          "hi": 0.13646736649931537,
+          "mean_predicted": 0.12468041841532061,
+          "realized_rate": 0.17479674796747968
+        },
+        {
+          "bin": 2,
+          "n": 252,
+          "lo": 0.13646736649931537,
+          "hi": 0.15244180739388408,
+          "mean_predicted": 0.14426079270898987,
+          "realized_rate": 0.1111111111111111
+        },
+        {
+          "bin": 3,
+          "n": 251,
+          "lo": 0.15244180739388408,
+          "hi": 0.17480602464628023,
+          "mean_predicted": 0.16339752809846875,
+          "realized_rate": 0.11952191235059761
+        },
+        {
+          "bin": 4,
+          "n": 245,
+          "lo": 0.17480602464628023,
+          "hi": 0.1971702418986764,
+          "mean_predicted": 0.18506133626430946,
+          "realized_rate": 0.09795918367346938
+        },
+        {
+          "bin": 5,
+          "n": 249,
+          "lo": 0.1971702418986764,
+          "hi": 0.2227293473299863,
+          "mean_predicted": 0.20952820868137084,
+          "realized_rate": 0.18072289156626506
+        },
+        {
+          "bin": 6,
+          "n": 255,
+          "lo": 0.2227293473299863,
+          "hi": 0.24874486535828388,
+          "mean_predicted": 0.23533707412677532,
+          "realized_rate": 0.22745098039215686
+        },
+        {
+          "bin": 7,
+          "n": 255,
+          "lo": 0.24874486535828388,
+          "hi": 0.284892743039708,
+          "mean_predicted": 0.2646763497731361,
+          "realized_rate": 0.2627450980392157
+        },
+        {
+          "bin": 8,
+          "n": 232,
+          "lo": 0.284892743039708,
+          "hi": 0.3295298950251027,
+          "mean_predicted": 0.3082949054911157,
+          "realized_rate": 0.2801724137931034
+        },
+        {
+          "bin": 9,
+          "n": 268,
+          "lo": 0.3295298950251027,
+          "hi": 0.40273847558192627,
+          "mean_predicted": 0.3591830895726752,
+          "realized_rate": 0.4141791044776119
+        },
+        {
+          "bin": 10,
+          "n": 251,
+          "lo": 0.40273847558192627,
+          "hi": 0.7261524418073939,
+          "mean_predicted": 0.47155422127100904,
+          "realized_rate": 0.41434262948207173
+        }
+      ]
+    },
+    "stay": {
+      "n": 2504,
+      "mean_predicted": 0.3838480977218741,
+      "realized_rate": 0.46166134185303515,
+      "bias": -0.07781324413116103,
+      "brier": 0.21582560756609698,
+      "bins": [
+        {
+          "bin": 1,
+          "n": 251,
+          "lo": 0.08991328160657235,
+          "hi": 0.17631218621633957,
+          "mean_predicted": 0.15373831010962993,
+          "realized_rate": 0.18326693227091634
+        },
+        {
+          "bin": 2,
+          "n": 250,
+          "lo": 0.17631218621633957,
+          "hi": 0.21661341853035146,
+          "mean_predicted": 0.1954157918758558,
+          "realized_rate": 0.24
+        },
+        {
+          "bin": 3,
+          "n": 248,
+          "lo": 0.21661341853035146,
+          "hi": 0.2642628936558649,
+          "mean_predicted": 0.2381737606925693,
+          "realized_rate": 0.2862903225806452
+        },
+        {
+          "bin": 4,
+          "n": 251,
+          "lo": 0.2642628936558649,
+          "hi": 0.3235965312642629,
+          "mean_predicted": 0.29797923777277924,
+          "realized_rate": 0.3745019920318725
+        },
+        {
+          "bin": 5,
+          "n": 252,
+          "lo": 0.3235965312642629,
+          "hi": 0.3726608854404382,
+          "mean_predicted": 0.3471506813588055,
+          "realized_rate": 0.43253968253968256
+        },
+        {
+          "bin": 6,
+          "n": 249,
+          "lo": 0.3726608854404382,
+          "hi": 0.4162482884527613,
+          "mean_predicted": 0.3924928376215955,
+          "realized_rate": 0.39759036144578314
+        },
+        {
+          "bin": 7,
+          "n": 252,
+          "lo": 0.4162482884527613,
+          "hi": 0.46695572797809226,
+          "mean_predicted": 0.4432997906297769,
+          "realized_rate": 0.5317460317460317
+        },
+        {
+          "bin": 8,
+          "n": 250,
+          "lo": 0.46695572797809226,
+          "hi": 0.5223185759926974,
+          "mean_predicted": 0.49376722957553626,
+          "realized_rate": 0.728
+        },
+        {
+          "bin": 9,
+          "n": 249,
+          "lo": 0.5223185759926974,
+          "hi": 0.5947056138749429,
+          "mean_predicted": 0.5563779536218814,
+          "realized_rate": 0.5943775100401606
+        },
+        {
+          "bin": 10,
+          "n": 252,
+          "lo": 0.5947056138749429,
+          "hi": 0.9963486992240986,
+          "mean_predicted": 0.7180529293719617,
+          "realized_rate": 0.8452380952380952
+        }
+      ]
+    },
+    "stay_exclusive": {
+      "n": 2504,
+      "mean_predicted": 0.3416508939416696,
+      "realized_rate": 0.4217252396166134,
+      "bias": -0.08007434567494381,
+      "brier": 0.23163732589901087,
+      "bins": [
+        {
+          "bin": 1,
+          "n": 251,
+          "lo": 0.08991328160657235,
+          "hi": 0.17631218621633957,
+          "mean_predicted": 0.15373831010962993,
+          "realized_rate": 0.18326693227091634
+        },
+        {
+          "bin": 2,
+          "n": 250,
+          "lo": 0.17631218621633957,
+          "hi": 0.21661341853035146,
+          "mean_predicted": 0.1954157918758558,
+          "realized_rate": 0.24
+        },
+        {
+          "bin": 3,
+          "n": 248,
+          "lo": 0.21661341853035146,
+          "hi": 0.2642628936558649,
+          "mean_predicted": 0.2381737606925693,
+          "realized_rate": 0.2862903225806452
+        },
+        {
+          "bin": 4,
+          "n": 251,
+          "lo": 0.2642628936558649,
+          "hi": 0.3235965312642629,
+          "mean_predicted": 0.29797923777277924,
+          "realized_rate": 0.3745019920318725
+        },
+        {
+          "bin": 5,
+          "n": 252,
+          "lo": 0.3235965312642629,
+          "hi": 0.3726608854404382,
+          "mean_predicted": 0.3471506813588055,
+          "realized_rate": 0.43253968253968256
+        },
+        {
+          "bin": 6,
+          "n": 249,
+          "lo": 0.3726608854404382,
+          "hi": 0.4162482884527613,
+          "mean_predicted": 0.3924928376215955,
+          "realized_rate": 0.39759036144578314
+        },
+        {
+          "bin": 7,
+          "n": 251,
+          "lo": 0.4162482884527613,
+          "hi": 0.4418073938840712,
+          "mean_predicted": 0.43362469792214076,
+          "realized_rate": 0.5418326693227091
+        },
+        {
+          "bin": 8,
+          "n": 244,
+          "lo": 0.4418073938840712,
+          "hi": 0.4495664080328617,
+          "mean_predicted": 0.44688030766698345,
+          "realized_rate": 0.5778688524590164
+        },
+        {
+          "bin": 9,
+          "n": 256,
+          "lo": 0.4495664080328617,
+          "hi": 0.45549977179370155,
+          "mean_predicted": 0.45305011980830673,
+          "realized_rate": 0.56640625
+        },
+        {
+          "bin": 10,
+          "n": 252,
+          "lo": 0.45549977179370155,
+          "hi": 0.45823824737562757,
+          "mean_predicted": 0.4568237305571856,
+          "realized_rate": 0.6150793650793651
+        }
+      ]
+    }
+  },
+  "skill": {
+    "model_ic": 0.27589795572551823,
+    "model_t": 6.349291929879969,
+    "n_dates": 8,
+    "best_factor": "vol_20",
+    "best_abs_ic": 0.28931387389192476,
+    "same_sign": false,
+    "pass_a": false,
+    "pass_b": true,
+    "passed": false,
+    "factor_table": {
+      "mom_12_1": {
+        "ic": -0.1131689052537987,
+        "t": -2.4672932207782368,
+        "n_dates": 8
+      },
+      "rev_1m": {
+        "ic": -0.07228694380287176,
+        "t": -3.2395300994561085,
+        "n_dates": 8
+      },
+      "vol_20": {
+        "ic": -0.28931387389192476,
+        "t": -6.935888439797481,
+        "n_dates": 8
+      },
+      "amihud_20": {
+        "ic": -0.04600140999290894,
+        "t": -4.244112856660747,
+        "n_dates": 8
+      },
+      "log_dollar_vol_20": {
+        "ic": -0.04395612781431141,
+        "t": -4.087641385014865,
+        "n_dates": 8
+      }
+    },
+    "caveats": [
+      "SIGN INVERTED \u2014 the model's val IC has the opposite sign to the best factor (+0.2759 vs `vol_20` -0.2893). Clause (a) is a |IC| comparison, so it is met in MAGNITUDE only: the model is anti-correlated with forward returns on this window, and a sign flip (which would make the sign positive) is not claimed here because it would be chosen on this same window."
+    ]
+  },
+  "shortlist": {
+    "as_of_date": "2026-09-22",
+    "n_candidates": 313,
+    "rows": [
+      {
+        "rank": 1,
+        "symbol": "ABT",
+        "p_up": 0.43450479233226835,
+        "p_down": 0.11136467366499316,
+        "composite": 0.3231401186672752,
+        "p_stay": 0.4952076677316294,
+        "forecast": 2.2171475887298584
+      },
+      {
+        "rank": 2,
+        "symbol": "LBS.PR.A",
+        "p_up": 0.43450479233226835,
+        "p_down": 0.11136467366499316,
+        "composite": 0.3231401186672752,
+        "p_stay": 0.9963486992240986,
+        "forecast": 2.21889066696167
+      },
+      {
+        "rank": 3,
+        "symbol": "BKNG",
+        "p_up": 0.4340483797352807,
+        "p_down": 0.11182108626198083,
+        "composite": 0.32222729347329987,
+        "p_stay": 0.34413509812870835,
+        "forecast": 2.2162282466888428
+      },
+      {
+        "rank": 4,
+        "symbol": "MRG.UN",
+        "p_up": 0.4340483797352807,
+        "p_down": 0.11182108626198083,
+        "composite": 0.32222729347329987,
+        "p_stay": 0.6499315381104519,
+        "forecast": 2.215754270553589
+      },
+      {
+        "rank": 5,
+        "symbol": "PEP",
+        "p_up": 0.4340483797352807,
+        "p_down": 0.11182108626198083,
+        "composite": 0.32222729347329987,
+        "p_stay": 0.5874030123231401,
+        "forecast": 2.2144696712493896
+      },
+      {
+        "rank": 6,
+        "symbol": "MA",
+        "p_up": 0.4299406663623916,
+        "p_down": 0.11364673664993154,
+        "composite": 0.31629392971246006,
+        "p_stay": 0.6134185303514377,
+        "forecast": 2.1640961170196533
+      },
+      {
+        "rank": 7,
+        "symbol": "CRR.UN",
+        "p_up": 0.4258329529895025,
+        "p_down": 0.1182108626198083,
+        "composite": 0.30762209036969423,
+        "p_stay": 0.5924235508900045,
+        "forecast": 2.113614320755005
+      },
+      {
+        "rank": 8,
+        "symbol": "CGO",
+        "p_up": 0.42309447740757644,
+        "p_down": 0.1204929256047467,
+        "composite": 0.30260155180282977,
+        "p_stay": 0.45869465997261527,
+        "forecast": 2.093993663787842
+      },
+      {
+        "rank": 9,
+        "symbol": "HD",
+        "p_up": 0.4226380648105888,
+        "p_down": 0.1204929256047467,
+        "composite": 0.3021451392058421,
+        "p_stay": 0.4910999543587403,
+        "forecast": 2.0903398990631104
+      },
+      {
+        "rank": 10,
+        "symbol": "MTY",
+        "p_up": 0.4226380648105888,
+        "p_down": 0.12094933820173437,
+        "composite": 0.30168872660885443,
+        "p_stay": 0.47193062528525787,
+        "forecast": 2.088705062866211
+      },
+      {
+        "rank": 11,
+        "symbol": "BX",
+        "p_up": 0.4217252396166134,
+        "p_down": 0.12277498858968508,
+        "composite": 0.2989502510269283,
+        "p_stay": 0.41533546325878595,
+        "forecast": 2.0796961784362793
+      },
+      {
+        "rank": 12,
+        "symbol": "CRT.UN",
+        "p_up": 0.42035600182565036,
+        "p_down": 0.1241442263806481,
+        "composite": 0.29621177544500227,
+        "p_stay": 0.6385212231857599,
+        "forecast": 2.0621731281280518
+      },
+      {
+        "rank": 13,
+        "symbol": "T",
+        "p_up": 0.4185303514376997,
+        "p_down": 0.12505705157462346,
+        "composite": 0.29347329986307624,
+        "p_stay": 0.4691921497033318,
+        "forecast": 2.0520880222320557
+      },
+      {
+        "rank": 14,
+        "symbol": "XRE",
+        "p_up": 0.41761752624372434,
+        "p_down": 0.1259698767685988,
+        "composite": 0.29164764947512556,
+        "p_stay": 0.7667731629392971,
+        "forecast": 2.045635223388672
+      },
+      {
+        "rank": 15,
+        "symbol": "RSI",
+        "p_up": 0.41761752624372434,
+        "p_down": 0.12688270196257417,
+        "composite": 0.29073482428115016,
+        "p_stay": 0.7334550433591968,
+        "forecast": 2.039799451828003
+      },
+      {
+        "rank": 16,
+        "symbol": "COST",
+        "p_up": 0.41716111364673664,
+        "p_down": 0.12733911455956184,
+        "composite": 0.28982199908717476,
+        "p_stay": 0.6225467822911912,
+        "forecast": 2.033231258392334
+      },
+      {
+        "rank": 17,
+        "symbol": "PBH",
+        "p_up": 0.41716111364673664,
+        "p_down": 0.12733911455956184,
+        "composite": 0.28982199908717476,
+        "p_stay": 0.5006846188954815,
+        "forecast": 2.028886079788208
+      },
+      {
+        "rank": 18,
+        "symbol": "DIR.UN",
+        "p_up": 0.41533546325878595,
+        "p_down": 0.1282519397535372,
+        "composite": 0.2870835235052488,
+        "p_stay": 0.5741670470104975,
+        "forecast": 2.004051923751831
+      },
+      {
+        "rank": 19,
+        "symbol": "JWEL",
+        "p_up": 0.41487905066179825,
+        "p_down": 0.1282519397535372,
+        "composite": 0.2866271109082611,
+        "p_stay": 0.9324509356458238,
+        "forecast": 1.996739149093628
+      },
+      {
+        "rank": 20,
+        "symbol": "KMP.UN",
+        "p_up": 0.41487905066179825,
+        "p_down": 0.1282519397535372,
+        "composite": 0.2866271109082611,
+        "p_stay": 0.5686900958466453,
+        "forecast": 1.9875407218933105
+      }
+    ]
+  },
+  "contrastive_candidate": null,
+  "robustness": {
+    "facts": {
+      "step1_permits_feature_spend": false,
+      "n_labels_cleared": 0,
+      "baseline_weakness_documented": true,
+      "contrastive_score_fold_safe": false,
+      "feature_pool_larger_than_baseline": true
+    },
+    "options": [
+      {
+        "key": "regime",
+        "title": "Trailing market-state / regime features",
+        "switch": "--robustness-regime",
+        "gates": [
+          {
+            "name": "step1_permits_feature_spend",
+            "met": false,
+            "evidence": "plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe."
+          },
+          {
+            "name": "baseline_weakness_documented",
+            "met": true,
+            "evidence": "continuous baseline skill bar FAIL: IC +0.0001 (t +0.03) vs `e5_vol_20` |IC| +0.0307, same-sign False \u2014 a documented weakness exists to aim an option at (necessary, not sufficient: the Step-1 gate above is also required)."
+          }
+        ],
+        "go": false,
+        "gate_decision": "NO-GO",
+        "unmet_gates": [
+          "step1_permits_feature_spend"
+        ],
+        "status": "NOT RUN",
+        "reason": "gate(s) unmet \u2014 step1_permits_feature_spend: plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe. Optional candidate left unbuilt (plan Step 4(a)/(d)); this is a documented no-go, not an execution failure.",
+        "feature_provenance": "would add **trailing** market-state/regime columns computed from raw OHLCV through `src.factors.e5_baseline.build_e5_panel` (trailing windows only, so no forward-looking window enters a training row). Nothing is read from `data/features/features_CAD.parquet`, and no column is built in this work item: that is feature spend, gated by Step 1(d).",
+        "comparison": "same-sign and |IC| of the option vs the five E5 factors on **identical purged folds** (same fold plan, same 20td purge, same out-of-fold rows); an option is accepted only if it then passes the **unchanged** skill bar \u2014 clause (a) same sign as the best factor AND |IC| >=, clause (b) |t| > 2 with a stable sign in >= 2 disjoint sub-windows."
+      },
+      {
+        "key": "stacking",
+        "title": "Factor + contrastive + continuous-regressor stacking",
+        "switch": "--robustness-stacking",
+        "gates": [
+          {
+            "name": "step1_permits_feature_spend",
+            "met": false,
+            "evidence": "plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe."
+          },
+          {
+            "name": "contrastive_score_fold_safe",
+            "met": false,
+            "evidence": "plan Step 3(a)/(d): fold-safe contrastive score \u2014 status NOT RUN, fold_safe None. Step 1 gate (plan Step 1(d)): no label cleared the unchanged skill bar, so the 89-feature spend and all optional candidates stay gated; the contrastive score is an 89-feature model output, so it is omitted and documented, not run."
+          }
+        ],
+        "go": false,
+        "gate_decision": "NO-GO",
+        "unmet_gates": [
+          "step1_permits_feature_spend",
+          "contrastive_score_fold_safe"
+        ],
+        "status": "NOT RUN",
+        "reason": "gate(s) unmet \u2014 step1_permits_feature_spend: plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe.; contrastive_score_fold_safe: plan Step 3(a)/(d): fold-safe contrastive score \u2014 status NOT RUN, fold_safe None. Step 1 gate (plan Step 1(d)): no label cleared the unchanged skill bar, so the 89-feature spend and all optional candidates stay gated; the contrastive score is an 89-feature model output, so it is omitted and documented, not run. Optional candidate left unbuilt (plan Step 4(a)/(d)); this is a documented no-go, not an execution failure.",
+        "feature_provenance": "would append the fold-safe `score_numpy` output of `models/contrastive_ranker_wi009b.pt` as **one** extra column on the five E5 factors (via `src.models.continuous_targets.stacked_input_matrix`), never replacing the continuous model and never becoming the final ranking. The score is an 89-feature model output, so using it is 89-feature spend \u2014 gated by Step 1(d) \u2014 and its fold-safety must be established first (Step 3(a)/(d)).",
+        "comparison": "same-sign and |IC| of the option vs the five E5 factors on **identical purged folds** (same fold plan, same 20td purge, same out-of-fold rows); an option is accepted only if it then passes the **unchanged** skill bar \u2014 clause (a) same sign as the best factor AND |IC| >=, clause (b) |t| > 2 with a stable sign in >= 2 disjoint sub-windows."
+      },
+      {
+        "key": "dynamic_feature_selection",
+        "title": "Dynamic feature selection (per-fold subset of the 89-feature pool)",
+        "switch": "--robustness-dynamic",
+        "gates": [
+          {
+            "name": "step1_permits_feature_spend",
+            "met": false,
+            "evidence": "plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe."
+          },
+          {
+            "name": "feature_pool_larger_than_baseline",
+            "met": true,
+            "evidence": "plan Step 4(d): feature selection needs a candidate pool larger than the 5 baseline factors; the only larger pool is the 89-feature matrix, whose read is the gated 89-feature spend."
+          }
+        ],
+        "go": false,
+        "gate_decision": "NO-GO",
+        "unmet_gates": [
+          "step1_permits_feature_spend"
+        ],
+        "status": "NOT RUN",
+        "reason": "gate(s) unmet \u2014 step1_permits_feature_spend: plan Step 1(d)/Step 4(d): 0/5 labels cleared the unchanged skill bar in `reports/wi009c_probe.md`, so the 89-feature spend and every optional candidate stay gated and the feature set may not be expanded after a failed probe. Optional candidate left unbuilt (plan Step 4(a)/(d)); this is a documented no-go, not an execution failure.",
+        "feature_provenance": "would select a per-fold subset of the 89 `float32` columns of `data/features/features_CAD.parquet` (bounded, `pyarrow.dataset` date chunks). Reading that pool *is* the 89-feature spend gated by Step 1(d); with the baseline deliberately limited to the same five factors, there is no larger pool in scope to select from.",
+        "comparison": "same-sign and |IC| of the option vs the five E5 factors on **identical purged folds** (same fold plan, same 20td purge, same out-of-fold rows); an option is accepted only if it then passes the **unchanged** skill bar \u2014 clause (a) same sign as the best factor AND |IC| >=, clause (b) |t| > 2 with a stable sign in >= 2 disjoint sub-windows."
+      }
+    ],
+    "n_attempted": 0,
+    "n_not_run": 3,
+    "n_go": 0,
+    "option_bodies_implemented": false,
+    "embargo_td": 20,
+    "n_base_features": 5,
+    "n_pool_features": 89,
+    "comparison": "same-sign and |IC| of the option vs the five E5 factors on **identical purged folds** (same fold plan, same 20td purge, same out-of-fold rows); an option is accepted only if it then passes the **unchanged** skill bar \u2014 clause (a) same sign as the best factor AND |IC| >=, clause (b) |t| > 2 with a stable sign in >= 2 disjoint sub-windows.",
+    "requested_switches": []
+  },
+  "elapsed_s": 5.50023889541626
+}
