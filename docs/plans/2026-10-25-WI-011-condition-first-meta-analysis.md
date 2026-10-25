@@ -5,21 +5,23 @@
 
 ## Product goal this item serves (admin, 2026-10-25)
 
-Decision-support screener with a hard usage spec: **~200 trades/year** target.
-Derived concurrency envelope (200 trades/yr / 252 trading days):
+Decision-support screener. Usage spec (admin clarification 2026-10-25): **~200
+trades/year ≈ one action (buy OR sell) per trading day on average — a
+PREFERENCE qualifying intended use, not a hard cap.** The screener's output is
+consumed daily: each day it should surface roughly one action candidate
+(200/252 ≈ 0.8/day), drawn from a ranked shortlist. Derived concurrency
+envelope (for sizing, preference-scaled):
 
 | Avg hold | Concurrent positions |
 |---|---|
 | 5d | ~4 |
 | 10d | ~8 |
 | 15d | ~12 |
-| 20d | ~16 |
 
-This spec is a *filter on conditions*: a "tradeable condition" must fire often
-enough (200 signal-events/yr across the ~315-name CAD universe ≈ 0.6 events/day)
-and few enough to stay inside the concurrency envelope. A condition firing
-daily per-name is 200× oversupply; a condition firing < 0.6/day total is
-under-supplied. Frequency is part of the acceptance bar, not an afterthought.
+Filter on conditions: a "tradeable condition" must fire often enough to fill
+~200 actions/yr across the ~315-name universe and few enough that the daily
+shortlist stays consumable (a screen surfacing 50 names/day is not a
+1-action/day screen). Frequency is part of the acceptance bar.
 
 ## Why this and not another model (from WI-009x findings)
 
@@ -42,6 +44,17 @@ percentile vs own trailing history), liquidity regime (amihud percentile),
 TS momentum state (price vs own trailing MA / 52w channel position).
 Acceptance: each condition is trailing, point-in-time, per-symbol; unit tests
 assert no forward-window inputs.
+
+### Step 1b — Indicator association analysis (admin direction 2026-10-25)
+Descriptive correlation structure across the indicator panel: which indicators
+co-associate (redundancy → drop), and which indicator values mark *extremes*
+(local peaks/bottoms) vs *trends* (upward/downward states) — association only
+(no forward-return claims here; that's Step 2's job). Output feeds the Step-1
+condition vocabulary: conditions are built from the indicators that empirically
+mark states, not from the full 89-feature pile.
+Acceptance: `reports/wi011_indicator_association.md` — indicator × state
+association table (extreme/trend), redundancy clusters, and the derived
+candidate-condition list.
 
 ### Step 2 — Conditional expectancy tables (the meta-analysis core)
 Walk-forward, purged 20td: per condition bucket × **horizon in {1, 2, 5, 10,
