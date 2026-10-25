@@ -1,6 +1,6 @@
 # D-002 / E5 — Unpredictability floor (USD)
 
-- Generated (UTC): 2026-10-24T18:56:37Z
+- Generated (UTC): 2026-10-25T00:34:34Z
 - Factors: mom_12_1, rev_1m, vol_20, amihud_20, log_dollar_vol_20 · ridge (continuous `fwd_atr_ret`) + logistic (binary = within-date median split of `fwd_atr_ret_15`) · 5-fold purged WF, 20d embargo
 
 ## Single-factor per-date Spearman rank-IC
@@ -15,7 +15,7 @@
 
 - ridge `fwd_atr_ret_15` oof rank-IC: +0.0083 (t = +2.25, 1722 dates)
 - ridge `fwd_atr_ret_20` oof rank-IC: +0.0075 (t = +2.05, 1722 dates)
-- logit_median_split `fwd_atr_ret_15` oof rank-IC: -0.0080 (t = -2.78, 1722 dates)
+- logit_median_split `fwd_atr_ret_15` oof rank-IC: -0.0055 (t = -1.67, 1722 dates)
 
 ## Verdict
 

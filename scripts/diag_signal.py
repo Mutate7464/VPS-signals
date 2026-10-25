@@ -552,7 +552,12 @@ def run_e5(market: str) -> int:
     for t in ("fwd_atr_ret_15", "fwd_atr_ret_20"):
         panel = panel.dropna(subset=[t])
 
-    dates_unique = panel["date"].unique()
+    # Sorted unique dates. PurgedWalkForwardSplit is fed this array, so the index
+    # sets it returns are POSITIONS into it. Feeding an unsorted array makes those
+    # indices arbitrary w.r.t. date order, and mapping them through pd.factorize
+    # codes (assigned by order of first appearance, i.e. symbol order) is a
+    # category error that leaks held-out rows into training on real data.
+    dates_unique = np.sort(pd.unique(panel["date"]))
     splitter = PurgedWalkForwardSplit(n_splits=5, embargo_td=20)
     splits = list(splitter.split(dates_unique))
 
@@ -580,7 +585,7 @@ def run_e5(market: str) -> int:
 
     # Multivariate ridge / logistic with purged WF
     X_all = panel[FACTORS].to_numpy(dtype="float32")
-    date_codes, _ = pd.factorize(panel["date"])
+    date_pos = np.searchsorted(dates_unique, panel["date"].to_numpy())
 
     results = {}
     for target_name, model_kind, model_fn in (
@@ -596,13 +601,18 @@ def run_e5(market: str) -> int:
             y = panel[target_name].to_numpy(dtype="float32")
         oof_pred = np.full(len(panel), np.nan)
         for tr_idx, val_idx in splits:
-            tr_rows = np.isin(date_codes, tr_idx)
-            va_rows = np.isin(date_codes, val_idx)
+            tr_rows = np.isin(date_pos, tr_idx)
+            va_rows = np.isin(date_pos, val_idx)
             if not tr_rows.any() or not va_rows.any():
                 continue
             m = model_fn()
             m.fit(X_all[tr_rows], y[tr_rows])
-            oof_pred[va_rows] = m.predict(X_all[va_rows])
+            if model_kind == "logit_median_split":
+                # Score with probabilities: `predict` returns class labels (0/1),
+                # which inflates the apparent rank-IC (WI-002 one-line fix).
+                oof_pred[va_rows] = m.predict_proba(X_all[va_rows])[:, 1]
+            else:
+                oof_pred[va_rows] = m.predict(X_all[va_rows])
         mask = np.isfinite(oof_pred) & np.isfinite(panel["fwd_atr_ret_15"].to_numpy())
         sub = pd.DataFrame({
             "date": panel["date"].to_numpy()[mask],

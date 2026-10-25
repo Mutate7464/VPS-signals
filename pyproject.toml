@@ -16,7 +16,16 @@ dependencies = [
     "matplotlib>=3.8",
     "ib_async>=0.6",
     "pandas_market_calendars>=4.4",
+    "torch>=2.1.0",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

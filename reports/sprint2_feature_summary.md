@@ -1,21 +1,21 @@
 # Sprint 2 — Feature Engineering & Target Summary (Gate 2)
 
-- Generated (UTC): 2026-10-23T20:11:59.862338+00:00
+- Generated (UTC): 2026-10-25T00:00:37.442517+00:00
 
-## USD
+## CAD
 
-- Ticker count: **508**
-- Labeled rows: **1240275**
+- Ticker count: **315**
+- Labeled rows: **701599**
 - Feature columns: **89**
 - Feature dtype: `float32` | Target dtype: `int8`
-- Mean NaN fraction across features: **0.39%**
+- Mean NaN fraction across features: **0.57%**
 
 ### Target class balance
 
 | Target | Positive | Negative | Positive rate |
 | :--- | ---: | ---: | ---: |
-| `y_15d_high` | 372625 | 867650 | 30.04% |
-| `y_15d_low` | 423860 | 816415 | 34.17% |
-| `y_20d_up` | 241416 | 998859 | 19.46% |
-| `y_20d_down` | 142278 | 1097997 | 11.47% |
+| `y_15d_high` | 208888 | 492711 | 29.77% |
+| `y_15d_low` | 225536 | 476063 | 32.15% |
+| `y_20d_up` | 129419 | 572180 | 18.45% |
+| `y_20d_down` | 76666 | 624933 | 10.93% |
 

@@ -35,7 +35,10 @@ IBKRDownload/api-exported-logs.txt
 IBKRDownload/*.log.txt
 
 # ── Regenerable artifacts ──
-models/
+# Anchored: an unanchored `models/` also matched src/models/ (WI-009 source
+# modules), which would have silently excluded them from every commit.
+/models/
+data/models/
 reports/*.pdf
 data/features/
 data/train_meta_*.json
