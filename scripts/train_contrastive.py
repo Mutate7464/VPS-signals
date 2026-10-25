@@ -200,7 +200,11 @@ def main() -> int:
           + ", ".join(f"{k} {v[0]:+.4f} (t {v[1]:+.2f})" for k, v in factor_stats.items()))
 
     epochs_log = []
-    best = {"rank_ic": -np.inf, "epoch": -1, "t": float("nan"), "state": None}
+    # Skill-bar clause (a) evaluates |IC|, so early stopping must select on |IC|
+    # too (WI-009b reviewer F1): raw-IC selection picks the epoch closest to zero
+    # when the model is consistently anti-correlated. Init 0.0 = "any epoch with
+    # nonzero signal beats nothing"; |IC|-compare handles both signs.
+    best = {"rank_ic": 0.0, "epoch": -1, "t": float("nan"), "state": None}
     stale = 0
     early_stopped = False
 
@@ -249,7 +253,7 @@ def main() -> int:
               f"pairs={n_pairs:,} val_rank_ic={ic:+.4f} t={t:+.2f} dates={n_d} "
               f"secs={secs:.0f} rss={_rss_mb():.0f}MB", flush=True)
 
-        if np.isfinite(ic) and ic > best["rank_ic"]:
+        if np.isfinite(ic) and abs(ic) > abs(best["rank_ic"]):
             best = {"rank_ic": float(ic), "epoch": epoch, "t": float(t),
                     "state": {k: v.clone() for k, v in model.state_dict().items()}}
             stale = 0

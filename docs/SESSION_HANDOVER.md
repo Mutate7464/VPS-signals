@@ -2,7 +2,7 @@
 
 > **Update this file at the END of every working session.** Anyone (agent or admin) starting cold reads this first, then `docs/README.md` for the doc map. **For what-now/what-next, see `workflow/BOARD.md`** (the kanban); this file is state, the board is the queue.
 
-- **Last Updated (UTC):** 2026-10-25 ~00:25 UTC (PM cycle 5 + addendum: WI-002 closed — pivot to WI-009; CAD dataset switch; torch verified; E5 root-caused; repo cleanup + tech_approach integrated week-based)
+- **Last Updated (UTC):** 2026-10-25 ~05:40 UTC (PM cycle 9 + admin-directed Build: WI-009b F1 early-stop fix landed + re-run (clause-a margin 3.1%→16.0%, sign question unchanged, gate still open); y_20d_stay target added (±5% band, exclusive of up/down), targets USD+CAD rebuilt row-for-row identical; xgb_trainer stay fallback + exit_urgency event-only fix; WI-009c classifier-route research doc written, admin scope decision pending)
 - **Execution mode (from 2026-10-22):** admin drives work directly in VS Code + opencode; **Hermes verifies results and maintains the board/handover**. Phase 2 pacing deferred to next week by admin.
 - **Current Phase:** **WI-009 in PLAN (do-next); WI-002 closed 2026-10-24 by admin gate decision: pivot to WI-009.** E3–E5 verdicts stand (H3 yes / H2 no / H4 no): signal exists in continuous fwd-ATR-return space; binary labels/within-date gates are blind to it; classic factors are present — so the pivot goes to D-003 Option 2 (hybrid technical-factor, contrastive pairwise ranking for top-10 recommendations, IBKR technical data only), with E5's factors as mandatory baselines. **Dataset switched to CAD (admin 2026-10-24):** stale 2026-10-21 CAD features/targets/catalog must be rebuilt as plan Step 0 (they predate the fib expansion and the R-08 index fix); ELE missing. Framework: PyTorch CPU PM-verified usable on this VPS (torch 2.14.1+cpu, 0.40 s smoke, 0.33 GB, 2 threads); E5 sign flip root-caused (target-definition artifact — see RISKS R-04). tech_approach docs restructured to week-based `YYYY-WW` (2026-W44); the draft WI-009 plan needs a planner pass (per-step verification commands, D-003 scope reconciliation, reuse of the 89 existing features) before Build.
 
@@ -22,13 +22,13 @@
 
 ## Open items (admin decisions / next actions)
 
-1. **WI-009 planner pass → EXECUTING** — paste the cycle-5 Build prompt v2 (PM cycle report) into opencode; refine the draft plan to workflow-contract format on **CAD** (admin switch 2026-10-24 — stale 2026-10-21 CAD features/targets/catalog must be rebuilt as plan Step 0), then execute.
+1. **WI-009b gate decision (BLOCKING, admin):** read `docs/human/briefings/2026-10-25-gate-WI-009b-skill-bar.md` (+ cycle-9 addendum — F1 fixed, clause-a margin now 16.0% relative, sign inversion unchanged). Responses: "gate approved" / "hold — <question>" (suggested re-spec: clause (a) same-sign AND |IC|) / "reject" (ship E5 factors as the D-003 Option 2 signal instead).
 
-2. **Framework: PyTorch CPU verified usable** (PM probe 2026-10-24: torch 2.14.1+cpu on Python 3.14; 0.40 s smoke, 0.33 GB RSS, 2 threads, 810 MB disk) — planner picks torch (Siamese pairwise) or xgboost `rank:pairwise`; either fits guardrails. E5 sign flip root-caused (target-definition artifact; class-label eval overstated it — logit −0.0055/t−1.67 with proper scores); one-line `predict_proba` fix folded into WI-009 Deviations.
+2. **WI-009c scope decision (admin):** classifier route to usable targets — research doc `docs/plans/2026-10-25-WI-009c-classifier-research.md` states the open questions (label-vs-feature problem; 3-class ordinal vs independent binaries vs continuous regression; Gate-4 bar vs skill bar). Key prior: Gate 4 FAILED on USD (all 4 targets ≈ random); WI-002 says signal lives in continuous space. PM proposal: cheap factor-only logistic first, full xgb CAD run last. Pick Q-order + Q3 design.
 
 3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
 
-4. **WI-008 execution decision:** Reinstate the 2 clean + how to handle the ~44 corp-action artifacts (split-adjust in loader vs keep quarantined). Needs a plan before next training run.
+4. **WI-008 execution decision:** per-row reinstate/keep remains human-gated; classifier consolidation + 2020-03-09 cluster / GME / ICL re-derivation → WI-010 (BACKLOG).
 
 5. Phase 2 pacing restore (WI-004) — deferred to next week by admin; 3 clean runs prerequisite.
 

@@ -130,3 +130,23 @@ baseline" becomes satisfiable by being confidently inverted.
 - **"reject"** → drop the contrastive branch and ship the E5 factor baseline
   (`vol_20` on the recent window, `mom_12_1` on full history) as the D-003
   Option 2 technical signal.
+
+---
+
+## Addendum (PM cycle 9, 2026-10-25 ~05:00 UTC) — numbers superseded by the F1 fix
+
+Reviewer pass `ses_e8ecc8dc` (verdict FIX BEFORE COMMIT) found the early-stop
+selected on **raw IC, not |IC|** — the skill bar's own clause (a) metric
+(reviewer F1; PM confirmed in code, cycle 9). Fix landed in
+`scripts/train_contrastive.py` (abs-compare + init 0.0); training re-run
+deterministically (`EXIT:0`):
+
+- Selected epoch moves 1 → **5**: model val IC **−0.1478 (t −6.03)** on the same
+  60 dates (was −0.1313 / t −6.55).
+- Clause (a) margin over `vol_20` |IC| 0.1274: **+0.0204 = 16.0% relative**
+  (was 3.1%) — the "thin margin" caveat retires; everything else in this brief
+  stands unchanged.
+- **The sign question is unaffected and still the gate:** the model remains
+  anti-correlated (every epoch negative, sub-windows −0.217 / −0.078 same sign).
+  A same-sign reading of clause (a) still **fails**. The re-specification
+  decision above is unchanged by the fix.

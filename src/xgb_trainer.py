@@ -77,7 +77,12 @@ PROB_COLUMN = {
     "y_15d_low": "p_15d_low",
     "y_20d_up": "p_20d_up",
     "y_20d_down": "p_20d_down",
+    "y_20d_stay": "p_20d_stay",
 }
+
+# exit_urgency = max P(event) over the four *event* targets. y_20d_stay (added
+# 2026-10-25) is a do-nothing band, deliberately excluded from this max.
+EVENT_PROB_COLUMNS = ("p_15d_high", "p_15d_low", "p_20d_up", "p_20d_down")
 
 
 # --------------------------------------------------------------------------- #
@@ -333,7 +338,21 @@ def target_features(
     cs_pct_only — whitelist features, cross-sectional percentile ranks only
     """
     cols = panel_cols if panel_cols is not None else set()
-    wl = catalog["whitelist_per_target"][target]
+    if target not in catalog["whitelist_per_target"]:
+        # y_20d_stay (added 2026-10-25) has no Gate-3 whitelist entry yet — a
+        # Sprint-3 metadata pass is WI-009c work. Fall back to the full panel so
+        # trainer loops resolve non-empty instead of KeyError (WI-009b lesson:
+        # masks must resolve, never silently-empty).
+        import logging
+
+        logging.getLogger("xgb_trainer").warning(
+            "[xgb_trainer] no Gate-3 whitelist for target '%s' — using all panel features", target
+        )
+        wl = sorted(cols) if cols else None
+        if wl is None:
+            raise KeyError(target)  # no panel columns either: genuinely unusable
+    else:
+        wl = catalog["whitelist_per_target"][target]
 
     def _existing(names: list[str]) -> list[str]:
         return [f for f in names if cols is None or f in cols]
@@ -591,7 +610,11 @@ def train_market(
 
         # Checkpoint after each target
         oof.to_parquet(oof_path, index=False)
-        preds["exit_urgency"] = preds[[PROB_COLUMN[t] for t in TARGET_COLUMNS if PROB_COLUMN[t] in preds.columns]].max(axis=1) if any(PROB_COLUMN[t] in preds.columns for t in TARGET_COLUMNS) else np.nan
+        preds["exit_urgency"] = (
+            preds[[c for c in EVENT_PROB_COLUMNS if c in preds.columns]].max(axis=1)
+            if any(c in preds.columns for c in EVENT_PROB_COLUMNS)
+            else np.nan
+        )
         preds.to_parquet(preds_path, index=False)
         meta_path.write_text(json.dumps(meta, indent=2))
         logger.info("checkpoint saved: %s", target)

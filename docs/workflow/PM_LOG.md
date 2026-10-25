@@ -34,6 +34,17 @@
   one-line early-stop change + rerun/refresh of report numbers, then re-verify.
 - cursor: session-since `ses_e8ecc8dc` (2026-10-25 03:55 UTC; cycle 9 consumed
   Build `ses_e8ee1979` + review `ses_e8ecc8dc`).
+- **Cycle 9 continuation (admin-directed Build by PM, same session):** F1 fix
+  landed in `scripts/train_contrastive.py` (|IC|-compare + init 0.0) + training
+  re-run deterministic (`EXIT:0`, epoch 1→5 selected, model IC −0.1478, clause-a
+  margin 16.0% — report/JSON regenerated, brief addendum written). `y_20d_stay`
+  (±5% relative, exclusive of up/down) added to `src/targets.py`; targets
+  USD+CAD rebuilt via `scripts/rebuild_targets.py` (guard asserts legacy labels
+  row-for-row identical — verified). `xgb_trainer` stay fixes: whitelist
+  fallback (never-empty masks, WI-009b lesson) + `exit_urgency` over the four
+  event columns only (stay is a do-nothing band). WI-009c research doc written
+  (`docs/plans/2026-10-25-WI-009c-classifier-research.md`) — open questions,
+  no scope decided. Full suite re-run post-fix (see below).
 
 ## 2026-10-25 — Cycle 8 (WI-008 Build + repair verified; human reinstate/keep gate open)
 - Ingest: one work session past cursor — `ses_e8f2423d` ("WI-008 per-case quarantine

@@ -1,6 +1,6 @@
 {
   "market": "CAD",
-  "generated_utc": "2026-10-25T04:00:25.218602+00:00",
+  "generated_utc": "2026-10-25T04:58:12.682512+00:00",
   "config": {
     "market": "CAD",
     "epochs": 20,
@@ -2687,10 +2687,10 @@
   ],
   "embargo_td": 20,
   "purge_gap_td": 20,
-  "epochs_run": 5,
+  "epochs_run": 9,
   "early_stopped": true,
   "patience": 4,
-  "train_seconds": 59.5,
+  "train_seconds": 83.5,
   "epochs": [
     {
       "epoch": 1,
@@ -2699,7 +2699,7 @@
       "rank_ic": -0.13130686001983544,
       "rank_ic_t": -6.545345442733602,
       "n_dates": 60,
-      "secs": 7.6
+      "secs": 7.7
     },
     {
       "epoch": 2,
@@ -2708,7 +2708,7 @@
       "rank_ic": -0.1392579080485576,
       "rank_ic_t": -5.8686405388453995,
       "n_dates": 60,
-      "secs": 7.3
+      "secs": 7.5
     },
     {
       "epoch": 3,
@@ -2717,7 +2717,7 @@
       "rank_ic": -0.1368122176130024,
       "rank_ic_t": -5.794913130900915,
       "n_dates": 60,
-      "secs": 8.0
+      "secs": 7.4
     },
     {
       "epoch": 4,
@@ -2726,7 +2726,7 @@
       "rank_ic": -0.1477507832047111,
       "rank_ic_t": -6.110426570790176,
       "n_dates": 60,
-      "secs": 13.6
+      "secs": 7.4
     },
     {
       "epoch": 5,
@@ -2735,14 +2735,50 @@
       "rank_ic": -0.14777561069098988,
       "rank_ic_t": -6.028947328204423,
       "n_dates": 60,
-      "secs": 10.1
+      "secs": 7.6
+    },
+    {
+      "epoch": 6,
+      "loss": 0.6913691263021149,
+      "pairs": 1317975,
+      "rank_ic": -0.1379985834163036,
+      "rank_ic_t": -5.802888272773835,
+      "n_dates": 60,
+      "secs": 6.9
+    },
+    {
+      "epoch": 7,
+      "loss": 0.6911820980332652,
+      "pairs": 1317995,
+      "rank_ic": -0.1383702084233405,
+      "rank_ic_t": -6.157637711672735,
+      "n_dates": 60,
+      "secs": 6.6
+    },
+    {
+      "epoch": 8,
+      "loss": 0.6909633904510404,
+      "pairs": 1318088,
+      "rank_ic": -0.12656369578546875,
+      "rank_ic_t": -5.704812756517772,
+      "n_dates": 60,
+      "secs": 9.3
+    },
+    {
+      "epoch": 9,
+      "loss": 0.6908343637952153,
+      "pairs": 1317985,
+      "rank_ic": -0.10094889954161938,
+      "rank_ic_t": -4.921947788051521,
+      "n_dates": 60,
+      "secs": 8.8
     }
   ],
-  "best_epoch": 1,
-  "val_rank_ic": -0.13130686001983544,
-  "val_rank_ic_t": -6.545345442733602,
-  "final_epoch_ic": -0.14777561069098988,
-  "final_epoch_t": -6.028947328204423,
+  "best_epoch": 5,
+  "val_rank_ic": -0.14777561069098988,
+  "val_rank_ic_t": -6.028947328204423,
+  "final_epoch_ic": -0.10094889954161938,
+  "final_epoch_t": -4.921947788051521,
   "e5_baseline_val": {
     "mom_12_1": {
       "mean_ic": 0.06771195948692657,
@@ -2808,8 +2844,8 @@
         "2026-08-10"
       ],
       "n_dates": 30,
-      "rank_ic": -0.1951053002937407,
-      "rank_ic_t": -6.2980357652521395,
+      "rank_ic": -0.21718910977179148,
+      "rank_ic_t": -5.5318647479214755,
       "factors": {
         "mom_12_1": {
           "mean_ic": -0.0033952028297911108,
@@ -2875,8 +2911,8 @@
         "2026-09-22"
       ],
       "n_dates": 30,
-      "rank_ic": -0.06750841974593018,
-      "rank_ic_t": -3.387479687184268,
+      "rank_ic": -0.0783621116101882,
+      "rank_ic_t": -3.2798164757532744,
       "factors": {
         "mom_12_1": {
           "mean_ic": 0.13881912180364428,
@@ -2912,15 +2948,14 @@
     "passed": true,
     "sign_agrees_with_best_factor": false,
     "caveats": [
-      "SIGN INVERTED \u2014 the model's val IC has the opposite sign to the best factor (-0.1313 vs `vol_20` +0.1274). Clause (a) is a |IC| comparison, so it is met in MAGNITUDE only: the model is anti-correlated with forward returns on this window, and a sign flip (which would make the sign positive) is not claimed here because it would be chosen on this same window.",
-      "THIN MARGIN \u2014 |IC| exceeds the best factor by only 3.1% relative; a margin this small is not robust to a different window or seed."
+      "SIGN INVERTED \u2014 the model's val IC has the opposite sign to the best factor (-0.1478 vs `vol_20` +0.1274). Clause (a) is a |IC| comparison, so it is met in MAGNITUDE only: the model is anti-correlated with forward returns on this window, and a sign flip (which would make the sign positive) is not claimed here because it would be chosen on this same window."
     ],
     "clause_a": {
       "passed": true,
-      "model_abs_ic": 0.13130686001983544,
+      "model_abs_ic": 0.14777561069098988,
       "best_factor": "vol_20",
       "best_factor_abs_ic": 0.1273532019602895,
-      "margin": 0.0039536580595459225,
+      "margin": 0.020422408730700364,
       "factor_table": {
         "mom_12_1": {
           "ic": 0.06771195948692657,
@@ -2951,7 +2986,7 @@
     },
     "clause_b": {
       "passed": true,
-      "model_t": -6.545345442733602,
+      "model_t": -6.028947328204423,
       "model_passes_t_floor": true,
       "n_sub_windows": 2,
       "all_windows_same_sign": true,
@@ -2959,16 +2994,16 @@
       "sub_windows": [
         {
           "window": 1,
-          "ic": -0.1951053002937407,
-          "t": -6.2980357652521395,
+          "ic": -0.21718910977179148,
+          "t": -5.5318647479214755,
           "n_dates": 30,
           "sign_matches_model": true,
           "abs_t_gt_2": true
         },
         {
           "window": 2,
-          "ic": -0.06750841974593018,
-          "t": -3.387479687184268,
+          "ic": -0.0783621116101882,
+          "t": -3.2798164757532744,
           "n_dates": 30,
           "sign_matches_model": true,
           "abs_t_gt_2": true
