@@ -4,6 +4,36 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 8 (WI-008 Build + repair verified; human reinstate/keep gate open)
+- Ingest: one work session past cursor — `ses_e8f2423d` ("WI-008 per-case quarantine
+  verification", deepseek-v4.1-flash, 161 msgs) covering BOTH the initial Build (02:2x,
+  8 steps, report 72 rows) and the admin-supervised repair pass (03:5x–04:00). Plus one
+  trivial PM smoke test (`ses_e8f0ea4d`, "Reply with exactly OK" on new planner model
+  openai/gpt-6-luna — config validation, no repo work).
+- PM verification (ran, not trusted from log): `uv run pytest tests/test_quarantine_analysis.py -q`
+  → 6 passed; full suite re-run independently → **62 passed** (453.86s, exit 0) — matches
+  Build's claim. Report integrity: 72 data rows, verdict summary 17 REINSTATE /
+  55 KEEP_QUARANTINED, size unchanged from 02:30 baseline → byte-identical claim holds.
+- Cycle-7 finding (2/6 unit tests failing, STATUS DONE dishonest) resolved: Build fixed
+  both implementation bugs (level-step unity guard; multi-day event window), assertions
+  untouched, under admin decision **option b** — tests-green fix kept, report NOT rewired
+  (wiring flips 22/72 recommendations → over the 5-verdict human gate, correctly escalated).
+  3-way classifier divergence logged by Build as WI-010 (backlog).
+- Commit-hash hygiene: Build amended its pre-push commit `6e004df` → `459ee44`; plan files
+  cited the stale hash — PM patched both plan STATUS lines to `459ee44`.
+- Config (outside repo): opencode planner model → `openrouter/openai/gpt-6-luna`
+  (was qwen/qwen3-coder, admin direction 2026-10-25); `docs/README.md` workforce line
+  synced in this cycle's commit. Verified: JSONC parses, model resolves, live smoke OK.
+- Board: already updated by Build — WI-008 → **QA/GATE** (owner: admin, human
+  reinstate/keep gate on the report); WI-010 (classifier consolidation) added to BACKLOG;
+  WI-009b next in queue after the gate.
+- cursor: session-since `ses_e8f0ea4d` (2026-10-25 02:43 UTC; cycle 8 consumed the
+  WI-008 Build+repair session `ses_e8f2423d` and the gpt-6-luna smoke test `ses_e8f0ea4d`).
+- Next: ADMIN human gate — reinstate/keep decision per row on
+  `reports/wi008_quarantine_percase_evidence.md` (start from the 17 REINSTATE rows;
+  treat 2020-03-09 cluster + GME + ICL with suspicion per the known-defect note). Then
+  WI-009b Build (queued) or WI-010 (classifier consolidation) per admin priority.
+
 ## 2026-10-25 — Cycle 7 (admin gate decision: WI-009 APPROVED; WI-008 do-next; WI-009b queued)
 - Admin direction: "approved 009, move to next item" (2026-10-25). WI-009 gate → DONE
   (APPROVED; continuation boarded as WI-009b). Next item per PM's proposed order: WI-008.

@@ -52,4 +52,4 @@ Quarantine/dead-letter mutation, reinstatement, verifier changes, ELE download, 
 03:56 | 4 | Report restored byte-identical to baseline → 0 verdict flips | 
 04:00 | 4 | Committed explicit paths only (source fix + tests + docs); report and duplicate classifier scripts left untracked | concern: 3-way classifier divergence deferred to WI-010
 
-STATUS: DONE | evidence: `uv run pytest tests/test_quarantine_analysis.py -q` → 6 passed; `uv run pytest -q` → 62 passed; report byte-identical to baseline (0 flips); no quarantine/dead-letter/verifier mutation; assertions untouched | admin decision: option b | follow-up: WI-010 (classifier consolidation)
+STATUS: DONE (PM-verified cycle 8: 6/6 unit tests green, full suite re-run independently; commit amended to 459ee44 pre-push) | evidence: `uv run pytest tests/test_quarantine_analysis.py -q` → 6 passed; `uv run pytest -q` → 62 passed; report byte-identical to baseline (0 flips); no quarantine/dead-letter/verifier mutation; assertions untouched | admin decision: option b | follow-up: WI-010 (classifier consolidation)
