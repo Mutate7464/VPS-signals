@@ -37,6 +37,19 @@ flash models either way. Hermes overhead is bounded by the same brief rule —
 poll artifacts/STATUS lines/logs with completion markers (`EXIT:0`), sleep in
 10-minute steps, never ingest full transcripts.
 
+**Completion/human-attention notifications (2026-10-25):**
+- `scripts/notify_gate.sh` — zero-model-token watcher. Detach it alongside any
+  long run: it polls a log/plan file for a marker (`EXIT:0`, `STATUS: DONE`)
+  and posts ONE Discord ping via `DISCORD_WEBHOOK_URL` from `signals/.env`
+  (gitignored; create the webhook in Discord: #general → Integrations →
+  Webhooks). State file prevents re-notify. `--once` posts immediately.
+- Hermes (PM) also posts gate pings to #general at cycle close via the Hermes
+  Discord connector (verified live 2026-10-25, message `1563790860699570241`)
+  — this path needs no webhook and works today.
+- Polling costs NO model tokens by design: the watcher is shell+curl; Hermes
+  enters only after the marker (PM verification), and gate decisions stay
+  with the admin either way.
+
 ## What the PM does on each cycle
 
 1. **Ingest** — reads new opencode sessions (since the last PM_LOG cursor), the
