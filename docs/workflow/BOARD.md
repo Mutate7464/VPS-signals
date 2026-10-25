@@ -36,4 +36,4 @@
 ## Column policies
 BACKLOG → unprioritized ideas, size-tagged · READY → meets Definition of Ready, admin-ordered · DESIGN/PLAN → Plan agent working (WIP 2) · EXECUTING → Build active (WIP 1) · QA/GATE → reviewer + human gate · DONE → DoD met · BLOCKED → named owner + reason; aging >7d flagged weekly.
 
-**Risks:** `RISKS.md` (reviewed weekly). **Retros:** `retros/YYYY-WW.md`.
+**Risks:** `RISKS.md` (reviewed weekly). **Retros:** `retros/YYYY-WW.md`. **Row hygiene:** DONE rows collapse to one-line evidence at the weekly review once 7 days old (WORKFLOW.md §2). **Logs:** execution logs live in `docs/plans/logs/WI-##-<slug>.md`, read by tail only (WORKFLOW.md §11).

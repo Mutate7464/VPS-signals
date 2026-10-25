@@ -24,17 +24,17 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 | **GOAL** | `goals/G-##-<slug>.md` | Admin (agents may draft) | Intention + success criteria + non-goals written; never edited, only superseded |
 | **DESIGN** | `designs/D-##-<slug>.md` (ADR format, §5) | Plan agent (Sonnet) | Context, options, decision, consequences recorded |
 | **PLAN** | `plans/YYYY-MM-DD-WI-##-<slug>.md` | Plan agent | Numbered steps, each with acceptance criterion + verification command |
-| **EXECUTE** | code + checkboxes in plan file | Build agent (DeepSeek) | Every verification command green; deviations appended in-plan |
+| **EXECUTE** | code + rows appended to the WI's log file | Build agent (DeepSeek) | Every verification command green; deviations appended in the log file |
 | **QA/GATE** | reviewer verdict + gate report | Reviewer (flash) / admin | APPROVE verdict; failed gate = hard stop |
 | **DONE** | board row + evidence link | Admin | QA passed **and** gate signed (where applicable) |
 
 **The iteration rules (the core):**
 1. **Intention never changes silently.** Goals are only *superseded* (linked forward), never edited in place. If execution reveals the goal was wrong, that's a new goal or an explicit supersession.
-2. **Deviations append, never rewrite.** Build appends to the plan file's `## DEVIATIONS` section and continues only if safe. Plan history is preserved.
+2. **Deviations append, never rewrite.** Build appends to the log file's `## DEVIATIONS` section and continues only if safe. Plan and log history are preserved.
 3. **A step failing twice is a signal for the human, not another guess.** → Build writes an intervention brief (options + costs + recommendation) and STOPS; the admin chooses the escalation path (cheap troubleshooter / Sonnet / Opus / personal takeover). One faithful application of any agent's fix plan; if it fails again → STOP and report.
 4. **QA gates are blocking.** Nothing reaches DONE over a failed gate (this rule exists because Sprint 5 shipped PDFs past a failed Gate 4 — see G-003).
 5. **One execute at a time.** EXECUTING WIP limit = 1, matching the one-task-one-session agent rule.
-6. **Board/handover state must match artifacts on disk.** A "running in background (PID N)" claim is written only alongside its evidence (log path, artifact mtime) and cleared as soon as the run ends. Before acting on any process/status claim, verify it (`ps -p N`, log tail, output mtime) — the plan EXECUTION LOG and the run's own artifacts are the truth, not the board row. Every session ends with board + handover reflecting the verified end state (DoD already requires this; this rule makes the failure mode explicit).
+6. **Board/handover state must match artifacts on disk.** A "running in background (PID N)" claim is written only alongside its evidence (log path, artifact mtime) and cleared as soon as the run ends. Before acting on any process/status claim, verify it (`ps -p N`, log tail, output mtime) — the WI's execution log and the run's own artifacts are the truth, not the board row. Every session ends with board + handover reflecting the verified end state (DoD already requires this; this rule makes the failure mode explicit).
 
 ## 2. Board policies (Kanban)
 
@@ -42,6 +42,7 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 - **WIP limits:** EXECUTING = 1. DESIGN+PLAN combined = 2.
 - **Classes of service:** normal (FIFO by admin order) and **EXPEDITE** (max 1) — reserved for breakage blocking the daily shortlist. Expedite rows are marked `⚡` and jump the queue.
 - **Flow awareness, minimal:** every row leaving BACKLOG gets a `since` date; anything sitting >7 days in BLOCKED or >3 days in EXECUTING is flagged at the weekly review. No story points, no velocity — plan steps *are* the estimate; budget is tracked via opencode spend.
+- **Row hygiene (token budget):** DONE rows are demoted at the weekly review once 7 days old — the Evidence/Blocker cells collapse to ONE line (verdict, commit hash, gate-brief path, test count). Full detail already lives in the plan, its log file, and PM_LOG; the board is a queue, not an archive. Target board size ≤5 KB.
 
 ## 3. Definitions (Scrum)
 
@@ -68,7 +69,7 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 
 - **Goals:** Intention / Success criteria / Non-goals / Current state
 - **Designs (ADR):** Context / Options considered / Decision / Consequences (positive & negative) / Status
-- **Plans:** GOAL / CONSTRAINTS / STEPS (change + acceptance criterion + verification command) / OUT OF SCOPE / DEVIATIONS
+- **Plans:** GOAL / CONSTRAINTS / STEPS (change + acceptance criterion + verification command) / OUT OF SCOPE / DEVIATIONS. **The EXECUTION LOG is a separate sibling file** `docs/plans/logs/WI-##-<slug>.md` (append-only, one row per step, ≤50 words per row — full output goes in the step's report artifact, cited by path). The plan file is frozen after the planner pass; only the log file grows. `STATUS:` lines live at the END of the log file.
 
 ## 6. Operating loop (three tiers)
 
@@ -83,7 +84,8 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 ```
 EXECUTE WI-002 per docs/plans/<plan-file>.md, steps <range> only.
 Do not improvise beyond the plan; verify each step with the plan's commands.
-Append one line per step to ## EXECUTION LOG in the plan file; flag concerns inline.
+Append ONE row per step (≤50 words) to the EXECUTION LOG file docs/plans/logs/WI-##-<slug>.md; flag concerns inline. Do not rewrite the plan file.
+READ SCOPE: the plan file's GOAL/STEPS sections and your log file's tail (last ~20 rows) only. Do not re-read completed log history, other WIs' plans, PM_LOG, or the handover.
 Stop conditions per the workflow contract (2 fails → intervention brief + STOP for admin; tradeoff → flag).
 Constraints: n_jobs<=2, float32, bounded memory, no secrets, no live trading.
 ```
@@ -96,7 +98,7 @@ Constraints: n_jobs<=2, float32, bounded memory, no secrets, no live trading.
 |---|---|---|---|
 | Gate review | PMP stage gate / sprint review | Admin approves gate evidence in `reports/`; failed gate blocks DONE | per sprint/WI |
 | Weekly review | Scrum retro + refinement | 15 min: reorder READY, flag aging rows, lessons → `retros/YYYY-WW.md` | weekly (Mon) |
-| Doc hygiene | PMP records mgmt | Router + handover freshness check, archive superseded docs | monthly |
+| Doc hygiene (rotation) | PMP records mgmt | Weekly sweep, folded into the Monday review: rotate PM_LOG (keep the last 2 cycles; older entries → `docs/workflow/archive/PM_LOG-YYYY-MM.md`), delete superseded SESSION_HANDOVER sections (git is the audit trail — no "kept for audit" history blocks), demote 7-day-old DONE board rows, move DONE WIs' execution logs to the archive. Never rewrite archived content. | weekly (Mon) |
 | Change control | PMP ICC | Goals/designs superseded via linked doc, never edited | as needed |
 
 ## 8. Risk & change
@@ -117,3 +119,11 @@ Constraints: n_jobs<=2, float32, bounded memory, no secrets, no live trading.
 - Don't move a card to DONE without a QA verdict.
 - Don't put discussion in goal/design/plan docs — decisions and facts only.
 - Don't add process: if a new artifact doesn't answer "what now / what next / why", it doesn't get created.
+
+## 11. Read discipline (token budget — applies to every agent, every session)
+- **Grep/tail before read.** Locate with search, then read ±40 lines around the hit. Never full-read a file >150 lines when a grep, `STATUS:` marker, or artifact mtime answers the question.
+- **Execution logs are read by tail** (last ~20 rows) + final `STATUS:` line — never in full.
+- **PM_LOG:** read only the newest entry and its `cursor:` line. Older cycles live in the archive.
+- **One canonical record per decision.** The PM_LOG entry is the agent-stream record of a gate decision; board/handover cite it by pointer, never restate it.
+- **The planner never re-reviews an approved plan.** The PM's one-time contract check (STEPS have acceptance + deterministic verify commands) is the only plan review.
+- **Verify with commands, not re-reads.** Re-run the targeted verify command rather than re-reading a whole log or report to confirm a claim.

@@ -52,7 +52,7 @@ data/audit_ingestion_*.csv
 ibkrdownload/settings.yaml
 
 # ── Python / IDE / OS ──
-logs/
+/logs/
 *.pyc
 __pycache__/
 .ipynb_checkpoints/

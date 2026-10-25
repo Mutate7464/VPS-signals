@@ -24,10 +24,17 @@ Acceptance: [Measurable outcome for this step]
 ## OUT OF SCOPE
 [List of things explicitly not covered by this plan]
 
-## EXECUTION LOG
+## Execution log + status
 
+Sibling file (this plan is frozen after the planner pass):
+`docs/plans/logs/WI-##-<slug>.md` — append-only, one row per step ≤50 words
+(details → the step's report artifact, cited by path); `STATUS:` line at its end.
+
+Initial log-file content:
+
+```
 | Time | Step | Outcome | Concern? |
 |---|---|---|---|
-| YYYY-MM-DD HH:MM | [step] | [outcome] | [concerns] |
+```
 
-STATUS: PLAN
+`STATUS: PLAN`

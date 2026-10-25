@@ -53,7 +53,9 @@ poll artifacts/STATUS lines/logs with completion markers (`EXIT:0`), sleep in
 ## What the PM does on each cycle
 
 1. **Ingest** — reads new opencode sessions (since the last PM_LOG cursor), the
-   plan file's EXECUTION LOG, and the final STATUS line. Does not trust chat claims.
+   WI's execution-log TAIL (`tail -n 20 docs/plans/logs/WI-##-*.md`) and its
+   final STATUS line — never the full plan file or full log history. Does not
+   trust chat claims.
 2. **Verify** — runs deterministic verifiers where they exist (e.g.
    `uv run python -m src.verify_synced_data`); otherwise reviews the evidence
    Build logged. A "done" claim without a QA-verdict reference does not move a row to DONE.
@@ -81,7 +83,9 @@ poll artifacts/STATUS lines/logs with completion markers (`EXIT:0`), sleep in
 | Framework | `docs/workflow/WORKFLOW.md` |
 | Cycle log (cursor) | `docs/workflow/PM_LOG.md` |
 | Planner briefs | `docs/workflow/briefs/` |
-| Plans | `docs/plans/YYYY-MM-DD-WI-##-<slug>.md` |
+| Plans (frozen after planner pass) | `docs/plans/YYYY-MM-DD-WI-##-<slug>.md` |
+| Execution logs (read by tail only) | `docs/plans/logs/WI-##-<slug>.md` |
+| Archived cycles / superseded docs | `docs/workflow/archive/` |
 | Intervention briefs | `docs/human/interventions/` |
 | Risk register | `docs/workflow/RISKS.md` |
 | Weekly retros | `retros/YYYY-WW.md` |

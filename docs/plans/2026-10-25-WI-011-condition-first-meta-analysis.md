@@ -98,9 +98,8 @@ admin wants it).
 Every step verify command pattern:
 `uv run python scripts/<step>.py && grep -E "<key markers>" reports/wi011_<step>.md`
 
-## EXECUTION LOG
+## Execution log + status
 
-| Time | Step | Outcome | Concern? |
-|---|---|---|---|
-
-STATUS: PLAN
+Lives in the sibling file: `docs/plans/logs/WI-011-condition-first-meta-analysis.md`
+(append-only, one row per step ≤50 words; `STATUS:` line at its end). This plan
+file is frozen after the planner pass.
