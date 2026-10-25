@@ -4,6 +4,37 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 9 (WI-009b Build verified at gate; reviewer pass = FIX BEFORE COMMIT)
+- Ingest: two sessions past cycle-8 cursor — `ses_e8ee1979` ("WI-009b contrastive
+  ranking vs E5 baseline", deepseek-v4.1-flash, 92 msgs; Build 03:33, commits
+  `c4fc27c` + `9540dac`) and `ses_e8ecc8dc` ("Review WI-009b diff",
+  deepseek-v4-flash reviewer, 14 msgs, 03:55) — **verdict FIX BEFORE COMMIT**.
+- PM verification (ran, not trusted from log): new suite
+  `pytest tests/test_wi009b_{input_transform,skill_bar,slim_masks}.py` → **37/37
+  green** (matches Build's 99 = 62 baseline + 37 new); gate brief
+  `2026-10-25-gate-WI-009b-skill-bar.md` explicitly carries SIGN INVERTED +
+  3.1% thin-margin caveats (reviewer F2/F4 asks satisfied at brief level);
+  report numbers match session claims (model −0.1313 t−6.55 vs `vol_20` +0.1274
+  t+3.48, 60 common dates; sub-windows −0.1951/−0.0675 both same sign).
+- Reviewer adjudication (PM-verified in code, not trusted from review):
+  - **F1 (major) CONFIRMED LIVE** in `c4fc27c`: early-stop line
+    `if np.isfinite(ic) and ic > best["rank_ic"]` selects on raw IC, not |IC|
+    (skill-bar clause (a) metric). For this run it picked epoch 1 (|IC| 0.1313)
+    over epoch 5 (|IC| 0.1478) — fix would *widen* the margin over `vol_20`
+    from 3.1% → ~16%. Does not flip the sign or the gate question; real defect,
+    small fix (abs-compare + init 0.0).
+  - F3 (warn): tautological census guard `src/models/training_data.py:107` —
+    agreed, cosmetic; F5/F6 nits (dropna-before-split val-size surprise;
+    `strict=False` on state restore). No leak introduced (F5 uses
+    `fwd_atr_ret_15`, same rows train drops anyway).
+- Gate status: **human gate OPEN** — board unchanged at QA/GATE, WI-009b.
+  Reviewer's "fix before commit" is moot for push-safety (nothing pushed,
+  ahead 51), but F1 should land before the gate decision is quoted anywhere.
+- Next: admin gate decision on WI-009b (see cycle-9 handoff); F1 fix =
+  one-line early-stop change + rerun/refresh of report numbers, then re-verify.
+- cursor: session-since `ses_e8ecc8dc` (2026-10-25 03:55 UTC; cycle 9 consumed
+  Build `ses_e8ee1979` + review `ses_e8ecc8dc`).
+
 ## 2026-10-25 — Cycle 8 (WI-008 Build + repair verified; human reinstate/keep gate open)
 - Ingest: one work session past cursor — `ses_e8f2423d` ("WI-008 per-case quarantine
   verification", deepseek-v4.1-flash, 161 msgs) covering BOTH the initial Build (02:2x,

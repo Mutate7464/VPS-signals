@@ -2,7 +2,7 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-25 (WI-009b Build complete → QA/GATE; skill bar PASS with caveats, admin gate brief waiting)
+**Last updated:** 2026-10-25 PM cycle 9 (WI-009b at QA/GATE — Build verified 37/37 new tests; reviewer pass ses_e8ecc8dc verdict FIX BEFORE COMMIT: F1 early-stop raw-IC vs |IC| metric mismatch CONFIRMED live in `c4fc27c` (fix widens margin 3.1%→~16%, sign unchanged); F3/F5/F6 warns/nits. Admin gate decision pending)
 
 ## ACTIVE
 
