@@ -3,17 +3,27 @@
 
 Pipeline
 --------
-1. Read the *rebuilt* CAD feature matrix with an Arrow dataset scan (never a
-   full all-ticker uncompressed frame), restricted to a date window.
+1. Read the *rebuilt* CAD feature matrix with a slimmed Arrow dataset scan
+   (never a full all-ticker uncompressed frame), restricted to a date window.
+   The keep list is built by `src.models.training_data.keep_columns`, which
+   refuses to drop any derived feature family (the E3 slim-mask bug class).
 2. Build the E5 factor + forward-return panel from raw OHLCV
    (`src.factors.e5_baseline.build_e5_panel`) and merge on (date, symbol).
    The forward return is the pairwise label; the E5 factors are the baseline.
-3. Split dates by time with a 20-trading-day purge between train and validation.
-4. Train with within-date pair batches streamed by `src.models.pair_sampler`.
-5. Evaluate **score-based within-date rank-IC** on validation dates and compare
-   against each E5 factor on the same rows.
+3. Split dates by time with a 20-trading-day purge between train and validation
+   (`src.models.skill_bar.purged_date_split`).
+4. Train with within-date pair batches streamed by `src.models.pair_sampler`,
+   early-stopping on **val within-date rank-IC** (not on loss).
+5. Evaluate **score-based within-date rank-IC** on the validation dates and
+   compare against each E5 factor on the same rows, then test the explicit
+   WI-009b skill bar (clause a: beat the best factor; clause b: |t| > 2 with a
+   stable sign across >= 2 disjoint sub-windows) and write both reports.
 
-Usage:
+Usage (WI-009b — full history, widened window):
+    uv run python scripts/train_contrastive.py --market CAD --val-dates 60 \
+        --epochs 12 --early-stop-patience 3 --report-prefix wi009b --tag wi009b
+
+Usage (WI-009 pilot reproduction):
     uv run python scripts/train_contrastive.py --market CAD --epochs 2 \
         --max-train-dates 40 --val-dates 10
 """
@@ -25,6 +35,7 @@ import datetime as dt
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -41,12 +52,22 @@ from src.models.contrastive_ranking import (  # noqa: E402
     save_model,
 )
 from src.models.pair_sampler import iter_pair_batches, within_date_rank_ic  # noqa: E402
+from src.models.skill_bar import (  # noqa: E402
+    EMBARGO_TD,
+    factor_ics_from_panel,
+    purged_date_split,
+    skill_bar_verdict,
+    stats_for_rows,
+    sub_window_split,
+    write_comparison_report,
+)
+from src.models.training_data import load_feature_panel  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-FEATURES_DIR = ROOT / "data" / "features"
 REPORTS = ROOT / "reports"
 MODELS = ROOT / "models"
-EMBARGO_TD = 20
+
+MODEL_SCORE_COL = "model_score"
 
 
 def parse_args():
@@ -60,36 +81,25 @@ def parse_args():
     ap.add_argument("--val-frac", type=float, default=0.2)
     ap.add_argument("--val-dates", type=int, default=0, help="Force an exact number of validation dates.")
     ap.add_argument("--max-train-dates", type=int, default=0, help="Cap train dates (most recent kept).")
+    ap.add_argument("--early-stop-patience", type=int, default=0,
+                    help="Stop after N epochs without a val rank-IC improvement (0 = off).")
+    ap.add_argument("--grad-clip", type=float, default=0.0,
+                    help="Clip the gradient norm (0 = off). Stability guard on unscaled inputs.")
+    ap.add_argument("--standardize", action="store_true",
+                    help="Fit the winsorise+standardise input transform on TRAIN rows only "
+                         "(stored in the model; off = WI-009 raw-feature behaviour).")
+    ap.add_argument("--sub-windows", type=int, default=2,
+                    help="Disjoint contiguous blocks of the val window for the clause-(b) guard.")
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--seed", type=int, default=7)
-    ap.add_argument("--tag", default=None, help="Suffix for output filenames.")
+    ap.add_argument("--report-prefix", default="wi009", help="Report filename prefix.")
+    ap.add_argument("--tag", default=None, help="Suffix for the saved model filename (default: market).")
     return ap.parse_args()
 
 
-def load_features(market: str, start: str | None, end: str | None) -> pd.DataFrame:
-    """Arrow-scan the feature matrix, selecting only the date window requested."""
-    import pyarrow.dataset as ds
-
-    path = FEATURES_DIR / f"features_{market}.parquet"
-    if not path.exists():
-        raise SystemExit(f"missing {path} — run Step 0 (feature_engine) first")
-
-    dataset = ds.dataset(path, format="parquet")
-    filt = None
-    if start is not None:
-        filt = ds.field("date") >= pd.Timestamp(start)
-    if end is not None:
-        end_f = ds.field("date") <= pd.Timestamp(end)
-        filt = end_f if filt is None else (filt & end_f)
-    tbl = dataset.to_table(filter=filt)
-    df = tbl.to_pandas()
-    df["date"] = pd.to_datetime(df["date"]).dt.normalize()
-    return df
-
-
-def split_dates(dates: np.ndarray, val_frac: float, val_dates: int) -> tuple[np.ndarray, np.ndarray]:
-    """Chronological split with a purge gap so train never abuts validation."""
+def split_dates_frac(dates: np.ndarray, val_frac: float, val_dates: int) -> tuple[np.ndarray, np.ndarray, int]:
+    """Legacy fraction-based split (kept for WI-009 pilot reproduction)."""
     uniq = np.sort(pd.unique(dates))
     if len(uniq) < 5:
         raise SystemExit(f"need >=5 dates, got {len(uniq)}")
@@ -98,7 +108,16 @@ def split_dates(dates: np.ndarray, val_frac: float, val_dates: int) -> tuple[np.
     val = uniq[-n_val:]
     train_cut = max(1, len(uniq) - n_val - EMBARGO_TD)
     train = uniq[:train_cut]
-    return train, val
+    return train, val, EMBARGO_TD
+
+
+def evaluate(model: ContrastiveRanker, panel: pd.DataFrame, feature_cols: list[str]) -> tuple[np.ndarray, float, float, int]:
+    """Score a panel and return (scores, mean within-date rank-IC, t, n_dates)."""
+    scores = model.score_numpy(panel[feature_cols].to_numpy(dtype=np.float32))
+    ic, t, n_d = within_date_rank_ic(
+        scores, panel["fwd_atr_ret_15"].to_numpy(), panel["date"].to_numpy()
+    )
+    return scores, ic, t, n_d
 
 
 def main() -> int:
@@ -106,12 +125,16 @@ def main() -> int:
     configure_torch()
     rng = np.random.default_rng(args.seed)
     torch.manual_seed(args.seed)
+    t_start = time.time()
 
+    prefix = args.report_prefix
     tag = args.tag or args.market
-    print(f"[train] loading features for {args.market} ...")
-    feats = load_features(args.market, args.start_date, args.end_date)
-    feature_cols = [c for c in feats.columns if c not in ("date", "symbol", "market")]
-    print(f"[train] features: {feats.shape}, {len(feature_cols)} feature columns")
+
+    print(f"[train] STEP panel: START")
+    print(f"[train] loading features for {args.market} (slim Arrow scan) ...")
+    feats_df, feature_cols, census = load_feature_panel(args.market, args.start_date, args.end_date)
+    print(f"[train] features: {feats_df.shape}, {len(feature_cols)} feature columns, "
+          f"census={census}")
     if len(feature_cols) < 10:
         raise SystemExit(f"only {len(feature_cols)} feature columns — is the feature rebuild done?")
 
@@ -120,21 +143,30 @@ def main() -> int:
     # Namespace the E5 factor columns: `amihud_20` also exists in the 89-feature
     # matrix, so a bare merge would silently suffix both to _x/_y.
     e5 = e5.rename(columns={f: f"e5_{f}" for f in E5_FACTORS})
-    panel = feats.merge(e5, on=["date", "symbol"], how="inner")
-    del feats, e5
+    panel = feats_df.merge(e5, on=["date", "symbol"], how="inner")
+    del feats_df, e5
     panel = panel.dropna(subset=feature_cols + ["fwd_atr_ret_15"])
     panel = panel.sort_values(["date", "symbol"], kind="stable").reset_index(drop=True)
+    n_symbols = int(panel["symbol"].nunique())
     print(f"[train] merged panel: {len(panel):,} rows, {panel['date'].nunique()} dates, "
-          f"{panel['symbol'].nunique()} symbols")
+          f"{n_symbols} symbols, rss={_rss_mb():.0f}MB")
+    print(f"[train] STEP panel: END")
 
-    train_sel, val_sel = split_dates(panel["date"].to_numpy(), args.val_frac, args.val_dates)
+    if args.val_dates > 0:
+        train_sel, val_sel, purge_gap = purged_date_split(
+            panel["date"].to_numpy(), args.val_dates, EMBARGO_TD
+        )
+    else:
+        train_sel, val_sel, purge_gap = split_dates_frac(
+            panel["date"].to_numpy(), args.val_frac, args.val_dates
+        )
     if args.max_train_dates and len(train_sel) > args.max_train_dates:
         train_sel = train_sel[-args.max_train_dates:]
     print(f"[train] train dates: {len(train_sel)} "
           f"({pd.Timestamp(train_sel[0]).date()} → {pd.Timestamp(train_sel[-1]).date()}) "
           f"| val dates: {len(val_sel)} "
           f"({pd.Timestamp(val_sel[0]).date()} → {pd.Timestamp(val_sel[-1]).date()}) "
-          f"| embargo {EMBARGO_TD}td")
+          f"| purge gap {purge_gap}td")
 
     train_panel = panel[panel["date"].isin(set(train_sel))].reset_index(drop=True)
     val_panel = panel[panel["date"].isin(set(val_sel))].reset_index(drop=True)
@@ -148,19 +180,33 @@ def main() -> int:
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    # E5 baseline on the *validation* rows only (same rows the model is scored on).
-    baseline = {
-        fac: within_date_rank_ic(
-            val_panel[f"e5_{fac}"].to_numpy(),
-            val_panel["fwd_atr_ret_15"].to_numpy(),
-            val_panel["date"].to_numpy(),
+    # Input transform: fitted on TRAIN rows only (never val) — leak-free, and
+    # stored in the model blob so inference stays consistent with training.
+    transform = None
+    if args.standardize:
+        transform = model.fit_input_transform(
+            train_panel[feature_cols].to_numpy(dtype=np.float32)
         )
-        for fac in E5_FACTORS
-    }
+        print(f"[train] input transform (train-fold only): winsorise q{transform['lo_q']:.2f}/"
+              f"q{transform['hi_q']:.2f} + standardise; rows={transform['n_rows']:,}, "
+              f"clipped values={transform['n_clipped_values']:,}")
+    else:
+        print("[train] input transform: none (raw features, WI-009 behaviour)")
+
+    # E5 factor baseline on the *validation* rows only (same rows the model is
+    # scored on) — this is the number the skill bar's clause (a) compares against.
+    factor_stats = factor_ics_from_panel(val_panel)
+    print("[train] E5 baseline on the val window: "
+          + ", ".join(f"{k} {v[0]:+.4f} (t {v[1]:+.2f})" for k, v in factor_stats.items()))
 
     epochs_log = []
-    best = {"rank_ic": -np.inf, "epoch": -1, "state": None}
+    best = {"rank_ic": -np.inf, "epoch": -1, "t": float("nan"), "state": None}
+    stale = 0
+    early_stopped = False
+
+    print(f"[train] STEP training: START (epochs={args.epochs}, patience={args.early_stop_patience})")
     for epoch in range(1, args.epochs + 1):
+        t_ep = time.time()
         model.train()
         losses = []
         n_pairs = 0
@@ -178,13 +224,15 @@ def main() -> int:
             loss = ranknet_loss(margin)
             optimizer.zero_grad()
             loss.backward()
+            if args.grad_clip > 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
             optimizer.step()
             losses.append(float(loss.detach()))
             n_pairs += int(batch.x_win.shape[0])
 
         # Validation: score the whole cross-section, then within-date rank-IC.
-        scores = model.score_numpy(val_panel[feature_cols].to_numpy(dtype=np.float32))
-        ic, t, n_d = within_date_rank_ic(scores, val_panel["fwd_atr_ret_15"].to_numpy(), val_panel["date"].to_numpy())
+        _, ic, t, n_d = evaluate(model, val_panel, feature_cols)
+        secs = time.time() - t_ep
 
         epochs_log.append(
             {
@@ -194,48 +242,171 @@ def main() -> int:
                 "rank_ic": None if not np.isfinite(ic) else float(ic),
                 "rank_ic_t": None if not np.isfinite(t) else float(t),
                 "n_dates": n_d,
+                "secs": round(secs, 1),
             }
         )
         print(f"[train] epoch {epoch}/{args.epochs} loss={epochs_log[-1]['loss']:.4f} "
-              f"pairs={n_pairs:,} val_rank_ic={ic:+.4f} t={t:+.2f} dates={n_d}")
+              f"pairs={n_pairs:,} val_rank_ic={ic:+.4f} t={t:+.2f} dates={n_d} "
+              f"secs={secs:.0f} rss={_rss_mb():.0f}MB", flush=True)
 
         if np.isfinite(ic) and ic > best["rank_ic"]:
-            best = {"rank_ic": float(ic), "epoch": epoch,
+            best = {"rank_ic": float(ic), "epoch": epoch, "t": float(t),
                     "state": {k: v.clone() for k, v in model.state_dict().items()}}
+            stale = 0
+        else:
+            stale += 1
+            if args.early_stop_patience and stale >= args.early_stop_patience:
+                early_stopped = True
+                print(f"[train] early stop: no val rank-IC improvement for {stale} epochs "
+                      f"(best epoch {best['epoch']})", flush=True)
+                break
 
     if best["state"] is not None:
         model.load_state_dict(best["state"])
+    print(f"[train] STEP training: END (best epoch {best['epoch']}, early_stopped={early_stopped})")
 
-    best_fac = max(baseline.items(), key=lambda kv: abs(kv[1][0]) if np.isfinite(kv[1][0]) else -1)
+    # ---- final evaluation of the selected model (post-restore) -------------- #
+    print("[train] STEP eval: START")
+    scores, model_ic, model_t, model_n = evaluate(model, val_panel, feature_cols)
+    val_scored = val_panel.assign(**{MODEL_SCORE_COL: scores})
+    if np.isfinite(model_ic) and abs(model_ic - best["rank_ic"]) > 1e-9:
+        print(f"[train] WARN: restored-model IC {model_ic:+.4f} != best-epoch IC "
+              f"{best['rank_ic']:+.4f} (unexpected)")
+
+    blocks = sub_window_split(val_sel, n_windows=args.sub_windows) if args.sub_windows >= 2 else []
+    sub_windows = []
+    sub_window_best_factor = {}
+    for i, block in enumerate(blocks, start=1):
+        sub = val_scored[val_scored["date"].isin(set(block))]
+        ic, t, n = stats_for_rows(sub, MODEL_SCORE_COL)
+        fstats = factor_ics_from_panel(sub)
+        fname = max(fstats.items(), key=lambda kv: abs(kv[1][0]))[0]
+        sub_windows.append(
+            {
+                "window": i,
+                "dates": [str(pd.Timestamp(d).date()) for d in block],
+                "n_dates": n,
+                "rank_ic": None if not np.isfinite(ic) else float(ic),
+                "rank_ic_t": None if not np.isfinite(t) else float(t),
+                "factors": {k: {"mean_ic": float(v[0]), "t": float(v[1]), "n_dates": int(v[2])}
+                            for k, v in fstats.items()},
+                "best_factor": fname,
+                "best_factor_abs_ic": float(abs(fstats[fname][0])),
+            }
+        )
+        sub_window_best_factor[i] = {"name": fname, "abs_ic": float(abs(fstats[fname][0]))}
+        print(f"[train] sub-window {i}: {n} dates, model IC {ic:+.4f} t {t:+.2f} | "
+              f"best factor {fname} |IC| {abs(fstats[fname][0]):.4f}")
+
+    verdict = skill_bar_verdict(
+        model_ic=model_ic,
+        model_t=model_t,
+        factor_stats=factor_stats,
+        sub_stats=[(w["rank_ic"], w["rank_ic_t"], w["n_dates"]) for w in sub_windows],
+    )
+    print(f"[train] SKILL BAR: {'PASS' if verdict['passed'] else 'FAIL'} | "
+          f"clause a {'PASS' if verdict['clause_a']['passed'] else 'FAIL'} "
+          f"(model |IC| {abs(model_ic):.4f} vs {verdict['clause_a']['best_factor']} "
+          f"|IC| {verdict['clause_a']['best_factor_abs_ic']:.4f}) | "
+          f"clause b {'PASS' if verdict['clause_b']['passed'] else 'FAIL'} "
+          f"(t {model_t:+.2f})")
+    print("[train] STEP eval: END")
+
+    train_minutes = (time.time() - t_start) / 60.0
+    last_epoch = epochs_log[-1] if epochs_log else {}
+    best_fac = verdict["clause_a"]["best_factor"]
     summary = {
         "market": args.market,
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "config": vars(args),
         "n_features": len(feature_cols),
+        "feature_census": census,
+        "input_transform": transform,
         "n_rows": int(len(panel)),
+        "n_symbols": n_symbols,
         "train_dates": [str(pd.Timestamp(d).date()) for d in train_sel],
         "val_dates": [str(pd.Timestamp(d).date()) for d in val_sel],
         "embargo_td": EMBARGO_TD,
+        "purge_gap_td": purge_gap,
+        "epochs_run": len(epochs_log),
+        "early_stopped": early_stopped,
+        "patience": args.early_stop_patience,
+        "train_seconds": round(train_minutes * 60.0, 1),
         "epochs": epochs_log,
         "best_epoch": best["epoch"],
-        "val_rank_ic": best["rank_ic"] if np.isfinite(best["rank_ic"]) else None,
+        "val_rank_ic": None if not np.isfinite(model_ic) else float(model_ic),
+        "val_rank_ic_t": None if not np.isfinite(model_t) else float(model_t),
+        "final_epoch_ic": last_epoch.get("rank_ic"),
+        "final_epoch_t": last_epoch.get("rank_ic_t"),
         "e5_baseline_val": {k: {"mean_ic": (None if not np.isfinite(v[0]) else float(v[0])),
                                 "t": (None if not np.isfinite(v[1]) else float(v[1])),
-                                "n_dates": v[2]} for k, v in baseline.items()},
-        "e5_best_factor": best_fac[0],
-        "e5_best_abs_ic": float(abs(best_fac[1][0])) if np.isfinite(best_fac[1][0]) else None,
+                                "n_dates": v[2]} for k, v in factor_stats.items()},
+        "e5_best_factor": best_fac,
+        "e5_best_abs_ic": verdict["clause_a"]["best_factor_abs_ic"],
+        "sub_windows": sub_windows,
+        "skill_bar": verdict,
+        "model_path": None,
+        "report_path": None,
     }
 
+    # ---- reports ----------------------------------------------------------- #
+    print("[train] STEP report: START")
     REPORTS.mkdir(parents=True, exist_ok=True)
-    out_json = REPORTS / f"wi009_train_{tag}.json"
-    out_json.write_text(json.dumps(summary, indent=2, default=str) + "\n")
-
+    out_json = REPORTS / f"{prefix}_train_{args.market}.json"
+    out_md = REPORTS / f"{prefix}_e5_vs_model_{args.market}.md"
     model_path = save_model(model, MODELS / f"contrastive_ranker_{tag}.pt", feature_cols)
+
+    write_comparison_report(
+        out_md,
+        {
+            "market": args.market,
+            "generated_utc": summary["generated_utc"],
+            "n_rows": len(panel),
+            "n_features": len(feature_cols),
+            "n_symbols": n_symbols,
+            "val_dates": summary["val_dates"],
+            "val_start": summary["val_dates"][0],
+            "val_end": summary["val_dates"][-1],
+            "embargo_td": EMBARGO_TD,
+            "n_train_dates": len(train_sel),
+            "train_start": summary["train_dates"][0],
+            "train_end": summary["train_dates"][-1],
+            "epochs_run": len(epochs_log),
+            "patience": args.early_stop_patience,
+            "early_stopped": early_stopped,
+            "train_minutes": train_minutes,
+            "best_epoch": best["epoch"],
+            "model_ic": summary["val_rank_ic"],
+            "model_t": summary["val_rank_ic_t"],
+            "final_epoch_ic": summary["final_epoch_ic"],
+            "final_epoch_t": summary["final_epoch_t"],
+            "skill_bar": verdict,
+            "sub_window_best_factor": sub_window_best_factor,
+        },
+    )
+    summary["model_path"] = str(model_path)
+    summary["report_path"] = str(out_md)
+    out_json.write_text(json.dumps(summary, indent=2, default=str) + "\n")
     print(f"[train] wrote {out_json}")
+    print(f"[train] wrote {out_md}")
     print(f"[train] wrote {model_path}")
-    print(f"[train] val rank-IC {summary['val_rank_ic']} vs best E5 factor "
-          f"{summary['e5_best_factor']} |IC|={summary['e5_best_abs_ic']}")
+    print(f"[train] STEP report: END")
+    print(f"[train] val rank-IC {summary['val_rank_ic']} (t {summary['val_rank_ic_t']}) vs best E5 factor "
+          f"{summary['e5_best_factor']} |IC|={summary['e5_best_abs_ic']} on {len(val_sel)} val dates")
+    print(f"[train] elapsed {train_minutes:.1f} min")
     return 0
+
+
+def _rss_mb() -> float:
+    """Peak/current RSS read from /proc — cheap host-budget telemetry."""
+    try:
+        with open("/proc/self/status") as fh:
+            for line in fh:
+                if line.startswith("VmRSS:"):
+                    return float(line.split()[1]) / 1024.0
+    except OSError:
+        pass
+    return float("nan")
 
 
 if __name__ == "__main__":

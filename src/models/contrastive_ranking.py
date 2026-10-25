@@ -18,6 +18,16 @@ Guardrails honoured here
   never enumerates a pair set itself.
 * No future information: the model consumes only whatever trailing feature
   columns it is handed.
+* **Input transform.** The 89 CAD features are raw indicator values spanning
+  ~11 orders of magnitude (`amihud_5` reaches 1.75e11), so an untransformed
+  first layer produces astronomic initial margins and a diverging pairwise loss
+  (WI-009b observed mean epoch loss ~9e4). The module therefore carries a
+  winsorise+standardise transform as **buffers**, initialised to the identity so
+  untrained models and the WI-009 pilot path are numerically unchanged. The
+  trainer fits it on **training-fold rows only** (`fit_input_transform`); because
+  the buffers live in the state dict, the inference path (`score_numpy`,
+  `load_model`, `scripts/rank_assets.py`) needs no changes and stays consistent
+  with training.
 """
 
 from __future__ import annotations
@@ -32,6 +42,10 @@ import torch.nn.functional as F
 
 MAX_EMBED_DIM = 64
 NUM_THREADS = 2
+# Winsorisation quantiles of the input transform (train-fold only).
+DEFAULT_LO_Q = 0.01
+DEFAULT_HI_Q = 0.99
+SIGMA_EPS = 1e-6
 
 
 def configure_torch() -> None:
@@ -58,6 +72,14 @@ class ContrastiveRanker(nn.Module):
         self.embed_dim = int(embed_dim)
         hidden = int(hidden_dim or max(embed_dim * 2, 32))
 
+        # Input transform buffers — identity until `fit_input_transform` is
+        # called with training-fold rows, so an untrained model scores raw
+        # features exactly as before.
+        self.register_buffer("input_lo", torch.full((self.input_dim,), float("-inf"), dtype=torch.float32))
+        self.register_buffer("input_hi", torch.full((self.input_dim,), float("inf"), dtype=torch.float32))
+        self.register_buffer("input_mu", torch.zeros(self.input_dim, dtype=torch.float32))
+        self.register_buffer("input_sigma", torch.ones(self.input_dim, dtype=torch.float32))
+
         self.encoder = nn.Sequential(
             nn.Linear(self.input_dim, hidden, dtype=torch.float32),
             nn.ReLU(),
@@ -67,9 +89,61 @@ class ContrastiveRanker(nn.Module):
         )
         self.score_head = nn.Linear(self.embed_dim, 1, dtype=torch.float32)
 
+    # ---- input transform -------------------------------------------------
+    def fit_input_transform(
+        self,
+        x: np.ndarray,
+        lo_q: float = DEFAULT_LO_Q,
+        hi_q: float = DEFAULT_HI_Q,
+    ) -> dict:
+        """Fit winsorise + standardise statistics on TRAINING-FOLD rows only.
+
+        Using validation rows here would be a leak, so the caller is responsible
+        for passing the train slice (`scripts/train_contrastive.py` does).
+
+        Returns a small dict of the fitted statistics for logging.
+        """
+        x = np.asarray(x, dtype="float64")
+        if x.ndim != 2 or x.shape[1] != self.input_dim:
+            raise ValueError(f"expected (n, {self.input_dim}) array, got {x.shape}")
+        finite = np.isfinite(x)
+        all_finite = bool(finite.all())
+        xs = x if all_finite else np.where(finite, x, np.nan)
+        qf = np.percentile if all_finite else np.nanpercentile
+        with np.errstate(all="ignore"):
+            lo = qf(xs, lo_q * 100.0, axis=0) if lo_q > 0 else np.full(self.input_dim, -np.inf)
+            hi = qf(xs, hi_q * 100.0, axis=0) if hi_q < 1 else np.full(self.input_dim, np.inf)
+            xw = np.clip(xs, lo, hi)
+            mu = (np.mean if all_finite else np.nanmean)(xw, axis=0)
+            sigma = (np.std if all_finite else np.nanstd)(xw, axis=0)
+        lo = np.where(np.isfinite(lo), lo, -np.inf)
+        hi = np.where(np.isfinite(hi), hi, np.inf)
+        mu = np.where(np.isfinite(mu), mu, 0.0)
+        # A constant feature would divide by zero: fall back to identity scaling.
+        sigma = np.where(np.isfinite(sigma) & (sigma > SIGMA_EPS), sigma, 1.0)
+
+        n_clipped = int(np.count_nonzero(np.abs(xw - xs)[finite] > 0))
+        with torch.no_grad():
+            self.input_lo.copy_(torch.from_numpy(lo.astype(np.float32)))
+            self.input_hi.copy_(torch.from_numpy(hi.astype(np.float32)))
+            self.input_mu.copy_(torch.from_numpy(mu.astype(np.float32)))
+            self.input_sigma.copy_(torch.from_numpy(sigma.astype(np.float32)))
+        return {
+            "lo_q": float(lo_q),
+            "hi_q": float(hi_q),
+            "n_rows": int(x.shape[0]),
+            "n_clipped_values": n_clipped,
+            "n_identity_sigma": int(np.count_nonzero(sigma == 1.0)),
+        }
+
+    def _transform(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.to(torch.float32)
+        x = torch.clamp(x, self.input_lo, self.input_hi)
+        return (x - self.input_mu) / self.input_sigma
+
     # ---- shared arm -----------------------------------------------------
     def embed(self, x: torch.Tensor) -> torch.Tensor:
-        return self.encoder(x.to(torch.float32))
+        return self.encoder(self._transform(x))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Scalar score per row: (m, input_dim) -> (m,)."""
