@@ -5,18 +5,37 @@
 > you a ready-to-paste prompt. You never relay status by hand — the loop reads it
 > from the artifacts.
 
-## The loop
+## The loop (v2, 2026-10-25 — direct handoff, scoped auto)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  1. You run Build in opencode tmux (paste the prompt PM gave)│
-│  2. Build finishes, writes STATUS: DONE|BLOCKED|ERROR line   │
-│  3. You tell Hermes: "run PM cycle"                          │
-│  4. PM: ingest → verify → update docs → pick next →          │
-│     write brief + prompt → hand back to you                  │
-│  5. GOTO 1                                                   │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│  1. Hermes writes the brief + dispatches it DIRECTLY:                 │
+│       opencode run --agent planner --auto "<prompt>"  → plan file     │
+│     (detached, log to logs/, poll artifacts — never transcripts)      │
+│  2. Hermes verifies the plan (contract: per-step verify commands),    │
+│     then dispatches Build the same way (--agent build --auto)         │
+│  3. Build finishes → STATUS: DONE|BLOCKED|ERROR line in the plan      │
+│  4. Hermes PM cycle: ingest → verify → update docs → pick next →       │
+│     write brief → STOP at every human gate (admin decides)           │
+│  5. GOTO 1 (after your gate word)                                     │
+└──────────────────────────────────────────────────────────────────────┘
 ```
+
+**Scoped auto (admin decision 2026-10-25):** Build/planner run headless with
+`--auto`, which approves everything NOT explicitly denied in
+`~/.config/opencode/opencode.jsonc` → `agent.build.permission` (deny precedence
+verified live 2026-10-25: `git push` blocked, `git status` passes). Denied:
+push/remote/filter-branch, `rm`/`rmdir`, sudo, curl/wget/webfetch, ssh/scp/
+rsync, nc/ping. Escalation tiers stay human-gated via escalation.md.
+
+**TUI fallback:** any cycle can still run the old way — paste the brief into
+the tmux TUI and watch. Hermes then ingests from `opencode.db` as before
+(`session_v2` / `session_message.data`, see the Hermes skill).
+
+**Token discipline (why this is cheap):** heavy generation stays on opencode's
+flash models either way. Hermes overhead is bounded by the same brief rule —
+poll artifacts/STATUS lines/logs with completion markers (`EXIT:0`), sleep in
+10-minute steps, never ingest full transcripts.
 
 ## What the PM does on each cycle
 

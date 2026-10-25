@@ -4,6 +4,25 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 9 continuation addendum: loop v2 (direct handoff, scoped auto)
+- Admin direction: "update agent — direct interface with planning and build in
+  opencode; direct handoff and completion". Loop v2 landed in
+  `docs/human/PM-CYCLE.md`: Hermes dispatches planner/build headlessly via
+  `opencode run --agent <name> --auto` (v2.1.4 verified on host), polls
+  artifacts/STATUS lines (never transcripts), PM cycle verifies as before.
+- **Scoped auto** (admin pick over full-auto/dispatch-only/keep-TUI): deny
+  rules added to `~/.config/opencode/opencode.jsonc` → `agent.build.permission`
+  (push/remote/filter-branch, rm/rmdir, sudo, curl/wget/webfetch, ssh/scp/
+  rsync, nc/ping). Backup taken (`opencode.jsonc.backup.20261025_053912`).
+- Verified LIVE (not from docs): deny blocks `git push --dry-run` under `--auto`
+  ("Permission denied: shell"); `git status --short --branch` passes (returned
+  `## main...origin/main [ahead 53]`). JSONC loads (opencode debug agents OK).
+- Cost accounting (admin question): heavy generation unchanged on opencode
+  flash models; Hermes overhead ≈ +30–50k tokens/cycle if artifact-first poll
+  discipline holds (10-min sleep steps, `EXIT:0` markers, no transcript ingest).
+  Admin relay time per cycle → 0. Gates unchanged: nothing self-approves.
+- TUI fallback documented (ingest via opencode.db as before).
+
 ## 2026-10-25 — Cycle 9 (WI-009b Build verified at gate; reviewer pass = FIX BEFORE COMMIT)
 - Ingest: two sessions past cycle-8 cursor — `ses_e8ee1979` ("WI-009b contrastive
   ranking vs E5 baseline", deepseek-v4.1-flash, 92 msgs; Build 03:33, commits
