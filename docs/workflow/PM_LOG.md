@@ -30,6 +30,23 @@
   stacking, detached run) with Step 4 robustness options still evidence-gated.
 - cursor: session-since `ses_e8ecc8dc` unchanged (steps 0–1 ran inside PM's
   loop-v2 dispatch; PM verified artifacts directly — no TUI session to ingest).
+- **Steps 2–5 (same cycle, admin "go" ×2, all loop-v2 headless):** Step 2
+  5-factor continuous baseline **FAILS both clauses** (|IC| +0.0001 noise vs
+  `vol_20` 0.0307 — honest negative, no tuning past it). Step 3 contrastive
+  stacking **OMITTED** (fold-safety not establishable; artifact cutoff
+  2026-05-28). Step 4: 3/3 robustness options **NO-GO / NOT RUN** (all gated
+  behind Step 1's 89-feature spend gate). Step 5 gate package written
+  (`reports/wi009c_summary.md`): route verdict = documented negative,
+  shortlist composite rests on noise → NOT usable. PM re-verified: 44 tests
+  (my run), full suite 176 passed (Build's detached run, EXIT:0), gates table
+  and verdicts match Build's claims. Commits `92f4716`, `7187ccf`, `4443539`.
+- **WI-009c route verdict for the human gate:** every level came back negative
+  — binary labels (probe 0/5), continuous 5-factor forecast (noise), stacked
+  contrastive (fold-safety), robustness candidates (gated). WI-002's
+  diagnosis triple-confirmed: on this CAD universe/window the learnable signal
+  lives in the E5 factors themselves; the 89-feature pool adds nothing at
+  these label definitions. Gate: accept WI-009c closure (negative result,
+  factor-baseline screener as the MVP signal) vs re-specify targets/data.
 
 ## 2026-10-25 — Cycle 9 gate close (admin decisions: WI-009b HOLD+re-spec; WI-009c combo scope)
 - **WI-009b gate: DECIDED — HOLD + re-spec** (admin, this session). Closed DONE
