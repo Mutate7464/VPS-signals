@@ -24,7 +24,7 @@
 
 1. ~~**WI-009b gate decision**~~ — **DECIDED 2026-10-25: HOLD + re-spec.** WI-009b closed DONE as a documented negative result (see board row): clause (a) re-specified to same-sign-AND-|IC| for all future skill bars; the sign-inverted model is NOT shipped; inverse signal parked as a candidate feature only. Findings recorded in both streams (agent: board/PM_LOG/handover; human: gate brief addendum). No further action.
 
-2. **WI-009c scope decision (admin direction received 2026-10-25, planner pass pending):** classifier route, **continuous-first combo** — regression on the continuous 20d move as the starting point, band probabilities (up/down/stay ±5%) derived from its forecast distribution; factor-only logistic probe stays as the cheap step-1 bound. Robustness techniques in scope as candidates (NOT yet built): regime-aware features, ensemble/stacked signals, dynamic feature selection. Same-sign clause carried into any new skill bar. Research doc `docs/plans/2026-10-25-WI-009c-classifier-research.md` is the base; planner brief next.
+2. ~~**WI-009c scope decision**~~ — **EXECUTED & CLOSED 2026-10-25 (gate: A — negative result).** All steps 0–5 ran loop-v2 headless, all verdicts negative (labels bottleneck; continuous 5-factor forecast = noise; stacking fold-unsafe; robustness NO-GO). Closed per admin "close out 009c". Findings: human stream `docs/human/briefings/2026-10-25-gate-WI-009c-skill-route.md`; gate package `reports/wi009c_summary.md`. Factor-baseline screener = MVP signal. Future model work needs a new target/data spec, probe-first, same-sign clause.
 
 3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
 

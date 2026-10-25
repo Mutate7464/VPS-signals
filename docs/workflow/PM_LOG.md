@@ -4,6 +4,24 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 10 gate close (admin: WI-009c CLOSED — option A, negative result)
+- **WI-009c gate: DECIDED — A, close as documented negative result** (admin
+  "a close out 009c. note findings", same day, no appeal). Board row → DONE
+  (kept in ACTIVE table per WI-008/009b convention). No model ships from the
+  route; factor-baseline screener stands as the MVP signal. The P(up)−P(down)
+  shortlist composite is explicitly NOT usable (noise forecast).
+- Findings recorded in BOTH streams:
+  - human: `docs/human/briefings/2026-10-25-gate-WI-009c-skill-route.md`
+    (decision + durable findings: labels-not-features bottleneck; continuous
+    route dies at the same place; triple-confirmation that E5 factors are the
+    signal; process findings — same-sign clause caught 3 sign-inverted wins,
+    loop-v2 + STOP clauses + evidence gates all fired as designed).
+  - agent: board row, this log, handover open item 2 struck.
+- Standing consequences: same-sign clause carries into any future skill bar;
+  future model work on this universe requires a NEW target/data spec,
+  probe-first; WI-010 + ELE follow-ups unchanged.
+- Route artifacts frozen at commits `92f4716`, `7187ccf`, `4443539`, `43b7681`.
+
 ## 2026-10-25 — Cycle 10 (WI-009c steps 0–1 via loop-v2 headless Build; probe = negative)
 - First full loop-v2 run: planner dispatched headless (`opencode run --agent
   planner --auto`, GPT-6-Luna) → plan written contract-clean in ~2.5 min,
