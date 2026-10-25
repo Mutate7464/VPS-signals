@@ -4,6 +4,33 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 10 (WI-009c steps 0–1 via loop-v2 headless Build; probe = negative)
+- First full loop-v2 run: planner dispatched headless (`opencode run --agent
+  planner --auto`, GPT-6-Luna) → plan written contract-clean in ~2.5 min,
+  verified by PM before dispatch; Build dispatched headless (`--agent build
+  --auto`, DeepSeek V4.1-Flash) for Steps 0–1 ONLY → `STATUS: DONE (steps 0-1)`,
+  exit 0. Build respected: no BOARD touch, no commits, honest EXECUTION LOG rows.
+- PM verification (reran, not trusted): inputs checker PASS (701,599 rows both
+  artifacts, alignment dates+symbols identical, stay base 44.84%, 0 dup keys);
+  probe rerun exit 0, report matches.
+- **Probe verdict (the step-1 gate): 0/5 targets clear the same-sign skill bar**
+  for a 5-E5-factor logistic on purged OOF folds (1,615 dates). Best magnitude
+  +0.0304 (t +6.86) but **sign-inverted vs `vol_20`** — same regime-inversion
+  pathology as WI-009b; others +0.0001 (t +0.04, pure noise), +0.0123 (t +3.15,
+  inverted), −0.0231 (t −5.19, mismatch). Confirms WI-002: **labels are the
+  bottleneck, not features** — and the same-sign clause is doing its job.
+- Consequence per plan Step 1(d) STOP: **89-feature classifier spend stays
+  gated**. The continuous-first combo (Step 2 regressor on continuous 20d move,
+  5-factor baseline, bands derived from forecast distribution) proceeds — that
+  was the admin's standing direction and the probe outcome supports it.
+- Build side-notes adopted: plan schema nit (`y_20d_high/low` vs actual
+  `y_15d_high/low`) logged; same-sign clause applied as a wrapper on top of
+  `src/models/skill_bar.py` (module untouched).
+- Next: admin decision — proceed to Steps 2–3 (continuous core + fold-safe
+  stacking, detached run) with Step 4 robustness options still evidence-gated.
+- cursor: session-since `ses_e8ecc8dc` unchanged (steps 0–1 ran inside PM's
+  loop-v2 dispatch; PM verified artifacts directly — no TUI session to ingest).
+
 ## 2026-10-25 — Cycle 9 gate close (admin decisions: WI-009b HOLD+re-spec; WI-009c combo scope)
 - **WI-009b gate: DECIDED — HOLD + re-spec** (admin, this session). Closed DONE
   as documented negative result: clause (a) re-specified to same-sign-AND-|IC|,
