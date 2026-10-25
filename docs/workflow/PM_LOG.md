@@ -18,8 +18,16 @@
   untracked" convention? unconfirmed) — same class as the WI-010 classifier
   consolidation.
 - Next: admin decision — WI-011 brief + planner dispatch (or hold).
-- cursor: `ses_e8e6bcfbdf…` sessions ingested; next cycle ingests past
-  `ses_e8d88ee6aff` (newest, WI-009c Build steps 4-5).
+- **Admin decision (same session): "go" + fold artifacts.** WI-009c artifacts
+  folded into tracked tree (evaluator, robustness gates, tests 11 passed,
+  6 reports); debug_test*.py probes deleted; WI-008 report + duplicate
+  classifiers stay untracked pending WI-010. WI-011 brief written + planner
+  dispatched headless → plan rewritten contract-clean in ~3 min; PM
+  contract-check PASS (steps 0–6, acceptance + verify commands, purge
+  ≥ horizon, same-sign clause, STOP at human gate, log stub untouched).
+  Board WI-011 → PLAN, awaiting admin approval before Build.
+- cursor: unchanged base `ses_e8ecc8dc`; WI-011 planner session ingested
+  directly (artifacts verified, no transcript ingest).
 
 ## 2026-10-25 — Cycle 10 gate close (admin: WI-009c CLOSED — option A, negative result)
 - **WI-009c gate: DECIDED — A, close as documented negative result** (admin

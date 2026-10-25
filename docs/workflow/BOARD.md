@@ -2,7 +2,7 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-25 cycle 10 gate close (WI-009c CLOSED — option A, documented negative result; WI-009b/009c both done-negative; factor-baseline screener = MVP signal; loop v2 proven)
+**Last updated:** 2026-10-25 cycle 11 continuation (admin GO: WI-011 planner pass done + contract-check PASS — row → PLAN awaiting admin approval; wi009c artifacts folded into tracked tree, debug probes deleted)
 
 ## ACTIVE
 
@@ -29,7 +29,7 @@
 | WI | Title | Goal | Size | Gate |
 |---|---|---|---|---|
 | WI-010 | Consolidate the quarantine classifier — three divergent claim paths exist (2026-10-25 repair pass) | G-002 | M | human gate. Report generator `src/final_quarantine_triage.py` → 17/55; `src/percase_quarantine_triage.py` + `src/simple_quarantine_analysis.py` → 11/61; tested+repaired `src/quarantine_analysis.py` → 13/59. All three are untracked except the repaired module. Must: wire the report to the unit-tested module, delete the duplicates, add the read-only CB-01 CLEAN_NOW check (runs `verify_synced_data` without mutating `dead_letter_tickers.csv`), and re-derive the decision rule for the 2020-03-09 cluster / GME / ICL. See `docs/human/interventions/2026-10-25-WI-008-step5.md`. |
-| WI-011 | Condition-first meta-analysis: tradeable conditions → decision rules (indicator association + horizon sweep + TS-momentum probe + cost overlay; ~200 trades/yr ≈ 1 action/day preference) | G-001 | M/L | **PROPOSED — needs planner pass + admin approval** (post-WI-009c pivot, admin brainstorm 2026-10-25). No ML; descriptive. Plan draft `docs/plans/2026-10-25-WI-011-condition-first-meta-analysis.md`. Steps: (1) trailing condition definitions, (1b) indicator association analysis — which indicators mark extremes (peak/bottom) vs trends, redundancy clusters → condition vocabulary, (2) conditional expectancy tables across horizons {1..120d} = the horizon sweep, (3) TS-momentum probe (never tested in repo — all prior runs cross-sectional), (4) cost overlay + ~1-action/day feasibility filter, (5) decision-rule distillation → screener tearsheet handoff, STOP at human gate. |
+| WI-011 | Condition-first meta-analysis: tradeable conditions → decision rules (indicator association + horizon sweep + TS-momentum probe + cost overlay; ~200 trades/yr ≈ 1 action/day preference) | G-001 | M/L | **PLAN — planner pass done (loop-v2 headless, cycle 11), PM contract-check PASS, awaiting admin approval before Build** | Plan `docs/plans/2026-10-25-WI-011-condition-first-meta-analysis.md` (STATUS: PLAN; steps 0–6: preflight, trailing condition defs + point-in-time tests, indicator association → empirical subset, expectancy horizon sweep {1,2,5,10,15,20,60,120}d purged ≥horizon, TS-momentum probe, cost/frequency/concurrency filter → decision rules; STOP at human gate). Design `docs/workflow/designs/D-011-condition-first-meta-analysis.md`. Brief `docs/workflow/briefs/2026-10-25-WI-011-condition-first-brief.md`. No ML; descriptive only. |
 | WI-004 | Ingest Phase 2 pacing restore (aggressive targets) | G-002 | S | deferred to next week by admin (2026-10-22); gate 1/3 clean runs |
 | WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | signal direction pivoted to WI-009 (2026-10-24) |
 
