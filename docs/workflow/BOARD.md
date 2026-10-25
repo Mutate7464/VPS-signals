@@ -2,13 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-25 (WI-008 repair pass — BLOCKED at human gate)
+**Last updated:** 2026-10-25 (PM cycle 8: WI-008 completion APPROVED by admin; row → DONE)
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-008 | Quarantine triage execution (72 dead-letter tickers: per-case verification + reinstate/keep decisions) | G-002 | **QA/GATE** — Build done 2026-10-25; admin chose option **b** (keep tests-green fix, drop report wiring, deliverable unchanged) | 2026-10-25 | **Owner: admin** — human reinstate/keep gate on the 72-row report (17 REINSTATE / 55 KEEP_QUARANTINED). Repair pass: 2 failing unit tests fixed in `src/quarantine_analysis.py` (6/6 green, full suite 62 passed); report byte-unchanged at baseline. **Reinstate/keep is a human gate, no auto-reinstatement.** ELE re-download is admin-owned (Mac/IBKR Gateway) — out of Build scope. Known input defect still open: 2020-03-09 cluster + GME + ICL; deferred to WI-010. | `reports/wi008_quarantine_percase_evidence.md`; plan `docs/plans/2026-10-25-WI-008-quarantine-percase.md`; decision brief `docs/human/interventions/2026-10-25-WI-008-step5.md` |
+| WI-008 | Quarantine triage execution (72 dead-letter tickers: per-case verification + reinstate/keep decisions) | G-002 | **DONE** (gate: admin APPROVED completion 2026-10-25, PM cycle 8) — Build done + repair pass under admin option **b**; PM re-verified independently (6/6 unit tests, 62 full suite, report byte-identical baseline 17 REINSTATE / 55 KEEP_QUARANTINED); commit `459ee44`, PM cycle `cc631b9` | 2026-10-25 | Follow-ups (owner: admin / WI-010): per-row reinstate/keep execution remains human-gated — no auto-reinstatement; ELE re-download admin-owned (Mac/IBKR Gateway); 3-way classifier divergence + 2020-03-09 cluster / GME / ICL re-derivation → WI-010 (BACKLOG). Report and duplicate classifier scripts deliberately untracked until WI-010 consolidation. | `reports/wi008_quarantine_percase_evidence.md`; plan `docs/plans/2026-10-25-WI-008-quarantine-percase.md`; decision brief `docs/human/interventions/2026-10-25-WI-008-step5.md` |
 | WI-009b | Make contrastive ranking beat the E5 factor baseline (WI-009 follow-up, admin APPROVED 2026-10-25) | G-001 | READY — queued after WI-008 | 2026-10-25 | Seed: gate brief APPROVE branch (`docs/human/briefings/2026-10-25-gate-WI-009-contrastive-ranking.md`). Open questions: model val rank-IC +0.043 vs rev_1m |IC| 0.157 (undertrained — 40 dates/2 epochs — or genuinely weaker); REIT concentration; shortlist lag (target-free inference path). | `reports/wi009_train_CAD.json`, `reports/wi009_top10_CAD.csv`, plan `docs/plans/2026-10-24-WI-009-contrastive-learning.md` |
 
 ## DONE

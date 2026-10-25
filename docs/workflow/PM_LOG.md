@@ -29,10 +29,11 @@
   WI-009b next in queue after the gate.
 - cursor: session-since `ses_e8f0ea4d` (2026-10-25 02:43 UTC; cycle 8 consumed the
   WI-008 Build+repair session `ses_e8f2423d` and the gpt-6-luna smoke test `ses_e8f0ea4d`).
-- Next: ADMIN human gate — reinstate/keep decision per row on
-  `reports/wi008_quarantine_percase_evidence.md` (start from the 17 REINSTATE rows;
-  treat 2020-03-09 cluster + GME + ICL with suspicion per the known-defect note). Then
-  WI-009b Build (queued) or WI-010 (classifier consolidation) per admin priority.
+- Gate outcome: admin APPROVED WI-008 completion later in cycle ("run pm cycle. approve
+  completion") — board row moved to DONE. Per-row reinstate/keep EXECUTION remains a
+  human gate (no auto-reinstatement); classifier consolidation = WI-010 (BACKLOG).
+- Next: WI-009b Build (top READY row) — contrastive ranking vs E5 factor baseline,
+  seed = gate-brief APPROVE branch.
 
 ## 2026-10-25 — Cycle 7 (admin gate decision: WI-009 APPROVED; WI-008 do-next; WI-009b queued)
 - Admin direction: "approved 009, move to next item" (2026-10-25). WI-009 gate → DONE
