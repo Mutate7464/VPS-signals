@@ -2,18 +2,20 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-24 (PM cycle 5)
+**Last updated:** 2026-10-25 (PM cycle 7)
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-009 | Implement Technical Trading Approach (D-003 Option 2 — hybrid technical-factor; contrastive pairwise ranking first) | G-001 | **GATE** — build DONE, human decision pending; brief: `docs/human/briefings/2026-10-25-gate-WI-009-contrastive-ranking.md` | 2026-10-25 | Admin approved direction 2026-10-24 (pivot from WI-002 gate). Planner pass pending: refine draft plan to workflow-contract format — per-step verification commands, D-003 Option-2 scope reconciliation, reuse the existing 89 features in `src/feature_engine.py`, framework decision (PM-verified 2026-10-24: torch 2.14.1+cpu usable on this VPS — smoke 0.40 s / 0.33 GB / 2 threads; alt xgboost rank:pairwise), and dataset switch to **CAD** (admin 2026-10-24 — stale 2026-10-21 CAD features/targets/catalog must be rebuilt as Step 0; ELE missing). Reviewer pass integrated (retro d957d43/d5c5441 + WI-009 pre-commit). Then EXECUTING. | `docs/workflow/designs/D-003-technical-trading-approach.md`, `docs/tech_approach/2026-W44/briefs/contrastive-learning-brief.md`, `docs/tech_approach/2026-W44/plans/contrastive-learning-plan.md` |
+| WI-008 | Quarantine triage execution (72 dead-letter tickers: per-case verification + reinstate/keep decisions) | G-002 | **PLAN** — do-next (admin order 2026-10-25); brief: `docs/workflow/briefs/2026-10-25-WI-008-quarantine-percase-brief.md` | 2026-10-25 | Build produces evidence per case; **reinstate/keep is a human gate, no auto-reinstatement**. ELE re-download is admin-owned (Mac/IBKR Gateway) — out of Build scope. Known input defect: 2020-03-09 cluster classified inconsistently (OVV/WES → GENUINE_VOL vs CVE/APA/OXY/MTDR/PR/SM same date → SPLIT_LOOKALIKE); classifier output is a hypothesis, not evidence. | `reports/wi008_quarantine_triage.md` |
+| WI-009b | Make contrastive ranking beat the E5 factor baseline (WI-009 follow-up, admin APPROVED 2026-10-25) | G-001 | READY — queued after WI-008 | 2026-10-25 | Seed: gate brief APPROVE branch (`docs/human/briefings/2026-10-25-gate-WI-009-contrastive-ranking.md`). Open questions: model val rank-IC +0.043 vs rev_1m |IC| 0.157 (undertrained — 40 dates/2 epochs — or genuinely weaker); REIT concentration; shortlist lag (target-free inference path). | `reports/wi009_train_CAD.json`, `reports/wi009_top10_CAD.csv`, plan `docs/plans/2026-10-24-WI-009-contrastive-learning.md` |
 
 ## DONE
 
 | WI | Title | Goal | Done | Evidence |
 |---|---|---|---|---|
+| WI-009 | Implement Technical Trading Approach (D-003 Option 2 — contrastive pairwise ranking on CAD) | G-001 | 2026-10-25 — gate decision: **APPROVED**, continue as WI-009b | Build commit 19795ac; PM cycle 6 verification (4acae0b): 11/11 leak+sampler tests, 56 full suite, top-10 CSV verified; gate brief `docs/human/briefings/2026-10-25-gate-WI-009-contrastive-ranking.md`; E5 split-leak found by reviewer #2, fixed and regression-locked (`tests/test_e5_split_no_leak.py`) |
 | WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | 2026-10-24 — gate decision: **pivot to WI-009** (hybrid technical-factor, D-003); no separate target/metric redesign item | E3–E5 verdicts (H3 yes / H2 no / H4 no) in `reports/diag_D002_summary.md` + e2–e5 reports; PM cycle 4 verification (ee6f93e); `logs/e3_runs.out` |
 | WI-003 | Ingest Phase 1 validation runs + CAD download | G-002 | 2026-10-22 | 546 USD + 350 CAD synced (~97-98% coverage); verifier PASS (824/896 ok, leakage PASS, 72 quarantined) — `reports/sprint1_ingestion_audit.md` |
 | WI-001 | Build & run pipeline v1 end-to-end (Sprints 1–5) | G-001 | 2026-10-22 ⚠ QA exception | Gate 4 FAILED; PDFs = structural demo only (`reports/`, `screener_*_20261021.pdf`) |
@@ -26,7 +28,6 @@
 | WI | Title | Goal | Size | Gate |
 |---|---|---|---|---|
 | WI-004 | Ingest Phase 2 pacing restore (aggressive targets) | G-002 | S | deferred to next week by admin (2026-10-22); gate 1/3 clean runs |
-| WI-008 | Quarantine triage (72 tickers: 70 CB-01 extreme returns, 2 CB-02 short history) + BRK.B/ELE empty-response fix | G-002 | S/M | before next training run — **triage analysis DONE 2026-10-23**: 2 rows already clean (stale), ~44 corp-action level-step artifacts, ~26 flagged genuine-vol (several actually restructuring artifacts — needs per-case verification); BRK.B resolved (downloads as `BRK B`, in universe); ELE missing — needs Mac re-download. Execution plan pending admin decision. | `reports/wi008_quarantine_triage.md` |
 | WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | signal direction pivoted to WI-009 (2026-10-24) |
 
 ## Column policies

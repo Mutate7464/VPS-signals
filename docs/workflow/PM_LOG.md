@@ -4,6 +4,23 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 7 (admin gate decision: WI-009 APPROVED; WI-008 do-next; WI-009b queued)
+- Admin direction: "approved 009, move to next item" (2026-10-25). WI-009 gate → DONE
+  (APPROVED; continuation boarded as WI-009b). Next item per PM's proposed order: WI-008.
+- Brief written: `docs/workflow/briefs/2026-10-25-WI-008-quarantine-percase-brief.md` —
+  per-case evidence report (level-step test + volume corroboration), 72 rows, recommended
+  action per row; human gate on reinstate/keep; no quarantine mutation; ELE owner-action.
+- Brief folds in the classifier's known defects: 2020-03-09 COVID cluster classified
+  inconsistently across the two classes (OVV/WES vs CVE/APA/OXY/MTDR/PR/SM same date);
+  GME genuine; GOOG 2014-04 likely artifact; ICL negative prices = FIX_DATA.
+- Board: WI-009 → DONE table (gate: approved, commit 19795ac + cycle-6 verification);
+  WI-008 → ACTIVE/PLAN do-next; WI-009b → ACTIVE/READY queued after WI-008; header cycle 7.
+  (Backlog-row delete fused with the WI-005 row mid-patch — the known table-fuse pitfall;
+  repaired immediately, verified in diff.)
+- cursor: no new opencode sessions since ses_e8f8c752dffejE7GTKy5IcSDFk (2026-10-25 00:26 UTC) — unchanged.
+- Next: admin pastes the WI-008 Build prompt (below) into opencode → planner/Build run →
+  PM cycle 8 verifies → reinstate/keep human gate on the evidence report.
+
 ## 2026-10-25 — Cycle 6 (WI-009 verified at gate; human decision pending)
 - Ingest: 5 sessions past cursor — ses_e8fb0881 (WI-009 Build, deepseek-v4.1-flash, the tmux session),
   ses_e8f8c752f (retro review WI-002 diag commits) + ses_e8f8c752d (pre-commit review WI-009 diff),
