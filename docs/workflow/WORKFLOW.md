@@ -59,9 +59,11 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 | Goals | `G-##-<kebab-slug>.md`, zero-padded, never renumbered | `G-001-dual_market_screener.md` |
 | Work items | `WI-##` on the board; referenced everywhere by ID only | `WI-002` |
 | Designs (ADRs) | `D-##-<kebab-slug>.md`; status field: `proposed / accepted / superseded-by-D-##` | `D-002-model-signal-diagnostics.md` |
-| Plans | `YYYY-MM-DD-WI-##-<kebab-slug>.md` (date-first = sortable; WI = traceable) | `2026-10-22-WI-002-model-signal.md` |
+| Plans | `YY-WW-WI-##-<kebab-slug>.md` (ISO year-week; sortable + traceable; **admin convention 2026-10-25, cycle 11**) | `26-W43-WI-011-condition-first-meta-analysis.md` |
+| Tech/research files | week dirs `docs/tech_approach/<YYYY-Www>/`, files inside also `YY-WW-<slug>` | `docs/tech_approach/2026-W44/26-W44-<slug>.md` |
+| Ingest/code changelog | one general `docs/ingest/CHANGELOG.md` (absorbs `ib4-changelog.md`; admin 2026-10-25) | — |
 | Retros | `retros/YYYY-WW.md` (ISO year-week) | `retros/2026-W43.md` |
-| File style | kebab-case filenames; doc title = human phrase; IDs = uppercase | — |
+| File style | kebab-case filenames; doc title = human phrase; IDs = uppercase. **Keep files small/flat** — one topic per file, no deep nesting (token discipline, admin 2026-10-25) | — |
 
 **Mandatory doc headers:** every artifact opens with `ID`, `Title`, `Goal:` (for D/P), `Status`, `Date`. A row or design that can't be traced to a goal is noise — delete it or promote it.
 
