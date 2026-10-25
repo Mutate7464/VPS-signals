@@ -4,6 +4,26 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 9 gate close (admin decisions: WI-009b HOLD+re-spec; WI-009c combo scope)
+- **WI-009b gate: DECIDED — HOLD + re-spec** (admin, this session). Closed DONE
+  as documented negative result: clause (a) re-specified to same-sign-AND-|IC|,
+  which this run fails (−0.1478 vs `vol_20` +0.1274). Model NOT shipped; inverse
+  signal parked as candidate feature. Same-sign clause carries into WI-009c.
+  Records: board row (agent stream), gate-brief decision section (human stream),
+  handover open item 1 struck through — both streams confirmed.
+- **WI-009c scope: DECIDED — continuous-first combo** (admin direction):
+  regression on the continuous 20d move as starting point; band probabilities
+  derived from its forecast distribution; factor-only logistic probe stays as
+  cheap step-1 bound; regime-aware features / ensembles / stacking / dynamic
+  feature selection in scope as candidates (PM verified NONE were built in
+  WI-009/009b — checked executed plan + code constructs). Research doc updated
+  with ADMIN DIRECTION section. Next: planner brief → loop-v2 headless planner
+  dispatch → plan review → Build.
+- WI-009 stale plan confirmed AGAIN: `docs/tech_approach/2026-W44/plans/
+  contrastive-learning-plan.md` is the unexecuted draft (STATUS: PLAN, TBD log;
+  `src/features/technical_features.py` never existed — Step 2 was dropped in
+  favor of the existing 89-feature panel). Do not read it as record.
+
 ## 2026-10-25 — Cycle 9 continuation addendum: loop v2 (direct handoff, scoped auto)
 - Admin direction: "update agent — direct interface with planning and build in
   opencode; direct handoff and completion". Loop v2 landed in

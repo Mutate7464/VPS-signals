@@ -22,9 +22,9 @@
 
 ## Open items (admin decisions / next actions)
 
-1. **WI-009b gate decision (BLOCKING, admin):** read `docs/human/briefings/2026-10-25-gate-WI-009b-skill-bar.md` (+ cycle-9 addendum — F1 fixed, clause-a margin now 16.0% relative, sign inversion unchanged). Responses: "gate approved" / "hold — <question>" (suggested re-spec: clause (a) same-sign AND |IC|) / "reject" (ship E5 factors as the D-003 Option 2 signal instead).
+1. ~~**WI-009b gate decision**~~ — **DECIDED 2026-10-25: HOLD + re-spec.** WI-009b closed DONE as a documented negative result (see board row): clause (a) re-specified to same-sign-AND-|IC| for all future skill bars; the sign-inverted model is NOT shipped; inverse signal parked as a candidate feature only. Findings recorded in both streams (agent: board/PM_LOG/handover; human: gate brief addendum). No further action.
 
-2. **WI-009c scope decision (admin):** classifier route to usable targets — research doc `docs/plans/2026-10-25-WI-009c-classifier-research.md` states the open questions (label-vs-feature problem; 3-class ordinal vs independent binaries vs continuous regression; Gate-4 bar vs skill bar). Key prior: Gate 4 FAILED on USD (all 4 targets ≈ random); WI-002 says signal lives in continuous space. PM proposal: cheap factor-only logistic first, full xgb CAD run last. Pick Q-order + Q3 design.
+2. **WI-009c scope decision (admin direction received 2026-10-25, planner pass pending):** classifier route, **continuous-first combo** — regression on the continuous 20d move as the starting point, band probabilities (up/down/stay ±5%) derived from its forecast distribution; factor-only logistic probe stays as the cheap step-1 bound. Robustness techniques in scope as candidates (NOT yet built): regime-aware features, ensemble/stacked signals, dynamic feature selection. Same-sign clause carried into any new skill bar. Research doc `docs/plans/2026-10-25-WI-009c-classifier-research.md` is the base; planner brief next.
 
 3. **ELE re-download on M1 Mac** (IBKR Gateway side; empty response for 20Y TSE query — try different duration/barSize or conid route).
 

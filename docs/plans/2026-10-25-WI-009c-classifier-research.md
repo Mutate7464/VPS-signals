@@ -86,3 +86,24 @@ spending compute.
 
 Pick Q-order and the target design (a/b/c from Q3); whether the Gate-4 bar or
 the skill bar governs; then WI-009c gets a planner pass → execution plan → Build.
+
+---
+
+## ADMIN DIRECTION (2026-10-25, cycle 9 close) — supersedes "Decision asked"
+
+- **WI-009b gate: HOLD + re-spec** (see gate brief decision record). Same-sign
+  clause adopted into every future skill bar — **including WI-009c's**.
+- **Q3 design: combo (c), continuous-first** — regression on the continuous
+  20d forward move is the *starting point*; band probabilities
+  (up/down/stay ±5%) derive from its forecast distribution rather than from
+  independent binary classifiers. Factor-only logistic probe (Q1) stays as the
+  cheap step-1 bound on label learnability.
+- **Robustness techniques in scope as candidates** (admin: "assume these will
+  change training/params"): regime-aware features (per-market-state feature
+  sets), ensemble/stacked weak signals, dynamic feature selection. NONE were
+  built in WI-009/009b (verified against the executed plan + code: no regime,
+  ensemble, stacking, or dynamic-selection constructs exist). They enter here
+  as scoped Build options, each behind the cheap probe.
+- **Contrastive ranker role:** `scripts/rank_assets.py` (WI-009 Step 4) already
+  refines to top-10 by scalar score + pairwise win-rate confidence; under the
+  combo design it becomes one *input* to the stack, not the final ranker.

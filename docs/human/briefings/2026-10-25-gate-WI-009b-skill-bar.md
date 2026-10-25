@@ -150,3 +150,23 @@ deterministically (`EXIT:0`):
   anti-correlated (every epoch negative, sub-windows −0.217 / −0.078 same sign).
   A same-sign reading of clause (a) still **fails**. The re-specification
   decision above is unchanged by the fix.
+
+---
+
+## GATE DECISION (admin, 2026-10-25): **HOLD + re-specify — WI-009b closed as a documented NEGATIVE result**
+
+Plain-language record for the human stream:
+
+- The model is **not shipped**. It learned a real, stable rule — "rank
+  high-volatility names as future losers" — which was true for most of the
+  2016–2026 history and **inverted** in the last 3 months. A ranker that's
+  confidently backwards is worse than no ranker if someone trades its top-10.
+- The skill bar itself was underspecified (magnitude-only), which let an
+  inverted model "pass". **Re-specified: clause (a) = same sign as the best
+  factor AND |IC| ≥ its |IC|.** This run fails that bar. All future skill bars
+  (WI-009c included) use the same-sign clause.
+- Nothing is wasted: the harness, the purged splits, the tests, the F1 fix all
+  carry forward. The negative result is documented and citable.
+- The inverse signal stays **parked as a candidate input feature** for
+  WI-009c models — never as a standalone ranker (negating it on the same
+  window it's evaluated on would be curve-fitting).
