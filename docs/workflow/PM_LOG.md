@@ -4,6 +4,30 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-25 — Cycle 6 (WI-009 verified at gate; human decision pending)
+- Ingest: 5 sessions past cursor — ses_e8fb0881 (WI-009 Build, deepseek-v4.1-flash, the tmux session),
+  ses_e8f8c752f (retro review WI-002 diag commits) + ses_e8f8c752d (pre-commit review WI-009 diff),
+  plus 2 trivial (10-24 "OK"/"Conversation title", no work). Commit 19795ac.
+- Verify (PM ran, not trusted from log): `uv run pytest -q tests/test_e5_split_no_leak.py
+  tests/test_pair_sampler.py` → 11/11 green (leak regression + sampler);
+  reports/wi009_top10_CAD.csv → 10 rows + header, ranks 1..10, no NaNs, 7/10 REITs;
+  reports/wi009_e5_baseline_CAD.md carries the POST-leak-fix numbers (ridge −0.0046 t−1.26,
+  logit +0.0226 t+4.44) matching the plan log; gate brief exists (6.3 KB, 00:34).
+- Key finding (sample, gate-relevant): the E5 split leak — reviewer #1 cleared the
+  pd.factorize-codes mask as "internally consistent", reviewer #2 called it a blocker;
+  Build adjudicated by experiment (codes ≠ positions for 100% of CAD rows, max gap 1839;
+  staggered fixture pulled 40 held-out rows into train). Reviewer #1 was wrong. Fix is
+  regression-locked in tests/test_e5_split_no_leak.py; contaminated CAD multivariate
+  numbers corrected in-report; USD report regenerated for truth-in-reporting.
+- Verdict: WI-009 build DONE, all stated acceptance criteria pass, BUT model val rank-IC
+  +0.043 (t+2.63) < rev_1m |IC| 0.157 (t−4.26) on the same 10 held-out dates → GATE
+  stands (APPROVE WI-009b / HOLD / REJECT), per docs/human/briefings/2026-10-25-gate-WI-009-contrastive-ranking.md.
+- Board: already at GATE (Build updated it correctly); no PM correction needed.
+  tech_approach/2026-W44/plans/contrastive-learning-plan.md is STALE (STATUS: PLAN, TBD
+  log row) — docs/plans/2026-10-24-WI-009-contrastive-learning.md is the executed plan;
+  flagged, not deleted.
+- cursor: session-since ses_e8f8c752dffejE7GTKy5IcSDFk (2026-10-25 00:26 UTC)
+
 ## 2026-10-24 — Cycle 5 (admin gate decision: pivot to WI-009; cleanup; tech_approach integrated)
 - Admin direction (verbatim): "perform clean up first. will pivot direction toward WI-009 / revew
   docs/tech_approach docs and integrate. / review file strucutre and associated docucs. / workflow is
