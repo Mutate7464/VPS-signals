@@ -4,7 +4,12 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
-## 2026-10-26 — Cycle 13 (WI-012: PM-executed cross-market validation run, admin-ordered in-chat)
+## 2026-10-26 — Cycle 14 (WI-013: admin plan approval in-chat → Build dispatched → PM close)
+- Admin approved + ordered execution in-chat ("execute WI-013"). Board row PLAN→EXECUTING→QA/GATE. Build dispatched detached (`opencode --agent build --auto`), log `logs/wi013_build.out`, EXIT:0.
+- **Delivered (steps 1–5):** `src/market_cli.py` (default BOTH = USD→CAD sequential; explicit single; invalid rejected pre-write), 6 `wi011_*` scripts + `src/wi011` market-parametrized (dropped `MARKET="CAD"`), probe/train/eval/rank_assets/train_contrastive/check_inputs/launcher all market-aware with suffixed writes, F-2 `write_report(market)`, F-4 metadata rebuild `scripts/rebuild_wi013_metadata.py` (USD 71→67, CAD 91→87 cols; every surviving column `assert_frame_equal(check_exact=True)`; backups retained; `y_*` labels gone), CAD regression/summary/shortlist backfilled suffixed, default preflight writes `wi011_preflight_{USD,CAD}.md`.
+- **Verified (PM, independently):** 58-file frozen-hash baseline intact after PM restore of regenerated `wi009c_{regression,summary}_CAD.json` (frozen wins); targeted `tests/test_wi013_*.py` 126 passed; Build full-suite log `pytest_exit=0`, 360 passed (7:38).
+- **Open for admin gate:** deviation 1 — USD Step-0 checker baseline undeclared (checker reports-observes, CAD assertions unchanged, exit 0); deviation 2 — `e5_baseline.py` CLI default left CAD (plan scoped it to F-2 only). PM rec: ACCEPT both. Untracked `data/` left untouched (pre-existing hygiene item).
+- Commit `5642819` (cycle-scoped, explicit paths). cursor: `ses_e86ef4e26ffe40` (Build run ingested this cycle: log rows + step outs above).
 - Admin order in-chat ("iterate from this version, run both CAD + USD, note errors/perf/optimizations"), scope confirmed via clarify: **full depth incl. WI-011 on USD**, artifacts to `reports/wi012_*`, cycle-scoped commits. PM executed directly (no opencode dispatch — admin-ordered PM run).
 - **F-1 ERROR fixed live:** `--horizon 20` NaN'd the whole e5 single-factor table (dropna hardcoded to fwd_15; 5 contaminated dates → non-NaN-aware mean). Fixed `src/factors/e5_baseline.py:99`, regression `tests/test_e5_baseline_horizon_nans.py` 6/6.
 - **Results:** USD factor signal generalizes (mom +0.0209 t+6.00 / vol −0.0158 t−5.11, h15); labels bottleneck cross-market (USD probe 0/5 bar); continuous ridge FAIL on USD; WI-011 USD chain EXIT:0 survivors=0 → NO_TRADE confirmed both markets. Frozen gate artifacts restored after every stage (3 overwrite incidents handled).
