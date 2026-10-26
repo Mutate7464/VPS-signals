@@ -49,6 +49,36 @@ E5_FACTORS = ["mom_12_1", "rev_1m", "vol_20", "amihud_20", "log_dollar_vol_20"]
 E5_WARMUP_MIN_DATE = "2015-01-01"
 
 
+def factor_frame(g: pd.DataFrame) -> pd.DataFrame:
+    """The five E5 factor columns for one symbol's date-sorted OHLCV frame.
+
+    Single source of truth for the definitions: `build_e5_panel` and the WI-014
+    screener both call this, so a shortlist ranked by the screener is ranked on
+    exactly the factor the WI-009/WI-012 baseline was validated on (no second,
+    drifting copy of the formulas).
+
+    Args:
+        g: one symbol's bars, sorted by `date`, with `close` and `volume`.
+
+    Returns:
+        A float32 frame indexed like `g`, columns in `E5_FACTORS` order.
+    """
+    close = g["close"].astype("float64")
+    ret = close.pct_change()
+    dollar_vol = (close * g["volume"].astype("float64")) + 1e-12
+
+    f = pd.DataFrame(
+        {
+            "mom_12_1": (close.shift(21) / close.shift(252) - 1.0),
+            "rev_1m": (close / close.shift(21) - 1.0),
+            "vol_20": ret.rolling(20, min_periods=20).std(ddof=1),
+            "amihud_20": (ret.abs() / dollar_vol).rolling(20, min_periods=20).mean(),
+            "log_dollar_vol_20": np.log(dollar_vol).rolling(20, min_periods=20).mean(),
+        }
+    )
+    return f[E5_FACTORS].astype("float32")
+
+
 def build_e5_panel(market: str, min_date: str = E5_WARMUP_MIN_DATE) -> pd.DataFrame:
     """Build the E5 factor + forward-return panel for one market.
 
@@ -65,20 +95,10 @@ def build_e5_panel(market: str, min_date: str = E5_WARMUP_MIN_DATE) -> pd.DataFr
         if len(g) < 30:
             continue
         close = g["close"].astype("float64")
-        ret = close.pct_change()
-        dollar_vol = (close * g["volume"].astype("float64")) + 1e-12
 
-        f = pd.DataFrame(
-            {
-                "date": g["date"],
-                "symbol": symbol,
-                "mom_12_1": (close.shift(21) / close.shift(252) - 1.0),
-                "rev_1m": (close / close.shift(21) - 1.0),
-                "vol_20": ret.rolling(20, min_periods=20).std(ddof=1),
-                "amihud_20": (ret.abs() / dollar_vol).rolling(20, min_periods=20).mean(),
-                "log_dollar_vol_20": np.log(dollar_vol).rolling(20, min_periods=20).mean(),
-            }
-        )
+        f = factor_frame(g)  # the one place the five factors are defined
+        f.insert(0, "symbol", symbol)
+        f.insert(0, "date", g["date"].to_numpy())
 
         close_a = close.to_numpy()
         atr = wilder_atr(g).astype("float64").to_numpy()
