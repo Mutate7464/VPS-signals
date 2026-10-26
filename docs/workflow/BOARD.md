@@ -2,7 +2,7 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-25 cycle 11 gate close (admin ACCEPT: WI-011 closed as documented negative — none survive costs, NO_TRADE default; full suite 191 passed; doc conventions YY-WW adopted)
+**Last updated:** 2026-10-26 cycle 12 quiescent close (0 new sessions; WI-011 post-commit Build residue cleaned — reports restored to frozen state, log STATUS superseded line added; PM_LOG rotated: cycles 9–11 archived. Next up per BACKLOG: WI-010 classifier consolidation, needs admin GO)
 
 ## ACTIVE
 
