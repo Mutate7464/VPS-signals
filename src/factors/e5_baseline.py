@@ -96,7 +96,7 @@ def build_e5_panel(market: str, min_date: str = E5_WARMUP_MIN_DATE) -> pd.DataFr
         return pd.DataFrame(columns=["date", "symbol"] + E5_FACTORS)
 
     panel = pd.concat(parts, ignore_index=True)
-    panel = panel.dropna(subset=E5_FACTORS + ["fwd_atr_ret_15"])
+    panel = panel.dropna(subset=E5_FACTORS + ["fwd_atr_ret_15", "fwd_atr_ret_20"])
     return panel.reset_index(drop=True)
 
 
