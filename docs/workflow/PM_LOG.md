@@ -9,7 +9,8 @@
 - Residue handled: WI-011 Build's post-commit chain re-run had left timestamp-only churn in 3 `reports/wi011_*` files (restored to committed state — frozen gate record wins) and a second STATUS line in the log claiming "nothing committed"; superseded — gate decided ACCEPT, committed `ce59331`/`f59287c` (board/log updated with a PM-set line).
 - Untracked WI-008 quarantine scripts + per-case report left untouched (deliberate, pending WI-010 consolidation per board).
 - Rotation duty done this cycle: cycles 9–11 archived to `docs/workflow/archive/PM_LOG-2026-10-cycles-9-11.md`.
-- cursor: unchanged `ses_e8ecc8dc`. No gate, no Discord ping.
+- **Admin GO "WI-010" (same cycle):** brief written + committed (`docs/workflow/briefs/2026-10-26-WI-010-quarantine-consolidation.md`), planner dispatched headless (`ses_e8972ffc`, ~2.5 min) → plan `docs/plans/26-W44-WI-010-quarantine-consolidation.md` + ADR `docs/workflow/designs/D-010-quarantine-consolidation.md`. PM contract-check PASS (5 steps, acceptance + deterministic verify each, read-only constraints, STOP at human gate; baseline anchors `| REINSTATE | 17 |` / `| KEEP_QUARANTINED | 55 |` verified present). Note: planner could NOT read `docs/human/**` (path rule) — plan relies on the brief's summary of the escalation evidence and mandates the persistence-guard-only anchor experiment BEFORE any rule change. Board: WI-010 → PLAN (awaiting admin plan approval before Build).
+- cursor: `ses_e8972ffc` (WI-010 planner). No gate, no Discord ping.
 
 ## 2026-10-25 — Cycle 11 gate close (admin: WI-011 ACCEPT — documented negative)
 - **WI-011 gate: DECIDED — ACCEPT** (admin "accept results", same day). Closed
