@@ -11,11 +11,11 @@
 # Usage (detached, survives the launcher — same Popen pattern as the chains):
 #   setsid bash scripts/notify_gate.sh >> logs/notify_gate.out 2>&1 &
 #   bash scripts/notify_gate.sh --file logs/wi009b_train.out \
-#        --marker 'EXIT:0|EXIT:1' \
-#        --message 'WI-009b training done — STATUS line written, run PM cycle'
+#        --marker 'EXIT:0|EXIT:1'
+#   (message defaults to "Run complete — <file basename>"; keep pings minimal)
 #
 # Or one-shot (for gate briefs that already exist):
-#   bash scripts/notify_gate.sh --once --message 'WI-009b at QA/GATE — admin decision needed'
+#   bash scripts/notify_gate.sh --once
 #
 # Marker sources this repo uses: `EXIT:0` / `EXIT:1` in run logs;
 # `STATUS: DONE|BLOCKED|ERROR` in plan files; gate decisions = PM posts.
@@ -40,7 +40,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -z "$MESSAGE" ]] && { echo "--message is required" >&2; exit 2; }
+# Message defaults to a minimal ping; --message overrides (keep pings minimal).
+if [[ -z "$MESSAGE" ]]; then
+  if [[ -n "$FILE" ]]; then MESSAGE="Run complete — $(basename "$FILE")"
+  else MESSAGE="Run complete"; fi
+fi
 
 # Load DISCORD_WEBHOOK_URL from .env (never echoed).
 WEBHOOK=""
