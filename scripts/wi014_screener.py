@@ -38,6 +38,9 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# `RANK_FACTOR`/`RANKING_RULE` come from the renderer, which is the single place the
+# printed ranking rule is defined: the CSV and the tearsheet cannot drift apart.
+
 import numpy as np
 import pandas as pd
 import pyarrow.compute as pc
@@ -54,14 +57,19 @@ from src.market_cli import (  # noqa: E402
     report_path,
     run_markets,
 )
+from src.pdf_compiler_factor import (  # noqa: E402
+    RANK_FACTOR,
+    RANKING_RULE,
+    ic_report_path,
+    parse_e5_ic_table,
+    render_tearsheet,
+)
 
 FEATURES_DIR = BASE_DIR / "data" / "features"
 RAW_DIR = BASE_DIR / "data" / "raw_ohlcv"
 REPORTS = BASE_DIR / "reports"
 
 DEFAULT_TOP_N = 10
-RANK_FACTOR = "mom_12_1"
-RANKING_RULE = "rank by mom_12_1 descending (WI-012-validated E5 single factor)"
 SHORTLIST_COLUMNS = ["rank", "symbol", *E5_FACTORS, "scoring_date"]
 # 252d mom_12_1 lookback + 20d vol/amihud window: below this a symbol cannot have
 # a complete factor row, so it is skipped rather than ranked on NaNs.
@@ -322,22 +330,80 @@ def build_parser() -> argparse.ArgumentParser:
                         help=f"How many names per market (default {DEFAULT_TOP_N}).")
     parser.add_argument("--date", default=None, metavar="YYYY-MM-DD",
                         help="Scoring date; default is the latest available feature date per market.")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Print the markets and the resolved suffixed paths, then write nothing.")
     return parser
 
 
+def _display(path: Path) -> str:
+    """Repo-relative path when possible (readable), else the absolute path."""
+    try:
+        return str(Path(path).relative_to(BASE_DIR))
+    except ValueError:
+        return str(path)
+
+
+def dry_run_lines(markets: list[str], args: argparse.Namespace, *,
+                  features_dir: Path | None = None, reports_dir: Path | None = None) -> list[str]:
+    """Resolve each market's scoring date and output paths *without* writing anything.
+
+    Resolving the date is the only work a dry run does: the market's feature panel is
+    read column-pruned (dates only) so the printed PDF name carries the real stamp.
+    """
+    lines: list[str] = []
+    total = len(markets)
+    for position, market in enumerate(markets, 1):
+        csv_path = shortlist_csv_path(market, args.top_n, reports_dir=reports_dir)
+        try:
+            scoring_date = (pd.Timestamp(args.date) if args.date
+                            else resolve_scoring_date(features_path(market, features_dir=features_dir)))
+        except (FileNotFoundError, ValueError) as exc:
+            lines.append(f"[wi014_screener] dry-run {position}/{total} market={market} UNRESOLVED: {exc}")
+            continue
+        pdf_path = tearsheet_pdf_path(market, scoring_date, reports_dir=reports_dir)
+        lines.append(
+            f"[wi014_screener] dry-run {position}/{total} market={market} "
+            f"scoring_date={scoring_date.date()} csv={_display(csv_path)} pdf={_display(pdf_path)} "
+            f"(nothing written)"
+        )
+    return lines
+
+
 def run_one_market(market: str, args: argparse.Namespace) -> int:
-    """Generate + write one market's shortlist CSV. Returns a process exit code."""
+    """Generate, then write one market's shortlist CSV and tearsheet PDF.
+
+    Everything that can fail is resolved *before* the first write: the cross-section,
+    and the published IC table the summary page quotes. A failure therefore leaves the
+    market's outputs unwritten (no half-written pair), and the exit code is non-zero.
+    """
     try:
         result = generate_shortlist(market, top_n=args.top_n, as_of=args.date)
+        ic_rows = parse_e5_ic_table(ic_report_path(market, reports_dir=REPORTS))
     except (FileNotFoundError, ValueError) as exc:
         print(f"[wi014_screener] {market}: {exc}", file=sys.stderr)
         return 1
 
+    if result.shortlist.empty:
+        print(f"[wi014_screener] {market}: no eligible symbol on {result.scoring_date.date()}", file=sys.stderr)
+        return 1
+
     csv_path = write_shortlist_csv(result.shortlist, shortlist_csv_path(market, args.top_n))
+    tear = render_tearsheet(
+        market=market, scoring_date=result.scoring_date, shortlist=result.shortlist,
+        cross_section=result.cross_section.frame, out_path=tearsheet_pdf_path(market, result.scoring_date),
+        eligible_symbols=result.eligible_symbols, stale_symbols=result.cross_section.stale_symbols,
+        skipped=result.cross_section.skipped, top_n=args.top_n, raw_dir=RAW_DIR, reports_dir=REPORTS,
+        ic_rows=ic_rows,
+    )
+
     print(f"[wi014_screener] {market}: scoring_date={result.scoring_date.date()} "
           f"eligible={result.eligible_symbols} stale={result.cross_section.stale_symbols} "
           f"skipped={result.cross_section.skipped} rows={len(result.shortlist)}")
-    print(f"[wi014_screener] {market}: {csv_path} ({csv_path.stat().st_size:,} bytes)")
+    print(f"[wi014_screener] {market}: {_display(csv_path)} ({csv_path.stat().st_size:,} bytes)")
+    print(f"[wi014_screener] {market}: {_display(tear.path)} ({tear.path.stat().st_size:,} bytes, "
+          f"{tear.pages} pages, tickers={','.join(tear.rendered_tickers)})")
+    if tear.skipped_tickers:
+        print(f"[wi014_screener] {market}: no chart page for {sorted(tear.skipped_tickers)}")
     return 0
 
 
@@ -350,6 +416,11 @@ def main(argv=None) -> int:
     print(f"[wi014_screener] PLAN: markets={', '.join(markets)} "
           f"({'default BOTH, USD then CAD' if args.market is None else 'explicit --market'}); "
           f"top_n={args.top_n}; {RANKING_RULE}")
+
+    if args.dry_run:
+        lines = dry_run_lines(markets, args)
+        print("\n".join(lines))
+        return 1 if any("UNRESOLVED" in line for line in lines) else 0
 
     return run_markets(markets, lambda market: run_one_market(market, args))
 

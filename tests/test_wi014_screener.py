@@ -29,8 +29,28 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = ROOT / "scripts"
 sys.path.insert(0, str(ROOT))
 
+import src.pdf_compiler_factor as factor_pdf  # noqa: E402
 from src.factors.e5_baseline import E5_FACTORS, factor_frame  # noqa: E402
 from src.market_cli import BOTH, resolve_markets  # noqa: E402
+
+IC_STUB = """# WI-009 — E5 factor baseline ({market})
+
+## Single-factor within-date rank-IC
+
+| Factor | mean IC | t | dates |
+| :--- | ---: | ---: | ---: |
+| `mom_12_1` | {mom} | +6.00 | 2869 |
+| `rev_1m` | +0.0025 | +0.90 | 2869 |
+| `vol_20` | -0.0158 | -5.11 | 2869 |
+| `amihud_20` | -0.0085 | -3.88 | 2869 |
+| `log_dollar_vol_20` | +0.0052 | +2.65 | 2869 |
+
+## Multivariate (purged WF, 20d embargo)
+
+| Model | mean IC | t | dates |
+| :--- | ---: | ---: | ---: |
+| `ridge` | +0.0055 | +1.86 | 1722 |
+"""
 
 USD_END = pd.Timestamp("2026-09-23")
 CAD_END = pd.Timestamp("2026-09-22")
@@ -110,6 +130,12 @@ def fixture(tmp_path_factory):
     # EEE: features are fresh, but no raw file exists at all.
     spans["USD"][NO_RAW_USD] = bars[("USD", "AAA")][["date"]].copy()
 
+    ic_md = {}
+    for market, mom_ic in (("USD", "+0.0209"), ("CAD", "+0.0271")):
+        text = IC_STUB.format(market=market, mom=mom_ic)
+        ic_md[market] = text
+        (reports_dir / f"wi012_e5_baseline_{market}_h15.md").write_text(text)
+
     for market, per_symbol in spans.items():
         rows = [
             {"date": date, "symbol": symbol, "market": market}
@@ -130,6 +156,7 @@ def fixture(tmp_path_factory):
         "raw_dir": raw_dir,
         "reports_dir": reports_dir,
         "bars": bars,
+        "ic_md": ic_md,
     }
 
 
@@ -138,10 +165,19 @@ def patched(screener, fixture, monkeypatch, tmp_path):
     """Point the stage script at the synthetic tree, with a per-test `reports/`."""
     reports_dir = tmp_path / "reports"
     reports_dir.mkdir()
+    # The per-test reports dir starts with only the published IC reports (the
+    # frozen read-only inputs); every other file in it is the run's own output.
+    for market, text in fixture["ic_md"].items():
+        (reports_dir / f"wi012_e5_baseline_{market}_h15.md").write_text(text)
     monkeypatch.setattr(screener, "FEATURES_DIR", fixture["features_dir"])
     monkeypatch.setattr(screener, "RAW_DIR", fixture["raw_dir"])
     monkeypatch.setattr(screener, "REPORTS", reports_dir)
     return {**fixture, "reports_dir": reports_dir}
+
+
+def _written(reports_dir: Path) -> set[str]:
+    """Files a run produced (the copies of the frozen IC reports are excluded)."""
+    return {p.name for p in reports_dir.iterdir() if not p.name.startswith("wi012_e5_baseline_")}
 
 
 def _expected_mom(screener, fixture, market: str, symbol: str) -> float:
@@ -175,7 +211,7 @@ def test_invalid_market_writes_nothing(screener, patched, capsys):
     err = capsys.readouterr().err
     assert rc != 0
     assert "invalid market" in err
-    assert list(patched["reports_dir"].iterdir()) == []
+    assert _written(patched["reports_dir"]) == set()
 
 
 def test_missing_scoring_date_writes_nothing(screener, patched):
@@ -184,7 +220,7 @@ def test_missing_scoring_date_writes_nothing(screener, patched):
         screener.generate_shortlist("USD", as_of="2026-09-22", features_dir=patched["features_dir"],
                                    raw_dir=patched["raw_dir"])
     assert screener.main(["--market", "USD", "--date", "2026-09-22"]) != 0
-    assert list(patched["reports_dir"].iterdir()) == []
+    assert _written(patched["reports_dir"]) == set()
 
 
 # --------------------------------------------------------------------------- #
@@ -305,3 +341,92 @@ def test_generated_csv_matches_ranking_contract(screener, patched, capsys):
     assert back["symbol"].tolist() == sorted(
         FRESH_USD, key=lambda s: _expected_mom(screener, patched, "USD", s), reverse=True
     )
+
+
+# --------------------------------------------------------------------------- #
+# Step 3 — end-to-end CLI: dry run, both markets, CSV + PDF per market
+# --------------------------------------------------------------------------- #
+def test_dry_run_prints_both_markets_in_order_and_writes_nothing(screener, patched, capsys):
+    rc = screener.main(["--dry-run"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "markets=USD, CAD" in out
+    assert "dry-run 1/2 market=USD" in out and "dry-run 2/2 market=CAD" in out
+    assert out.index("market=USD") < out.index("market=CAD")
+    assert _written(patched["reports_dir"]) == set(), "--dry-run must not write"
+
+    usd_line = next(line for line in out.splitlines() if "market=USD" in line)
+    cad_line = next(line for line in out.splitlines() if "market=CAD" in line)
+    assert "wi014_shortlist_USD_10.csv" in usd_line and "screener_factor_USD_20260923.pdf" in usd_line
+    assert "wi014_shortlist_CAD_10.csv" in cad_line and "screener_factor_CAD_20260922.pdf" in cad_line
+    assert "nothing written" in usd_line
+    # only market-suffixed paths: no unsuffixed report name anywhere in the plan
+    for line in out.splitlines():
+        for token in ("wi014_shortlist_", "screener_factor_"):
+            assert token not in line or "_USD" in line or "_CAD" in line
+
+
+def test_dry_run_single_market_reports_one_line(screener, patched, capsys):
+    rc = screener.main(["--market", "CAD", "--top-n", "3", "--dry-run"])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "1/1 market=CAD" in out
+    assert "wi014_shortlist_CAD_3.csv" in out
+    assert "market=USD" not in out
+    assert _written(patched["reports_dir"]) == set()
+
+
+def test_invalid_market_dry_run_writes_nothing(screener, patched, capsys):
+    rc = screener.main(["--market", "XYZ", "--dry-run"])
+    assert rc != 0
+    assert "invalid market" in capsys.readouterr().err
+    assert _written(patched["reports_dir"]) == set()
+
+
+def test_default_run_writes_csv_and_pdf_for_both_markets(screener, patched, capsys):
+    rc = screener.main([])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert _written(patched["reports_dir"]) == {
+        "wi014_shortlist_USD_10.csv",
+        "wi014_shortlist_CAD_10.csv",
+        "screener_factor_USD_20260923.pdf",
+        "screener_factor_CAD_20260922.pdf",
+    }
+    for name in ("wi014_shortlist_USD_10.csv", "wi014_shortlist_CAD_10.csv"):
+        csv_path = patched["reports_dir"] / name
+        assert csv_path.stat().st_size > 0
+        assert list(pd.read_csv(csv_path).columns) == screener.SHORTLIST_COLUMNS
+    for name, expected_pages in (("screener_factor_USD_20260923.pdf", 4),
+                                 ("screener_factor_CAD_20260922.pdf", 3)):
+        pdf_path = patched["reports_dir"] / name
+        assert pdf_path.read_bytes()[:4] == b"%PDF"
+        assert pdf_path.stat().st_size > 5_000, "PDF must be non-empty"
+        assert f"{expected_pages} pages" in out
+    assert "tickers=" in out
+
+
+def test_small_top_n_writes_both_output_types(screener, patched):
+    rc = screener.main(["--market", "USD", "--top-n", "2"])
+    assert rc == 0
+    written = _written(patched["reports_dir"])
+    assert written == {"wi014_shortlist_USD_2.csv", "screener_factor_USD_20260923.pdf"}
+    back = pd.read_csv(patched["reports_dir"] / "wi014_shortlist_USD_2.csv")
+    assert back["rank"].tolist() == [1, 2]
+    assert (patched["reports_dir"] / "screener_factor_USD_20260923.pdf").stat().st_size > 5_000
+
+
+def test_run_fails_before_writing_when_the_ic_report_is_missing(screener, patched, capsys):
+    """No published IC table → no CSV either: the summary may not quote invented numbers."""
+    (patched["reports_dir"] / "wi012_e5_baseline_USD_h15.md").unlink()
+    rc = screener.main(["--market", "USD"])
+    assert rc != 0
+    assert "missing E5 baseline report" in capsys.readouterr().err
+    assert _written(patched["reports_dir"]) == set()
+
+
+def test_ranking_rule_comes_from_the_renderer(screener):
+    """The CSV run and the tearsheet print the same rule from one definition."""
+    assert screener.RANK_FACTOR == factor_pdf.RANK_FACTOR == "mom_12_1"
+    assert screener.RANKING_RULE == factor_pdf.RANKING_RULE
+    assert "descending" in screener.RANKING_RULE
