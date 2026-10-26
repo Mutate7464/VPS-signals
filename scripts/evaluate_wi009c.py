@@ -31,9 +31,11 @@ Discipline
 * No live-use integration, no order wiring, and no sprint gate is marked passed here: the
   claim/use decision is left to the human gate.
 
-CLI::
+CLI (WI-013: omitted `--market` runs BOTH, USD then CAD; every input is read
+from that market's suffixed artifacts and the summary is written suffixed)::
 
-    uv run python scripts/evaluate_wi009c.py --market CAD
+    uv run python scripts/evaluate_wi009c.py                  # both markets
+    uv run python scripts/evaluate_wi009c.py --market CAD     # one market
 """
 
 from __future__ import annotations
@@ -51,6 +53,13 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from src.market_cli import (  # noqa: E402
+    add_market_argument,
+    cli_markets,
+    report_path,
+    resolve_output,
+    run_markets,
+)
 from src.models.continuous_targets import (  # noqa: E402
     ATR_PRICE_COLUMN,
     CONTINUOUS_TARGET,
@@ -64,6 +73,25 @@ from src.models.continuous_targets import (  # noqa: E402
 
 REPORTS = ROOT / "reports"
 DATA = ROOT / "data"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013).
+
+    Inputs are the *same-market* artifacts written by the probe/train/robustness
+    steps; the summary and its JSON record are market-suffixed, so a CAD
+    evaluation can never overwrite the frozen unsuffixed gate package.
+    """
+    return {
+        "probe": report_path(REPORTS, "wi009c_probe", market),
+        "run_json": report_path(REPORTS, "wi009c_regression", market, suffix=".json"),
+        "oof": DATA / f"wi009c_oof_{market}.parquet",
+        "shortlist": report_path(REPORTS, "wi009c_shortlist", market, suffix=".csv"),
+        "robustness": report_path(REPORTS, "wi009c_robustness", market),
+        "summary": report_path(REPORTS, "wi009c_summary", market),
+        "summary_json": report_path(REPORTS, "wi009c_summary", market, suffix=".json"),
+    }
+
 
 VERDICT_ROW_RE = re.compile(
     r"^\|\s*`(?P<target>[^`]+)`\s*\|\s*(?P<ic>[+-]?[\d.]+)\s*\|\s*(?P<t>[+-]?[\d.]+)\s*\|\s*"
@@ -474,9 +502,10 @@ def build_summary(record: dict, recomp: dict, verdicts: list[dict], n_cleared: i
 # --------------------------------------------------------------------------- #
 # Main
 # --------------------------------------------------------------------------- #
-def parse_args(argv=None):
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--market", default="CAD")
+    add_market_argument(ap)
     ap.add_argument("--probe", default=None)
     ap.add_argument("--run-json", default=None)
     ap.add_argument("--oof", default=None)
@@ -484,17 +513,29 @@ def parse_args(argv=None):
     ap.add_argument("--robustness", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--json-out", default=None)
-    return ap.parse_args(argv)
+    return ap
+
+
+def parse_args(argv=None):
+    return build_parser().parse_args(argv)
 
 
 def main(argv=None) -> int:
     args = parse_args(argv)
-    m = args.market
-    probe_p = Path(args.probe) if args.probe else REPORTS / "wi009c_probe.md"
-    run_p = Path(args.run_json) if args.run_json else REPORTS / f"wi009c_regression_{m}.json"
-    oof_p = Path(args.oof) if args.oof else DATA / f"wi009c_oof_{m}.parquet"
-    sl_p = Path(args.shortlist) if args.shortlist else REPORTS / f"wi009c_shortlist_{m}.csv"
-    rob_p = Path(args.robustness) if args.robustness else REPORTS / "wi009c_robustness.md"
+    markets = cli_markets(args.market, prog="evaluate_wi009c")
+    if markets is None:
+        return 2
+    print(f"[wi009c-eval] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, lambda m: run_market(m, args))
+
+
+def run_market(m: str, args) -> int:
+    p = paths(m)
+    probe_p = Path(args.probe) if args.probe else p["probe"]
+    run_p = Path(args.run_json) if args.run_json else p["run_json"]
+    oof_p = Path(args.oof) if args.oof else p["oof"]
+    sl_p = Path(args.shortlist) if args.shortlist else p["shortlist"]
+    rob_p = Path(args.robustness) if args.robustness else p["robustness"]
 
     try:
         probe_text = probe_p.read_text()
@@ -540,7 +581,7 @@ def main(argv=None) -> int:
         labels_cleared_line=labels_cleared_line,
     )
 
-    out = Path(args.out) if args.out else REPORTS / "wi009c_summary.md"
+    out = resolve_output(args.out, m, what="--out") if args.out else Path(p["summary"])
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text)
     print(f"[wi009c-eval] wrote {out}")
@@ -571,7 +612,11 @@ def main(argv=None) -> int:
                             "composite_max_abs_error": recomp["composite_max_abs_error"]},
         "human_gate": "claim/use decision left to the human gate; no gate marked passed",
     }
-    jout = Path(args.json_out) if args.json_out else REPORTS / f"wi009c_summary_{m}.json"
+    jout = (
+        resolve_output(args.json_out, m, what="--json-out")
+        if args.json_out
+        else Path(p["summary_json"])
+    )
     jout.parent.mkdir(parents=True, exist_ok=True)
     jout.write_text(json.dumps(summary_json, indent=2, default=str) + "\n")
     print(f"[wi009c-eval] wrote {jout}")

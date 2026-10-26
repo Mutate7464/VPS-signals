@@ -23,20 +23,27 @@ training dates by construction.
 
 Outputs
 -------
-    data/wi009c_oof_{MKT}.parquet      per-row fold predictions + probabilities
-    reports/wi009c_regression.md       folds, calibration, skill bar, limitations
-    reports/wi009c_regression_{MKT}.json   machine-readable run record
-    reports/wi009c_robustness.md       Step-4 evidence gates (gate evaluation only)
+    data/wi009c_oof_{market}.parquet           per-row fold predictions + probabilities
+    reports/wi009c_regression_{market}.md      folds, calibration, skill bar, limitations
+    reports/wi009c_regression_{market}.json    machine-readable run record
+    reports/wi009c_robustness_{market}.md      Step-4 evidence gates (gate evaluation only)
+    reports/wi009c_shortlist_{market}.csv      daily shortlist
 
-`--smoke` runs write the four artifacts above with a `_smoke` suffix (except the Step-4
+WI-013: the market is a parameter — omitting `--market` runs BOTH, USD then CAD —
+and every path above is market-suffixed, so no run can write an unsuffixed
+(frozen-gate) artifact. The detached launcher writes
+`logs/wi009c_train_{market}.out` / `.pid`.
+
+`--smoke` runs write the artifacts above with a `_smoke` suffix (except the Step-4
 report, which is canonical) so a bounded smoke window can never overwrite the production
 artifacts Step 5 evaluates. Plan Step 4 exposes three optional robustness switches
 (`--robustness-regime`, `--robustness-stacking`, `--robustness-dynamic`) that only
 *evaluate* their evidence gate: no option body is implemented, so a GO decision is
-recorded in `reports/wi009c_robustness.md` and refused rather than run.
+recorded in `reports/wi009c_robustness_{market}.md` and refused rather than run.
 
 CLI::
 
+    uv run python scripts/train_wi009c.py                        # both markets (USD, CAD)
     uv run python scripts/train_wi009c.py --market CAD --max-dates 60 --smoke
     uv run python scripts/train_wi009c.py --market CAD --detach      # production
 
@@ -95,6 +102,13 @@ from src.models.robustness_gates import (  # noqa: E402
     evaluate_robustness_gates,
     render_robustness_report,
 )
+from src.market_cli import (  # noqa: E402
+    add_market_argument,
+    cli_markets,
+    report_path,
+    resolve_output,
+    run_markets,
+)
 from src.models.skill_bar import (  # noqa: E402
     factor_ics_from_panel,
     skill_bar_verdict,
@@ -109,9 +123,26 @@ LOGS = ROOT / "logs"
 E5_COLS = [f"e5_{f}" for f in E5_FACTORS]
 RIDGE_ALPHA = 100.0  # matches the E5 multivariate ridge baseline
 SMOKE_DATES = 60
-PROBE_REPORT = REPORTS / "wi009c_probe.md"
 CONTRASTIVE_ARTIFACT = ROOT / "models" / "contrastive_ranker_wi009b.pt"
-WI009B_TRAIN_JSON = REPORTS / "wi009b_train_CAD.json"
+
+
+def paths(market: str, suffix: str = "") -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013).
+
+    `suffix` is the smoke namespace (`_smoke`), applied exactly as before so a
+    bounded smoke run still cannot overwrite a production artifact. Every *write*
+    is market-suffixed — including the regression report, which previously landed
+    on the frozen `reports/wi009c_regression.md` (finding F-5).
+    """
+    return {
+        "probe_report": report_path(REPORTS, "wi009c_probe", market),
+        "wi009b_train_json": report_path(REPORTS, "wi009b_train", market, suffix=".json"),
+        "shortlist": report_path(REPORTS, "wi009c_shortlist", market, suffix=f"{suffix}.csv"),
+        "report": report_path(REPORTS, "wi009c_regression", market, suffix=f"{suffix}.md"),
+        "oof": DATA / f"wi009c_oof_{market}{suffix}.parquet",
+        "json": report_path(REPORTS, "wi009c_regression", market, suffix=f"{suffix}.json"),
+        "robustness": report_path(REPORTS, "wi009c_robustness", market),
+    }
 
 
 def _finite(x) -> bool:
@@ -338,7 +369,7 @@ def score_skill(frame: pd.DataFrame, score_col: str = "forecast") -> dict:
 # --------------------------------------------------------------------------- #
 # Step 4 — evidence-gated robustness options (gate evaluation only)
 # --------------------------------------------------------------------------- #
-def robustness_evidence(args, skill: dict, contrastive) -> tuple[dict | None, dict | None, str]:
+def robustness_evidence(args, market: str, skill: dict, contrastive) -> tuple[dict | None, dict | None, str]:
     """Gate evidence for Step 4 plus a human-readable provenance line.
 
     A `--smoke` invocation must not fabricate thinner gate evidence, so a smoke run
@@ -346,7 +377,7 @@ def robustness_evidence(args, skill: dict, contrastive) -> tuple[dict | None, di
     evidence. `--robustness-evidence` overrides both (used to re-evaluate the gates
     against a pinned record).
     """
-    prod = REPORTS / f"wi009c_regression_{args.market}.json"
+    prod = paths(market)["json"]
     if args.robustness_evidence:
         p = Path(args.robustness_evidence)
         if not p.exists():
@@ -369,19 +400,20 @@ def robustness_evidence(args, skill: dict, contrastive) -> tuple[dict | None, di
     return skill, contrastive, "this run (in-memory skill + fold-safety decision)"
 
 
-def run_robustness_gates(args, skill: dict, contrastive, panel: pd.DataFrame, frame: pd.DataFrame) -> dict:
+def run_robustness_gates(args, market: str, skill: dict, contrastive, panel: pd.DataFrame, frame: pd.DataFrame) -> dict:
     """Evaluate the three Step-4 gates, print each verdict, write the Step-4 report.
 
     No option body exists in this work item (plan Step 4(a)/(d)): a GO decision is
     recorded and refused, never silently executed.
     """
-    b_skill, b_ct, source = robustness_evidence(args, skill, contrastive)
+    b_skill, b_ct, source = robustness_evidence(args, market, skill, contrastive)
     if b_ct is None:
         uniq_dates = np.sort(pd.unique(panel["date"].to_numpy()))
-        b_ct = contrastive_status(args.market, uniq_dates, frame["date"].unique(), args.embargo_td)
+        b_ct = contrastive_status(market, uniq_dates, frame["date"].unique(), args.embargo_td)
         source += "; Step-3 fold-safety decision recomputed for this panel (no feature spend)"
+    probe_report = paths(market)["probe_report"]
     ctx = evaluate_robustness_gates(
-        PROBE_REPORT.read_text() if PROBE_REPORT.exists() else "", b_skill, b_ct
+        probe_report.read_text() if probe_report.exists() else "", b_skill, b_ct
     )
     requested = [
         s for s, on in (
@@ -400,9 +432,13 @@ def run_robustness_gates(args, skill: dict, contrastive, panel: pd.DataFrame, fr
                   "implemented in WI-009c (plan Step 4(d))", file=sys.stderr)
     if requested:
         print(f"[wi009c] robustness switches requested: {', '.join(requested)}")
-    out = Path(args.robustness_out) if args.robustness_out else REPORTS / "wi009c_robustness.md"
+    out = (
+        resolve_output(args.robustness_out, market, what="--robustness-out")
+        if args.robustness_out
+        else paths(market)["robustness"]
+    )
     render_robustness_report(
-        ctx, out, market=args.market, evidence_source=source, smoke=bool(args.smoke),
+        ctx, out, market=market, evidence_source=source, smoke=bool(args.smoke),
         baseline_skill=b_skill,
     )
     print(f"[wi009c] wrote {out}")
@@ -423,18 +459,22 @@ def contrastive_status(market: str, uniq_dates, val_dates, embargo_td: int) -> d
     WI-009b run metadata that produced the artifact. If neither is available the
     decision fails closed.
     """
-    probe_text = PROBE_REPORT.read_text() if PROBE_REPORT.exists() else ""
+    probe_report = paths(market)["probe_report"]
+    wi009b_train_json = paths(market)["wi009b_train_json"]
+    probe_text = probe_report.read_text() if probe_report.exists() else ""
     provenance: list[str] = []
     cutoff = None
     if not probe_text:
-        provenance.append(f"Step-1 probe report {PROBE_REPORT.relative_to(ROOT)} MISSING (gate treated as no permission)")
-    if WI009B_TRAIN_JSON.exists():
-        blob = json.loads(WI009B_TRAIN_JSON.read_text())
+        provenance.append(
+            f"Step-1 probe report {probe_report.relative_to(ROOT)} MISSING (gate treated as no permission)"
+        )
+    if wi009b_train_json.exists():
+        blob = json.loads(wi009b_train_json.read_text())
         train_dates = blob.get("train_dates") or []
         if train_dates:
             cutoff = str(train_dates[-1])
             provenance.append(
-                f"artifact cutoff established from {WI009B_TRAIN_JSON.relative_to(ROOT)}: "
+                f"artifact cutoff established from {wi009b_train_json.relative_to(ROOT)}: "
                 f"train_dates[-1] = {cutoff} ({len(train_dates)} training dates)"
             )
         val = blob.get("val_dates") or []
@@ -809,17 +849,45 @@ def write_report(ctx: dict, out_path: Path) -> Path:
 # --------------------------------------------------------------------------- #
 # Detached launcher
 # --------------------------------------------------------------------------- #
-def launch_detached(argv: list[str]) -> int:
-    """Start the production run as an independent process and return immediately.
+def launcher_paths(market: str) -> dict[str, Path]:
+    """The detached launcher's log and pid sidecar for one market (WI-013)."""
+    return {
+        "log": LOGS / f"wi009c_train_{market}.out",
+        "pid": LOGS / f"wi009c_train_{market}.pid",
+    }
+
+
+def _strip_market(argv: list[str]) -> list[str]:
+    """`argv` without `--market VALUE` / `--market=VALUE` (re-added per market)."""
+    out: list[str] = []
+    skip = False
+    for a in argv:
+        if skip:
+            skip = False
+            continue
+        if a == "--market":
+            skip = True
+            continue
+        if a.startswith("--market="):
+            continue
+        out.append(a)
+    return out
+
+
+def launch_detached(markets: list[str], argv: list[str]) -> int:
+    """Start the production run(s) as one independent, sequential process chain.
 
     Mirrors `scripts/wi009b_launch.py`: `start_new_session=True`, everything appended to
-    `logs/wi009c_train.out`, `END`/`EXIT:<code>` markers written by the detached shell.
+    that market's `logs/wi009c_train_{market}.out`, `END`/`EXIT:<code>` markers written
+    by the detached shell per market.
+
+    WI-013: with both markets selected the chain runs them **sequentially** (USD then
+    CAD) under a single detached pid, each into its own log/pid sidecar — two
+    concurrent 8 GB-host training runs would breach the host budget.
     """
     LOGS.mkdir(parents=True, exist_ok=True)
-    log = LOGS / "wi009c_train.out"
-    pidfile = LOGS / "wi009c_train.pid"
-    cmd = [sys.executable, "-u", str(ROOT / "scripts" / "train_wi009c.py")]
-    cmd += [a for a in argv if a != "--detach"]
+    base = [sys.executable, "-u", str(ROOT / "scripts" / "train_wi009c.py")]
+    base += [a for a in _strip_market(argv) if a != "--detach"]
     env = dict(os.environ)
     env.update(
         {
@@ -830,23 +898,37 @@ def launch_detached(argv: list[str]) -> int:
             "PYTHONUNBUFFERED": "1",
         }
     )
-    inner = " ".join(shlex.quote(c) for c in cmd)
-    wrapper = f"{inner}; rc=$?; echo 'END '\"$(date -Is)\"; echo EXIT:$rc"
-    with log.open("a") as fh:
-        fh.write(f"START {dt.datetime.now().isoformat()} {inner}\n")
-        fh.flush()
-        proc = subprocess.Popen(
-            ["/bin/sh", "-c", wrapper],
-            cwd=str(ROOT),
-            stdout=fh,
-            stderr=subprocess.STDOUT,
-            stdin=subprocess.DEVNULL,
-            start_new_session=True,
-            env=env,
+
+    parts: list[str] = []
+    logs: list[Path] = []
+    for market in markets:
+        lp = launcher_paths(market)
+        logs.append(lp["log"])
+        cmd = base + ["--market", market]
+        inner = " ".join(shlex.quote(c) for c in cmd)
+        with lp["log"].open("a") as fh:
+            fh.write(f"START {dt.datetime.now().isoformat()} {inner}\n")
+        parts.append(
+            f"{{ {inner}; rc=$?; echo 'END '\"$(date -Is)\"; echo EXIT:$rc; }} "
+            f">> {shlex.quote(str(lp['log']))} 2>&1"
         )
-    pidfile.write_text(f"{proc.pid}\n")
-    print(f"[wi009c] detached pid={proc.pid} → {log}")
-    print(f"[wi009c] poll: tail -n 40 {log} ; grep -c EXIT: {log}")
+        lp["pid"].write_text("")  # filled below with the chain pid
+
+    wrapper = " ; ".join(parts)
+    proc = subprocess.Popen(
+        ["/bin/sh", "-c", wrapper],
+        cwd=str(ROOT),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
+        stdin=subprocess.DEVNULL,
+        start_new_session=True,
+        env=env,
+    )
+    for market in markets:
+        launcher_paths(market)["pid"].write_text(f"{proc.pid}\n")
+    print(f"[wi009c] detached pid={proc.pid} markets={' '.join(markets)} (sequential)")
+    for log in logs:
+        print(f"[wi009c] poll: tail -n 40 {log} ; grep -c EXIT: {log}")
     return 0
 
 
@@ -854,8 +936,14 @@ def launch_detached(argv: list[str]) -> int:
 # Main
 # --------------------------------------------------------------------------- #
 def parse_args(argv=None):
+    ap = build_parser()
+    return ap.parse_args(argv)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--market", default="CAD")
+    add_market_argument(ap)
     ap.add_argument("--max-dates", type=int, default=0, help="Keep only the last N dates (0 = all).")
     ap.add_argument("--smoke", action="store_true", help="Bounded smoke run (caps dates, never detached).")
     ap.add_argument("--detach", action="store_true", help="Re-exec this run as a detached production process.")
@@ -869,7 +957,7 @@ def parse_args(argv=None):
     ap.add_argument("--contrastive", action="store_true",
                     help="Attempt the fold-safe contrastive stacked-input candidate (gated).")
     ap.add_argument("--robustness-report", action="store_true",
-                    help="Evaluate the Step-4 evidence gates and write reports/wi009c_robustness.md.")
+                    help="Evaluate the Step-4 evidence gates and write reports/wi009c_robustness_{market}.md.")
     ap.add_argument("--robustness-regime", action="store_true",
                     help="Evaluate the trailing market-state/regime candidate gate (Step 4).")
     ap.add_argument("--robustness-stacking", action="store_true",
@@ -877,14 +965,14 @@ def parse_args(argv=None):
     ap.add_argument("--robustness-dynamic", action="store_true",
                     help="Evaluate the dynamic feature selection candidate gate (Step 4).")
     ap.add_argument("--robustness-out", default=None,
-                    help="Step-4 report path (default: reports/wi009c_robustness.md, never smoke-suffixed).")
+                    help="Step-4 report path (default: reports/wi009c_robustness_{market}.md; suffixed if not).")
     ap.add_argument("--robustness-evidence", default=None,
                     help="Run-record JSON to read the Step-4 gate evidence from (default: production "
                          "record for a --smoke run, else this run).")
     ap.add_argument("--report", default=None)
     ap.add_argument("--oof-out", default=None)
     ap.add_argument("--json-out", default=None)
-    return ap.parse_args(argv)
+    return ap
 
 
 def main(argv=None) -> int:
@@ -902,13 +990,22 @@ def main(argv=None) -> int:
         args.max_dates = SMOKE_DATES
     RIDGE_ALPHA = float(args.alpha)
 
+    markets = cli_markets(args.market, prog="wi009c")
+    if markets is None:
+        return 2
     if args.detach:
-        return launch_detached(sys.argv[1:])
+        print(f"[wi009c] PLAN: markets={', '.join(markets)} (detached, sequential)")
+        raw = sys.argv[1:] if argv is None else list(argv)
+        return launch_detached(markets, raw)
+    print(f"[wi009c] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, lambda m: run_market(m, args))
 
+
+def run_market(market: str, args) -> int:
     t_start = time.time()
-    panel = build_route_panel(args.market, max_dates=args.max_dates)
+    panel = build_route_panel(market, max_dates=args.max_dates)
     if panel.empty:
-        print(f"[wi009c] {args.market}: empty route panel", file=sys.stderr)
+        print(f"[wi009c] {market}: empty route panel", file=sys.stderr)
         return 1
     print(f"[wi009c] panel: {len(panel):,} rows · {panel['symbol'].nunique()} symbols · "
           f"{panel['date'].nunique()} dates ({panel['date'].min().date()} → {panel['date'].max().date()})"
@@ -968,13 +1065,13 @@ def main(argv=None) -> int:
     contrastive = None
     if args.contrastive:
         uniq_dates = np.sort(pd.unique(panel["date"].to_numpy()))
-        contrastive = contrastive_status(args.market, uniq_dates, frame["date"].unique(), args.embargo_td)
+        contrastive = contrastive_status(market, uniq_dates, frame["date"].unique(), args.embargo_td)
         print(f"[wi009c] contrastive candidate: {contrastive['status']} — {contrastive['reason']}")
         if contrastive["run"]:
             from src.models.contrastive_ranking import load_model
 
             model, feature_cols = load_model(CONTRASTIVE_ARTIFACT)
-            scores = contrastive_scores_for_panel(args.market, panel, model, feature_cols)
+            scores = contrastive_scores_for_panel(market, panel, model, feature_cols)
             folds_c = run_folds(panel, args, extra_scores=scores, label="stacked")
             contrastive["stacked_skill"] = score_skill(folds_c["frame"])
             s = contrastive["stacked_skill"]
@@ -985,10 +1082,10 @@ def main(argv=None) -> int:
     robustness = None
     if (args.robustness_report or args.robustness_regime
             or args.robustness_stacking or args.robustness_dynamic):
-        robustness = run_robustness_gates(args, skill, contrastive, panel, frame)
+        robustness = run_robustness_gates(args, market, skill, contrastive, panel, frame)
 
     ctx = {
-        "market": args.market,
+        "market": market,
         "smoke": bool(args.smoke),
         "n_rows": int(len(panel)),
         "n_symbols": int(panel["symbol"].nunique()),
@@ -1012,19 +1109,29 @@ def main(argv=None) -> int:
     # `--smoke` outputs are namespaced so a bounded smoke run can never overwrite the
     # production artifacts that Step 5 evaluates (explicit --*-out paths still win).
     suffix = "_smoke" if args.smoke else ""
+    market_paths = paths(market, suffix)
     shortlist_out = (
-        Path(args.shortlist_out) if args.shortlist_out
-        else REPORTS / f"wi009c_shortlist_{args.market}{suffix}.csv"
+        resolve_output(args.shortlist_out, market, what="--shortlist-out")
+        if args.shortlist_out
+        else market_paths["shortlist"]
     )
     shortlist_out.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(shortlist["rows"]).to_csv(shortlist_out, index=False)
     print(f"[wi009c] wrote {shortlist_out}")
 
-    report = Path(args.report) if args.report else REPORTS / f"wi009c_regression{suffix}.md"
+    report = (
+        resolve_output(args.report, market, what="--report")
+        if args.report
+        else market_paths["report"]
+    )
     write_report(ctx, report)
     print(f"[wi009c] wrote {report}")
 
-    oof_out = Path(args.oof_out) if args.oof_out else DATA / f"wi009c_oof_{args.market}{suffix}.parquet"
+    oof_out = (
+        resolve_output(args.oof_out, market, what="--oof-out")
+        if args.oof_out
+        else market_paths["oof"]
+    )
     oof_out.parent.mkdir(parents=True, exist_ok=True)
     out_frame = frame.copy()
     out_frame["composite"] = out_frame["p_up"].astype("float64") - out_frame["p_down"].astype("float64")
@@ -1034,9 +1141,13 @@ def main(argv=None) -> int:
     out_frame.to_parquet(oof_out, index=False)
     print(f"[wi009c] wrote {oof_out} ({len(out_frame):,} rows)")
 
-    json_out = Path(args.json_out) if args.json_out else REPORTS / f"wi009c_regression_{args.market}{suffix}.json"
+    json_out = (
+        resolve_output(args.json_out, market, what="--json-out")
+        if args.json_out
+        else market_paths["json"]
+    )
     record = {
-        "market": args.market,
+        "market": market,
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "smoke": bool(args.smoke),
         "config": {
@@ -1081,7 +1192,7 @@ def main(argv=None) -> int:
     json_out.parent.mkdir(parents=True, exist_ok=True)
     json_out.write_text(json.dumps(record, indent=2, default=str) + "\n")
     print(f"[wi009c] wrote {json_out}")
-    print(f"[wi009c] DONE in {time.time() - t_start:.1f}s")
+    print(f"[wi009c] {market}: DONE in {time.time() - t_start:.1f}s")
     return 0
 
 

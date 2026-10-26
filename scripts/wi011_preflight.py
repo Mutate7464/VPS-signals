@@ -1,8 +1,14 @@
-"""WI-011 Step 1 — preflight inspection of the existing CAD feature/target parquets.
+"""WI-011 Step 1 — preflight inspection of one market's feature/target parquets.
 
-Read-only. This script never rebuilds data: it inspects `data/features/features_CAD.parquet`
-and `data/features/targets_CAD.parquet` and reports row counts, columns, symbol/date
-coverage, duplicate keys and key alignment to `reports/wi011_preflight.md`.
+Read-only. This script never rebuilds data: it inspects
+`data/features/features_{market}.parquet` and `data/features/targets_{market}.parquet`
+and reports row counts, columns, symbol/date coverage, duplicate keys and key
+alignment to `reports/wi011_preflight_{market}.md`.
+
+WI-013 (F-3/F-5): the market is a parameter, not a constant. Omitting `--market`
+runs **both** markets sequentially, USD then CAD, and prints the plan line naming
+them; `--market USD|CAD` runs only that market. Every output path is
+market-suffixed, so no run can touch a frozen gate report.
 
 Marker lines the plan's verify command greps for:
 
@@ -25,6 +31,7 @@ coverage and alignment — that is what keeps it inside the 2 vCPU / 8 GB host r
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import sys
 from pathlib import Path
@@ -33,11 +40,29 @@ import numpy as np
 import pyarrow.parquet as pq
 
 BASE_DIR = Path(__file__).resolve().parents[1]
-FEATURES = BASE_DIR / "data" / "features" / "features_CAD.parquet"
-TARGETS = BASE_DIR / "data" / "features" / "targets_CAD.parquet"
-REPORT = BASE_DIR / "reports" / "wi011_preflight.md"
+sys.path.insert(0, str(BASE_DIR))
+
+from src.market_cli import (  # noqa: E402
+    add_market_argument,
+    cli_markets,
+    report_path,
+    run_markets,
+)
+
+FEATURES_DIR = BASE_DIR / "data" / "features"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_preflight"
 
 KEY_COLUMNS = ["date", "symbol", "market"]
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market."""
+    return {
+        "features": FEATURES_DIR / f"features_{market}.parquet",
+        "targets": FEATURES_DIR / f"targets_{market}.parquet",
+        "report": report_path(REPORTS, REPORT_STEM, market),
+    }
 
 
 def _read_keys(path: Path) -> tuple[list[str], np.ndarray, np.ndarray, np.ndarray, int]:
@@ -98,9 +123,13 @@ def _monthly_coverage(dates, symbols) -> list[str]:
     return lines
 
 
-def main() -> int:
+def run_market(market: str) -> int:
+    FEATURES = paths(market)["features"]
+    TARGETS = paths(market)["targets"]
+    REPORT = paths(market)["report"]
+
     report_lines: list[str] = [
-        "# WI-011 Step 1 — preflight (CAD inputs, read-only)",
+        f"# WI-011 Step 1 — preflight ({market} inputs, read-only)",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Feature input: `{FEATURES.relative_to(BASE_DIR)}`",
@@ -142,9 +171,9 @@ def main() -> int:
         "",
         "| Input | Rows | Columns | Symbols | Unique dates | Date range |",
         "| :--- | ---: | ---: | ---: | ---: | :--- |",
-        f"| features_CAD.parquet | {f_rows:,} | {len(f_cols)} | {len(np.unique(f_sym))} | "
+        f"| features_{market}.parquet | {f_rows:,} | {len(f_cols)} | {len(np.unique(f_sym))} | "
         f"{len(f_dates)} | {f_dates.min()} → {f_dates.max()} |",
-        f"| targets_CAD.parquet | {t_rows:,} | {len(t_cols)} | {len(np.unique(t_sym))} | "
+        f"| targets_{market}.parquet | {t_rows:,} | {len(t_cols)} | {len(np.unique(t_sym))} | "
         f"{len(t_dates)} | {t_dates.min()} → {t_dates.max()} |",
         "",
         f"FEATURE_ROWS: {f_rows}",
@@ -202,8 +231,32 @@ def main() -> int:
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(report_lines) + "\n")
-    print(f"[wi011_preflight] wrote {REPORT} (failures={len(failures)})")
+    print(f"[wi011_preflight] {market}: wrote {REPORT} (failures={len(failures)})")
     return 1 if failures else 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_preflight")
+    if markets is None:
+        return 2
+    outputs = ", ".join(f"reports/wi011_preflight_{m}.md" for m in markets)
+    if args.market is None:
+        print(f"[wi011_preflight] PLAN: markets={', '.join(markets)} (default = BOTH, USD then CAD); "
+              f"will write {outputs}")
+    else:
+        print(f"[wi011_preflight] PLAN: markets={', '.join(markets)} (--market {markets[0]}); "
+              f"will write {outputs}")
+
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

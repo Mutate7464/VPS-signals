@@ -22,5 +22,7 @@ label observed at t needs h future bars. Horizons are fixed by the plan and are
 never re-selected after looking at results.
 """
 
-MARKET = "CAD"
-"""WI-011 is CAD-universe only (plan CONSTRAINTS)."""
+# WI-013 (F-3): the `MARKET = "CAD"` module constant is gone. The market is a
+# parameter on every entry point (`scripts/wi011_*.py --market USD|CAD`, default
+# both) and on the panel/condition helpers in this package; nothing here may
+# resolve a market implicitly.

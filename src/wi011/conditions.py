@@ -34,8 +34,9 @@ Primitive sources
 The Step 3 hook
 ---------------
 `compute_conditions(..., indicator_states=...)` accepts the compact indicator
-subset selected empirically in Step 3 (`reports/wi011_selected_indicators.json`)
-and adds one `ind_<name>_low` / `ind_<name>_high` own-history-percentile
+subset selected empirically in Step 3
+(`reports/wi011_selected_indicators_{market}.json`; WI-013 made the selection
+market-specific) and adds one `ind_<name>_low` / `ind_<name>_high` own-history-percentile
 condition per selected indicator. The E5 primitives and OHLCV-derived states are
 always present; the 89-feature panel is never used wholesale.
 """
@@ -72,6 +73,7 @@ __all__ = [
     "indicator_condition_names",
     "load_selected_indicators",
     "rolling_percentile_last",
+    "selection_path",
     "trailing_ols_slope_r2",
 ]
 
@@ -108,7 +110,15 @@ INDICATOR_PCTILE_MIN_PERIODS = 60
 INDICATOR_EXTREME_LOW = 0.20
 INDICATOR_EXTREME_HIGH = 0.80
 
-DEFAULT_SELECTION_PATH = Path(__file__).resolve().parents[2] / "reports" / "wi011_selected_indicators.json"
+REPORTS_DIR = Path(__file__).resolve().parents[2] / "reports"
+DEFAULT_SELECTION_STEM = "wi011_selected_indicators"
+DEFAULT_SELECTION_PATH = REPORTS_DIR / f"{DEFAULT_SELECTION_STEM}.json"
+"""Legacy market-less selection path — read-only, never written by WI-013 code."""
+
+
+def selection_path(market: str) -> Path:
+    """The Step 3 selection JSON for one market (`reports/wi011_selected_indicators_{market}.json`)."""
+    return REPORTS_DIR / f"{DEFAULT_SELECTION_STEM}_{str(market).upper()}.json"
 
 LOAD_INDICATOR_COLUMNS: tuple[str, ...] = ("close", "high", "low", "volume")
 
@@ -436,15 +446,30 @@ def indicator_condition_names(indicators) -> list[str]:
 # --------------------------------------------------------------------------- #
 # Step 3 selection hook
 # --------------------------------------------------------------------------- #
-def load_selected_indicators(path: Path | str = DEFAULT_SELECTION_PATH) -> list[str]:
+def load_selected_indicators(
+    market: str | None = None,
+    path: Path | str | None = None,
+) -> list[str]:
     """Read the Step 3 indicator subset; empty list when Step 3 has not run yet.
 
     Step 3 (`scripts/wi011_indicator_association.py`) writes the JSON with a
     `selected_indicators` list. Before that file exists, Step 2 runs on the E5
     primitives + OHLCV-derived state vocabulary only — which is exactly what the
     plan's ordering (Step 2 draft, then Step 1b subset) implies.
+
+    Args:
+        market: market code; the selection is read from that market's suffixed
+            JSON (`reports/wi011_selected_indicators_{market}.json`). WI-013: the
+            selection is market-specific, so a CAD run never reads a USD subset.
+        path: explicit path override (wins over `market`).
+
+    Raises:
+        ValueError: when neither `market` nor `path` is given (the market-less
+            default would resolve an ambiguous selection).
     """
-    p = Path(path)
+    if path is None and market is None:
+        raise ValueError("load_selected_indicators() needs a market (or an explicit path)")
+    p = Path(path) if path is not None else selection_path(market)
     if not p.exists():
         return []
     payload = json.loads(p.read_text())

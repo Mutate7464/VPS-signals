@@ -12,7 +12,7 @@ the plan's criteria hold:
 3. **implied concurrency 4–12 positions** for a 5–15 trading-day hold.
 
 Anything that clears all three is written up as a data-only rule spec in
-`reports/wi011_decision_rules.md`. If nothing clears all three, the explicit
+`reports/wi011_decision_rules_{market}.md`. If nothing clears all three, the explicit
 valid conclusion is written instead — "none survive costs at this universe size"
 — and the rule spec is marked N/A. Either way the script stops at the human gate:
 it does not optimise, backtest, size positions, or implement a screener.
@@ -24,6 +24,7 @@ Markers the plan's verify command greps for:
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import sys
 from pathlib import Path
@@ -34,7 +35,8 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 
-from src.wi011 import HORIZONS, MARKET  # noqa: E402
+from src.market_cli import add_market_argument, cli_markets, report_path, run_markets  # noqa: E402
+from src.wi011 import HORIZONS  # noqa: E402
 from src.wi011.conditions import CONDITION_SPECS, indicator_condition_names, load_selected_indicators  # noqa: E402
 from src.wi011.panel import build_condition_panel  # noqa: E402
 from src.wi011.stats import (  # noqa: E402
@@ -48,8 +50,21 @@ from src.wi011.stats import (  # noqa: E402
 )
 from src.wi011.ts_rules import TS_RULE_SPECS, TS_WINDOWS, compute_ts_cs_conditions  # noqa: E402
 
-REPORT = BASE_DIR / "reports" / "wi011_tradeable_conditions.md"
-RULES = BASE_DIR / "reports" / "wi011_decision_rules.md"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_tradeable_conditions"
+RULES_STEM = "wi011_decision_rules"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013).
+
+    Both writes — the cost/frequency report and the decision-rule spec — are
+    market-suffixed, so neither can land on a frozen gate artifact.
+    """
+    return {
+        "report": report_path(REPORTS, REPORT_STEM, market),
+        "rules": report_path(REPORTS, RULES_STEM, market),
+    }
 
 # --------------------------------------------------------------------------- #
 # Cost assumptions (disclosed; constants, not tuned on results)
@@ -106,8 +121,10 @@ def commission_bps_round_trip(close: np.ndarray) -> np.ndarray:
     return np.where(np.isfinite(c) & (c > 0), bps, np.nan)
 
 
-def main() -> int:
-    selected = load_selected_indicators()
+def run_market(market: str) -> int:
+    REPORT = paths(market)["report"]
+    RULES = paths(market)["rules"]
+    selected = load_selected_indicators(market)
     condition_cols = [s.name for s in CONDITION_SPECS] + indicator_condition_names(selected)
     ts_names = [s.name for s in TS_RULE_SPECS]
     keep = {f"fwd_ret_{h}" for h in HORIZONS} | {f"fwd_atr_ret_{h}" for h in HORIZONS}
@@ -115,7 +132,7 @@ def main() -> int:
     keep |= {f"tret_{w}" for w in TS_WINDOWS} | {f"tret_z_{w}" for w in TS_WINDOWS}
     keep |= set(condition_cols)
 
-    panel = build_condition_panel(MARKET, keep_only=keep)
+    panel = build_condition_panel(market, keep_only=keep)
     panel = pd.concat([panel, compute_ts_cs_conditions(panel)], axis=1)
     all_rules = [c for c in condition_cols if c in panel.columns] + ts_names
 
@@ -250,7 +267,7 @@ def main() -> int:
     near = [d for d in rows if d["passes_net"] and (d["passes_freq"] or d["passes_conc"])]
 
     lines = [
-        "# WI-011 Step 6 — costs, frequency, concurrency (CAD)",
+        f"# WI-011 Step 6 — costs, frequency, concurrency ({market})",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Panel: {len(panel):,} rows · {panel['symbol'].nunique()} symbols · {n_dates} dates "
@@ -267,7 +284,7 @@ def main() -> int:
         f"x{COMMISSION_SENSITIVITY[0]}–x{COMMISSION_SENSITIVITY[1]} (the x1.0 numbers are the headline; the "
         "stress column is the robustness check a survivor must also pass).",
         "- the *within-date* component is the criterion, not the raw mean: a long-only rule that fires on "
-        "strong-market days inherits CAD market drift, and crediting that drift as edge would be wrong. The "
+        f"strong-market days inherits {market} market drift, and crediting that drift as edge would be wrong. The "
         "raw-mean net column is shown for transparency.",
         "",
         f"ANNUAL_FIRINGS envelope: {FIRINGS_PER_YEAR_MIN}–{FIRINGS_PER_YEAR_MAX} firings/year across the universe "
@@ -352,11 +369,11 @@ def main() -> int:
 
     # ---- decision-rule specification ------------------------------------- #
     rule_lines = [
-        "# WI-011 — decision-rule specification (data only, human gate)",
+        f"# WI-011 — decision-rule specification, {market} (data only, human gate)",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         "- Derived from Steps 4–6 of `docs/plans/2026-10-25-WI-011-condition-first-meta-analysis.md`; "
-        "cost evidence in `reports/wi011_tradeable_conditions.md`.",
+        f"cost evidence in `reports/wi011_tradeable_conditions_{market}.md`.",
         "- These are **data specifications only**. Nothing here is optimised, backtested, sized or "
         "implemented; no long-only rule survives at this universe size, so the specification is N/A by "
         "the plan's own pre-authorised conclusion.",
@@ -395,7 +412,7 @@ def main() -> int:
             "within-date components (about +50 and +19 bps at a 20d horizon), i.e. 6–12 month relative "
             "winners and losers both outrun the middle of the distribution.",
             "",
-            "FACTOR_TILTS (observed, descriptive): the CAD universe over 2016–2026 drifts up "
+            f"FACTOR_TILTS (observed, descriptive): the {market} universe over 2016–2026 drifts up "
             f"(all-rows mean +{baselines[20]['mean_bps']:.0f} bps per 20 trading days); `vol_high`, "
             "`dollarvol_high` and the 52-week-low states carry the largest *market* components, so any rule "
             "built on them is a market-timing bet rather than a name-selection bet.",
@@ -404,7 +421,7 @@ def main() -> int:
             "",
             "REASON FOR N/A: " + f"{len(rows)} candidate cells cleared the stable within-date screen, "
             f"{n_net} cleared net expectancy, but {len(survivors)} cleared frequency and concurrency as well — "
-            "see `reports/wi011_tradeable_conditions.md` for the full table and the explicit "
+            f"see `reports/wi011_tradeable_conditions_{market}.md` for the full table and the explicit "
             "no-survivor conclusion.",
         ]
 
@@ -426,10 +443,27 @@ def main() -> int:
     RULES.parent.mkdir(parents=True, exist_ok=True)
     RULES.write_text("\n".join(rule_lines) + "\n")
     print(
-        f"[wi011_tradeable_conditions] wrote {REPORT} and {RULES}: candidates={len(rows)} "
+        f"[wi011_tradeable_conditions] {market}: wrote {REPORT} and {RULES}: candidates={len(rows)} "
         f"net={n_net} freq={n_freq} conc={n_conc} survivors={len(survivors)}"
     )
     return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_tradeable_conditions")
+    if markets is None:
+        return 2
+    print(f"[wi011_tradeable_conditions] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

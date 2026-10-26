@@ -177,6 +177,11 @@ def multivariate_ic(panel: pd.DataFrame, horizon: int = 15) -> dict[str, tuple[f
 
 
 def write_report(market: str, panel: pd.DataFrame, horizon: int, single: dict, multi: dict | None) -> Path:
+    """Write the market's baseline report (path and body both name `market`).
+
+    WI-013 (F-2): the body used to say "Compiled on CAD" for every market; the
+    `market` argument now drives both the suffixed path and the prose.
+    """
     REPORTS.mkdir(parents=True, exist_ok=True)
     out = REPORTS / f"wi009_e5_baseline_{market}.md"
     lines = [
@@ -186,7 +191,7 @@ def write_report(market: str, panel: pd.DataFrame, horizon: int, single: dict, m
         f"- Panel: {len(panel):,} rows · {panel['symbol'].nunique()} symbols · "
         f"{panel['date'].nunique()} dates ({panel['date'].min()} → {panel['date'].max()})",
         f"- Metric: score-based within-date Spearman rank-IC vs `fwd_atr_ret_{horizon}` "
-        "(never class-label IC). Compiled on CAD inside `src/factors/e5_baseline.py`.",
+        f"(never class-label IC). Compiled on {market} inside `src/factors/e5_baseline.py`.",
         "",
         "## Single-factor within-date rank-IC",
         "",

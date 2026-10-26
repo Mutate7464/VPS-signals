@@ -24,16 +24,18 @@ Method (declared before the numbers were seen)
    indicators with |t| >= 2 in at least one state, collapse clusters to their
    strongest-associated member, and retain at most 6 representatives.
 
-Outputs
--------
-* `reports/wi011_indicator_association.md` — the four marker blocks.
-* `reports/wi011_selected_indicators.json` — the subset Step 2 picks up
-  (`load_selected_indicators`), which adds `ind_<name>_low` / `ind_<name>_high`
-  own-history-percentile conditions to the vocabulary.
+Outputs (WI-013: per market, `--market USD|CAD`, default both USD-then-CAD)
+-------------------------------------------------------------------------
+* `reports/wi011_indicator_association_{market}.md` — the four marker blocks.
+* `reports/wi011_selected_indicators_{market}.json` — the subset that market's
+  Step 2 (`load_selected_indicators(market)`) picks up, which adds
+  `ind_<name>_low` / `ind_<name>_high` own-history-percentile conditions to the
+  vocabulary.
 """
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import json
 import sys
@@ -45,12 +47,26 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 
-from src.wi011 import MARKET  # noqa: E402
+from src.market_cli import add_market_argument, cli_markets, report_path, run_markets  # noqa: E402
+from src.wi011.conditions import selection_path  # noqa: E402
 from src.wi011.panel import build_state_panel  # noqa: E402
 
-FEATURES = BASE_DIR / "data" / "features" / f"features_{MARKET}.parquet"
-REPORT = BASE_DIR / "reports" / "wi011_indicator_association.md"
-SELECTION_JSON = BASE_DIR / "reports" / "wi011_selected_indicators.json"
+FEATURES_DIR = BASE_DIR / "data" / "features"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_indicator_association"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market.
+
+    Both writes are market-suffixed: the report and the Step 3 selection JSON
+    that Step 2 (`load_selected_indicators(market)`) reads back. WI-013.
+    """
+    return {
+        "features": FEATURES_DIR / f"features_{market}.parquet",
+        "report": report_path(REPORTS, REPORT_STEM, market),
+        "selection_json": selection_path(market),
+    }
 
 KEY_COLUMNS = ("date", "symbol", "market")
 STATE_COLUMNS = ("ch52_high", "ch52_low", "trend_up", "trend_down")
@@ -84,10 +100,10 @@ changes the selection: it tells the human gate how much of the selected set is a
 re-parameterisation of a state Step 2 already has."""
 
 
-def _indicator_columns() -> list[str]:
+def _indicator_columns(features: Path) -> list[str]:
     import pyarrow.parquet as pq
 
-    cols = list(pq.ParquetFile(FEATURES).schema_arrow.names)
+    cols = list(pq.ParquetFile(features).schema_arrow.names)
     return [c for c in cols if c not in KEY_COLUMNS]
 
 
@@ -109,10 +125,10 @@ def day_of(dates) -> np.ndarray:
     return np.asarray(dates, dtype="datetime64[D]").astype("int64")
 
 
-def _iter_batches(columns: list[str], batch_rows: int = BATCH_ROWS):
+def _iter_batches(features: Path, columns: list[str], batch_rows: int = BATCH_ROWS):
     import pyarrow.dataset as ds
 
-    dataset = ds.dataset(FEATURES, format="parquet")
+    dataset = ds.dataset(features, format="parquet")
     for batch in dataset.to_batches(columns=["date", *columns], batch_size=batch_rows):
         yield batch
 
@@ -123,9 +139,13 @@ def _batch_matrix(batch, columns: list[str]) -> np.ndarray:
     )
 
 
-def main() -> int:
-    indicators = _indicator_columns()
-    states = build_state_panel(MARKET)
+def run_market(market: str) -> int:
+    FEATURES = paths(market)["features"]
+    REPORT = paths(market)["report"]
+    SELECTION_JSON = paths(market)["selection_json"]
+
+    indicators = _indicator_columns(FEATURES)
+    states = build_state_panel(market)
 
     # ---- keys, alignment -------------------------------------------------- #
     import pyarrow.parquet as pq
@@ -149,7 +169,7 @@ def main() -> int:
     sums = np.zeros((n_dates, len(indicators)), dtype="float64")
     sumsq = np.zeros((n_dates, len(indicators)), dtype="float64")
     counts = np.zeros(n_dates, dtype="float64")
-    for batch in _iter_batches(indicators):
+    for batch in _iter_batches(FEATURES, indicators):
         b_dates = batch.column("date").to_numpy(zero_copy_only=False).astype("datetime64[ns]")
         codes = np.searchsorted(uniq_dates, b_dates)
         x = _batch_matrix(batch, indicators).astype("float64")
@@ -184,7 +204,7 @@ def main() -> int:
     n_ind = len(indicators)
 
     row_off = 0
-    for batch in _iter_batches(indicators):
+    for batch in _iter_batches(FEATURES, indicators):
         nb = batch.num_rows
         b_dates = batch.column("date").to_numpy(zero_copy_only=False).astype("datetime64[ns]")
         codes = np.searchsorted(uniq_dates, b_dates)
@@ -338,7 +358,7 @@ def main() -> int:
         return lines
 
     lines = [
-        "# WI-011 Step 3 — indicator association and empirical subset (CAD)",
+        f"# WI-011 Step 3 — indicator association and empirical subset ({market})",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Indicator panel: {n_rows:,} rows · {len(indicators)} indicators · {n_dates} dates "
@@ -441,7 +461,7 @@ def main() -> int:
                 )
         lines += [
             "",
-            "Step 2 hook: these names are written to `reports/wi011_selected_indicators.json`; "
+            f"Step 2 hook: these names are written to `reports/wi011_selected_indicators_{market}.json`; "
             "re-running `scripts/wi011_conditions.py` adds `ind_<name>_low` (own-history percentile <= 0.20) "
             "and `ind_<name>_high` (>= 0.80) to the declared vocabulary — Step 3(a)'s mandated update of the "
             "Step 2 condition configuration.",
@@ -481,7 +501,7 @@ def main() -> int:
     SELECTION_JSON.write_text(
         json.dumps(
             {
-                "market": MARKET,
+                "market": market,
                 "rule": {
                     "assoc_t_floor": ASSOC_T_FLOOR,
                     "cluster_abs_corr": CLUSTER_ABS_CORR,
@@ -495,8 +515,26 @@ def main() -> int:
         )
         + "\n"
     )
-    print(f"[wi011_indicator_association] wrote {REPORT} and {SELECTION_JSON} (selected={selected})")
+    print(f"[wi011_indicator_association] {market}: wrote {REPORT} and {SELECTION_JSON} "
+          f"(selected={selected})")
     return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_indicator_association")
+    if markets is None:
+        return 2
+    print(f"[wi011_indicator_association] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

@@ -27,6 +27,7 @@ Markers the plan's verify command greps for:
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import sys
 from pathlib import Path
@@ -37,7 +38,8 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 
-from src.wi011 import HORIZONS, MARKET  # noqa: E402
+from src.market_cli import add_market_argument, cli_markets, report_path, run_markets  # noqa: E402
+from src.wi011 import HORIZONS  # noqa: E402
 from src.wi011.conditions import CONDITION_SPECS, indicator_condition_names, load_selected_indicators  # noqa: E402
 from src.wi011.stats import (  # noqa: E402
     MIN_PURGE_TD,
@@ -50,7 +52,13 @@ from src.wi011.stats import (  # noqa: E402
 )
 from src.wi011.panel import build_condition_panel  # noqa: E402
 
-REPORT = BASE_DIR / "reports" / "wi011_condition_expectancy.md"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_condition_expectancy"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013)."""
+    return {"report": report_path(REPORTS, REPORT_STEM, market)}
 
 SHADOW_PAIRS = {
     "ind_pct_from_high_f102_high": "ch52_high",
@@ -97,13 +105,14 @@ def _shadow_overlap(panel: pd.DataFrame) -> list[tuple[str, str, float, int, int
     return rows
 
 
-def main() -> int:
+def run_market(market: str) -> int:
+    REPORT = paths(market)["report"]
     keep = set()
     keep |= {f"fwd_ret_{h}" for h in HORIZONS} | {f"fwd_atr_ret_{h}" for h in HORIZONS}
     keep |= {"atr_pct_20", "mom_12_1", "amihud_20", "close"}
-    selected = load_selected_indicators()
+    selected = load_selected_indicators(market)
     condition_cols = [s.name for s in CONDITION_SPECS] + indicator_condition_names(selected)
-    panel = build_condition_panel(MARKET, keep_only=keep | set(condition_cols))
+    panel = build_condition_panel(market, keep_only=keep | set(condition_cols))
     condition_cols = [c for c in panel.columns if c in set(condition_cols)]
 
     uniq_dates = np.sort(panel["date"].unique())
@@ -111,7 +120,7 @@ def main() -> int:
     windows = sub_windows(uniq_dates, 2)
 
     lines = [
-        "# WI-011 Step 4 — conditional expectancy and horizon sweep (CAD)",
+        f"# WI-011 Step 4 — conditional expectancy and horizon sweep ({market})",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Panel: {len(panel):,} rows · {panel['symbol'].nunique()} symbols · "
@@ -191,7 +200,7 @@ def main() -> int:
         "not-evaluable rather than stable or unstable.",
         "",
         "**Market-drift control (added within Step 4, not a re-selection).** Raw sign stability turns out "
-        "to be nearly universal in this panel, because the equal-weight CAD universe drifts up over "
+        f"to be nearly universal in this panel, because the equal-weight {market} universe drifts up over "
         "2016–2026: almost every condition fires on some positive-drift days and inherits the sign. The "
         "same stability clause is therefore also applied to the *within-date* component — each firing "
         "row's return minus its own date's all-name mean — which is the 'is this name rich or cheap versus "
@@ -315,10 +324,27 @@ def main() -> int:
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(lines) + "\n")
     print(
-        f"[wi011_condition_expectancy] wrote {REPORT}: cells={len(results)} stable={len(stable)} "
+        f"[wi011_condition_expectancy] {market}: wrote {REPORT}: cells={len(results)} stable={len(stable)} "
         f"unstable={len(unstable)} not_evaluable={len(not_eval)} insufficient={len(insuf)}"
     )
     return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_condition_expectancy")
+    if markets is None:
+        return 2
+    print(f"[wi011_condition_expectancy] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

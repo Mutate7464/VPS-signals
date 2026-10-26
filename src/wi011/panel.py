@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 
 from src.feature_engine import iter_market_symbols
-from src.wi011 import HORIZONS, MARKET
+from src.wi011 import HORIZONS
 from src.wi011.conditions import (
     INDICATOR_PCTILE_LOOKBACK,
     INDICATOR_PCTILE_MIN_PERIODS,
@@ -54,7 +54,7 @@ __all__ = [
 ]
 
 ANALYSIS_START = "2016-01-04"
-"""First date of the CAD feature/target panel (see `reports/wi011_preflight.md`).
+"""First date of the feature/target panel (see `reports/wi011_preflight_{market}.md`).
 
 Raw history is read in full so the 252-trading-day warm-ups complete before this
 date; the panel is then trimmed here so Steps 2–6 share one timeline.
@@ -192,7 +192,7 @@ def add_cost_columns(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------------------------------------- #
 # Step 3 indicator subset (attached only when the selection exists)
 # --------------------------------------------------------------------------- #
-def load_indicator_map(columns, market: str = MARKET) -> dict[str, pd.DataFrame]:
+def load_indicator_map(columns, market: str) -> dict[str, pd.DataFrame]:
     """Read the selected indicator columns once, keyed by symbol.
 
     A handful of columns (the Step 3 subset), not the 89-column panel: the
@@ -234,6 +234,7 @@ def _symbol_frame(
     indicator_map: dict[str, pd.DataFrame],
     indicator_columns,
     keep_conditions: bool,
+    market: str,
     keep_only: set[str] | None = None,
 ) -> pd.DataFrame | None:
     """Build one symbol's panel rows (state + conditions + labels + costs)."""
@@ -256,7 +257,7 @@ def _symbol_frame(
     out = attach_trailing_returns(out)
     out = add_cost_columns(out)
     out["symbol"] = symbol
-    out["market"] = MARKET
+    out["market"] = market
 
     keep = ["date", "symbol", "market"] + list(STATE_COLUMNS) + list(COST_COLUMNS)
     keep += list(TRALING_RET_WINDOWS and [f"tret_{w}" for w in TRALING_RET_WINDOWS])
@@ -284,26 +285,31 @@ def _symbol_frame(
 
 
 def build_condition_panel(
-    market: str = MARKET,
+    market: str,
     selected_indicators: list[str] | None = None,
     keep_only: set[str] | None = None,
 ) -> pd.DataFrame:
-    """Stream every CAD symbol and return the stacked analysis panel.
+    """Stream every symbol of one market and return the stacked analysis panel.
 
     Args:
-        market: market code (CAD only for WI-011).
+        market: market code (`USD` or `CAD`) — required since WI-013; the panel
+            carries it in its `market` column and reads only that market's raw
+            bars and indicator columns.
         selected_indicators: Step 3 indicator subset; `None` reads
-            `reports/wi011_selected_indicators.json` when it exists (and uses no
-            panel indicators otherwise).
+            `reports/wi011_selected_indicators_{market}.json` when it exists
+            (and uses no panel indicators otherwise).
         keep_only: optional column allow-list (plus keys) applied per symbol
             before stacking, so a step that needs a handful of columns never
             materialises the full panel.
     """
-    indicators = load_selected_indicators() if selected_indicators is None else list(selected_indicators)
+    indicators = load_selected_indicators(market) if selected_indicators is None else list(selected_indicators)
     indicator_map = load_indicator_map(indicators, market)
     parts: list[pd.DataFrame] = []
-    for symbol, raw in iter_market_symbols(market, min_date=None, allow_fixture=False):
-        frame = _symbol_frame(symbol, raw, indicator_map, indicators, keep_conditions=True, keep_only=keep_only)
+    for symbol, raw in iter_market_symbols(str(market).upper(), min_date=None, allow_fixture=False):
+        frame = _symbol_frame(
+            symbol, raw, indicator_map, indicators, keep_conditions=True, market=str(market).upper(),
+            keep_only=keep_only,
+        )
         if frame is not None:
             parts.append(frame)
     if not parts:
@@ -313,13 +319,15 @@ def build_condition_panel(
     return panel
 
 
-def build_state_panel(market: str = MARKET, selected_indicators: list[str] | None = None) -> pd.DataFrame:
+def build_state_panel(market: str, selected_indicators: list[str] | None = None) -> pd.DataFrame:
     """Panel without the forward labels: states + conditions only (Step 3 use)."""
-    indicators = load_selected_indicators() if selected_indicators is None else list(selected_indicators)
+    indicators = load_selected_indicators(market) if selected_indicators is None else list(selected_indicators)
     indicator_map = load_indicator_map(indicators, market)
     parts: list[pd.DataFrame] = []
-    for symbol, raw in iter_market_symbols(market, min_date=None, allow_fixture=False):
-        frame = _symbol_frame(symbol, raw, indicator_map, indicators, keep_conditions=True)
+    for symbol, raw in iter_market_symbols(str(market).upper(), min_date=None, allow_fixture=False):
+        frame = _symbol_frame(
+            symbol, raw, indicator_map, indicators, keep_conditions=True, market=str(market).upper(),
+        )
         if frame is not None:
             parts.append(frame)
     if not parts:

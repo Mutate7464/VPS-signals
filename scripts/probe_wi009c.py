@@ -25,11 +25,13 @@ established direction sign from `src.xgb_trainer.TARGET_DIRECTION`:
     y_15d_low   -> +fwd_atr_ret_15      y_15d_high -> -fwd_atr_ret_15
     y_20d_stay  -> -|fwd_atr_ret_20|    (stay ~ small |move|; magnitude ref)
 
-Writes `reports/wi009c_probe.md`. No 89-feature model, no robustness variant.
+Writes `reports/wi009c_probe_{market}.md` (WI-013: market-suffixed, never the
+frozen unsuffixed gate report). No 89-feature model, no robustness variant.
 
-CLI::
+CLI (WI-013: omitted `--market` runs BOTH, USD then CAD)::
 
-    uv run python scripts/probe_wi009c.py --market CAD
+    uv run python scripts/probe_wi009c.py                  # both markets
+    uv run python scripts/probe_wi009c.py --market CAD     # one market
     uv run python scripts/probe_wi009c.py --market CAD --max-dates 400   # smoke
 """
 
@@ -53,6 +55,13 @@ from sklearn.pipeline import make_pipeline  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from src.factors.e5_baseline import E5_FACTORS, build_e5_panel, date_positions  # noqa: E402
+from src.market_cli import (  # noqa: E402
+    add_market_argument,
+    cli_markets,
+    report_path,
+    resolve_output,
+    run_markets,
+)
 from src.models.skill_bar import (  # noqa: E402
     EMBARGO_TD,
     factor_ics_from_panel,
@@ -66,6 +75,15 @@ from src.xgb_trainer import PurgedWalkForwardSplit  # noqa: E402
 REPORTS = ROOT / "reports"
 FEATURES_DIR = ROOT / "data" / "features"
 E5_COLS = [f"e5_{f}" for f in E5_FACTORS]
+REPORT_STEM = "wi009c_probe"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013)."""
+    return {
+        "report": report_path(REPORTS, REPORT_STEM, market),
+        "targets": FEATURES_DIR / f"targets_{market}.parquet",
+    }
 
 # Per-label continuous reference (see module docstring). 0 = magnitude reference.
 TARGET_HORIZON = {
@@ -229,7 +247,7 @@ def write_report(
     out_path: Path | None = None,
 ) -> Path:
     REPORTS.mkdir(parents=True, exist_ok=True)
-    out = out_path if out_path is not None else REPORTS / "wi009c_probe.md"
+    out = Path(out_path) if out_path is not None else paths(market)["report"]
     out.parent.mkdir(parents=True, exist_ok=True)
     n_pass = sum(1 for m in metrics if m["passed"])
 
@@ -357,23 +375,36 @@ def write_report(
     return out
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--market", default="CAD")
+    add_market_argument(ap)
     ap.add_argument("--n-splits", type=int, default=5)
     ap.add_argument("--embargo-td", type=int, default=EMBARGO_TD)
     ap.add_argument("--max-dates", type=int, default=0, help="Smoke cap: keep only the last N dates (0 = all).")
-    ap.add_argument("--out", default=None)
-    args = ap.parse_args()
+    ap.add_argument("--out", default=None, help="Report path; suffixed with the market if it is not.")
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
 
     if args.embargo_td != EMBARGO_TD:
         print(f"[probe] refusing embargo_td={args.embargo_td}: the unchanged bar is {EMBARGO_TD}td", file=sys.stderr)
         return 2
 
+    markets = cli_markets(args.market, prog="probe_wi009c")
+    if markets is None:
+        return 2
+    print(f"[probe] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, lambda m: run_market(m, args))
+
+
+def run_market(market: str, args) -> int:
     t0 = time.time()
-    panel = build_probe_panel(args.market, max_dates=args.max_dates)
+    panel = build_probe_panel(market, max_dates=args.max_dates)
     if panel.empty:
-        print(f"[probe] {args.market}: empty panel", file=sys.stderr)
+        print(f"[probe] {market}: empty panel", file=sys.stderr)
         return 1
     print(f"[probe] panel: {len(panel):,} rows, {panel['date'].nunique()} dates, "
           f"{panel['symbol'].nunique()} symbols")
@@ -392,9 +423,9 @@ def main() -> int:
             print(f"[probe] LEAKAGE DEFECT in {target} folds — stopping", file=sys.stderr)
             return 1
 
-    out = write_report(args.market, panel, metrics, time.time() - t0, folds,
-                       Path(args.out) if args.out else None)
-    print(f"[probe] wrote {out}")
+    out_override = resolve_output(args.out, market, what="--out") if args.out else None
+    out = write_report(market, panel, metrics, time.time() - t0, folds, out_override)
+    print(f"[probe] {market}: wrote {out}")
     return 0
 
 

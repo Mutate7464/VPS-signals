@@ -1,9 +1,12 @@
 """WI-011 Step 2 — build the condition panel and write its definitions report.
 
-Streams the CAD symbols one at a time (never an all-ticker uncompressed frame),
-computes the trailing conditions declared in `src/wi011/conditions.py`, and writes
-`reports/wi011_condition_definitions.md` with the formulas, lookbacks, warm-up
-handling and firing counts.
+Streams one market's symbols one at a time (never an all-ticker uncompressed
+frame), computes the trailing conditions declared in `src/wi011/conditions.py`,
+and writes `reports/wi011_condition_definitions_{market}.md` with the formulas,
+lookbacks, warm-up handling and firing counts.
+
+WI-013 (F-3/F-5): the market is a parameter (`--market USD|CAD`, default both in
+USD-then-CAD order) and every output is market-suffixed.
 
 Markers the plan's verify command greps for:
 
@@ -11,12 +14,13 @@ Markers the plan's verify command greps for:
     CONDITION_COUNT: <n>
 
 `POINT_IN_TIME` is only written PASS after a *runtime* causality spot-check on
-real CAD bars (5 symbols, truncated-frame recomputation) on top of the unit
-tests in `tests/test_wi011_conditions.py` — the marker is evidence, not policy.
+real bars (5 symbols, truncated-frame recomputation) on top of the unit tests in
+`tests/test_wi011_conditions.py` — the marker is evidence, not policy.
 """
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import sys
 from pathlib import Path
@@ -28,22 +32,33 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 
 from src.feature_engine import iter_market_symbols  # noqa: E402
-from src.wi011 import HORIZONS, MARKET  # noqa: E402
+from src.market_cli import add_market_argument, cli_markets, report_path, run_markets  # noqa: E402
+from src.wi011 import HORIZONS  # noqa: E402
 from src.wi011.conditions import (  # noqa: E402
     CONDITION_SPECS,
     PCTILE_MIN_PERIODS,
     add_state_columns,
     compute_conditions,
     load_selected_indicators,
+    selection_path,
 )
 from src.wi011.panel import ANALYSIS_START, build_condition_panel, panel_coverage  # noqa: E402
 
-REPORT = BASE_DIR / "reports" / "wi011_condition_definitions.md"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_condition_definitions"
 SPOT_CHECK_SYMBOLS = 5
 SPOT_CHECK_TAIL = 3  # bars truncated away in the recomputation check
 
 
-def point_in_time_spot_check(market: str = MARKET, n_symbols: int = SPOT_CHECK_SYMBOLS) -> tuple[bool, list[str]]:
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market."""
+    return {
+        "report": report_path(REPORTS, REPORT_STEM, market),
+        "selection": selection_path(market),
+    }
+
+
+def point_in_time_spot_check(market: str, n_symbols: int = SPOT_CHECK_SYMBOLS) -> tuple[bool, list[str]]:
     """Truncated-frame recomputation on real bars: does row t survive losing t+1..?
 
     For each of the first `n_symbols` symbols, the condition row at the cut is
@@ -103,9 +118,10 @@ def _condition_table(panel: pd.DataFrame) -> tuple[list[str], int]:
     return rows, total
 
 
-def main() -> int:
-    indicators = load_selected_indicators()
-    panel = build_condition_panel(MARKET)
+def run_market(market: str) -> int:
+    REPORT = paths(market)["report"]
+    indicators = load_selected_indicators(market)
+    panel = build_condition_panel(market)
     cov = panel_coverage(panel)
 
     cond_cols = [c for c in panel.columns if not c.startswith(("fwd_", "tret", "spread", "dollar_vol", "close"))]
@@ -121,17 +137,18 @@ def main() -> int:
         if c.startswith(("fwd_", "spread_", "tret_")) or c in ("atr_pct_20", "er_20", "ols_slope_20", "ols_r2_20")
     )
 
-    ok_pit, pit_notes = point_in_time_spot_check(MARKET)
+    ok_pit, pit_notes = point_in_time_spot_check(market)
     cond_rows, total_fires = _condition_table(panel)
 
     lines = [
-        "# WI-011 Step 2 — trailing condition definitions (CAD)",
+        f"# WI-011 Step 2 — trailing condition definitions ({market})",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Panel: {cov['rows']:,} rows · {cov['symbols']} symbols · {cov['dates']} dates "
         f"({cov['first_date']} → {cov['last_date']})",
-        f"- Analysis window: `date >= {ANALYSIS_START}` (the CAD feature/target panel start, "
-        "`reports/wi011_preflight.md`); raw history is read in full so long lookbacks warm up first.",
+        f"- Analysis window: `date >= {ANALYSIS_START}` (the {market} feature/target panel start, "
+        f"`reports/wi011_preflight_{market}.md`); raw history is read in full so long lookbacks "
+        "warm up first.",
         "- Built by sequential per-symbol iteration (`src/wi011/panel.py`); no all-ticker "
         "uncompressed frame; calculated columns cast to float32 immediately.",
         "",
@@ -141,7 +158,7 @@ def main() -> int:
         f"- declared atomic conditions: {len([s for s in CONDITION_SPECS if s.family != 'cross'])}",
         f"- declared cross conditions: {len([s for s in CONDITION_SPECS if s.family == 'cross'])}",
         f"- Step-3-selected indicator conditions: {len([c for c in cond_cols if c.startswith('ind_')])}"
-        + (f" (from `reports/wi011_selected_indicators.json`: {', '.join(indicators)})" if indicators else " (no selection file yet)"),
+        + (f" (from `reports/wi011_selected_indicators_{market}.json`: {', '.join(indicators)})" if indicators else " (no selection file yet)"),
         f"- total condition firings in the panel: {total_fires:,}",
         "",
         "Three-valued semantics: `1.0` fires, `0.0` defined and does not fire, **`NaN` = undefined** "
@@ -209,8 +226,26 @@ def main() -> int:
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(lines) + "\n")
-    print(f"[wi011_conditions] wrote {REPORT} (conditions={len(cond_cols)}, pit={'PASS' if ok_pit else 'FAIL'})")
+    print(f"[wi011_conditions] {market}: wrote {REPORT} "
+          f"(conditions={len(cond_cols)}, pit={'PASS' if ok_pit else 'FAIL'})")
     return 0 if (ok_pit and dtypes_ok and float32_ok) else 1
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_conditions")
+    if markets is None:
+        return 2
+    print(f"[wi011_conditions] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

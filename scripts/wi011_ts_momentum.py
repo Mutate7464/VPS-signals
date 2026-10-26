@@ -17,6 +17,7 @@ Markers the plan's verify command greps for:
 
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import sys
 from pathlib import Path
@@ -27,7 +28,8 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE_DIR))
 
-from src.wi011 import HORIZONS, MARKET  # noqa: E402
+from src.market_cli import add_market_argument, cli_markets, report_path, run_markets  # noqa: E402
+from src.wi011 import HORIZONS  # noqa: E402
 from src.wi011.panel import build_condition_panel  # noqa: E402
 from src.wi011.stats import (  # noqa: E402
     MIN_PURGE_TD,
@@ -46,7 +48,13 @@ from src.wi011.ts_rules import (  # noqa: E402
     ts_cs_pairs,
 )
 
-REPORT = BASE_DIR / "reports" / "wi011_ts_momentum.md"
+REPORTS = BASE_DIR / "reports"
+REPORT_STEM = "wi011_ts_momentum"
+
+
+def paths(market: str) -> dict[str, Path]:
+    """Every input/output path this script resolves for one market (WI-013)."""
+    return {"report": report_path(REPORTS, REPORT_STEM, market)}
 
 STEP4_POSITION_CONDITIONS = ("above_ma_50", "below_ma_50", "ch52_high", "ch52_low", "mom_pos", "mom_neg")
 
@@ -70,11 +78,12 @@ def _row(r: dict) -> str:
     )
 
 
-def main() -> int:
+def run_market(market: str) -> int:
+    REPORT = paths(market)["report"]
     keep = {f"fwd_ret_{h}" for h in HORIZONS} | {f"fwd_atr_ret_{h}" for h in HORIZONS}
     keep |= {f"tret_{w}" for w in TS_WINDOWS} | {f"tret_z_{w}" for w in TS_WINDOWS}
     keep |= {"vol_20", "mom_12_1", "rev_1m"} | set(STEP4_POSITION_CONDITIONS)
-    panel = build_condition_panel(MARKET, keep_only=keep)
+    panel = build_condition_panel(market, keep_only=keep)
     ts_cs = compute_ts_cs_conditions(panel)
     panel = pd.concat([panel, ts_cs], axis=1)
 
@@ -86,7 +95,7 @@ def main() -> int:
     windows = sub_windows(uniq_dates, 2)
 
     lines = [
-        "# WI-011 Step 5 — per-symbol (time-series) momentum probe and TS-vs-CS decomposition (CAD)",
+        f"# WI-011 Step 5 — per-symbol (time-series) momentum probe and TS-vs-CS decomposition ({market})",
         "",
         f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
         f"- Panel: {len(panel):,} rows · {panel['symbol'].nunique()} symbols · "
@@ -245,7 +254,7 @@ def main() -> int:
         f"- Mean |within bps| across TS cells: {ts_absmean:.1f}; across CS cells: {cs_absmean:.1f} "
         "(cross-sectionally framed rules are, on this panel, the larger 'which name' effect).",
         "- Raw `mean bps` is dominated by the market component for every rule and horizon: the "
-        "own-history rules mostly identify *when*, not *which*, and the when is the CAD market drift "
+        f"own-history rules mostly identify *when*, not *which*, and the when is the {market} market drift "
         "shared by the whole equal-weight universe.",
         "- Null and insufficient cases are recorded in each horizon table rather than dropped.",
         "",
@@ -262,9 +271,26 @@ def main() -> int:
 
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(lines) + "\n")
-    print(f"[wi011_ts_momentum] wrote {REPORT}: cells={len(results)} TS_within_stable={len(ts_strong_within)} "
-          f"CS_within_stable={len(cs_strong_within)}")
+    print(f"[wi011_ts_momentum] {market}: wrote {REPORT}: cells={len(results)} "
+          f"TS_within_stable={len(ts_strong_within)} CS_within_stable={len(cs_strong_within)}")
     return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
+    ap = argparse.ArgumentParser(description=__doc__)
+    add_market_argument(ap)
+    return ap
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+
+    markets = cli_markets(args.market, prog="wi011_ts_momentum")
+    if markets is None:
+        return 2
+    print(f"[wi011_ts_momentum] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, run_market)
 
 
 if __name__ == "__main__":

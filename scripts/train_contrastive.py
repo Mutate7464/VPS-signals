@@ -45,6 +45,12 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
 
 from src.factors.e5_baseline import E5_FACTORS, build_e5_panel  # noqa: E402
+from src.market_cli import (  # noqa: E402
+    add_market_argument,
+    cli_markets,
+    report_path,
+    run_markets,
+)
 from src.models.contrastive_ranking import (  # noqa: E402
     ContrastiveRanker,
     configure_torch,
@@ -70,9 +76,24 @@ MODELS = ROOT / "models"
 MODEL_SCORE_COL = "model_score"
 
 
-def parse_args():
+def paths(market: str, prefix: str = "wi009", tag: str | None = None) -> dict[str, Path]:
+    """Every output path this script resolves for one market (WI-013).
+
+    The report/JSON paths were already market-suffixed under WI-009b; WI-013 adds
+    the explicit contract (and the model filename, which follows `tag`).
+    """
+    tag = tag or market
+    return {
+        "train_json": report_path(REPORTS, f"{prefix}_train", market, suffix=".json"),
+        "comparison_md": report_path(REPORTS, f"{prefix}_e5_vs_model", market),
+        "model": MODELS / f"contrastive_ranker_{tag}.pt",
+    }
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The CLI parser for this entry point (one shared `--market` flag)."""
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--market", default="CAD")
+    add_market_argument(ap)
     ap.add_argument("--epochs", type=int, default=3)
     ap.add_argument("--embed-dim", type=int, default=32)
     ap.add_argument("--batch-pairs", type=int, default=4096)
@@ -95,7 +116,11 @@ def parse_args():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--report-prefix", default="wi009", help="Report filename prefix.")
     ap.add_argument("--tag", default=None, help="Suffix for the saved model filename (default: market).")
-    return ap.parse_args()
+    return ap
+
+
+def parse_args(argv=None):
+    return build_parser().parse_args(argv)
 
 
 def split_dates_frac(dates: np.ndarray, val_frac: float, val_dates: int) -> tuple[np.ndarray, np.ndarray, int]:
@@ -120,26 +145,34 @@ def evaluate(model: ContrastiveRanker, panel: pd.DataFrame, feature_cols: list[s
     return scores, ic, t, n_d
 
 
-def main() -> int:
-    args = parse_args()
+def main(argv=None) -> int:
+    args = parse_args(argv)
+    markets = cli_markets(args.market, prog="train_contrastive")
+    if markets is None:
+        return 2
+    print(f"[train] PLAN: markets={', '.join(markets)}")
+    return run_markets(markets, lambda m: run_market(m, args))
+
+
+def run_market(market: str, args) -> int:
     configure_torch()
     rng = np.random.default_rng(args.seed)
     torch.manual_seed(args.seed)
     t_start = time.time()
 
     prefix = args.report_prefix
-    tag = args.tag or args.market
+    tag = args.tag or market
 
     print(f"[train] STEP panel: START")
-    print(f"[train] loading features for {args.market} (slim Arrow scan) ...")
-    feats_df, feature_cols, census = load_feature_panel(args.market, args.start_date, args.end_date)
+    print(f"[train] loading features for {market} (slim Arrow scan) ...")
+    feats_df, feature_cols, census = load_feature_panel(market, args.start_date, args.end_date)
     print(f"[train] features: {feats_df.shape}, {len(feature_cols)} feature columns, "
           f"census={census}")
     if len(feature_cols) < 10:
         raise SystemExit(f"only {len(feature_cols)} feature columns — is the feature rebuild done?")
 
     print("[train] building E5 factor + forward-return panel from raw OHLCV ...")
-    e5 = build_e5_panel(args.market)
+    e5 = build_e5_panel(market)
     # Namespace the E5 factor columns: `amihud_20` also exists in the 89-feature
     # matrix, so a bare merge would silently suffix both to _x/_y.
     e5 = e5.rename(columns={f: f"e5_{f}" for f in E5_FACTORS})
@@ -320,7 +353,7 @@ def main() -> int:
     last_epoch = epochs_log[-1] if epochs_log else {}
     best_fac = verdict["clause_a"]["best_factor"]
     summary = {
-        "market": args.market,
+        "market": market,
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "config": vars(args),
         "n_features": len(feature_cols),
@@ -356,14 +389,15 @@ def main() -> int:
     # ---- reports ----------------------------------------------------------- #
     print("[train] STEP report: START")
     REPORTS.mkdir(parents=True, exist_ok=True)
-    out_json = REPORTS / f"{prefix}_train_{args.market}.json"
-    out_md = REPORTS / f"{prefix}_e5_vs_model_{args.market}.md"
-    model_path = save_model(model, MODELS / f"contrastive_ranker_{tag}.pt", feature_cols)
+    market_paths = paths(market, prefix, tag)
+    out_json = market_paths["train_json"]
+    out_md = market_paths["comparison_md"]
+    model_path = save_model(model, market_paths["model"], feature_cols)
 
     write_comparison_report(
         out_md,
         {
-            "market": args.market,
+            "market": market,
             "generated_utc": summary["generated_utc"],
             "n_rows": len(panel),
             "n_features": len(feature_cols),
