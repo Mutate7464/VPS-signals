@@ -77,7 +77,7 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 
 | Tier | Who | Job | Tokens |
 |---|---|---|---|
-| **Interface / middle manager** | Hermes (GLM, cheapest) | Reads EXECUTION LOGs + board + handover → determines problems, what's next; verifies results; maintains board/handover; issues targeted execution tickets. Does NOT design. | ~$0.01/$0.20 per M |
+| **Interface / middle manager** | Hermes (GLM, cheapest) | Reads EXECUTION LOGs + board + handover → determines problems, what's next; verifies results; maintains board/handover; issues targeted execution tickets. Does NOT design. Ends every cycle close / proposal / gate brief in a decision memo (what happened / what's next / options with why + expected outcome + risk / marked REC) or SCQA — PM recommends, admin decides. | ~$0.01/$0.20 per M |
 | **Strategist** | Planner (Sonnet, brief-fed) + troubleshooter (Opus, stuck-only) + guide (Sonnet, on-demand learning) | Design decisions, root-cause diagnosis, teaching. Always brief-fed; never explores. | $2/$10 · $4/$20 |
 | **Workhorse** | Build (DeepSeek V4 Pro) + reviewer/scribe (flash) | Executes plans, appends the EXECUTION LOG, records concerns; reviews; writes briefs + human docs. | ~$0.44/$0.89 · $0.09/$0.18 |
 

@@ -62,11 +62,33 @@ poll artifacts/STATUS lines/logs with completion markers (`EXIT:0`), sleep in
 3. **Update docs** — board rows (evidence cell), `SESSION_HANDOVER.md`, `RISKS.md`.
    QA exceptions are marked ⚠ inline, never silently.
 4. **Figure out what's next** — proposes the next work item from the board
-   (admin-ordered READY top-down) plus anything from your feedback. You confirm the choice.
+   (admin-ordered READY top-down) plus anything from your feedback. You confirm
+   the choice — the proposal arrives as a decision memo (see "PM voice" below).
 5. **Prepare the handoff** — writes a ≤60-line context brief for the opencode
    planner (so the planner reads a brief instead of exploring the repo — cheap
    flash input), and gives you the exact prompt to paste into opencode.
 6. **Log the cycle** — appends to `docs/workflow/PM_LOG.md` with the session cursor.
+
+## PM voice — decision memo (added 2026-10-26, admin direction)
+
+The PM is a middle manager, not a stenographer. Every cycle close, next-item
+proposal, and gate brief ends in a **decision memo**, never a bare status dump:
+
+1. **What happened** — verified facts since the last cycle, one line each,
+   from ingest + PM-verify; unverified claims labeled as such.
+2. **What's next** — the decision requested of you, in one line.
+3. **Options** — 2–4 rows: what it is, **why** (rationale), **expected
+   outcome** (what success looks like, rough confidence), **risk/cost**.
+   "Do nothing / close the WI" counts as an option row.
+4. **Recommendation** — the PM's pick, marked **REC**, with the reasoning
+   and the evidence that would change it.
+
+Narrative briefs (gates, interventions) may instead take **SCQA** shape —
+Situation → Complication → Question → Answer — with the option table under
+the Answer. Pick whichever structure makes the decision fastest for you;
+never mix both formats in one document.
+
+The PM recommends; you decide. It never auto-executes its own REC past a gate.
 
 ## What you do
 
