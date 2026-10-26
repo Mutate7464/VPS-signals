@@ -10,6 +10,7 @@
 - **Results:** USD factor signal generalizes (mom +0.0209 t+6.00 / vol −0.0158 t−5.11, h15); labels bottleneck cross-market (USD probe 0/5 bar); continuous ridge FAIL on USD; WI-011 USD chain EXIT:0 survivors=0 → NO_TRADE confirmed both markets. Frozen gate artifacts restored after every stage (3 overwrite incidents handled).
 - Findings backlog F-2..F-5 + perf profile (nothing hours-scale in current route) in `reports/wi012_iteration_notes.md`; board WI-012 row DONE. CAD universe now 335 symbols (post-WI-010b reinstatements) — frozen baselines unchanged, current-universe numbers in wi012 reports.
 - cursor: unchanged (`ses_e8ecc8dc`); no new opencode sessions this cycle.
+- **GATE DECISION (admin, in-chat 2026-10-26): WI-012 ACCEPTED as DONE** with F-2..F-5 backlog carried forward; admin asked for the WI-013 explanation before deciding on it. Canonical record = this entry; board row cites it.
 
 ## 2026-10-26 — Cycle 12 (quiescent close — post-commit Build residue only)
 - Ingest: 0 new opencode sessions past cursor `ses_e8ecc8dc` (newest session remains the WI-011 Build 21:16, already ingested cycle 11). No manual admin work found in git.

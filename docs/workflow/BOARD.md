@@ -2,7 +2,7 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-26 cycle 13 — WI-012 cross-market validation run DONE (PM-executed): full route on CAD+USD, F-1 horizon-NaN bug fixed + regression-locked, 5 findings logged to `reports/wi012_iteration_notes.md`
+**Last updated:** 2026-10-26 cycle 13 — WI-012 gate ACCEPTED (admin, in-chat): cross-market validation DONE, full route on CAD+USD, F-1 horizon-NaN bug fixed + regression-locked, F-2..F-5 backlog carried to proposed WI-013 (awaiting admin decision)
 
 ## ACTIVE
 
