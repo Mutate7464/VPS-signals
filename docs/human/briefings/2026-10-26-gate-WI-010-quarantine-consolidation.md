@@ -33,3 +33,18 @@
   rows can be re-judged.
 - TRI/CAD + SPCX/USD: CB-01 CLEAN_NOW ≠ CB-02 cure — their lookback quarantine stands
   unless the CB-02 check is separately cleared.
+
+## GATE DECISION EXECUTED (2026-10-26, same day — admin "apply reinstatements")
+The accepted REINSTATE verdicts are now **applied**, not just recorded:
+- **47 tickers reinstated** (23 CAD + 24 USD) — removed from the quarantine list;
+  they now flow into the feature pipeline again (GME, OVV, the 2020-03-09 crash
+  cluster, etc.).
+- **25 stay quarantined**: 23 KEEP_QUARANTINED (incl. OXY), 2 FIX_DATA
+  (HMMC, ICL — data repair first), and TRI + SPCX whose short-lookback (CB-02)
+  quarantine stands.
+- New `data/adjudicated_tickers.csv` records all 72 verdicts with citations, and
+  `quarantine_ticker` now refuses to re-quarantine a reinstated ticker — the
+  next audit cannot bounce them back. Locked by a live test.
+- Backup of the pre-edit list: `data/dead_letter_tickers.backup-20261026.csv`.
+- Still open for you: HMMC/ICL data repair, ELE re-download (Mac), and TRI/SPCX
+  CB-02 clearance if you ever want them back.
