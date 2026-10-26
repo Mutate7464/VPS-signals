@@ -1,8 +1,10 @@
 """Helper functions for per-case quarantine triage analysis."""
 
-import numpy as np
 import pandas as pd
+from pathlib import Path
 from typing import Tuple, Optional
+
+from src.verify_synced_data import cb01_spike_indices
 
 
 # Simple split/distribution fractions (excluding 1.0: a ratio near unity is *no*
@@ -14,6 +16,21 @@ STEP_RATIO_TOL = 0.1
 # A permanent corp-action step leaves a *flat* new level; genuine volatility keeps
 # moving, so the post-spike window is dispersed. Threshold is relative to the level.
 STEP_PERSISTENCE_MAX_SPREAD = 0.35
+
+
+def persistence_spread(df: pd.DataFrame, spike_idx: int) -> Optional[float]:
+    """Relative dispersion of the post-spike level window [spike+5, spike+20].
+
+    This is the persistence guard used by :func:`level_step_test`: a permanent
+    corporate-action step leaves a flat new level (small spread), while genuine
+    volatility keeps ranging. Read-only; returns None when not computable.
+    """
+    post_window = slice(min(len(df), spike_idx + 5), min(len(df), spike_idx + 20))
+    post_close = df.loc[post_window, 'close']
+    post_median = post_close.median()
+    if len(post_close) == 0 or not post_median:
+        return None
+    return float((post_close.max() - post_close.min()) / post_median)
 
 
 def level_step_test(df: pd.DataFrame, spike_idx: int) -> Tuple[Optional[float], Optional[float], Optional[str]]:
@@ -59,11 +76,9 @@ def level_step_test(df: pd.DataFrame, spike_idx: int) -> Tuple[Optional[float], 
         return ratio, None, "GENUINE_VOL"  # No clean step: reversal / genuine volatility
 
     # Persistence: a corp action leaves a flat new level across the post window.
-    post_close = df.loc[post_window, 'close']
-    if len(post_close) and post_median:
-        spread = float((post_close.max() - post_close.min()) / post_median)
-        if spread > STEP_PERSISTENCE_MAX_SPREAD:
-            return ratio, None, "GENUINE_VOL"  # Clean ratio but the level kept ranging
+    spread = persistence_spread(df, spike_idx)
+    if spread is not None and spread > STEP_PERSISTENCE_MAX_SPREAD:
+        return ratio, None, "GENUINE_VOL"  # Clean ratio but the level kept ranging
 
     return ratio, clean_ratio, "SPLIT_LOOKALIKE"  # Persistent clean step -> corp action
 
@@ -158,24 +173,73 @@ def multi_day_path_analysis(df: pd.DataFrame, spike_idx: int) -> Tuple[bool, Opt
     return True, "SPLIT_LOOKALIKE"  # Material move confined to the spike event
 
 
-def analyze_ticker_parquet(symbol: str, market: str) -> dict:
+def combine_verdicts(level_recommendation: Optional[str], path_recommendation: Optional[str]) -> str:
+    """Final combination rule for the quarantine classifier (WI-010 / ADR D-010).
+
+    `SPLIT_LOOKALIKE` requires **both** independent pieces of structural evidence:
+
+      1. a persistent non-unity level step (`level_step_test`, persistence guard
+         included), and
+      2. an isolated multi-day path (`multi_day_path_analysis`).
+
+    Volume corroboration is deliberately *not* an input: a volume-only anomaly
+    (e.g. the 2020-03-09 crash cluster, where a 2-4x volume spike accompanies a
+    genuine crash) must never label a ticker split-like on its own. Volume remains
+    reported evidence for the human reviewer.
+    """
+    if level_recommendation == "SPLIT_LOOKALIKE" and path_recommendation == "SPLIT_LOOKALIKE":
+        return "SPLIT_LOOKALIKE"
+    return "GENUINE_VOL"
+
+
+def quarantine_verdict(analysis: dict) -> str:
+    """Map a classifier result to the report verdict vocabulary (read-only).
+
+    REINSTATE / KEEP_QUARANTINED / FIX_DATA / OWNER_ACTION / AMBIGUOUS — the same
+    vocabulary as the WI-008 baseline report. No verdict here changes state; the
+    per-row decision stays with the human gate.
+    """
+    status = analysis.get("status")
+
+    if status == "NO_FILE":
+        return "OWNER_ACTION"  # e.g. parquet never downloaded — admin-owned
+    if status in ("ERROR", "READ_ERROR"):
+        return "AMBIGUOUS"
+    if status == "NO_SPIKE":
+        # CB-01 no longer trips on disk: the quarantine reason is resolved.
+        return "REINSTATE"
+    if analysis.get("non_positive_close"):
+        # Non-positive closes make the ratio family meaningless: data must be
+        # repaired before any reinstate/keep decision (ICL-style evidence).
+        return "FIX_DATA"
+    if analysis.get("recommendation") == "SPLIT_LOOKALIKE":
+        return "KEEP_QUARANTINED"
+    return "REINSTATE"
+
+
+def analyze_ticker_parquet(symbol: str, market: str, base_dir: Optional[Path] = None) -> dict:
     """
     Analyze a ticker's parquet file for quarantine triage.
-    
+
+    The classifier verdict comes from the single tested combination rule
+    (:func:`combine_verdicts`): a persistent non-unity level step AND an isolated
+    multi-day path are jointly required for `SPLIT_LOOKALIKE`. Volume is returned
+    as evidence only and never votes. Use :func:`quarantine_verdict` for the
+    report-level verdict.
+
+    Memory-bounded: one symbol's parquet at a time, three columns only.
+
     Args:
         symbol: Ticker symbol
         market: Market (USD/CAD)
-        
+        base_dir: Repository root override (tests); defaults to this repo.
+
     Returns:
         Dictionary with analysis results
     """
-    import os
-    from pathlib import Path
-    
-    # Construct parquet path
-    base_dir = Path(__file__).resolve().parents[1]
-    parquet_path = base_dir / "data" / "raw_ohlcv" / f"market={market}" / f"symbol={symbol}.parquet"
-    
+    root = Path(base_dir) if base_dir is not None else Path(__file__).resolve().parents[1]
+    parquet_path = root / "data" / "raw_ohlcv" / f"market={market}" / f"symbol={symbol}.parquet"
+
     if not parquet_path.exists():
         return {
             "symbol": symbol,
@@ -183,58 +247,65 @@ def analyze_ticker_parquet(symbol: str, market: str) -> dict:
             "status": "NO_FILE",
             "error": f"Parquet file not found: {parquet_path}"
         }
-    
+
     try:
         # Arrow column scan: only the columns this analysis needs (bounded memory).
         df = pd.read_parquet(parquet_path, columns=["date", "close", "volume"])
         df = df.sort_values("date").reset_index(drop=True)
-        
-        # Find spike indices (returns > 100% or < -50%)
-        ret = df["close"].astype("float64").pct_change()
-        spike_mask = (ret > 1.0) | (ret < -0.5)
-        spike_indices = np.where(spike_mask)[0]
-        
+
+        # Data sanity: non-positive closes invalidate every ratio-based test.
+        non_positive_close = bool((df["close"].astype("float64") <= 0).any())
+
+        # CB-01 spike indices (single source of truth: > +100% or < -50%).
+        spike_indices = cb01_spike_indices(df)
+
         if len(spike_indices) == 0:
             return {
                 "symbol": symbol,
                 "market": market,
                 "status": "NO_SPIKE",
+                "non_positive_close": non_positive_close,
                 "error": "No spikes found"
             }
-            
+
         # Analyze the first spike
-        spike_idx = spike_indices[0]
-        
+        spike_idx = int(spike_indices[0])
+
         # Perform all analyses
         level_ratio, clean_ratio, level_recommendation = level_step_test(df, spike_idx)
         volume_ratio, volume_recommendation = volume_corroboration(df, spike_idx)
         is_isolated, path_recommendation = multi_day_path_analysis(df, spike_idx)
-        
-        # Combine recommendations
-        recommendations = [level_recommendation, volume_recommendation, path_recommendation]
-        # If any says SPLIT_LOOKALIKE, go with that; otherwise GENUINE_VOL
-        final_recommendation = "SPLIT_LOOKALIKE" if "SPLIT_LOOKALIKE" in recommendations else "GENUINE_VOL"
-        
+
+        # Final rule: conjunction of level-step persistence and isolated path.
+        # (volume_recommendation is evidence only -- deliberately not an input)
+        final_recommendation = combine_verdicts(level_recommendation, path_recommendation)
+
         # Format the spike date properly
         spike_date = str(df.iloc[spike_idx]["date"].date()) if hasattr(df.iloc[spike_idx]["date"], 'date') else str(df.iloc[spike_idx]["date"])
 
         # Cast numpy scalars to plain floats for a stable downstream API.
         level_ratio_f = None if level_ratio is None else float(level_ratio)
         volume_ratio_f = None if volume_ratio is None else float(volume_ratio)
+        spread_f = persistence_spread(df, spike_idx)
 
         return {
             "symbol": symbol,
             "market": market,
             "spike_date": spike_date,
-            "spike_return": float(ret.iloc[spike_idx]),
+            "spike_return": float(df["close"].astype("float64").pct_change().iloc[spike_idx]),
             "level_ratio": level_ratio_f,
             "clean_ratio": clean_ratio,
+            "persistence_spread": spread_f,
+            "level_verdict": level_recommendation,
             "volume_ratio": volume_ratio_f,
+            "volume_verdict": volume_recommendation,
             "is_isolated": is_isolated,
+            "path_verdict": path_recommendation,
+            "non_positive_close": non_positive_close,
             "recommendation": final_recommendation,
             "status": "SUCCESS"
         }
-        
+
     except Exception as e:
         return {
             "symbol": symbol,
