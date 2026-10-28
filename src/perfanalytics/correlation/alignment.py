@@ -53,7 +53,7 @@ from src.factors.e5_baseline import E5_FACTORS, factor_frame
 from src.feature_engine import iter_market_symbols
 from src.market_cli import MarketSelectionError, normalize_market
 from src.perfanalytics.features.panel import family_of, feature_columns, window_of
-from src.perfanalytics.markets import BOTH_ORDER, resolve_markets
+from src.perfanalytics.markets import resolve_markets
 from src.perfanalytics.targets.labelers import DEFAULT_HORIZONS, TARGET_STEMS
 from src.xgb_trainer import PurgedWalkForwardSplit
 

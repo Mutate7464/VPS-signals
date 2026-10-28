@@ -70,7 +70,7 @@ from src.feature_engine import (
     iter_market_symbols,
 )
 from src.market_cli import MarketSelectionError, normalize_market
-from src.perfanalytics.markets import BOTH_ORDER, resolve_markets
+from src.perfanalytics.markets import resolve_markets
 from src.targets import wilder_atr
 
 BASE_DIR = Path(__file__).resolve().parents[3]

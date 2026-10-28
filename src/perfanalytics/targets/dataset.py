@@ -44,13 +44,12 @@ from src.perfanalytics.targets.labelers import (
     DEFAULT_HORIZONS,
     RUN_ATR_MULT,
     DIAG_STEMS,
-    TARGET_STEMS,
     compute_run_targets,
     target_columns,
     target_value_columns,
 )
 from src.feature_engine import iter_market_symbols
-from src.market_cli import MARKET_CHOICES, MarketSelectionError, normalize_market
+from src.market_cli import MarketSelectionError, normalize_market
 from src.perfanalytics.markets import BOTH_ORDER, resolve_markets
 
 BASE_DIR = Path(__file__).resolve().parents[3]
