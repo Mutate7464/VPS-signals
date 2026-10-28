@@ -1,56 +1,72 @@
-# Fib-spacing features & target×feature alignment — research plan (WI-015)
+# Feature windows & target×feature alignment — research plan (WI-015)
 
-Status: RESEARCH / PLAN-OUTLINE. No analysis run yet.
+Status: RESEARCH / PLAN-OUTLINE. **Spec confirmed by admin 2026-10-28** (see CONFIRMED below). No analysis run yet.
 
-## Fib-spacing features (net-new)
+## CONFIRMED (admin, 2026-10-28): Fibonacci-scaled feature windows
 
-The current 92-col pool (`data/features/features_{CAD,USD}.parquet`) has **no
-fib columns** — verified by schema read 2026-10-28 (rsi/bb/adx/atr/obv/hurst/
-kama/range_pos/donchian families only). Legacy fib artifacts exist in `data/`
-(`oof_USD_fib_only.parquet`, `train_meta_USD_fib_only.json`) — from a pre-WI-009
-experiment; treat as stale, don't inherit.
+Iterate the **existing normalized feature families** at Fibonacci-scaled
+windows covering a range of **3 to 200 days**. Grid:
 
-Draft feature set (trailing, causal, per t):
+> **3, 5, 8, 13, 21, 34, 55, 89, 144** (fib sequence) **+ 200** (terminal cap;
+> next fib 233 exceeds the requested range)
 
-| Feature | Definition (draft) | Rationale |
+Families to iterate (from the current 92-col pool, `data/features/features_*.parquet`;
+family names follow existing naming, `<W>` = window):
+
+| Family | Column pattern | Note |
 |---|---|---|
-| FIB_dist_382 | `close / fib(0.382 level of last swing) − 1` | Nearest retracement band distance |
-| FIB_dist_618 | same at 0.618 | Deeper band — run continuation vs reversal |
-| FIB_dist_100 | same at 1.0 (extension) | Extension = momentum continuation |
-| FIB_spacing_238_382 | gap between 23.6% and 38.2% levels ÷ trailing ATR | **The admin-named "fib spacing"** — tight spacing = compressed swing = sharper runs? |
-| FIB_spacing_382_618 | 38.2→61.8 gap ÷ ATR | Coarse spacing variant |
-| SWING_age | days since the swing low/high defining the levels | Stale levels vs fresh |
+| RSI | `rsi_<W>` | |
+| Bollinger | `bb_pct_b_<W>`, `bb_width_<W>` | |
+| ADX / DI | `adx_<W>`, `di_spread_<W>` | |
+| ATR% | `atr_pct_<W>` | |
+| OBV z | `obv_zscore_<W>` | |
+| Hurst | `hurst_<W>` | |
+| KAMA ER | `kama_er_<W>` | |
+| VWAP z | `vwap_zscore_<W>` | |
+| Amihud / Yang-Zhang | `amihud_<W>`, `yangzhang_<W>` | illiquidity / range vol |
+| Range pos / Donchian | `range_pos_f<W>`, `range_width_f<W>`, `donchian_break_f<W>` | existing fib windows f3..f39 subsume the short end |
 
-Open: swing definition (Donchian pivot vs fractal pivot), ATR normalization window.
+Coverage vs current pool: windows 5/10/20/50/100 and f3/f6/f9/f15/f24/f39 exist
+today; the fib grid adds 8, 13, 21, 34, 55, 89, 144, 200 and normalizes the rest
+to the fib scale. Short windows (≤8) warm up fast; 144/200 need history length —
+check per-symbol history coverage before computing (some CAD tickers may lack
+200 trading days pre-window).
+
+Estimate: ~10 families × ~10 windows ≈ 100 feature columns — well within host
+limits if built symbol-sequential + float32 (matches the 89-feature pool
+precedent in WI-009c).
 
 ## Alignment analysis (target × feature)
 
-Question per admin: **"at fib spacing, which aligns best with each target"** —
-i.e. a per-target feature association table, not one global score.
+Question: **for each run target, which feature family × window correlates /
+aligns best?** Per-target association table, not one global score.
 
 Method (plan draft):
-1. Build T1–T4 + brainstorm targets on both markets from `data/raw_ohlcv/`
-   (symbol-sequential, float32).
-2. Per target: Spearman rank IC of each feature vs the target at horizons
-   t+k, on held-out folds — reuse the E5 factor-screener machinery shape
+1. Build T1–T4 + brainstormed run targets (`docs/tech_approach/perfanalytics/targets-research.md`) on both markets from `data/raw_ohlcv/` (symbol-sequential, float32).
+2. Build the fib-window feature grid above (trailing, causal, per t).
+3. Per target: Spearman rank IC of each family×window feature vs the target at
+   horizons t+k, held-out folds — reuse the E5 factor-screener machinery shape
    (`src/factors/e5_baseline.py`).
-3. Skill bar (carried from WI-009b re-spec): association must match the sign
-   of the best univariate factor AND clear a noise margin (|t| from block
-   bootstrap), held-out. Record which features survive per target.
-4. Output: target×feature matrix in `reports/perfanalytics/`, market-suffixed
-   (`*_CAD`, `*_USD`), one row per target, columns = top-5 aligned features
-   + IC + t-stat.
+4. Skill bar (carried from WI-009b re-spec): association must match the sign of
+   the best univariate factor AND clear a noise margin (|t| from block bootstrap),
+   held-out. Record surviving features per target.
+5. Output: target×feature matrix in `reports/perfanalytics/`, market-suffixed
+   (`*_CAD`, `*_USD`) — one row per target, top-5 aligned family×window + IC + t.
 
-Prior expectations to falsify (from WI-009 series): fib spacing will likely
-land near noise like the rest of the 89-feature pool; the run targets' own
-lagged values (T1→T1 at t−1) will likely be the strongest aligners — i.e.
-persistence, not features. If that reproduces, the honest product is
-run-target descriptive analytics + persistence baseline, not a feature-driven
-shortlist.
+Prior expectations to falsify (from WI-009 series): most family×window cells
+land near noise; the run targets' own lagged values (persistence) likely beat
+every feature. If that reproduces, the honest product is run-target descriptive
+analytics + persistence baseline.
 
 ## Sequencing
 
-1. Plan step: implement run-target labelers (`src/perfanalytics/targets/`).
-2. Plan step: fib feature builder + alignment report on CAD.
-3. Gate: review matrix, decide USD replication + whether any association
-   enters the daily shortlist. No pipeline changes before that gate.
+1. Plan step: run-target labelers (`src/perfanalytics/targets/`).
+2. Plan step: fib-window feature builder (`src/perfanalytics/features/`) + alignment report on CAD.
+3. Gate: review matrix, decide USD replication + whether any association enters the daily shortlist. No pipeline changes before that gate.
+
+## Superseded reading (2026-10-28)
+
+The first draft read "fib spacing" as **Fibonacci retracement bands** (swing
+level distances ÷ ATR). Admin clarification replaces that: fib scale applies to
+**feature window durations**, not price levels. Retacement-band features stay
+parked in this file's git history if ever wanted.
