@@ -1,0 +1,43 @@
+{
+  "market": "CAD",
+  "generated_utc": "2026-10-28T04:21:17Z",
+  "n_splits": 5,
+  "embargo_td": 20,
+  "block_dates": 20,
+  "n_bootstrap": 1000,
+  "bootstrap_seed": 42,
+  "min_names_per_date": 3,
+  "targets": [
+    "t1_amp_15",
+    "t2_vel_15",
+    "t3_streak_15",
+    "t4_freq_15",
+    "t1_amp_20",
+    "t2_vel_20",
+    "t3_streak_20",
+    "t4_freq_20"
+  ],
+  "n_candidates": 150,
+  "fold_date_blocks": [
+    [
+      "2015-04-08",
+      "2017-07-21"
+    ],
+    [
+      "2017-07-24",
+      "2019-11-07"
+    ],
+    [
+      "2019-11-08",
+      "2022-02-24"
+    ],
+    [
+      "2022-02-25",
+      "2024-06-11"
+    ],
+    [
+      "2024-06-12",
+      "2026-09-29"
+    ]
+  ]
+}

@@ -19,6 +19,8 @@ the row.
 
 04:06 | addendum | done | `src/perfanalytics/correlation/visualize.py`: `heatmap_{market}.png` (family-block × window signed held-out IC, diverging cmap, blanks for absent), `alignment_top_{market}.csv` (top-10 per target×horizon: family, window, IC, noise margin, sign-match vs E5 best, pass/fail), family-vs-timeframe summary appended to `alignment_{market}.md` — all derived from the single alignment CSV (no recompute drift; deterministic). `tests/perfanalytics/test_visualization.py` 5 passed (PNG magic, non-empty, determinism). `tests/perfanalytics/test_pipeline_e2e.py` 6 passed (market order, suffixed paths, schemas, no WI-014 coupling). Focused suite 48 passed.
 
+04:36 | step 5 | done | Focused suite `uv run pytest tests/perfanalytics -q` → 48 passed; repository suite `uv run pytest -q` → **444 passed, EXIT:0** (detached `logs/wi015_full_suite.out`) = 396 pre-existing + 48 new, nothing broken. Market modes covered: CAD-only, USD-only and BOTH (CLI ordering tests) — BOTH runs CAD then USD per plan. Frozen check: `git status` shows **no modified tracked files** — WI-014 scripts/CSV/PDF and every pre-existing report untouched; only new `reports/perfanalytics/*` + ignored `data/perfanalytics/*`. Concern: resource — alignment peak RSS 1.88 GB (CAD) / 2.86 GB (USD) on the 8 GB host, no swap; comfortably inside budget but the largest WI-015 footprint, single-process and fold-major by design.
+
 ## DEVIATIONS
 
 1. **`donchian_break_f<W>` is NaN during warm-up (step 3).** The shipped
@@ -35,4 +37,4 @@ the row.
    addendum commit; Build was told not to touch BOARD.md, so the row still needs
    moving by PM/scribe.
 
-STATUS: PLAN
+STATUS: DONE | evidence: `uv run pytest tests/perfanalytics -q` → 48 passed; `uv run pytest -q` → 444 passed EXIT:0 (`logs/wi015_full_suite.out`); real runs exit 0 — targets CAD 338 sym/1,191,669 rows, USD 533 sym/2,121,659 rows; features CAD 338 sym/1,196,063 rows/150 cols (233-window coverage 337/338), USD 533 sym/2,128,588 rows (533/533) + `reports/perfanalytics/features_summary_{CAD,USD}.md`; alignment `reports/perfanalytics/alignment_{CAD,USD}.{csv,json,md}` (1200 candidate rows each; 558 CAD / 487 USD pass the same-sign + noise-margin bar, best-per-target cell 8/8 both markets; CAD 3:01, USD 5:11, `logs/wi015_alignment*.out`); addendum `heatmap_{CAD,USD}.png` (290 KB, `%PNG`), `alignment_top_{CAD,USD}.csv` (top-10 per target×horizon), family-vs-timeframe summary appended to both `.md`. BOARD.md and all WI-014 artifacts untouched by Build (log-only + new files). Stop at PM verification / admin gate.
