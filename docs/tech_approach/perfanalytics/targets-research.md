@@ -52,10 +52,48 @@ only if the daily shortlist needs exit/avoid signals.
 
 - Qualifying-run trigger: fixed % vs trailing-ATR multiple (recommend ATR —
   matches existing label style, self-normalizing cross-ticker)?
-- Windows: reuse k=15/20 (comparable to existing labels) or add longer k=60
-  for "momentum duration" to breathe?
 - Amplitude measured close-to-close or low-to-high (wick-inclusive)?
   Recommend close-to-close (tradable), record low-high as diagnostic.
-- Does any T1–T4 combo become the daily-shortlist ranking key (replacing
-  expected-return style score in WI-014)? Not decided — this is a research item,
-  not a shipping change.
+- Downside twins (peak-to-bottom) in MVP scope, or upside-only?
+
+## Researched target families (2026-10-28, admin direction "additional tradable targets")
+
+Grounding: López de Prado *AFML* ch.3 (triple-barrier + meta-labeling);
+trend-scanning labeling (horizon-free t-stat argmax); smoothed-trend LTDC
+(SVM on MA-smoothed trend direction — PLOS ONE 2022); spectral trend-following
+theory (arXiv 2607.19497 — TF alpha = positive low-frequency spectral mass).
+
+| Family | Mechanism | Fit here |
+|---|---|---|
+| **Triple-barrier** | First-touch of profit-take / stop-loss / max-hold, barriers in trailing-vol multiples | **Highest** — path-aware, mirrors position management, fixes the "band labels at fixed k" weakness WI-009c hit |
+| **Meta-labeling** | Primary decides side (E5 factor screener already does), secondary model predicts P(bet profitable) → filter/size | Direct upgrade path for the WI-014 shortlist: predicts whether a ranked ticker's run pays |
+| **Trend-scanning** | Per-event horizon = argmax |t-stat| of forward regression over a horizon grid | Converts T3 duration from fixed-k to event-adaptive; aligns with fib-window spirit |
+| **Smoothed-trend (LTDC)** | Classify MA-smoothed trend direction, not raw daily direction | Directly addresses labels bottleneck: raw-direction was noise (WI-002); smoothing raises SNR |
+| **Run hazard** (brainstorm #4) | P(run continues \| started) — survival framing | Conditional targets have richer base rates than unconditional labels; tradable as entry timing |
+| **Spectral/autocorr targets** | Predict sign of vol-normalized return autocorrelation at window w | Theory-backed (TF profitability ⇔ positive spectral mass); overlaps Hurst features |
+
+## Achievable goals — proposal (help set targets for ML, 2026-10-28)
+
+Evidence base for what is achievable on THIS universe (not generic advice):
+
+- Confirmed 4×: E5 factors themselves carry the only surviving signal
+  (mom +0.0209 t+6.00 cross-market); **binary/three-class regime labels are the
+  bottleneck** — model capacity and 89-feature spend added nothing.
+- WI-011: no condition survived costs → NO_TRADE default stands.
+- Implication: goals should **stop chasing direction-classification accuracy**
+  and move to (a) ranking quality on the factor baseline, (b) bet-filtering
+  precision (meta-labeling), (c) descriptive run analytics for humans.
+
+Proposed goal ladder (each gate measurable, probe-first before any build):
+
+| Goal | Metric bar | Achievability rationale |
+|---|---|---|
+| **G-PA1** Rank alignment: does any family×window feature add to E5 factor ranking IC, held-out, same-sign | Δ Spearman IC > noise margin (block bootstrap), both markets | Cheap probe first (~1 run); 4× negative precedent → expect null; falsifies quickly |
+| **G-PA2** Run-descriptive analytics ship: T1–T4 + persistence baseline rendered per market (report, not model) | Coverage ≥ both markets, point-in-time verified, suite green | Near-certain achievable — pure computation, no learning risk |
+| **G-PA3** Meta-label filter on WI-014 shortlist: P(top-10 entry pays) model beats "always act" precision, held-out, same-sign | Precision lift > cost hurdle from WI-011 params | Uncertain but the RIGHT uncertain bet — filters weak signals rather than inventing direction |
+| **G-PA4** Event-adaptive horizon (trend-scanning style targets) beats fixed-k labels on persistence | Held-out IC vs T1@fixed-k | Second-order; only if G-PA1/PA3 show any life |
+
+Order: **G-PA2 first** (guaranteed win, builds the target dataset the rest
+consume), then G-PA1 probe (cheap falsification), then G-PA3 (the real ML bet).
+G-PA4 conditional. No goal proposes auto-execution; all outputs remain
+research-shortlist inputs with the human gate.

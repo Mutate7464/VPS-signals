@@ -5,10 +5,10 @@ Status: RESEARCH / PLAN-OUTLINE. **Spec confirmed by admin 2026-10-28** (see CON
 ## CONFIRMED (admin, 2026-10-28): Fibonacci-scaled feature windows
 
 Iterate the **existing normalized feature families** at Fibonacci-scaled
-windows covering a range of **3 to 200 days**. Grid:
+windows **3 → 233 days**. Grid:
 
-> **3, 5, 8, 13, 21, 34, 55, 89, 144** (fib sequence) **+ 200** (terminal cap;
-> next fib 233 exceeds the requested range)
+> **3, 5, 8, 13, 21, 34, 55, 89, 144, 233** (fib sequence; admin ACCEPT 233
+> as terminal cap 2026-10-28)
 
 Families to iterate (from the current 92-col pool, `data/features/features_*.parquet`;
 family names follow existing naming, `<W>` = window):
@@ -27,10 +27,10 @@ family names follow existing naming, `<W>` = window):
 | Range pos / Donchian | `range_pos_f<W>`, `range_width_f<W>`, `donchian_break_f<W>` | existing fib windows f3..f39 subsume the short end |
 
 Coverage vs current pool: windows 5/10/20/50/100 and f3/f6/f9/f15/f24/f39 exist
-today; the fib grid adds 8, 13, 21, 34, 55, 89, 144, 200 and normalizes the rest
-to the fib scale. Short windows (≤8) warm up fast; 144/200 need history length —
+today; the fib grid adds 8, 13, 21, 34, 55, 89, 144, 233 and normalizes the rest
+to the fib scale. Short windows (≤8) warm up fast; 144/233 need history length —
 check per-symbol history coverage before computing (some CAD tickers may lack
-200 trading days pre-window).
+233 trading days pre-window).
 
 Estimate: ~10 families × ~10 windows ≈ 100 feature columns — well within host
 limits if built symbol-sequential + float32 (matches the 89-feature pool
