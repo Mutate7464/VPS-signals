@@ -92,8 +92,21 @@ Proposed goal ladder (each gate measurable, probe-first before any build):
 | **G-PA2** Run-descriptive analytics ship: T1–T4 + persistence baseline rendered per market (report, not model) | Coverage ≥ both markets, point-in-time verified, suite green | Near-certain achievable — pure computation, no learning risk |
 | **G-PA3** Meta-label filter on WI-014 shortlist: P(top-10 entry pays) model beats "always act" precision, held-out, same-sign | Precision lift > cost hurdle from WI-011 params | Uncertain but the RIGHT uncertain bet — filters weak signals rather than inventing direction |
 | **G-PA4** Event-adaptive horizon (trend-scanning style targets) beats fixed-k labels on persistence | Held-out IC vs T1@fixed-k | Second-order; only if G-PA1/PA3 show any life |
+| **G-PA5** Trading applications (meta-label filter, shortlist integration) | — | **DEFERRED (admin 2026-10-28): step back — enrich features → correlation first; trading goals only after.** Parked in this doc; separate work item when re-ordered |
 
-Order: **G-PA2 first** (guaranteed win, builds the target dataset the rest
-consume), then G-PA1 probe (cheap falsification), then G-PA3 (the real ML bet).
-G-PA4 conditional. No goal proposes auto-execution; all outputs remain
-research-shortlist inputs with the human gate.
+Order (re-anchored 2026-10-28 admin clarification — correlation BEFORE trading goals):
+**G-PA2 first** (build the run-target dataset + descriptive analytics — guaranteed
+achievable, pure computation), then **G-PA1** (alignment probe over the enriched
+fib grid — cheap falsification). **G-PA3** stays as a research note only;
+**G-PA5 trading goals** deferred to a later explicitly-ordered item. No goal
+proposes auto-execution; all outputs remain research-shortlist inputs behind the human gate.
+
+## Intent vs WI-014 (admin clarification 2026-10-28)
+
+WI-015 **complements** WI-014 — it is not an alternative. WI-014 (daily shortlist
+CSV + tearsheet) remains shipped and unchanged. WI-015's product is the **enriched
+feature panel** (existing normalized families × fib windows 3→233) plus the
+**per-target alignment matrix** — i.e., better input features and evidence of
+which ones carry signal. That evidence is what a future shortlist-ranking or
+bet-filtering upgrade would consume. Sequence: enrich features → measure
+correlation → only then set trading goals.
