@@ -51,24 +51,10 @@ from src.perfanalytics.targets.labelers import (
 )
 from src.feature_engine import iter_market_symbols
 from src.market_cli import MARKET_CHOICES, MarketSelectionError, normalize_market
+from src.perfanalytics.markets import BOTH_ORDER, resolve_markets
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = BASE_DIR / "data" / "perfanalytics"
-
-# Plan constraint: an implicit both-market run is CAD first, then USD (the
-# opposite of `src.market_cli.BOTH`, which is USD-first for WI-013's screener).
-BOTH_ORDER: tuple[str, ...] = ("CAD", "USD")
-_BOTH_ALIASES = frozenset({"BOTH", "ALL", "ANY"})
-
-
-def resolve_markets(value: str | None = None) -> list[str]:
-    """Resolve `--market` to the ordered run list: CAD first on an implicit both."""
-    if value is None:
-        return list(BOTH_ORDER)
-    raw = str(value).strip()
-    if not raw or raw.upper() in _BOTH_ALIASES:
-        return list(BOTH_ORDER)
-    return [normalize_market(raw)]
 
 
 def dataset_dir(market: str, base: Path | None = None) -> Path:
