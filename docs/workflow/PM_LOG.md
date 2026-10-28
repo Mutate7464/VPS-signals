@@ -4,6 +4,16 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-28 — Cycle 18 (WI-015: plan approved + viz addendum → Build → PM verify → gate open)
+
+- **Admin approved plan + added scope (in-chat "proceed. visualize results → confirm best features family/timeframe"):** addendum `docs/workflow/briefs/2026-10-28-WI-015-perfanalytics-addendum.md` (commit `c350a95`); Build dispatched detached headless (`logs/wi015_build.out`); notify watcher armed on WI log.
+- **Delivered (Build commits `06c4cb3`..`f8c32c8`, steps 1–5 + addendum):** `src/perfanalytics/{targets,features,correlation}/` + 48 tests; run-target datasets (CAD 338 sym/1.19M rows; USD 533 sym/2.12M); enriched panels (150 cols, fib 3→233); alignment matrix + heatmaps + ranked tables (`reports/perfanalytics/`). Full suite **444 passed EXIT:0** (396+48).
+- **PM re-verified independently:** 48 targeted re-run by PM, alignment CSVs 1200 candidate rows/market, top tables 80 rows, PNG headers valid, `git status` clean of tracked-file modifications (WI-014 untouched), peak RSS 2.86 GB inside budget.
+- **Result (first positive alignment after WI-009 series 4× negatives):** best-per-target 8/8 pass both markets. CAD: T1/T2 → `bb_width@233` (IC 0.21/0.19) & `range_width_f@233` (0.30/0.27); T3 → `amihud@89` (−0.21/−0.22, negative = illiquidity shortens runs); T4 → weak (rsi@144 0.05, yangzhang@21 −0.06). USD: T1/T2 → `yangzhang@144` (0.20/0.29), `range_width_f@233`; T3/T4 → `atr_pct@233/8` (negative). Cross-market story: run AMPLITUDE/VELOCITY align with LONG-window range/vol features (21–233) positively; DURATION/FREQUENCY with vol negatively (high vol → shorter, rarer runs).
+- **Deviation 1 adjudicated (PM):** donchian warm-up NaN masking — ACCEPTED (consistent with no-partial-window acceptance; shipped `0.0` would be a partial-window artefact). Deviation 2 was a board-state note, resolved this cycle.
+- **Open for admin gate:** WI-015 verdict. Honest caveats: 558/1200 CAD & 487/1200 USD cells pass — some multiple-testing risk across 1200 candidates (block bootstrap mitigates, not eliminates); IC magnitudes ~0.2 are economically modest. Next-step options at gate: (a) accept research verdict, close; (b) order a multiple-testing-strengthened rerun (e.g. FDR/BH across the 1200-cell family); (c) open WI-016 to fold the winners into shortlist ranking (a G-PA5 trading goal — only on explicit order).
+- cursor: `ses_e85a141e0ffec` unchanged (Build sessions ingested via artifacts + logs).
+
 ## 2026-10-28 — Cycle 17 (WI-014 gate ACCEPT → DONE; WI-015 pivot setup + feature-window spec confirmed)
 
 - **GATE DECISION (admin, in-chat 2026-10-28): WI-014 ACCEPT.** Canonical record = this entry; human stream `docs/human/briefings/2026-10-28-gate-WI-014-factor-screener-pdf.md`; board row → DONE (collapsed). Shortlist CSV + tearsheet PDF ships as built (suite 396 EXIT:0, PM-verified); no execution beyond the record.
@@ -14,10 +24,3 @@
 - **Admin GO ("proceed") → WI-015 brief + planner dispatched.** Brief `docs/workflow/briefs/2026-10-28-WI-015-perfanalytics-enrich.md` (commit `dc6796d`); planner detached headless (log `logs/wi015_planner.out`). Plan landed `docs/plans/2026-10-28-WI-015-perfanalytics.md` + design `docs/workflow/designs/D-15-perfanalytics.md`; PM contract check PASS (5 steps, acceptance + deterministic verify each, OUT OF SCOPE carries G-PA deferral); log stub `docs/plans/logs/WI-015-perfanalytics.md` STATUS: PLAN; board → DESIGN/PLAN, awaiting admin plan review before Build dispatch.
 - Open decisions still with admin: run-trigger (ATR vs fixed %), k grid, close-vs-wick amplitude — parked in targets-research open questions.
 - cursor: `ses_e85a141e0ffec` unchanged (no new opencode sessions; work executed by PM directly).
-
-## 2026-10-26 — Cycle 16 (WI-014: plan approved in-chat -> Build -> PM verify -> gate open)
-- Admin APPROVED the WI-014 plan in-chat ("approve"). Board row -> EXECUTING (commit `8f75c97`), Build dispatched detached headless (`logs/wi014_build.out`).
-- **Delivered (Build commits `2c33cc3`..`878db57`, steps 1-4):** `scripts/wi014_screener.py` (+`src/pdf_compiler_factor.py`), tests `test_wi014_screener.py`/`test_pdf_compiler_factor.py`; e2e run 25.8 s / peak RSS 342 MB -> `wi014_shortlist_{USD,CAD}_10.csv` + `screener_factor_{USD,CAD}_*.pdf` (11 pages each). Frozen baseline: 66 pre-existing reports + `src/pdf_compiler.py` sha-identical; full suite **396 passed EXIT:0** (`logs/wi014_full_suite.out`).
-- **PM re-verified independently:** dry-run prints USD then CAD, suffixed paths only; `--market XYZ` exit 2 before writes; targeted 36 passed; CSVs 10 rows + header, schema rank/symbol/5 factors/date; PDFs ~256 KB, `%PDF` header; `git status reports/ src/` clean of modifications.
-- **Open for admin gate:** WI-014 verdict (research-shortlist tearsheets, NO_TRADE caveat on summary page). No unresolved deviations; Build left BOARD.md untouched per plan.
-- cursor: `ses_e85a141e0ffec` unchanged (Build sessions ingested via artifacts + logs, not full transcripts).
