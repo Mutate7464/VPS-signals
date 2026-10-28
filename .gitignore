@@ -41,6 +41,7 @@ IBKRDownload/*.log.txt
 data/models/
 reports/*.pdf
 data/features/
+data/perfanalytics/
 data/train_meta_*.json
 data/metadata_catalog_*.json
 data/sync_manifest.json
