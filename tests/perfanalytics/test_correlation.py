@@ -79,7 +79,7 @@ def test_alignment_matrix_schema_and_coverage(built):
         "noise_margin", "baseline_factor", "baseline_ic", "sign_match", "pass",
     }
     cells = set(zip(table["target"], table["horizon"]))
-    assert cells == {(f"T{t}@{k}", k) for t in (1, 2, 3, 4) for k in (15, 20)}
+    assert cells == {(f"T{t}", k) for t in (1, 2, 3, 4) for k in (15, 20)}
     assert len(table) == 8 * len(feature_columns())
     # Features that are all-NaN for this universe (estimator/pipeline floors at the
     # longest windows) score no held-out dates; every computable one must.

@@ -78,9 +78,8 @@ def target_columns(horizons: tuple[int, ...] = DEFAULT_HORIZONS) -> list[str]:
 
 
 def target_label(column: str) -> str:
-    """`t1_amp_15` -> `T1@15` for reports."""
-    stem, k = column.rsplit("_", 1)
-    return f"{stem.split('_')[0].upper()}@{k}"
+    """`t1_amp_15` -> `T1` (the horizon stays its own column/field)."""
+    return column.split("_")[0].upper()
 
 
 # --------------------------------------------------------------------------- #
@@ -105,16 +104,9 @@ def fold_val_positions(
 # --------------------------------------------------------------------------- #
 # Rank IC
 # --------------------------------------------------------------------------- #
-def _group_sums(mat: np.ndarray, codes: np.ndarray, n_dates: int) -> tuple[np.ndarray, np.ndarray]:
-    """Per-date sum and sum-of-squares for every column of `mat`."""
-    n_cols = mat.shape[1]
-    s = np.empty((n_dates, n_cols), dtype="float64")
-    s2 = np.empty((n_dates, n_cols), dtype="float64")
-    for j in range(n_cols):
-        v = mat[:, j].astype("float64")
-        s[:, j] = np.bincount(codes, weights=v, minlength=n_dates)
-        s2[:, j] = np.bincount(codes, weights=v * v, minlength=n_dates)
-    return s, s2
+def _per_date_sums(mat: np.ndarray, starts: np.ndarray) -> np.ndarray:
+    """Sum each contiguous date block of a date-sorted matrix (rows per date)."""
+    return np.add.reduceat(mat, starts, axis=0)
 
 
 def daily_spearman_ic(
@@ -124,41 +116,49 @@ def daily_spearman_ic(
 ) -> dict[str, np.ndarray]:
     """Per-date cross-sectional Spearman IC for every (target, feature) pair.
 
-    Returns `{target_col: ic_matrix}` with shape `(n_dates_in_fold, n_features)`,
-    NaN where the date had <3 names or a zero-dispersion rank vector — the same
+    Pairwise-complete: each (target, feature) cell is scored on the names whose
+    ranks are defined for **both** that date — a NaN in one long-window feature
+    cannot silently delete that date for the other candidates (which would make
+    the window comparison unfair, since it would strip dates unevenly). A date
+    needs >=3 such names and non-zero rank dispersion in both series, the same
     guard as `within_date_rank_ic`.
+
+    Returns `{target_col: ic_matrix}` with shape `(n_dates_in_fold, n_features)`,
+    NaN where a date/candidate pair was undefined.
     """
     codes, uniq = pd.factorize(frame["date"].to_numpy(), sort=True)
     n_dates = len(uniq)
-    n = np.bincount(codes, minlength=n_dates).astype("float64")
+    rt = frame.groupby("date", sort=True)[target_cols].rank().to_numpy("float64")
+    rf = frame.groupby("date", sort=True)[feat_cols].rank().to_numpy("float64")
+    mt, mf = np.isfinite(rt), np.isfinite(rf)
+    rt = np.where(mt, rt, 0.0)
+    rf = np.where(mf, rf, 0.0)
 
-    rt = frame.groupby("date", sort=True)[target_cols].rank().to_numpy("float32")
-    rf = frame.groupby("date", sort=True)[feat_cols].rank().to_numpy("float32")
-
-    s_t, s2_t = _group_sums(rt, codes, n_dates)
-    s_f, s2_f = _group_sums(rf, codes, n_dates)
-    inv_n = np.where(n > 0, 1.0 / np.maximum(n, 1.0), np.nan)
-
-    mean_t = s_t * inv_n[:, None]
-    mean_f = s_f * inv_n[:, None]
-    var_t = s2_t * inv_n[:, None] - mean_t**2
-    var_f = s2_f * inv_n[:, None] - mean_f**2
-    valid_t = (n >= MIN_NAMES_PER_DATE)[:, None] & (var_t > 0.0)
-    valid_f = (n >= MIN_NAMES_PER_DATE)[:, None] & (var_f > 0.0)
+    order = np.argsort(codes, kind="stable")
+    codes_s = codes[order]
+    starts = np.flatnonzero(np.r_[True, codes_s[1:] != codes_s[:-1]])
+    rt_s, rf_s, mt_s, mf_s = rt[order], rf[order], mt[order], mf[order]
 
     out: dict[str, np.ndarray] = {}
-    n_feat = len(feat_cols)
-    denom_t = np.sqrt(np.where(var_t > 0.0, var_t, np.nan))
-    denom_f = np.sqrt(np.where(var_f > 0.0, var_f, np.nan))
     for i, t_col in enumerate(target_cols):
-        cov = np.empty((n_dates, n_feat), dtype="float64")
-        for j in range(n_feat):
-            prod = (rf[:, j].astype("float64") * rt[:, i].astype("float64"))
-            sxy = np.bincount(codes, weights=prod, minlength=n_dates)
-            cov[:, j] = sxy * inv_n - mean_f[:, j] * mean_t[:, i]
-        corr = cov / (denom_t[:, [i]] * denom_f)
-        corr = np.where(valid_t[:, [i]] & valid_f, corr, np.nan)
-        out[t_col] = corr
+        ti = rt_s[:, i]
+        ti2 = ti * ti
+        both = (mf_s & mt_s[:, [i]]).astype("float64")
+        cnt = _per_date_sums(both, starts)
+        sx = _per_date_sums(rf_s * both, starts)
+        sxx = _per_date_sums(rf_s * rf_s * both, starts)
+        sy = _per_date_sums(ti[:, None] * both, starts)
+        syy = _per_date_sums(ti2[:, None] * both, starts)
+        sxy = _per_date_sums(rf_s * ti[:, None] * both, starts)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            mx = sx / cnt
+            my = sy / cnt
+            vx = sxx / cnt - mx * mx
+            vy = syy / cnt - my * my
+            cov = sxy / cnt - mx * my
+            corr = cov / np.sqrt(vx * vy)
+        ok = (cnt >= MIN_NAMES_PER_DATE) & (vx > 0.0) & (vy > 0.0)
+        out[t_col] = np.where(ok, corr, np.nan)
     return out
 
 

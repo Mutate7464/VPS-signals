@@ -55,7 +55,7 @@ def test_renders_heatmap_top_table_and_summary(reports):
         "held_out_ic", "noise_margin", "sign_match_vs_e5", "pass",
     }
     assert set(zip(top["target"], top["horizon"])) == {
-        (f"T{t}@{k}", k) for t in (1, 2, 3, 4) for k in (15, 20)
+        (f"T{t}", k) for t in (1, 2, 3, 4) for k in (15, 20)
     }
     for _, g in top.groupby(["target", "horizon"]):
         assert len(g) <= viz.TOP_N
@@ -65,6 +65,8 @@ def test_renders_heatmap_top_table_and_summary(reports):
     assert viz.SUMMARY_MARKER in md
     assert "Family vs timeframe" in md
     assert "Most frequent best family" in md
+    assert "| T1@15 |" in md  # target×horizon label rendered once, not doubled
+    assert "@15@15" not in md
     # the summary must not duplicate itself when re-applied
     viz.append_summary(viz.load_matrix("CAD", reports), "CAD", paths["md"])
     assert paths["md"].read_text().count(viz.SUMMARY_MARKER) == 1

@@ -93,7 +93,7 @@ def ranked_table(table: pd.DataFrame, market: str, top_n: int = TOP_N) -> pd.Dat
 def _heatmap_matrix(table: pd.DataFrame) -> tuple[np.ndarray, list[str]]:
     """(rows × windows) signed held-out IC matrix, one row-block per family."""
     lookup = {
-        (r["family"], r["target"], int(r["window"])): r["held_out_ic"]
+        (r["family"], f"{r['target']}@{int(r['horizon'])}", int(r["window"])): r["held_out_ic"]
         for _, r in table.iterrows()
     }
     mat = np.full((len(FAMILIES) * len(TARGET_ORDER), len(FIB_GRID)), np.nan)
