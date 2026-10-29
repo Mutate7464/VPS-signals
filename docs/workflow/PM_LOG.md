@@ -4,6 +4,14 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-29 — Cycle 19 (WI-015 gate ACCEPT; WI-016 opened at DESIGN, admin chat direction)
+
+- **WI-015 gate ACCEPT → DONE (admin in-chat 2026-10-29):** decision recorded both streams — human `docs/human/briefings/2026-10-29-gate-WI-015-perfanalytics.md`, board DONE row collapsed. Evidence unchanged since gate-open verify (444 passed EXIT:0, PM re-verified).
+- **WI-016 opened (admin chat direction, PM-executed setup per skill):** `docs/workflow/designs/D-016-triple-barrier-fib-labeling.md` (status proposed) — triple-barrier labels with fib vertical barriers replacing current 5 labels, unified window grid {3,8,21,55,144,233} for smooth families (measured adjacent-window |ρ| 0.89–0.99 on classic/fib grids; fast families keep dense windows), looser admission + ρ>0.7 uniqueness prune + events-per-feature cap (admin confirmed), probe-first gate (BH-FDR + placebo + same-sign bar), E5 top-decile meta-labeling, decision-rule synthesis into WI-014 shortlist. Embargo fix (embargo_td = max(20, h)) as precondition.
+- **Open at definition gate:** D-016 Q1–Q5 — Q1 target ladder (full 13 fib horizons vs curated {8,21,55,144,233}, REC curated), Q2 old-label retirement (REC legacy-baseline), Q3 vertical-outcome class (REC sign-of-return), Q4 k grid (REC {1.5,2.0} probe, one ships), Q5 E5 event decile (REC top-decile/date/market). Admin answers gate DESIGN → PLAN.
+- Commits this cycle: `6c7ba1e` (D-016 + board row), `7b7dc72` (feature-selection spec confirmed), `7360398` (window-grid unification), gate-close commit (board WI-015 → DONE, gate brief, PM_LOG).
+- cursor: none — PM-executed cycle, no opencode sessions to ingest.
+
 ## 2026-10-28 — Cycle 18 (WI-015: plan approved + viz addendum → Build → PM verify → gate open)
 
 - **Admin approved plan + added scope (in-chat "proceed. visualize results → confirm best features family/timeframe"):** addendum `docs/workflow/briefs/2026-10-28-WI-015-perfanalytics-addendum.md` (commit `c350a95`); Build dispatched detached headless (`logs/wi015_build.out`); notify watcher armed on WI log.
