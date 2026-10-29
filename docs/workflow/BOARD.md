@@ -2,12 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-28 cycle 17 — WI-014 ACCEPT → DONE; WI-015 at DESIGN/PLAN (plan written, contract PASS, awaiting admin plan review)
+**Last updated:** 2026-10-29 cycle 18 — WI-016 opened at DESIGN (D-016 proposed, admin chat direction: triple-barrier fib-ladder labels + feature re-eval to 233 + E5 meta-labeling + decision-rule synthesis; open Q1–Q5 at definition gate); WI-015 QA/GATE still awaiting admin verdict
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
+| WI-016 | Triple-barrier fib-ladder labeling + feature re-eval (fib windows→233, WI-015-validated family) + E5 meta-labeling + decision-rule synthesis into WI-014 shortlist (admin chat direction 2026-10-29) | G-001 | **DESIGN** — D-016 proposed; replaces current 5 labels as primary (legacy-baseline per Q2); probe-first gate (BH-FDR + placebo + same-sign bar), per-horizon embargo fix as precondition | 2026-10-29 | Open Q1–Q5 (fib ladder curation, label retirement, vertical outcome class, k grid, E5 event def) — admin definition gate | `docs/workflow/designs/D-016-triple-barrier-fib-labeling.md` |
 
 | WI-015 | Performance analytics: enrich feature panel (existing families × fib windows 3→233) + run-target alignment matrix; COMPLEMENTS WI-014 (admin direction 2026-10-28) | G-001 | **QA/GATE** — Build complete 2026-10-28 (STATUS: DONE): steps 1–5 + viz addendum; **444 passed EXIT:0** (396 pre-existing + 48 new), PM re-verified (48 targeted re-run, alignment CSVs 1200 rows/market, PNGs valid, frozen check clean, no WI-014 touch). Headline: best-per-target 8/8 pass both markets (CAD: bb_width@233 / range_width@233 T1-T2, amihud@89 T3; USD: yangzhang@144, atr_pct@233/8) — first positive feature-alignment result after the WI-009 series. Deviation 1 (donchian warm-up NaN) accepted by PM. Awaiting admin gate verdict | 2026-10-28 | Open for admin | log `docs/plans/logs/WI-015-perfanalytics.md` STATUS: DONE; reports `reports/perfanalytics/alignment_*`, `heatmap_*`, `alignment_top_*` |
 | WI-014 | E5 factor screener → daily shortlist CSV + tearsheet PDF, both markets | G-001 | **DONE** (gate 2026-10-28: admin ACCEPT) — suite 396 passed EXIT:0, PM-verified; CSV+PDF both markets, frozen artifacts clean; decision record `docs/human/briefings/2026-10-28-gate-WI-014-factor-screener-pdf.md`; log `docs/plans/logs/WI-014-factor-screener-pdf.md` STATUS: DONE
