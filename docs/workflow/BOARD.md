@@ -2,13 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-10-29 cycle 18 — WI-015 gate ACCEPT → DONE (decision record `docs/human/briefings/2026-10-29-gate-WI-015-perfanalytics.md`); WI-016 at DESIGN (D-016 proposed, open Q1–Q5 at admin definition gate)
+**Last updated:** 2026-10-29 cycle 19 — WI-015 gate ACCEPT → DONE; WI-016 D-016 accepted (Q1–Q5 answered in-chat), planner dispatched → PLAN pending admin review
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-| WI-016 | Triple-barrier fib-ladder labeling + feature re-eval (fib windows→233, WI-015-validated family) + E5 meta-labeling + decision-rule synthesis into WI-014 shortlist (admin chat direction 2026-10-29) | G-001 | **DESIGN** — D-016 proposed; replaces current 5 labels as primary (legacy-baseline per Q2); probe-first gate (BH-FDR + placebo + same-sign bar), per-horizon embargo fix as precondition | 2026-10-29 | Open Q1–Q5 (fib ladder curation, label retirement, vertical outcome class, k grid, E5 event def) — admin definition gate | `docs/workflow/designs/D-016-triple-barrier-fib-labeling.md` |
+| WI-016 | Triple-barrier fib-ladder labeling + feature re-eval (fib windows→233, WI-015-validated family) + E5 meta-labeling + decision-rule synthesis into WI-014 shortlist (admin chat direction 2026-10-29) | G-001 | **PLAN** — D-016 accepted (definition gate answered 2026-10-29: barriers {8,21,55,144,233} aligned to unified window grid; legacy y* retire to baseline w/ one comparative probe; sign-of-return 3-class; k∈{1.5,2.0} probe w/ density stats logged; top-decile events, top-2-decile training expansion); planner brief written, planner dispatched | 2026-10-29 | Plan review → admin after planner lands | `docs/workflow/designs/D-016-triple-barrier-fib-labeling.md`; brief `docs/workflow/briefs/2026-10-29-WI-016-triple-barrier-brief.md` |
 
 | WI-014 | E5 factor screener → daily shortlist CSV + tearsheet PDF, both markets | G-001 | **DONE** (gate 2026-10-28: admin ACCEPT) — suite 396 passed EXIT:0, PM-verified; CSV+PDF both markets, frozen artifacts clean; decision record `docs/human/briefings/2026-10-28-gate-WI-014-factor-screener-pdf.md`; log `docs/plans/logs/WI-014-factor-screener-pdf.md` STATUS: DONE
 | WI-013 | Pipeline hygiene + two-market parametrization (F-2..F-5: `--market` with default BOTH USD+CAD, market-suffixed report paths, F-4 label strip with old==new rebuild) | G-003 | **DONE** (gate 2026-10-26: admin ACCEPT — SIMPLE rec approved in-chat, both deviations accepted; decision record `docs/human/briefings/2026-10-26-gate-WI-013-pipeline-hygiene.md`) | 2026-10-26 | none — closed | log `docs/plans/logs/WI-013-pipeline-hygiene.md` STATUS: DONE (PM-set) | log stub `docs/plans/logs/WI-013-pipeline-hygiene.md` STATUS: PLAN |

@@ -1,6 +1,6 @@
 # D-016 — Triple-Barrier Fib-Ladder Labeling + Meta-Labeled E5 Screener
 
-**Goal:** G-001 (dual-market screener) · **Status:** proposed (awaiting admin definition gate) · **Date:** 2026-10-29
+**Goal:** G-001 (dual-market screener) · **Status:** accepted (admin definition gate 2026-10-29, Q1–Q5 answered) · **Date:** 2026-10-29
 
 ## Context
 
@@ -39,12 +39,12 @@
 - **Negative / risks:** long-horizon overlap (233-bar windows ≈ 10 non-overlapping per ticker → overlap-inflated t-stats; mitigate with date-sparse evaluation or block bootstrap, registered in RISKS.md); probe grid still ~5 horizons × ~40 whitelist features × 2 markets — bounded but real; ~65-target blowup avoided by curation only if Q1 answered "curated".
 - **Constraints carried:** n_jobs=2, float32, symbol-sequential (2 vCPU/8 GB), market parametrization (`--market`), point-in-time trailing-only features, daily shortlist + human gate, no auto-execution.
 
-## Open definition questions (admin gate)
+## Definition gate — answered (admin, 2026-10-29)
 
-| # | Question | REC |
+| # | Question | Admin answer → spec |
 |---|---|---|
-| 1 | Fib ladder: full 13 horizons {3,5,8,13,21,34,55,89,144,233…} vs curated {8,21,55,144,233}? | **Curated** — span with ~40% of the test count; add 89 if probe budget allows |
-| 2 | Old 5 labels: retire-as-legacy-baseline (rebuildable) vs delete? | **Retire as legacy baseline** — one comparative probe run (old vs new labels) is cheap insurance |
-| 3 | Vertical-barrier outcome: sign-of-return 3-class vs neutral binary? | **Sign-of-return** — keeps label informative at 8–21d; neutral collapses too much |
-| 4 | k (ATR multiple): both {1.5, 2.0} as grid, or fix 2.0 (matches current TREND_ATR_MULT)? | **Both in probe, one ships** — pick per horizon by cleared-bar density |
-| 5 | E5 primary event: top-decile rank (per market, per date) as entry event? | **Yes** — matches WI-014 shortlist semantics |
+| 1 | Target horizon ladder | **Curated, aligned with the unified window grid, larger windows emphasized: vertical barriers ∈ {8, 21, 55, 144, 233}** (1:1 with the feature window grid minus the 3-bar runt — a 3-bar barrier is noise; full 13-horizon grid rejected on multiple-testing grounds). Same alignment as the window duplicate-removal decision. |
+| 2 | Old 5 labels | **A — retire to legacy-baseline.** Legacy `y_*` machinery (wilder_atr, forward rolls in `src/targets.py`) is *reused* by the triple-barrier computation — one final comparative probe run (old vs new labels on the same panel) before legacy generation stops. Legacy stays rebuildable, never deleted. |
+| 3 | Vertical-barrier outcome | **A — sign of realized return** (3-class: profit-take / stop / time±). |
+| 4 | Barrier ATR multiple k | **A — {1.5, 2.0} both in probe, one ships per horizon.** Probe must **log per-horizon adjustment statistics** (barrier-touch densities, class balance per k, events per fold) as report artifacts so the k choice is auditable. |
+| 5 | E5 primary event | **A — top-decile rank per date/market, long side.** Admin authorized **rank expansion for training data**: meta-labeler trains on an expanded event set (top-2 deciles ≈ 2× events, decile flag recorded per event for stratified analysis); shipped decisions and shortlist semantics remain top-decile only. Longer training/runtime explicitly accepted. |
