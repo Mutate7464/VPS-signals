@@ -33,3 +33,10 @@
 - **Admin GO ("proceed") → WI-015 brief + planner dispatched.** Brief `docs/workflow/briefs/2026-10-28-WI-015-perfanalytics-enrich.md` (commit `dc6796d`); planner detached headless (log `logs/wi015_planner.out`). Plan landed `docs/plans/2026-10-28-WI-015-perfanalytics.md` + design `docs/workflow/designs/D-15-perfanalytics.md`; PM contract check PASS (5 steps, acceptance + deterministic verify each, OUT OF SCOPE carries G-PA deferral); log stub `docs/plans/logs/WI-015-perfanalytics.md` STATUS: PLAN; board → DESIGN/PLAN, awaiting admin plan review before Build dispatch.
 - Open decisions still with admin: run-trigger (ATR vs fixed %), k grid, close-vs-wick amplitude — parked in targets-research open questions.
 - cursor: `ses_e85a141e0ffec` unchanged (no new opencode sessions; work executed by PM directly).
+
+## 2026-10-30 — Cycle 20 (WI-016 PM finding + admin addendum order)
+
+- **PM finding (pre-gate, verified on 60 CAD symbols vs module):** ±1 labels conflate barrier first-touch with vertical drift-sign (~45% of h8 events touch no barrier; class 0 only ≈zero-return rows). Step-5 IC partially measures drift; proxy edge overstated. Same-sign clause verified E5-independent (split-half IC stability, `probe.py:122`); CAD winner not an E5 factor — no legacy confound in the probe statistics. Logged `docs/plans/logs/WI-016-triple-barrier-fib-labels.md` PM FINDING (commit `f17c870`).
+- **Admin decision (in-chat 2026-10-30):** proceed with REC addendum, USD included in trade scope. Addendum brief `docs/workflow/briefs/2026-10-30-WI-016-addendum-brief.md` — touch-restricted labels + fret regression target, overlap/uniqueness weights, E5-de-anchoring primary bake-off (E5 vs mom/vol/yangzhang/tc_rating gated IC), 10/20/30 bps cost bands, duration offsets added to labels. Both markets. Build dispatched detached (`logs/wi016_addendum_build.out`).
+- Step-5 verdict (CAD CLEAR / USD NOT_CLEAR) stands until addendum lands; step 6 remains gated.
+- cursor: none — PM-executed dispatch; ingest addendum Build session at next cycle.
