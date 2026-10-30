@@ -41,3 +41,10 @@
 - Step-5 verdict (CAD CLEAR / USD NOT_CLEAR) stands until addendum lands; step 6 remains gated.
 - **Admin pre-approval (in-chat 2026-10-30 "approved"):** step 6 (meta-labeler + actions) is pre-approved for every market that clears the addendum probe at the standing 20 bps cost band, once PM verifies the addendum results — no re-ask at that gate. A market that only clears below 20 bps comes back to the admin with the flip-point number. Markets that don't clear stay descriptive (E5 ranks only). PM verifies addendum (tests + report numbers + bake-off) before dispatching step 6 under this approval.
 - cursor: none — PM-executed dispatch; ingest addendum Build session at next cycle.
+
+## 2026-10-30 — Cycle 21 (WI-016 addendum verified; step 6 dispatched under pre-approval)
+
+- **Addendum PM-verified (26 tests pass; verdicts read from reports):** barrier-resolved CAD **CLEAR at all cost bands** — 4 targets survive (k15 h8/h55/h144, k20 h8; best IC −0.042); h21 flipped NOT_CLEAR, k20 long horizons dropped. USD **NOT_CLEAR at every band** (0 flips) → stays descriptive. Uniqueness weighting kills long-horizon pseudo-replication (CAD h233 t −11.64 → −0.74); h8 edge survives (t −5.13). Cost bands 10/20/30: no verdict flips. Duration columns added (mean 3.9 bars, k15 h8).
+- **Primary adjudication (PM):** bake-off winner `tc_rating` EXCLUDED as backtest primary — static watchlist snapshot, no point-in-time history → look-ahead violation of the standing causal constraint (usable live only). Best clean primary: `yangzhang_21` (gated IC 0.0108); E5 composite LOST the de-anchor bake-off (0.0059). USD clean primary (mom_12_1, 0.0095) moot — market not clear.
+- **Step 6 dispatched (CAD only) under admin pre-approval (commit d636326):** meta-labeler + actions, primary yangz21 top-decile events (top-2-decile training expansion, decile flag), cleared targets only, per-horizon embargo, 20 bps overlay, emits `reports/wi016_shortlist_CAD.parquet`. Build detached `logs/wi016_step6_build.out`.
+- cursor: wi016 addendum + step-6 opencode sessions — ingest both next cycle.
