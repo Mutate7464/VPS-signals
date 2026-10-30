@@ -32,6 +32,7 @@ import datetime as dt
 import gc
 import json
 import pickle
+import re
 import sys
 import time
 from pathlib import Path
@@ -69,6 +70,11 @@ CB04_MIN_POSITIVES = 25
 N_PLACEBO_SEEDS = 5
 EARLY_STOPPING_ROUNDS = 30
 
+# WI-009's flat embargo floor (trading days). A per-target embargo never goes
+# below this, but grows to cover the label horizon (D-016 precondition fix):
+# a forward label spanning `horizon` bars cannot straddle a fold boundary.
+EMBARGO_FLOOR_TD = 20
+
 TARGET_HORIZON = {"y_15d_high": 15, "y_15d_low": 15, "y_20d_up": 20, "y_20d_down": 20}
 # Sign that maps each target onto "realized forward ATR return in the predicted direction".
 TARGET_DIRECTION = {"y_15d_high": -1, "y_15d_low": 1, "y_20d_up": 1, "y_20d_down": -1}
@@ -83,6 +89,46 @@ PROB_COLUMN = {
 # exit_urgency = max P(event) over the four *event* targets. y_20d_stay (added
 # 2026-10-25) is a do-nothing band, deliberately excluded from this max.
 EVENT_PROB_COLUMNS = ("p_15d_high", "p_15d_low", "p_20d_up", "p_20d_down")
+
+
+# --------------------------------------------------------------------------- #
+# Horizon-specific embargo (D-016 precondition fix)
+# --------------------------------------------------------------------------- #
+def horizon_embargo(horizon: int, floor: int = EMBARGO_FLOOR_TD) -> int:
+    """Per-target embargo = `max(floor, horizon)`.
+
+    A forward label spanning `horizon` trading days cannot straddle a fold
+    boundary, so the purge must cover at least the label horizon. The WI-009
+    flat 20-bar floor is retained for short targets.
+    """
+    return int(max(int(floor), int(horizon)))
+
+
+def target_horizon(target: str) -> int:
+    """Label horizon for a target column.
+
+    Mapping first (`TARGET_HORIZON`), then a `y_<N>d_*` name parse so targets
+    added by future work items (e.g. the WI-016 fib-ladder names) resolve their
+    own horizon instead of silently inheriting the flat floor.
+    """
+    if target in TARGET_HORIZON:
+        return int(TARGET_HORIZON[target])
+    m = re.match(r"^y_(\d+)d", str(target))
+    if m:
+        return int(m.group(1))
+    raise KeyError(f"no horizon known for target {target!r}")
+
+
+def resolve_embargo(target: str, cli_embargo: int | None = None) -> int:
+    """Effective per-target embargo for `target`.
+
+    An explicit CLI/config value may only *strengthen* the per-target horizon
+    embargo — the flat default (20) can never weaken it, so `--embargo 20` on a
+    144-bar target still yields 144.
+    """
+    configured = int(cli_embargo) if cli_embargo is not None else EMBARGO_FLOOR_TD
+    return max(configured, horizon_embargo(target_horizon(target)))
+
 
 
 # --------------------------------------------------------------------------- #
@@ -459,7 +505,6 @@ def train_market(
     logger, _log_path, _jsonl_path = setup_logging("xgb_trainer", market)
     catalog = load_catalog(market)
     params = xgb_params(cfg)
-    splitter = PurgedWalkForwardSplit(n_splits=n_splits, embargo_td=embargo_td)
 
     target_list = targets if targets else list(TARGET_COLUMNS)
     suffix = "" if feature_set == "full" else f"_{feature_set}"
@@ -540,6 +585,12 @@ def train_market(
         logger.info("=== target: %s ===", target)
         check_memory(logger, min_avail_mb)
 
+        # Per-target embargo: floor at the flat WI-009 value, grow to the label
+        # horizon, and never let the CLI/default weaken it (D-016).
+        target_embargo_td = resolve_embargo(target, embargo_td)
+        splitter = PurgedWalkForwardSplit(n_splits=n_splits, embargo_td=target_embargo_td)
+        logger.info("target %s: horizon=%d embargo_td=%d", target, target_horizon(target), target_embargo_td)
+
         panel_cols = set(labeled.columns)
         feats = target_features(catalog, target, feature_set=feature_set, panel_cols=panel_cols)
         # Ensure features exist in the panel (some may have been dropped)
@@ -572,10 +623,16 @@ def train_market(
 
         # Final model on all labeled dates
         all_idx = np.arange(len(y))
-        fit_i, cal_i = purged_holdout(dates, all_idx, CALIB_FRACTION, embargo_td)
+        fit_i, cal_i = purged_holdout(dates, all_idx, CALIB_FRACTION, target_embargo_td)
         final = fit_calibrated(X[fit_i], y[fit_i], X[cal_i], y[cal_i], params)
 
-        tmeta: dict[str, object] = {"features": feats, "folds": stats, "final_model": None}
+        tmeta: dict[str, object] = {
+            "features": feats,
+            "folds": stats,
+            "final_model": None,
+            "horizon": target_horizon(target),
+            "embargo_td": target_embargo_td,
+        }
         if final is not None:
             with open(model_dir / f"{target}.pkl", "wb") as fh:
                 pickle.dump({"model": final, "features": feats, "market": market, "target": target}, fh)

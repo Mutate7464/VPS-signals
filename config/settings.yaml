@@ -38,6 +38,16 @@ features:
   atr_window: 20
   range_fib: true   # Fibonacci-window range features (WI-002 E3; windows 3x[1,2,3,5,8,13,21,34])
 
+wi016:
+  # WI-016 unified feature grid + admission (D-016 §2). The legacy `features:`
+  # grid above is retained unchanged for frozen WI-014 artifacts.
+  smooth_windows: [3, 8, 21, 55, 144, 233]
+  fast_fib_windows: [3, 6, 9, 15, 24, 39, 63, 102]
+  vif_threshold: 8.0        # relaxed from 5.0 (D-016)
+  mi_min_percentile: 20     # relaxed from 30
+  cluster_rho: 0.7          # per-target |Spearman rho| cluster prune
+  min_labeled_events: 500   # minimum labeled events per admitted feature
+
 targets:
   high_15d_horizon: 15
   low_15d_horizon: 15
