@@ -5,9 +5,17 @@
 | Step | Done (UTC) | Result | Evidence |
 |---|---|---|---|
 | — | 2026-10-29 | PLAN approved by PM contract check; awaiting admin plan review before Build dispatch | plan `docs/plans/26-W44-WI-016-triple-barrier-fib-labels.md` |
+| 1 | 2026-10-29 23:12 | Horizon embargo added: `horizon_embargo`/`target_horizon`/`resolve_embargo`; per-target embargo wired to CV splitter + final `purged_holdout`. CLI default cannot weaken. Tests 14 pass. | `uv run pytest tests/test_xgb_trainer.py -k 'embargo or purged_holdout'` → 14 passed; regression set (leakage/e5_split/trainer_logging/wi009c) 29 passed |
+| 2 | 2026-10-29 23:17 | `src/wi016/triple_barrier.py` + package: first-touch ±k·ATR (k=1.5/2.0) over h∈{8,21,55,144,233}, 3-class labels, NaN masks, streaming diagnostics. 17 tests pass. USD/CAD density reports written. | `uv run pytest tests/test_triple_barrier.py` → 17 passed; `reports/wi016_label_density_{USD,CAD}.{md,csv}` (USD 594 sym, CAD 365 sym) |
+| 3 | 2026-10-29 23:26 | WI-016 unified grid added to `feature_engine.py` (`compute_features_wi016`, 111 cols: smooth ladder {3..233}, dense fib only for kama/hurst/entropy/vwap) + `wi016` config + new `src/wi016/admission.py` (VIF 8.0, relaxed MI, ρ>0.7 cluster reps, ≥500 events). 10 tests pass. | `uv run pytest tests/test_wi016_features.py` → 10 passed; regression: range_fib/feature_vectorized/stat_metadata_vif 20 passed |
+| 4 | 2026-10-30 00:09 | `src/wi016/probe.py::legacy_comparison` compares legacy 5 labels vs triple-barrier on identical rows/features; writes `wi016_` report. Legacy generation not invoked after. | `uv run pytest tests/test_wi016_probe.py -k legacy_comparison` → 1 passed; `reports/wi016_legacy_comparison_{USD,CAD}.md` written |
+| 5 | 2026-10-30 01:50 | Probe-first gate: within-date rank-IC, BH-FDR, 5-seed placebo, WI-009b same-sign, cost overlay (NO_TRADE default), fold counts. Full-market runs. **CAD = CLEAR; USD = NOT_CLEAR** (USD edge < cost). 9 tests pass. STOP for PM/admin. | `uv run pytest tests/test_wi016_probe.py` → 9 passed; `reports/wi016_probe_{CAD,USD}.md`; brief `docs/human/briefings/2026-10-30-gate-WI-016-probe.md` |
 
 ## DEVIATIONS
 
-(none)
+- Plan step 3 said "update `src/feature_engine.py`": done by **adding** the WI-016 unified grid (`compute_features_wi016`, `wi016_feature_names`) while leaving the legacy `compute_features` grid and its windows untouched — required to keep the shipped screener and frozen WI-014 artifacts working (OUT OF SCOPE: replacing the shipped screener before gate approval).
+- Plan step 3 "rebuild the admission stage": implemented in the new `src/wi016/admission.py` (reusing `stat_metadata` ADF/MI and a now-parameterised VIF) rather than mutating `stat_metadata`, so frozen catalogs are unaffected. The real-data admission catalog itself is produced on demand by `admission.run_market` and is consumed by the step-5 probe panel; it was not materialised as a standalone step-3 artifact.
+- Probe cost overlay is a documented proxy (|IC|·1000 bps − cost); the real overlay is WI-011's. The 5-seed placebo runs on the top-100 FDR survivors (host-time bound), noted in the report.
+- Planned dependency `src.factors.e5_baseline:factor_frame` used as the sole E5 definition (no drift).
 
-STATUS: PLAN
+STATUS: DONE | evidence: steps 1–5 verified — `uv run pytest tests/test_xgb_trainer.py -k 'embargo or purged_holdout'` (14), `tests/test_triple_barrier.py` (17), `tests/test_wi016_features.py` (10), `tests/test_wi016_probe.py -k legacy_comparison` (1), `tests/test_wi016_probe.py` (9) all passed; full-market probe reports written: `reports/wi016_probe_CAD.md` (CLEAR), `reports/wi016_probe_USD.md` (NOT_CLEAR), `reports/wi016_legacy_comparison_{USD,CAD}.md`, `reports/wi016_label_density_{USD,CAD}.md`; gate brief `docs/human/briefings/2026-10-30-gate-WI-016-probe.md`. Step 6 NOT started (not dispatched); awaiting PM/admin gate decision.
