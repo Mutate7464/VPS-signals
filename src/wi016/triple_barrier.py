@@ -90,7 +90,7 @@ def label_columns(k_values=K_VALUES, horizons=VERTICAL_HORIZONS) -> list[str]:
     for k in k_values:
         for h in horizons:
             tag = _k_tag(k)
-            cols += [f"tb_label_{tag}_h{h}", f"tb_touch_{tag}_h{h}"]
+            cols += [f"tb_label_{tag}_h{h}", f"tb_touch_{tag}_h{h}", f"tb_duration_{tag}_h{h}"]
     for h in horizons:
         cols.append(f"tb_fret_h{h}")
     return cols
@@ -128,8 +128,10 @@ def compute_triple_barrier(
 
     Returns a DataFrame aligned to `df.index` with, per ``(k, h)``:
     ``tb_label_<k>_h<h>`` (float32, ∈ {-1.0, 0.0, +1.0}), ``tb_touch_<k>_h<h>``
-    (int8; +1 profit, −1 stop, 0 vertical) and ``tb_fret_h<h>`` (float32 realized
-    return over ``[t, t+h]`` used for the vertical sign).
+    (int8; +1 profit, −1 stop, 0 vertical), ``tb_duration_<k>_h<h>`` (float32
+    bars to first touch; barrier = first-touch offset, vertical = h) and
+    ``tb_fret_h<h>`` (float32 realized return over ``[t, t+h]`` used for the
+    vertical sign).
     """
     close = df["close"].astype("float64").to_numpy()
     high = df["high"].astype("float64").to_numpy()
@@ -157,6 +159,7 @@ def compute_triple_barrier(
             m = max(n - h, 0)
             label = np.full(n, np.nan)
             touch = np.full(n, TOUCH_INVALID, dtype="float64")
+            duration = np.full(n, np.nan)
             if m > 0:
                 fwd_high = sliding_window_view(high, h + 1)[:, 1:]
                 fwd_low = sliding_window_view(low, h + 1)[:, 1:]
@@ -182,8 +185,17 @@ def compute_triple_barrier(
                 ok = valid_atr[:m] & np.isfinite(close[:m])
                 label[:m] = np.where(ok, lab, np.nan)
                 touch[:m] = np.where(ok, touch_arr, TOUCH_INVALID)
+                # Duration to first touch, in 1-based bars: barrier touches use the
+                # first-touch offset, a vertical exit uses the full horizon h.
+                dur_m = np.where(
+                    vert, float(h),
+                    np.where(profit_first, prof_first + 1.0,
+                             np.where(stop_first_mask, stop_first + 1.0, np.nan)),
+                )
+                duration[:m] = np.where(ok, dur_m, np.nan)
             out[f"tb_label_{tag}_h{h}"] = label.astype("float32")
             out[f"tb_touch_{tag}_h{h}"] = touch.astype("int8")
+            out[f"tb_duration_{tag}_h{h}"] = duration.astype("float32")
 
     res = pd.DataFrame(out, index=df.index)
     return res

@@ -53,6 +53,7 @@ def test_label_columns_cover_grid():
         for h in (8, 21, 55, 144, 233):
             assert f"tb_label_{k_tag}_h{h}" in cols
             assert f"tb_touch_{k_tag}_h{h}" in cols
+            assert f"tb_duration_{k_tag}_h{h}" in cols
     assert "tb_fret_h233" in cols
 
 
