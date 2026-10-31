@@ -66,3 +66,4 @@ Thumbs.db
 # WI-017 brute-force per-symbol target parquets (469MB regenerated in ~60s)
 /reports/wi017/targets/
 /reports/wi017/derived/
+/reports/wi017/features/
