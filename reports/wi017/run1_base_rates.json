@@ -1,0 +1,175 @@
+{
+  "market": "USD",
+  "generated_utc": "2026-10-31T17:02:21Z",
+  "windows": [
+    3,
+    5,
+    6,
+    8,
+    9,
+    13,
+    15,
+    21,
+    24,
+    34,
+    39,
+    55,
+    63,
+    89,
+    102,
+    144,
+    233
+  ],
+  "symbols_written": 593,
+  "skipped_quarantined": 15,
+  "short_history_symbols_lt_233": [
+    [
+      "SKHY",
+      78
+    ]
+  ],
+  "barrier_defs": {
+    "touch_up10": "max(high[t+1..t+w]) >= 1.10 * close_t",
+    "touch_dn10": "min(low[t+1..t+w]) <= 0.90 * close_t",
+    "stay5": "max(high) <= 1.05*close_t AND min(low) >= 0.95*close_t over [t+1..t+w]",
+    "peak_ret/bottom_ret": "extreme forward return vs close_t (descriptive)"
+  },
+  "per_window": {
+    "3": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.042191,
+      "base_rate_dn10": 0.037658,
+      "base_rate_stay5": 0.684806,
+      "mean_peak_ret": 0.049271,
+      "mean_bottom_ret": -0.027188
+    },
+    "5": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.076754,
+      "base_rate_dn10": 0.068607,
+      "base_rate_stay5": 0.53533,
+      "mean_peak_ret": 0.071275,
+      "mean_bottom_ret": -0.03585
+    },
+    "6": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.093942,
+      "base_rate_dn10": 0.08351,
+      "base_rate_stay5": 0.477211,
+      "mean_peak_ret": 0.081631,
+      "mean_bottom_ret": -0.039443
+    },
+    "8": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.12722,
+      "base_rate_dn10": 0.111826,
+      "base_rate_stay5": 0.384273,
+      "mean_peak_ret": 0.10111,
+      "mean_bottom_ret": -0.045724
+    },
+    "9": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.143344,
+      "base_rate_dn10": 0.125225,
+      "base_rate_stay5": 0.34671,
+      "mean_peak_ret": 0.110345,
+      "mean_bottom_ret": -0.04853
+    },
+    "13": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.202586,
+      "base_rate_dn10": 0.173043,
+      "base_rate_stay5": 0.236041,
+      "mean_peak_ret": 0.147654,
+      "mean_bottom_ret": -0.05824
+    },
+    "15": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.229104,
+      "base_rate_dn10": 0.194162,
+      "base_rate_stay5": 0.197293,
+      "mean_peak_ret": 0.166218,
+      "mean_bottom_ret": -0.062441
+    },
+    "21": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.299315,
+      "base_rate_dn10": 0.248847,
+      "base_rate_stay5": 0.119866,
+      "mean_peak_ret": 0.217064,
+      "mean_bottom_ret": -0.073337
+    },
+    "24": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.329528,
+      "base_rate_dn10": 0.271844,
+      "base_rate_stay5": 0.095033,
+      "mean_peak_ret": 0.240488,
+      "mean_bottom_ret": -0.078077
+    },
+    "34": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.413017,
+      "base_rate_dn10": 0.332767,
+      "base_rate_stay5": 0.046724,
+      "mean_peak_ret": 0.31824,
+      "mean_bottom_ret": -0.091609
+    },
+    "39": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.4472,
+      "base_rate_dn10": 0.357063,
+      "base_rate_stay5": 0.033696,
+      "mean_peak_ret": 0.356861,
+      "mean_bottom_ret": -0.097379
+    },
+    "55": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.531209,
+      "base_rate_dn10": 0.416301,
+      "base_rate_stay5": 0.012993,
+      "mean_peak_ret": 0.479914,
+      "mean_bottom_ret": -0.113011
+    },
+    "63": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.562875,
+      "base_rate_dn10": 0.439015,
+      "base_rate_stay5": 0.008531,
+      "mean_peak_ret": 0.545907,
+      "mean_bottom_ret": -0.119702
+    },
+    "89": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.634422,
+      "base_rate_dn10": 0.49264,
+      "base_rate_stay5": 0.002696,
+      "mean_peak_ret": 0.797692,
+      "mean_bottom_ret": -0.137957
+    },
+    "102": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.659353,
+      "base_rate_dn10": 0.512352,
+      "base_rate_stay5": 0.001626,
+      "mean_peak_ret": 0.930521,
+      "mean_bottom_ret": -0.145605
+    },
+    "144": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.713802,
+      "base_rate_dn10": 0.557063,
+      "base_rate_stay5": 0.000575,
+      "mean_peak_ret": 1.352723,
+      "mean_bottom_ret": -0.165871
+    },
+    "233": {
+      "n_rows": 2340073,
+      "base_rate_up10": 0.764442,
+      "base_rate_dn10": 0.602124,
+      "base_rate_stay5": 0.00022,
+      "mean_peak_ret": 1.903999,
+      "mean_bottom_ret": -0.19567
+    }
+  }
+}
