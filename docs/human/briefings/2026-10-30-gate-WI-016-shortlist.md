@@ -28,3 +28,9 @@
 ## GATE DECISION (admin, 2026-10-30)
 
 **HOLD + fix (Option B).** The step-6 artifact is not accepted as-is: the near-inert abstention filter (99.3% TRADE) must be reconciled first — expected edge and cost compared on consistent terms, breakeven probability derived from cost + slippage, probability floor calibrated out-of-fold. Shortlist to be re-emitted under the corrected rule with the trade share reported per cost/slippage band. USD stays descriptive. Model remains research context behind the human gate; no live execution.
+
+## FIX DELIVERED (2026-10-31, PM-verified)
+
+Rule v2 shipped: breakeven probability derived per event from cost+slippage vs barrier geometry; OOF-calibrated floor 0.5303 (precision 0.568 vs 0.545 base). Re-emitted shortlist: 148 rows — 133 TRADE / 15 NO_TRADE (89.9%, was 99.3%); all abstentions carry `p_below_floor`; trade share stable across cost 10–30 × slippage 0–10 bps (only 30+10 drops one row); median tradeable net edge 122 bps at 20+5. Full suite 550 passed EXIT:0 (PM ran). Honest note: with OOF precision 0.568 on a 0.545 base rate, the model's discrimination is thin — the floor cannot abstain harder without killing recall. That ceiling is the model's, not the rule's.
+
+**Re-gate decision requested:** ACCEPT the corrected artifact (research context, paper-track daily) | further HOLD.

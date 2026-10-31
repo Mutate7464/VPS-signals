@@ -178,6 +178,8 @@ def test_meta_cv_returns_oof_placebo_and_strata():
     res = meta_cv(events, "tb_label_k15_h8", feature_cols=FEATURES,
                   n_splits=2, placebo_seeds=2, params=SMALL_PARAMS)
     assert len(res["oof"]) == len(events)
+    assert len(res["oof_label"]) == len(events)
+    assert len(res["oof_decile"]) == len(events)
     finite = res["oof"][np.isfinite(res["oof"])]
     assert finite.size > 0 and ((finite >= 0) & (finite <= 1)).all()
     assert len(res["placebo"]) == 2

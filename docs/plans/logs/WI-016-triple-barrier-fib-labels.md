@@ -65,3 +65,38 @@ edge is knowingly not the maximal bake-off number. No deviation from the amended
 file paths and the amendment's target list/primary/expansion/embargo/cost all match the code.
 
 STATUS: DONE | evidence: `uv run pytest tests/test_wi016_meta_labeler.py tests/test_wi016_actions.py` → 27 passed; `uv run pytest -q` → 542 passed; `uv run python -m src.wi016.meta_labeler --market CAD` → `reports/wi016_shortlist_CAD.parquet` (148 rows, 147 TRADE / 1 NO_TRADE @ 20 bps, scoring date 2026-10-28, schema verified) + `reports/wi016_meta_labeler_CAD.md`; frozen `reports/wi014_*` and `reports/perfanalytics/` unmodified (git status clean of tracked report changes). USD untouched (NOT_CLEAR → descriptive only).
+
+## STEP 6 FIX (admin gate decision 2026-10-30, HOLD + fix Option B — CAD only)
+
+Rule v2 reconciles the step-6 wart: expected edge and cost are expressed on the same terms
+(bps of price), the breakeven probability is derived per event from the cost + slippage band,
+and the probability floor is calibrated out-of-fold instead of hand-picked. No model was
+retrained (`p_meta` is bit-identical to the step-6 artifact); frozen artifacts untouched.
+
+| # | Done (UTC) | Result (≤50 words) | Concern (inline) |
+|---|---|---|---|
+| 1 | 2026-10-31 05:29 | `src/wi016/actions.py` rule v2: gross edge (bps) `(2p−1)·k·ATR/close·10000`; per-event breakeven `p* = 0.5 + (cost_bps+slippage_bps)/(2·k·ATR/close·10000)`; `net = gross − (cost+slippage)`; TRADE iff `p_meta ≥ p*` AND `p_meta ≥ floor`, else NO_TRADE with binding reason (`p_below_floor`/`net_edge_nonpositive`/`undefined`). | `net > 0` is algebraically identical to `p ≥ p*`; both stated per the spec. |
+| 2 | 2026-10-31 05:29 | OOF-calibrated floor: precision-max on pooled top-decile barrier-resolved events subject to recall ≥ 0.50 and floor ≥ 0.50 → **0.5303**; OOF precision 0.568, recall 0.507, predicted share 48.7% (n=168,923, pos rate 0.545, source `oof_calibrated`). | The model is weak (AUC 0.51–0.53), so the honest precision-max floor sits near the base rate — not high, but genuine and not hand-picked. |
+| 3 | 2026-10-31 05:28 | Re-emitted `reports/wi016_shortlist_CAD.parquet` under v2 @ 20 bps + 5 bps: 148 rows, **133 TRADE (89.9%) / 15 NO_TRADE (all `p_below_floor`)**; `p_meta` bit-identical to v1 (max diff 0.0). Sensitivity 10/20/30 × 0/5/10 in `reports/wi016_actions_v2_CAD.md`. | Trade share still 89.9%: the weak ranking (not the band) now caps the filter; the band flips only 30+10 bps (132). Cost band `net_edge_nonpositive` never binds at baseline. |
+| 4 | 2026-10-31 05:39 | `tests/test_wi016_actions.py` updated (breakeven math, cost+slippage band flips, calibrated-floor selection + lower-bound guard, band sensitivity monotonicity, abstain reasons, no-order-execution); `test_wi016_meta_labeler.py` asserts OOF labels/deciles. Full suite **550 passed**. | none |
+
+STEP 6 FIX CONCERNS: (a) the calibrated floor is OOF-CV and applied to the same panel's scoring
+date — a research threshold, not a validated edge; (b) pooling OOF across targets lets the
+high-event h8 targets dominate the precision curve, so per-target floors are not separately set;
+(c) the step-6 `reports/wi016_meta_labeler_CAD.md` model report is **not** regenerated (its
+shortlist counts remain the step-6 147/1) — `reports/wi016_actions_v2_CAD.md` is the authoritative
+corrected-decision record; (d) `meta_labeler.meta_cv` gained `oof_label`/`oof_decile` outputs
+(additive) so the floor can be calibrated, and its report caveat now describes rule v2.
+Frozen `reports/wi014_*`, `reports/perfanalytics/` and `wi016_meta_labeler_CAD.md` unmodified.
+
+STATUS: DONE | evidence: `uv run pytest tests/test_wi016_actions.py tests/test_wi016_meta_labeler.py` → 35 passed; `uv run pytest -q` → **550 passed**; `uv run python -m src.wi016.actions --market CAD` → `reports/wi016_shortlist_CAD.parquet` (148 rows, 133 TRADE / 15 NO_TRADE @ 20 bps + 5 bps slippage, floor 0.5303; `p_meta` bit-identical to the step-6 artifact) + `reports/wi016_actions_v2_CAD.md` (floor calibration, net-edge distribution, cost×slippage sensitivity); frozen `reports/wi014_*` and `reports/perfanalytics/` untouched; USD unchanged (NOT_CLEAR → descriptive).
+
+## STEP 6 FIX (abstention rule v2 — admin gate Option B; rows PM-set: Build session ended before logging, code/tests verified by PM)
+
+| # | Done (UTC) | Result (≤50 words) | Evidence |
+|---|---|---|---|
+| 1 | 2026-10-31 05:28 | Rule v2 in `actions.py`: breakeven p* = 0.5 + (cost+slip)/(2·k·ATR/close·10⁴) per event; TRADE iff p_meta ≥ p* AND ≥ floor; abstain reasons recorded. Tests 35 pass (PM re-ran). | `tests/test_wi016_{actions,meta_labeler}.py` 35 passed |
+| 2 | 2026-10-31 05:28 | OOF-calibrated floor **0.5303** (max precision s.t. recall ≥0.5, floor ≥0.5): OOF precision 0.568 vs base 0.545, predicted-positive share 48.7%. Pooled across cleared targets. | `reports/wi016_actions_v2_CAD.md` threshold table |
+| 3 | 2026-10-31 05:28 | Re-emit (PM-executed after Build session died pre-emit): 148 rows — **133 TRADE / 15 NO_TRADE (89.9%)**, all abstains `p_below_floor`; trade share stable across cost 10–30 × slip 0–10 (only 30+10 drops one row); median net edge 122 bps @ 20+5. | `reports/wi016_shortlist_CAD.parquet` (re-emitted); `reports/wi016_actions_v2_CAD.md` |
+
+STATUS: FIX DONE (PM-set) — full-suite verification running at commit time; re-gate with admin.

@@ -356,6 +356,8 @@ def meta_cv(
         "fold_plan": fold_plan(dates, target, n_splits=n_splits),
         "folds": stats,
         "oof": oof,
+        "oof_label": y,
+        "oof_decile": flag,
         "fold_id": fold_id,
         "oof_ap": _safe_ap(y, oof),
         "oof_auc": _safe_auc(y, oof),
@@ -512,10 +514,13 @@ def _write_report(result: dict, market: str, shortlist_meta: dict | None,
                   f"- Path: `{shortlist_meta['path']}`",
                   f"- Scoring date: {shortlist_meta['scoring_date']}",
                   f"- Rows: {shortlist_meta['n_rows']} ({shortlist_meta['n_trade']} TRADE / "
-                  f"{shortlist_meta['n_no_trade']} NO_TRADE at {shortlist_meta['cost_bps']:.0f} bps)",
+                  f"{shortlist_meta['n_no_trade']} NO_TRADE at {shortlist_meta['cost_bps']:.0f} bps "
+                  f"+ {shortlist_meta.get('slippage_bps', 0.0):.0f} bps slippage, floor "
+                  f"{shortlist_meta.get('p_floor', float('nan')):.4f})",
                   f"- Schema: {', '.join(shortlist_meta['columns'])}",
-                  "- NO_TRADE is the default: a row is tradeable only when the calibrated meta-probability "
-                  "clears the coin-flip floor and the expected edge exceeds the cost band.",
+                  "- NO_TRADE is the default (rule v2): a row is tradeable only when the calibrated "
+                  "meta-probability clears both the per-event breakeven ``p*`` (net expected edge > 0 "
+                  "under the cost + slippage band) and the OOF-calibrated probability floor.",
                   "- No order execution exists; this artifact is research context for the human gate."]
 
         # Caveats are computed from this run's numbers so they cannot drift stale.
@@ -530,10 +535,12 @@ def _write_report(result: dict, market: str, shortlist_meta: dict | None,
         pos_rates = [r["pos_rate"] for r in result["targets"].values()]
         lines += [
             "", "## Caveats (auto-computed — read before the gate)", "",
-            f"- **The cost band is not the binding constraint.** {shortlist_meta['n_trade']}/{n} shortlist "
-            f"rows clear {shortlist_meta['cost_bps']:.0f} bps (trade share {trade_share:.1%}). The symmetric "
-            "barrier payoff ``k·ATR/close`` is typically several percent, so a 20 bps round trip is dwarfed by "
-            "the payoff scale: the abstain channel is driven by the probability floor, not the cost overlay.",
+            f"- **Abstention under rule v2.** {shortlist_meta['n_trade']}/{n} shortlist rows trade at "
+            f"{shortlist_meta['cost_bps']:.0f} bps + {shortlist_meta.get('slippage_bps', 0.0):.0f} bps "
+            f"slippage (trade share {trade_share:.1%}). Expected edge and cost are compared in the same "
+            "units (bps of price), and a row trades only when the meta-probability clears the per-event "
+            "breakeven ``p*`` and the OOF-calibrated probability floor; the band sensitivity lives in "
+            "`wi016_actions_v2_*.md`.",
             f"- **The OOF edge is thin.** OOF AUC {_range(oof_aucs)} vs placebo {_range(pl_aucs)} "
             f"(≈0.50 = no edge). OOF AP "
             f"{_range([r['oof_ap'] for r in result['targets'].values()])} on base rates "
