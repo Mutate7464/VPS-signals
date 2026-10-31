@@ -58,3 +58,10 @@
 - **Gate decision (admin in-chat 2026-10-30): HOLD + fix (Option B)** — abstention rule v2: reconcile expected-edge vs cost units, breakeven-p floor from cost+slippage bands, OOF-calibrated threshold, re-emit shortlist w/ trade share per band. Recorded both streams (gate brief GATE DECISION + this entry). Fix Build dispatched (`logs/wi016_fix_build.out`).
 
 - **Fix delivered + PM-verified (cycle 21 cont., 2026-10-31):** Build session died pre-emit (log rows PM-set); code/tests verified (35 targeted pass), re-emit PM-executed. Rule v2: per-event breakeven p*, OOF floor 0.5303 (precision 0.568 vs 0.545). Shortlist re-emitted: 133 TRADE / 15 NO_TRADE (89.9% vs 99.3%); stable across all cost×slippage bands; median net edge 122 bps @ 20+5. Full suite **550 passed EXIT:0** (PM ran). Discrimination ceiling noted honestly (thin OOF precision lift). Re-gate with admin: ACCEPT corrected artifact or further HOLD.
+
+## 2026-10-31 — Cycle 22 (WI-016 re-gate ACCEPT → DONE)
+
+- **Re-gate ACCEPT (admin in-chat 2026-10-31):** rule-v2 corrected shortlist ships as research context beside WI-014 — 133 TRADE / 15 NO_TRADE (89.9%) @ 20+5 bps, OOF floor 0.5303, p_meta bit-identical, suite 550 EXIT:0 (PM-verified). Decision recorded both streams (gate brief RE-GATE DECISION + board DONE row). WI-016 closed.
+- **Carries forward (board DONE row):** paper-track shortlist daily behind human gate; discrimination ceiling (precision 0.568 vs 0.545 base) is the next-iteration target — addressed via new data/families (WI-017 brute-force route) not rule tuning; tc_rating point-in-time history needed before any live use; cost/slippage remain assumptions.
+- Next: WI-017 (READY, awaiting admin go/no-go) is the discrimination-ceiling lever.
+- cursor: wi016 fix-build + re-emit sessions — ingest if not already covered.
