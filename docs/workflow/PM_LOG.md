@@ -4,6 +4,10 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-10-31 — WI-017 setup (admin chat direction, no cycle — spec confirmed in clarify)
+
+- **WI-017 opened: brute-force target/feature confirmation study, USD only** — admin chat direction 2026-10-31, PM-executed setup per skill (no planner/Build dispatch). Spec CONFIRMED via admin clarify: window grid = full fib 3–233 (union pure-fib + 3×fib ladder, 17 windows), base targets = lookforward peak/bottom + ±10% barriers + ±5% stay band per window, run 2 = triple-barrier/velocity family on run-1 outputs, feature scope = ALL existing fib families at full grid. Admin amendments (same day): run 1 gates the rest; relaxed redundancy (prune only high-ρ AND less-useful columns); per-target base rates first, edge cases modeled last. Charter `docs/tech_approach/wi017-brute-force-usd/README.md`; package `src/wi017/{targets,features,correlation}/`. Frozen paths untouched; awaiting go/no-go on charter.
+
 ## 2026-10-29 — Cycle 19 (WI-015 gate ACCEPT; WI-016 opened at DESIGN, admin chat direction)
 
 - **WI-015 gate ACCEPT → DONE (admin in-chat 2026-10-29):** decision recorded both streams — human `docs/human/briefings/2026-10-29-gate-WI-015-perfanalytics.md`, board DONE row collapsed. Evidence unchanged since gate-open verify (444 passed EXIT:0, PM re-verified).
