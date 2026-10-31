@@ -24,3 +24,7 @@
 | A — ACCEPT | Ship the shortlist as a research artifact beside WI-014's; paper-track decisions daily | First model-bearing artifact on record; thin-edge risk visible to the human gate |
 | B — HOLD | Fix the abstention/edge-unit wart first (expected-bps vs barrier-distance), re-run | One more Build cycle before anything ships |
 | C — REJECT | Close WI-016 at step 5+addendum as the validated record; discard the step-6 artifact | Model path documented negative-ish (thin), no artifact |
+
+## GATE DECISION (admin, 2026-10-30)
+
+**HOLD + fix (Option B).** The step-6 artifact is not accepted as-is: the near-inert abstention filter (99.3% TRADE) must be reconciled first — expected edge and cost compared on consistent terms, breakeven probability derived from cost + slippage, probability floor calibrated out-of-fold. Shortlist to be re-emitted under the corrected rule with the trade share reported per cost/slippage band. USD stays descriptive. Model remains research context behind the human gate; no live execution.
