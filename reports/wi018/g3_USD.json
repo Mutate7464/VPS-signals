@@ -1,0 +1,82 @@
+{
+ "step": "WI-018 step 4 (G3) conditional cost overlay",
+ "market": "USD",
+ "scope": "USD only \u2014 CAD skipped (D-018 Q2)",
+ "generated_utc": "2026-11-01T04:07:45Z",
+ "target": "first_touch_34",
+ "input_provenance": {
+  "probe_report": "/home/yycuser/projects/signals/reports/wi018/probe_USD.json",
+  "probe_verdict": "G2_PASS_WITH_RED_FLAG",
+  "preflight_report": "/home/yycuser/projects/signals/reports/wi018/preflight_USD.json",
+  "preflight_verdict": "PASS",
+  "symbols": 593,
+  "derived_dir": "/home/yycuser/projects/signals/reports/wi017/derived",
+  "features_dir": "/home/yycuser/projects/signals/reports/wi017/features"
+ },
+ "config": {
+  "cost_bps_total": 25.0,
+  "cost_assumptions": "WI-011 assumptions: 20 bps cost + 5 bps slippage; measured costs are not available in this WI",
+  "overlay_helper": "src.wi016.probe.cost_overlay",
+  "ic_helper": "src.wi016.probe._fast_ic_detail (within-date Spearman rank IC)",
+  "ic_to_bps": 1000.0,
+  "proxy_warning": "the |IC| * 1000 bps scale is a documented screening proxy, not a P&L model; no position sizing, no execution",
+  "decision_rule": "TRADE only if |IC| * 1000 - 25 bps > 0 and the IC is estimable; otherwise NO_TRADE",
+  "ic_dates": "held-out folds only (identical geometry to G2: fold_blocks, embargo max(20, horizon))",
+  "embargo_td": 34,
+  "min_ic_dates": 60,
+  "min_group_dates": 3,
+  "bootstrap": "circular 20-date blocks, 1000 draws, seed 42 (block_bootstrap_margin)",
+  "target": "first_touch_34",
+  "secondary_targets": [
+   "first_touch_24",
+   "first_touch_39"
+  ],
+  "secondary_role": "robustness reads only \u2014 never selection targets (untouched by G3)",
+  "executable_output": false
+ },
+ "g2_verdict": "G2_PASS_WITH_RED_FLAG",
+ "g2_pass": true,
+ "g2_red_flag": true,
+ "g2_survivors_available": 2506,
+ "g3_skipped": true,
+ "skip_reason": "survivor density 0.685 > 0.1: a wall of survivors is a noise/leakage red flag, not a win, so G3 is not invoked",
+ "conditions": [],
+ "n_conditions": 0,
+ "n_tradeable": 0,
+ "g3_decision": "SKIPPED",
+ "ship_shape": "memo only \u2014 no executable rules, no shortlist CSV, no trading integration",
+ "checks": {
+  "usd_only_scope_recorded": {
+   "ok": true,
+   "detail": "market=USD scope=USD only \u2014 CAD skipped (D-018 Q2)"
+  },
+  "cost_assumption_labelled": {
+   "ok": true,
+   "detail": "25.0 bps | WI-011 assumptions: 20 bps cost + 5 bps slippage; measured costs are not available in this WI"
+  },
+  "screening_proxy_labelled": {
+   "ok": true,
+   "detail": "the |IC| * 1000 bps scale is a documented screening proxy, not a P&L model; no position sizing, no execution"
+  },
+  "no_executable_output": {
+   "ok": true,
+   "detail": "memo only \u2014 no executable rules, no shortlist CSV, no trading integration"
+  },
+  "gating_matches_g2": {
+   "ok": true,
+   "detail": "skipped: survivor density 0.685 > 0.1: a wall of survivors is a noise/leakage red flag, not a win, so G3 is not invoked"
+  },
+  "trade_requires_positive_net": {
+   "ok": true,
+   "detail": "0 tradeable of 0"
+  },
+  "no_trade_is_the_default": {
+   "ok": true,
+   "detail": "0 NO_TRADE of 0"
+  },
+  "cost_math_matches_helper": {
+   "ok": true,
+   "detail": "net_bps == |IC| * 1000 - 25.0 for every estimable condition"
+  }
+ }
+}

@@ -74,6 +74,8 @@ ATLAS_JSON = REPORTS_DIR / "atlas_USD.json"
 ATLAS_MD = REPORTS_DIR / "atlas_USD.md"
 PROBE_JSON = REPORTS_DIR / "probe_USD.json"
 PROBE_MD = REPORTS_DIR / "probe_USD.md"
+G3_JSON = REPORTS_DIR / "g3_USD.json"
+"""G3 cost-overlay payload (written only when G2 clears; skipped otherwise)."""
 SUMMARY_MD = REPORTS_DIR / "summary_USD.md"
 
 DATES_PER_BLOCK = 300
@@ -97,6 +99,7 @@ __all__ = [
     "EXPECTED_USD_SYMBOLS",
     "FDR_ALPHA",
     "FEATURES_DIR",
+    "G3_JSON",
     "HORIZON",
     "MARKET",
     "MIN_GROUP_DATES",
