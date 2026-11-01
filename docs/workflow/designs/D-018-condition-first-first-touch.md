@@ -1,6 +1,7 @@
 # D-018 — Condition-first directional study: first_touch @ w≈34 (USD)
 
-Status: **proposed** (definition gate — open questions at the end, admin decides)
+Status: **accepted** (all 5 definition-gate questions answered by admin 2026-11-01:
+Q1 both binnings · Q2 CAD skipped · Q3 depth ≤2 · Q4 BH-FDR 5% · Q5 memo-only)
 Admin direction 2026-11-01: WI-017 gate REC A+C accepted in chat. Parent evidence:
 `docs/human/briefings/2026-11-01-gate-WI-017-brute-force.md` (WI-017 confirmation).
 
@@ -67,7 +68,7 @@ is predictable enough to survive costs?
 | 1 | Condition granularity for the atlas: quantile bins (5) or terciles (3)? | (a) quintiles (b) terciles (c) both | ANSWERED: both |
 | 2 | Include CAD as a confirmation market, or USD-only? | (a) USD-only (b) add CAD replication if G2 clears | ANSWERED: skip — USD-only, no replication stage |
 | 3 | Conjunction depth cap for G2 rules | (a) univariate only (b) ≤2 conditions (c) ≤3 | ANSWERED: ≤2 |
-| 4 | Multiple-testing budget | (a) BH-FDR 5% across all probed conditions (b) 1% (c) Bonferroni (d) two-stage | PENDING — expanded for admin (see next section) |
+| 4 | Multiple-testing budget | (a) BH-FDR 5% across all probed conditions (b) 1% (c) Bonferroni (d) two-stage | ANSWERED: **(a) BH-FDR 5%** (admin "accept rec" 2026-11-01) |
 | 5 | Ship-shape if G3 clears | (a) memo only (b) CSV | ANSWERED: memo only |
 
 ## Q4 expansion — multiple-testing budget (what's tested, why, ideal results)
