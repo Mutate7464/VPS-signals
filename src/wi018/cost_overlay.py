@@ -511,7 +511,7 @@ def _fmt_bps(value) -> str:
 
 def format_g3_markdown(report: dict) -> str:
     """G3 section body as markdown (used by the memo, also readable alone)."""
-    config = report["config"]
+    config = report.get("config") or {}
     lines = [
         "## G3 — cost overlay (conditional on G2)",
         "",
@@ -531,8 +531,8 @@ def format_g3_markdown(report: dict) -> str:
         ]
         return "\n".join(lines)
     lines += [
-        f"Verdict **{report['g3_decision']}** — {report['n_tradeable']} of {report['n_conditions']} survivor(s) "
-        f"clear {config['cost_bps_total']:.0f} bps of assumed cost.",
+        f"Verdict **{report['g3_decision']}** — {report.get('n_tradeable')} of {report.get('n_conditions')} "
+        f"survivor(s) clear {config.get('cost_bps_total', COST_BPS_TOTAL):.0f} bps of assumed cost.",
         "",
         "| condition | dir | IC | IC 95% CI | gross bps | cost bps | net bps | decision |",
         "|---|---|---|---|---|---|---|---|",
@@ -545,11 +545,11 @@ def format_g3_markdown(report: dict) -> str:
         )
     lines += [
         "",
-        f"- IC: {config['ic_helper']}, held-out dates only (same folds/embargo as G2), "
-        f"{report['held_out_dates']} held-out dates.",
-        f"- Costs are **assumptions**, not measurements: {config['cost_assumptions']}.",
-        f"- Edge scale is a screening proxy only: {config['proxy_warning']}.",
-        f"- Decision rule: {config['decision_rule']}.",
+        f"- IC: {config.get('ic_helper')}, held-out dates only (same folds/embargo as G2), "
+        f"{report.get('held_out_dates')} held-out dates.",
+        f"- Costs are **assumptions**, not measurements: {config.get('cost_assumptions')}.",
+        f"- Edge scale is a screening proxy only: {config.get('proxy_warning')}.",
+        f"- Decision rule: {config.get('decision_rule')}.",
         "",
     ]
     return "\n".join(lines)
@@ -582,8 +582,8 @@ def build_summary_markdown(
     lines = [
         "# WI-018 — condition-first directional study, `first_touch_34` (USD): memo",
         "",
-        "**Ship shape: memo only.** No trading integration, no order execution, no ranking/screener change "
-        "and **no shortlist CSV** are produced by this work item (D-018 Q5, plan step 4).",
+        "**Ship shape: memo only** — no executable rules, no trading integration, no order execution, "
+        "no ranking/screener change and **no shortlist CSV** are produced by this work item (D-018 Q5, plan step 4).",
         "",
         f"Generated from the on-disk artifacts: `reports/wi018/{{preflight_USD.json, atlas_USD.json, "
         f"probe_USD.json, g3_USD.json}}`. Market: **USD only** — CAD was skipped by design (D-018 Q2).",

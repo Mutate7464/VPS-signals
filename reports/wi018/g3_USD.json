@@ -2,7 +2,7 @@
  "step": "WI-018 step 4 (G3) conditional cost overlay",
  "market": "USD",
  "scope": "USD only \u2014 CAD skipped (D-018 Q2)",
- "generated_utc": "2026-11-01T04:07:45Z",
+ "generated_utc": "2026-11-01T04:08:58Z",
  "target": "first_touch_34",
  "input_provenance": {
   "probe_report": "/home/yycuser/projects/signals/reports/wi018/probe_USD.json",

@@ -1,6 +1,6 @@
 # WI-018 — condition-first directional study, `first_touch_34` (USD): memo
 
-**Ship shape: memo only.** No trading integration, no order execution, no ranking/screener change and **no shortlist CSV** are produced by this work item (D-018 Q5, plan step 4).
+**Ship shape: memo only** — no executable rules, no trading integration, no order execution, no ranking/screener change and **no shortlist CSV** are produced by this work item (D-018 Q5, plan step 4).
 
 Generated from the on-disk artifacts: `reports/wi018/{preflight_USD.json, atlas_USD.json, probe_USD.json, g3_USD.json}`. Market: **USD only** — CAD was skipped by design (D-018 Q2).
 
