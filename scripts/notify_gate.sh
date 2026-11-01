@@ -63,7 +63,11 @@ post_discord() {
 import json, sys, urllib.request
 url, text = sys.argv[1], sys.argv[2]
 data = json.dumps({"content": text}).encode()
-req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+# discord.com sits behind Cloudflare, which 403-bans (code 1010) the bare
+# python-urllib signature from this VPS — a real User-Agent is required.
+req = urllib.request.Request(url, data=data, headers={
+    "Content-Type": "application/json",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) signals-notify/1.0"})
 try:
     with urllib.request.urlopen(req, timeout=15) as r:
         print("[notify] discord POST ->", r.status)
