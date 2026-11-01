@@ -48,17 +48,62 @@ is predictable enough to survive costs?
   point-in-time only, no order execution, human gate on every ship decision.
   USD only. Frozen artifacts untouched.
 
+## Admin answers (definition gate, 2026-11-01)
+
+1. **Bin granularity: BOTH** (quintiles + terciles) — the atlas emits both
+   binnings per feature; the G2 probe reads off whichever the atlas favors.
+2. **CAD: SKIP entirely** — USD-only for all of G1–G3, including post-G2
+   replication. Explicit DEFERRED line below.
+3. **Conjunction depth: ≤2** (admin accepted REC).
+4. **Multiple-testing budget: PENDING expansion** — options explained at the
+   definition gate; see below.
+5. **Ship shape: memo only** at this WI's gate; shortlist CSV only as a
+   follow-up WI if admin accepts the rules.
+
 ## Open questions (definition gate — admin decides)
 
 | # | Question | Options | PM REC |
 |---|---|---|---|
-| 1 | Condition granularity for the atlas: quantile bins (5) or terciles (3)? | (a) quintiles (b) terciles (c) both | (c) both — atlas is cheap; the probe reads off whichever the atlas favors |
-| 2 | Include CAD as a confirmation market, or USD-only? | (a) USD-only (b) add CAD replication if G2 clears | (b) — replication only on a G2 pass, keeps cost near zero unless warranted |
-| 3 | Conjunction depth cap for G2 rules | (a) univariate only (b) ≤2 conditions (c) ≤3 | (b) — depth 3 on 88 features with 2.34M rows is a combinatorial pit and WI-009c precedent says depth doesn't rescue thin signal |
-| 4 | Multiple-testing budget | (a) BH-FDR 5% across all probed conditions (b) 1% | (a) 5% consistent with WI-016 probe machinery, with the bootstrap CI as the binding filter |
-| 5 | Ship-shape if G3 clears: shortlist CSV (WI-014 format) vs decision-rules memo only | (a) memo only (b) CSV | (a) memo at this WI's gate; CSV only as a follow-up if admin accepts the rules |
+| 1 | Condition granularity for the atlas: quantile bins (5) or terciles (3)? | (a) quintiles (b) terciles (c) both | ANSWERED: both |
+| 2 | Include CAD as a confirmation market, or USD-only? | (a) USD-only (b) add CAD replication if G2 clears | ANSWERED: skip — USD-only, no replication stage |
+| 3 | Conjunction depth cap for G2 rules | (a) univariate only (b) ≤2 conditions (c) ≤3 | ANSWERED: ≤2 |
+| 4 | Multiple-testing budget | (a) BH-FDR 5% across all probed conditions (b) 1% (c) Bonferroni (d) two-stage | PENDING — expanded for admin (see next section) |
+| 5 | Ship-shape if G3 clears | (a) memo only (b) CSV | ANSWERED: memo only |
+
+## Q4 expansion — multiple-testing budget (what's tested, why, ideal results)
+
+**What gets tested (the hypothesis count the budget must cover):**
+- G1 atlas is descriptive — no testing budget consumed (CIs reported, no pass/fail).
+- G2 probe: 88 features × 8 states (5 quintile + 3 tercile bins) × 2 directions
+  ≈ **1,400 univariate condition-vs-outcome hypotheses**, plus conjunction rules
+  built only from the top ~50 univariate survivors → ~1,200 pairwise AND/OR
+  combinations. **Total ≈ 2,600 hypotheses.**
+- Each hypothesis: does the conditional first_touch_34 distribution (up/dn/
+  neither shares) differ from the unconditional 38/30/33 split, measured
+  out-of-fold (5 chronological folds, 20-session embargo) with a 20-date-block
+  circular bootstrap CI.
+
+**Why a budget is needed at all:** at 2,600 tests, pure noise produces ~130
+"discoveries" at a naive 5% per-test threshold. The budget is what separates a
+real condition set from a curve-fit one — this is exactly how thin signals
+(the |IC|≈0.05 zone we are in) die honestly.
+
+**Options:**
+
+| Option | What it controls | Expected result on THIS study |
+|---|---|---|
+| (a) **BH-FDR 5%** | Expected fraction of FALSE discoveries among those called significant ≤ 5% | Tolerates a small controlled error rate — right fit when the true effect is thin; the binding filter stays the out-of-fold bootstrap CI. Ideal result: a handful (~5–15) of conditions survive, each with out-of-fold CIs excluding zero. Risk: ~1 in 20 of the survivors may be spurious — mitigated by G3's independent cost overlay which must also clear |
+| (b) BH-FDR 1% | Same, ≤ 1% | Halves spurious survivors but, with |lift| small, risks a false NO-GO (killing a real-but-thin condition). Use if you prefer "never wrong" over "may find something" |
+| (c) Bonferroni α=0.05/2600≈2×10⁻⁵ | P(any false positive at all) ≤ 5% | Strictest; almost certainly zero survivors on thin signal — effectively pre-declaring NO-GO. Not recommended: it converts the probe into a formality |
+| (d) Two-stage: FDR 5% screen on folds 1–4, then Bonferroni confirmation on fold 5 | Screens liberally, confirms harshly on untouched data | Cleaner survivors than (a), one fewer fold of training power. Cost: slightly higher false-NO-GO risk than (a), less standard than (a) in this repo's machinery |
+
+**PM REC unchanged: (a)** — consistent with the WI-016 probe machinery already in
+the codebase, the out-of-fold + bootstrap + cost-overlay stack already stacks
+three independent filters on top of it, and it gives a thin-but-real signal its
+fair shot. Ideal result either way: a SMALL, explainable condition set reaching
+G3 — a wall of survivors would itself be a red flag (noise or leakage).
 
 ## DEFERRED
 
 - Trading integration, ranking changes to the shipped screener — not ordered.
-- Any CAD-only work beyond the conditional replication in Q2.
+- CAD market work of any kind — explicitly skipped by admin (Q2, 2026-11-01).
