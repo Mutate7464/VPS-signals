@@ -51,3 +51,20 @@ More data made this test *worse*, not better. A confidence interval's half-width
 - **"hold — run G3 on the wall"** → new order; I will first need a bulk-IC design (bounded, batched) before any cost numbers
 - **"hold — tighten the G2 bar"** → re-plan G2 (effect-size floor / fold-wise stability) as the follow-up WI
 - **"reject"** → back to PLAN with this evidence bundle
+
+## DECISION (admin, 2026-11-01)
+
+**ACCEPT — WI-018 closed as a documented negative** ("accept all", in-chat). The memo
+is the deliverable; E5 factor screener stands unchanged as the MVP signal. DEVIATION 1
+adjudicated: Build's fail-closed interpretation (`g3_eligible = g2_pass and not
+red_flag`) is the correct reading and becomes the convention (D-019 R7 → WORKFLOW.md).
+
+Also ordered same chat:
+- **IBKR/ticker-download concerns dropped** (ELE re-download, HMMC/ICL repair,
+  TRI/SPCX clearance, WI-004 ingest Phase 2 — removed from backlog/carry-forward).
+- **D-019 G-gate recalibration accepted** (R1–R4, R6, R7; R5's IBKR-schedule
+  validation dropped — 20+5 bps stays a labeled assumption).
+- **WI-018 is the last research run before MVP publish.** Next work item: closeout —
+  summarize prior work/spirit/conclusions, clean up and refactor existing
+  data/structure for simplicity, and capture process learnings (token minimization,
+  communication, expectations). → WI-019 (BACKLOG, awaiting admin ordering).

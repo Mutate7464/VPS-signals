@@ -78,3 +78,13 @@
 - **Carries forward (board DONE row):** paper-track shortlist daily behind human gate; discrimination ceiling (precision 0.568 vs 0.545 base) is the next-iteration target — addressed via new data/families (WI-017 brute-force route) not rule tuning; tc_rating point-in-time history needed before any live use; cost/slippage remain assumptions.
 - Next: WI-017 (READY, awaiting admin go/no-go) is the discrimination-ceiling lever.
 - cursor: wi016 fix-build + re-emit sessions — ingest if not already covered.
+
+## 2026-11-01 — Cycle 23 (WI-017 + WI-018 gates ACCEPT; MVP closeout ordered)
+
+- **WI-017 gate ACCEPT** (admin in-chat, REC A+C): closed as "confirmation delivered" — WI-015 positives real on USD (amplitude), WI-016 thin-direction stands; opened WI-018 from REC A+C same day.
+- **WI-018 executed same day** (steps 1–5/5, 100 WI-018 tests + suite 662 passed, artifacts recompute-verified): G2 probe returned its pre-registered failure mode — 2,506/3,658 survivors, density 0.685 vs 0.10 bar ⇒ wall ⇒ G3 skipped (`g3_eligible=false`) ⇒ memo NO-GO. DEVIATION 1 (plan self-contradiction on red-flag semantics) resolved fail-closed by Build, flagged for adjudication.
+- **WI-018 gate ACCEPT** (admin "accept all", in-chat): closed as documented negative; DEVIATION 1 adjudicated in Build's favor (fail-closed becomes convention → D-019 R7). E5 factor screener = MVP signal.
+- **Admin direction (same chat):** WI-018 is the last research run before MVP publish. IBKR/ticker-download concerns dropped (WI-004, ELE re-download, HMMC/ICL repair, TRI/SPCX). **WI-019 MVP closeout ordered** (BACKLOG, awaiting ordering): (a) summary of prior work/spirit/conclusions, (b) data/structure cleanup + refactor for simplicity, (c) process retro — token minimization, communication, expectations.
+- **D-019 G-gate recalibration ACCEPTED** (R1–R4, R6, R7; R5 IBKR-schedule validation dropped): effect-size floor + tiered G2 verdicts (GREEN/AMBER/RED) post-MVP; permutation-null calibration first; fail-closed plan rule to WORKFLOW.md. Retro `retros/2026-W44.md` + proposal `designs/D-019-g-gate-recalibration.md` written by Hermes and committed with the gate decision.
+- Next: admin orders WI-019 (or its decomposition a/b/c); no research run before MVP closeout.
+- cursor: wi018 build sessions + this gate cycle — ingest if not already covered.
