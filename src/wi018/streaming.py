@@ -31,10 +31,13 @@ import pyarrow.parquet as pq
 from src.wi018 import BINNINGS, DATES_PER_BLOCK, DATE_COLUMN
 
 __all__ = [
+    "BINNING_ORDER",
     "CLASSES",
     "N_STATES",
     "QUANTILES",
     "STATE_OFFSET",
+    "binning_index",
+    "binning_of_code",
     "classify_target",
     "date_blocks",
     "edges_from_sorted",
@@ -46,7 +49,10 @@ __all__ = [
     "read_block_pairs",
     "schema_columns",
     "state_codes",
+    "state_label",
     "state_layout",
+    "stream_conjunction_counts",
+    "stream_state_counts",
     "symbol_column",
 ]
 
@@ -273,3 +279,187 @@ def classify_target(target: np.ndarray) -> np.ndarray:
     out[finite & (t == -1.0)] = 1
     out[finite & (t == 0.0)] = 2
     return out
+
+
+# --------------------------------------------------------------------------- #
+# State-count streaming (shared by G1 and G2)
+# --------------------------------------------------------------------------- #
+def stream_state_counts(
+    derived_paths: dict[str, Path],
+    feature_paths: dict[str, Path],
+    keep_columns: list[str],
+    dates: np.ndarray,
+    targets: str | list[str],
+    block_size: int | None = None,
+) -> dict:
+    """Per-(feature, state, class, date) counts for one or more targets.
+
+    One symbol-sequential pass over date blocks; only block-sized frames are held.
+    Returns `{target: accumulators}` where each entry has:
+
+    * `state_counts`   `(n_features, N_STATES, 3, n_dates)` int32
+    * `feature_totals` `(n_features, len(BINNING_ORDER), n_dates)` int32 — rows
+      with a defined state *and a usable target* for that binning (the rate
+      denominator axis)
+    * `universe`       `(3, n_dates)` int32 — all-names class counts
+    * `other`          `(n_dates,)` int32 — finite values outside {+1, 0, -1}
+    * `state_symbols`  `(n_features, N_STATES, n_symbols)` int32 — breadth
+      (target-independent: any row with a defined state)
+
+    plus `n_dates`, `symbols`, `state_counts`-independent `targets`.
+    """
+    if isinstance(targets, str):
+        targets = [targets]
+    targets = list(targets)
+    n_dates = int(dates.size)
+    n_features = len(keep_columns)
+    symbols = sorted(derived_paths)
+    state_counts = {t: np.zeros((n_features, N_STATES, len(CLASSES), n_dates), dtype=np.int32) for t in targets}
+    feature_totals = {t: np.zeros((n_features, len(BINNING_ORDER), n_dates), dtype=np.int32) for t in targets}
+    universe = {t: np.zeros((len(CLASSES), n_dates), dtype=np.int32) for t in targets}
+    other = {t: np.zeros(n_dates, dtype=np.int32) for t in targets}
+    state_symbols = np.zeros((n_features, N_STATES, len(symbols)), dtype=np.int32)
+
+    date_index = pd.Index(dates)
+    blocks = date_blocks(dates, size=block_size or DATES_PER_BLOCK)
+    for block in blocks:
+        pair = read_block_pairs(derived_paths, feature_paths, keep_columns, targets, block["lo"], block["hi"])
+        if pair is None:
+            continue
+        feats, tgts = pair
+        pos = date_index.get_indexer(feats["date"].to_numpy())
+        sym_codes = feats[SYMBOL_COLUMN].to_numpy(dtype="int64")
+        classes = {}
+        for t in targets:
+            values = tgts[t].to_numpy(dtype="float64")
+            classes[t] = classify_target(values)
+            for k in range(len(CLASSES)):
+                rows = pos[classes[t] == k]
+                if rows.size:
+                    universe[t][k] += np.bincount(rows, minlength=n_dates)
+            unexpected = pos[(classes[t] < 0) & np.isfinite(values)]
+            if unexpected.size:
+                other[t] += np.bincount(unexpected, minlength=n_dates)
+        del tgts
+
+        for fi, col in enumerate(keep_columns):
+            v = feats[col].to_numpy(dtype="float64")
+            xs, starts, sizes = group_sorted(v, pos, n_dates)
+            for binning, quantiles in QUANTILES.items():
+                edges = edges_from_sorted(xs, starts, sizes, quantiles, BINNINGS[binning])
+                codes = state_codes(v, edges, pos, offset=STATE_OFFSET[binning])
+                defined_state = codes >= 0
+                if not defined_state.any():
+                    continue
+                bucket = pos[defined_state] * N_STATES + codes[defined_state].astype("int64")
+                sym_bucket = codes[defined_state].astype("int64") * len(symbols) + sym_codes[defined_state]
+                state_symbols[fi] += np.bincount(sym_bucket, minlength=N_STATES * len(symbols)).reshape(
+                    N_STATES, len(symbols)
+                )
+                for t in targets:
+                    usable = defined_state & (classes[t] >= 0)
+                    if not usable.any():
+                        continue
+                    sel = pos[usable] * N_STATES + codes[usable].astype("int64")
+                    feature_totals[t][fi, binning_index(binning)] += np.bincount(sel, minlength=n_dates * N_STATES).reshape(
+                        n_dates, N_STATES
+                    ).sum(axis=1)
+                    for k in range(len(CLASSES)):
+                        mask = usable & (classes[t] == k)
+                        if not mask.any():
+                            continue
+                        joint = pos[mask] * N_STATES + codes[mask].astype("int64")
+                        state_counts[t][fi, :, k, :] += np.bincount(joint, minlength=n_dates * N_STATES).reshape(
+                            n_dates, N_STATES
+                        ).T
+        del feats
+
+    out: dict = {"n_dates": n_dates, "symbols": symbols, "targets": targets, "by_target": {}}
+    for t in targets:
+        out["by_target"][t] = {
+            "state_counts": state_counts[t],
+            "feature_totals": feature_totals[t],
+            "universe": universe[t],
+            "other": other[t],
+            "state_symbols": state_symbols,
+        }
+    return out
+
+
+def stream_conjunction_counts(
+    derived_paths: dict[str, Path],
+    feature_paths: dict[str, Path],
+    feature_columns: list[str],
+    dates: np.ndarray,
+    targets: str | list[str],
+    pairs: list[tuple[int, int, int, int]],
+    block_size: int | None = None,
+) -> dict:
+    """Joint per-date class counts for AND-conjunctions of two states.
+
+    `pairs` are `(feature_index_a, code_a, feature_index_b, code_b)` into
+    `feature_columns`. A row fires when *both* states match it and its target is
+    usable, so the conjunction's rate denominator is its own per-date size.
+    Returns `{target: (joint_counts (n_pairs, 3, n_dates) int32, pair_symbols)}`
+    where `pair_symbols` counts distinct symbols per pair (breadth diagnostic).
+    """
+    if isinstance(targets, str):
+        targets = [targets]
+    targets = list(targets)
+    n_dates = int(dates.size)
+    symbols = sorted(derived_paths)
+    needed = sorted({feature_columns[p[0]] for p in pairs} | {feature_columns[p[2]] for p in pairs})
+    joint = {t: np.zeros((len(pairs), len(CLASSES), n_dates), dtype=np.int32) for t in targets}
+    pair_symbols = np.zeros((len(pairs), len(symbols)), dtype=np.int32)
+
+    date_index = pd.Index(dates)
+    blocks = date_blocks(dates, size=block_size or DATES_PER_BLOCK)
+    for block in blocks:
+        pair_frames = read_block_pairs(derived_paths, feature_paths, needed, targets, block["lo"], block["hi"])
+        if pair_frames is None:
+            continue
+        feats, tgts = pair_frames
+        pos = date_index.get_indexer(feats["date"].to_numpy())
+        sym_codes = feats[SYMBOL_COLUMN].to_numpy(dtype="int64")
+        classes = {t: classify_target(tgts[t].to_numpy(dtype="float64")) for t in targets}
+        del tgts
+        codes: dict[str, np.ndarray] = {}
+        for col in needed:
+            v = feats[col].to_numpy(dtype="float64")
+            xs, starts, sizes = group_sorted(v, pos, n_dates)
+            for binning, quantiles in QUANTILES.items():
+                edges = edges_from_sorted(xs, starts, sizes, quantiles, BINNINGS[binning])
+                codes[f"{col}|{binning}"] = state_codes(v, edges, pos, offset=STATE_OFFSET[binning])
+        del feats
+        for pi, (fi_a, code_a, fi_b, code_b) in enumerate(pairs):
+            col_a, col_b = feature_columns[fi_a], feature_columns[fi_b]
+            binning_a = binning_of_code(code_a)
+            binning_b = binning_of_code(code_b)
+            fires = (codes[f"{col_a}|{binning_a}"] == code_a) & (codes[f"{col_b}|{binning_b}"] == code_b)
+            if not fires.any():
+                continue
+            pair_symbols[pi] += np.bincount(sym_codes[fires], minlength=len(symbols))
+            for t in targets:
+                mask = fires & (classes[t] >= 0)
+                if not mask.any():
+                    continue
+                for k in range(len(CLASSES)):
+                    cls_mask = mask & (classes[t] == k)
+                    if not cls_mask.any():
+                        continue
+                    joint[t][pi, k] += np.bincount(pos[cls_mask], minlength=n_dates)
+    return {"n_dates": n_dates, "symbols": symbols, "targets": targets, "pairs": pairs,
+            "by_target": {t: {"joint_counts": joint[t], "pair_symbols": pair_symbols} for t in targets}}
+
+
+def binning_of_code(code: int) -> str:
+    """Which binning a packed state code belongs to (`5..7` -> tercile)."""
+    for binning, offset in STATE_OFFSET.items():
+        if code >= offset and code < offset + BINNINGS[binning]:
+            return binning
+    raise ValueError(f"state code {code} is not a valid packed state (see N_STATES)")
+
+
+def state_label(binning: str, code: int) -> str:
+    """`(binning, code)` -> `"quintile/5"` style label for reports."""
+    return f"{binning}/{code - STATE_OFFSET[binning] + 1}"

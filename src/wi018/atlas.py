@@ -61,22 +61,17 @@ from src.wi018.rates import RATE_SUM_TOL, rate_block, sums_to_one, unconditional
 from src.wi018.streaming import (
     BINNING_ORDER,
     CLASSES,
-    N_STATES,
     QUANTILES,
     STATE_OFFSET,
     SYMBOL_COLUMN,
     binning_index,
-    classify_target,
     date_blocks,
-    edges_from_sorted,
-    feature_columns,
     feature_families,
     global_dates,
-    group_sorted,
     read_block_pairs,
     schema_columns,
-    state_codes,
     state_layout,
+    stream_state_counts,
 )
 
 __all__ = [
@@ -109,80 +104,16 @@ def collect_state_counts(
     target: str = PRIMARY_TARGET,
     block_size: int | None = None,
 ) -> dict:
-    """Accumulate per-(feature, state, class, date) counts and breadth diagnostics.
+    """Single-target wrapper around `streaming.stream_state_counts` (the G1 accumulators).
 
-    One symbol-sequential pass over date blocks; only block-sized frames are held.
-    Returns numpy accumulators (the caller derives rates and JSON):
-
-    * `state_counts`   `(n_features, N_STATES, 3, n_dates)` int32
-    * `feature_totals` `(n_features, n_dates)` int32 — rows with a defined state
-    * `universe`       `(3, n_dates)` int32 — all-names class counts
-    * `other`          `(n_dates,)` int32 — finite target values outside {+1,0,-1}
-    * `state_symbols`  `(n_features, N_STATES, n_symbols)` int32 — breadth
+    Kept as the atlas's entry point so the G1 report and the G2 probe share one
+    state-binning implementation; see `stream_state_counts` for the accumulator
+    shapes.
     """
-    n_dates = int(dates.size)
-    n_features = len(keep_columns)
-    symbols = sorted(derived_paths)
-    state_counts = np.zeros((n_features, N_STATES, len(CLASSES), n_dates), dtype=np.int32)
-    feature_totals = np.zeros((n_features, len(BINNING_ORDER), n_dates), dtype=np.int32)
-    universe = np.zeros((len(CLASSES), n_dates), dtype=np.int32)
-    other = np.zeros(n_dates, dtype=np.int32)
-    state_symbols = np.zeros((n_features, N_STATES, len(symbols)), dtype=np.int32)
-
-    date_index = pd.Index(dates)
-    blocks = date_blocks(dates, size=block_size or DATES_PER_BLOCK)
-    for block in blocks:
-        pair = read_block_pairs(derived_paths, feature_paths, keep_columns, [target], block["lo"], block["hi"])
-        if pair is None:
-            continue
-        feats, tgts = pair
-        pos = date_index.get_indexer(feats["date"].to_numpy())
-        target_values = tgts[target].to_numpy(dtype="float64")
-        classes = classify_target(target_values)
-        sym_codes = feats[SYMBOL_COLUMN].to_numpy(dtype="int64")
-        del tgts
-        for k in range(len(CLASSES)):
-            rows = pos[classes == k]
-            if rows.size:
-                universe[k] += np.bincount(rows, minlength=n_dates)
-        # finite target values outside {+1, 0, -1}: counted, never folded in
-        unexpected_rows = pos[(classes < 0) & np.isfinite(target_values)]
-        if unexpected_rows.size:
-            other += np.bincount(unexpected_rows, minlength=n_dates)
-        for fi, col in enumerate(keep_columns):
-            v = feats[col].to_numpy(dtype="float64")
-            xs, starts, sizes = group_sorted(v, pos, n_dates)
-            for binning, quantiles in QUANTILES.items():
-                min_names = BINNINGS[binning]
-                edges = edges_from_sorted(xs, starts, sizes, quantiles, min_names)
-                codes = state_codes(v, edges, pos, offset=STATE_OFFSET[binning])
-                defined = (codes >= 0) & (classes >= 0)  # usable target so class rates sum to 1
-                if not defined.any():
-                    continue
-                c = codes[defined].astype("int64")
-                p = pos[defined]
-                feature_totals[fi, binning_index(binning)] += np.bincount(p, minlength=n_dates)
-                bucket = p * N_STATES + c
-                for k in range(len(CLASSES)):
-                    mask = classes[defined] == k
-                    if not mask.any():
-                        continue
-                    per_date = np.bincount(bucket[mask], minlength=n_dates * N_STATES)
-                    state_counts[fi, :, k, :] += per_date.reshape(n_dates, N_STATES).T
-                sym_bucket = c * len(symbols) + sym_codes[defined]
-                state_symbols[fi] += np.bincount(sym_bucket, minlength=N_STATES * len(symbols)).reshape(
-                    N_STATES, len(symbols)
-                )
-        del feats
-    return {
-        "state_counts": state_counts,
-        "feature_totals": feature_totals,
-        "universe": universe,
-        "other": other,
-        "state_symbols": state_symbols,
-        "n_dates": n_dates,
-        "symbols": symbols,
-    }
+    streamed = stream_state_counts(derived_paths, feature_paths, keep_columns, dates, target, block_size=block_size)
+    out = dict(streamed["by_target"][target])
+    out.update({"n_dates": streamed["n_dates"], "symbols": streamed["symbols"], "targets": streamed["targets"]})
+    return out
 
 
 # --------------------------------------------------------------------------- #
