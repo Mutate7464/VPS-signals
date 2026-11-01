@@ -2,7 +2,7 @@
  "step": "WI-018 step 2 (G1) condition atlas",
  "market": "USD",
  "scope": "USD only \u2014 CAD skipped (D-018 Q2)",
- "generated_utc": "2026-11-01T03:05:04Z",
+ "generated_utc": "2026-11-01T04:04:05Z",
  "target": "first_touch_34",
  "input_provenance": {
   "preflight_report": "/home/yycuser/projects/signals/reports/wi018/preflight_USD.json",
@@ -288,7 +288,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0030605209973217757
+       "max_symbol_share": 0.0030468979555336013
       }
      },
      {
@@ -345,7 +345,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025377205399993094
+       "max_symbol_share": 0.0025243395536197533
       }
      },
      {
@@ -402,7 +402,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026899638677668125
+       "max_symbol_share": 0.0026881892895866347
       }
      },
      {
@@ -459,7 +459,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002563261642558774
+       "max_symbol_share": 0.002556067719752307
       }
      },
      {
@@ -516,7 +516,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0035494726714440806
+       "max_symbol_share": 0.003534001606950275
       }
      }
     ],
@@ -575,7 +575,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028184041012817153
+       "max_symbol_share": 0.0028120102031408464
       }
      },
      {
@@ -632,7 +632,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026472389103990536
+       "max_symbol_share": 0.002638451321471424
       }
      },
      {
@@ -689,7 +689,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025504677371020407
+       "max_symbol_share": 0.0025414137256919438
       }
      }
     ]
@@ -753,7 +753,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0037945005672302954
+       "max_symbol_share": 0.0037638439622116066
       }
      },
      {
@@ -810,7 +810,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027771927119862247
+       "max_symbol_share": 0.0028003547259483753
       }
      },
      {
@@ -866,8 +866,8 @@
        "dn": 0.0028722428944222833
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026586047642197376
+       "symbols": 593,
+       "max_symbol_share": 0.0026614971513159026
       }
      },
      {
@@ -923,8 +923,8 @@
        "dn": -0.001023520250551746
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.00304643037831758
+       "symbols": 593,
+       "max_symbol_share": 0.0030199059804039744
       }
      },
      {
@@ -981,7 +981,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0038457513604018417
+       "max_symbol_share": 0.003812281858163232
       }
      }
     ],
@@ -1040,7 +1040,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003354278622159552
+       "max_symbol_share": 0.0033535387370441706
       }
      },
      {
@@ -1096,8 +1096,8 @@
        "dn": 0.0016497968132132002
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026544165818981292
+       "symbols": 593,
+       "max_symbol_share": 0.0026610991462791096
       }
      },
      {
@@ -1153,8 +1153,8 @@
        "dn": 0.0005078288950585708
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003311729422438044
+       "symbols": 593,
+       "max_symbol_share": 0.0032894140909079145
       }
      }
     ]
@@ -1217,8 +1217,8 @@
        "dn": -0.022423183368715627
       },
       "breadth": {
-       "symbols": 558,
-       "max_symbol_share": 0.005577851531941879
+       "symbols": 560,
+       "max_symbol_share": 0.005604244917426817
       }
      },
      {
@@ -1274,8 +1274,8 @@
        "dn": -0.012470328747926474
       },
       "breadth": {
-       "symbols": 572,
-       "max_symbol_share": 0.004423440981250378
+       "symbols": 575,
+       "max_symbol_share": 0.004382549067498629
       }
      },
      {
@@ -1331,8 +1331,8 @@
        "dn": -0.005811925534934426
       },
       "breadth": {
-       "symbols": 577,
-       "max_symbol_share": 0.0041896617829880675
+       "symbols": 580,
+       "max_symbol_share": 0.004153236946311815
       }
      },
      {
@@ -1388,8 +1388,8 @@
        "dn": 0.007732488310047525
       },
       "breadth": {
-       "symbols": 577,
-       "max_symbol_share": 0.0045327584242094415
+       "symbols": 578,
+       "max_symbol_share": 0.004490835147870367
       }
      },
      {
@@ -1445,8 +1445,8 @@
        "dn": 0.025185420748561338
       },
       "breadth": {
-       "symbols": 565,
-       "max_symbol_share": 0.007019067766927722
+       "symbols": 567,
+       "max_symbol_share": 0.006954421471255752
       }
      }
     ],
@@ -1504,8 +1504,8 @@
        "dn": -0.018426292288204638
       },
       "breadth": {
-       "symbols": 573,
-       "max_symbol_share": 0.004432065100132099
+       "symbols": 575,
+       "max_symbol_share": 0.004390991296624977
       }
      },
      {
@@ -1561,8 +1561,8 @@
        "dn": -0.004764659152593387
       },
       "breadth": {
-       "symbols": 581,
-       "max_symbol_share": 0.0036263265730237565
+       "symbols": 582,
+       "max_symbol_share": 0.0036246403687929933
       }
      },
      {
@@ -1618,8 +1618,8 @@
        "dn": 0.018465486439744994
       },
       "breadth": {
-       "symbols": 578,
-       "max_symbol_share": 0.0050918831858803
+       "symbols": 580,
+       "max_symbol_share": 0.005044943213221575
       }
      }
     ]
@@ -1682,8 +1682,8 @@
        "dn": -0.030087196199028665
       },
       "breadth": {
-       "symbols": 523,
-       "max_symbol_share": 0.006474585670297169
+       "symbols": 526,
+       "max_symbol_share": 0.006412480006166773
       }
      },
      {
@@ -1739,8 +1739,8 @@
        "dn": -0.022605228358726415
       },
       "breadth": {
-       "symbols": 549,
-       "max_symbol_share": 0.004996298585644376
+       "symbols": 550,
+       "max_symbol_share": 0.004948494520359002
       }
      },
      {
@@ -1796,8 +1796,8 @@
        "dn": -0.010457416085390914
       },
       "breadth": {
-       "symbols": 562,
-       "max_symbol_share": 0.004648402004943965
+       "symbols": 565,
+       "max_symbol_share": 0.0046040582487159205
       }
      },
      {
@@ -1853,8 +1853,8 @@
        "dn": -0.0031774485985917034
       },
       "breadth": {
-       "symbols": 568,
-       "max_symbol_share": 0.004993635801730183
+       "symbols": 569,
+       "max_symbol_share": 0.004946074718637555
       }
      },
      {
@@ -1910,8 +1910,8 @@
        "dn": 0.015990182351712068
       },
       "breadth": {
-       "symbols": 528,
-       "max_symbol_share": 0.007783132293619402
+       "symbols": 530,
+       "max_symbol_share": 0.007708739893214997
       }
      }
     ],
@@ -1970,7 +1970,7 @@
       },
       "breadth": {
        "symbols": 548,
-       "max_symbol_share": 0.00493523058380238
+       "max_symbol_share": 0.004918322526062039
       }
      },
      {
@@ -2026,8 +2026,8 @@
        "dn": -0.011867784742493837
       },
       "breadth": {
-       "symbols": 569,
-       "max_symbol_share": 0.00401858927291673
+       "symbols": 571,
+       "max_symbol_share": 0.0039802063842974906
       }
      },
      {
@@ -2083,8 +2083,8 @@
        "dn": 0.009061831456406488
       },
       "breadth": {
-       "symbols": 568,
-       "max_symbol_share": 0.0058320516041079976
+       "symbols": 569,
+       "max_symbol_share": 0.005776486353960385
       }
      }
     ]
@@ -2148,7 +2148,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003245631170080089
+       "max_symbol_share": 0.003241135823382571
       }
      },
      {
@@ -2205,7 +2205,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026766572196411857
+       "max_symbol_share": 0.002668428513698147
       }
      },
      {
@@ -2262,7 +2262,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029862460192370305
+       "max_symbol_share": 0.0029818969995062234
       }
      },
      {
@@ -2319,7 +2319,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025902992108322387
+       "max_symbol_share": 0.002582907481451389
       }
      },
      {
@@ -2376,7 +2376,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031724789078876703
+       "max_symbol_share": 0.0031645433739957833
       }
      }
     ],
@@ -2435,7 +2435,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027137077096668414
+       "max_symbol_share": 0.0027159027496915494
       }
      },
      {
@@ -2492,7 +2492,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002916296846414404
+       "max_symbol_share": 0.0029077336480064645
       }
      },
      {
@@ -2549,7 +2549,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002728070732754094
+       "max_symbol_share": 0.0027136536241609012
       }
      }
     ]
@@ -2613,7 +2613,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0037769181566202673
+       "max_symbol_share": 0.003782707806309833
       }
      },
      {
@@ -2669,8 +2669,8 @@
        "dn": 0.007669036671272
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003145685230362967
+       "symbols": 593,
+       "max_symbol_share": 0.0031225824905683273
       }
      },
      {
@@ -2726,8 +2726,8 @@
        "dn": -0.0020340293140434507
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003373138110780497
+       "symbols": 593,
+       "max_symbol_share": 0.003378480809795862
       }
      },
      {
@@ -2783,8 +2783,8 @@
        "dn": -0.01320880791241208
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003139243826991813
+       "symbols": 593,
+       "max_symbol_share": 0.0031312503114998146
       }
      },
      {
@@ -2840,8 +2840,8 @@
        "dn": -0.006670005882351893
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.004299409187874744
+       "symbols": 592,
+       "max_symbol_share": 0.00426182716865871
       }
      }
     ],
@@ -2899,8 +2899,8 @@
        "dn": 0.01528970824748127
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003302411388347355
+       "symbols": 593,
+       "max_symbol_share": 0.0033059887811679256
       }
      },
      {
@@ -2956,8 +2956,8 @@
        "dn": -0.002012853317060026
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0032676567544248428
+       "symbols": 593,
+       "max_symbol_share": 0.0032677317340425115
       }
      },
      {
@@ -3013,8 +3013,8 @@
        "dn": -0.009910583983628707
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.003465254808583109
+       "symbols": 592,
+       "max_symbol_share": 0.0034350026378006603
       }
      }
     ]
@@ -3078,7 +3078,7 @@
       },
       "breadth": {
        "symbols": 574,
-       "max_symbol_share": 0.00627466186164268
+       "max_symbol_share": 0.006217202055676841
       }
      },
      {
@@ -3135,7 +3135,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.003907270502284779
+       "max_symbol_share": 0.0039215151989936215
       }
      },
      {
@@ -3191,8 +3191,8 @@
        "dn": -0.011507814910727832
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.0038905516156437273
+       "symbols": 588,
+       "max_symbol_share": 0.0039002055605723025
       }
      },
      {
@@ -3248,8 +3248,8 @@
        "dn": -0.021417373096529857
       },
       "breadth": {
-       "symbols": 585,
-       "max_symbol_share": 0.004211751657890274
+       "symbols": 587,
+       "max_symbol_share": 0.004212166007025575
       }
      },
      {
@@ -3305,8 +3305,8 @@
        "dn": -0.004226055696430475
       },
       "breadth": {
-       "symbols": 565,
-       "max_symbol_share": 0.006635529070703817
+       "symbols": 569,
+       "max_symbol_share": 0.006574852783939486
       }
      }
     ],
@@ -3365,7 +3365,7 @@
       },
       "breadth": {
        "symbols": 588,
-       "max_symbol_share": 0.0048940334763960276
+       "max_symbol_share": 0.004849104247586999
       }
      },
      {
@@ -3422,7 +3422,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.003588870241241906
+       "max_symbol_share": 0.0035970145188090764
       }
      },
      {
@@ -3478,8 +3478,8 @@
        "dn": -0.011040697445969971
       },
       "breadth": {
-       "symbols": 582,
-       "max_symbol_share": 0.004537533835207902
+       "symbols": 585,
+       "max_symbol_share": 0.004533014843883297
       }
      }
     ]
@@ -3543,7 +3543,7 @@
       },
       "breadth": {
        "symbols": 406,
-       "max_symbol_share": 0.010738379917520241
+       "max_symbol_share": 0.01071834580982819
       }
      },
      {
@@ -3599,8 +3599,8 @@
        "dn": -0.06262790853430014
       },
       "breadth": {
-       "symbols": 511,
-       "max_symbol_share": 0.007185704253371628
+       "symbols": 513,
+       "max_symbol_share": 0.007196430880641407
       }
      },
      {
@@ -3656,8 +3656,8 @@
        "dn": 0.001122581171730641
       },
       "breadth": {
-       "symbols": 548,
-       "max_symbol_share": 0.006454024312331315
+       "symbols": 549,
+       "max_symbol_share": 0.006439021027529023
       }
      },
      {
@@ -3713,8 +3713,8 @@
        "dn": 0.06521371047344315
       },
       "breadth": {
-       "symbols": 561,
-       "max_symbol_share": 0.006098449189373697
+       "symbols": 562,
+       "max_symbol_share": 0.006088624509677142
       }
      },
      {
@@ -3771,7 +3771,7 @@
       },
       "breadth": {
        "symbols": 517,
-       "max_symbol_share": 0.010449774719709405
+       "max_symbol_share": 0.010432061765768729
       }
      }
     ],
@@ -3830,7 +3830,7 @@
       },
       "breadth": {
        "symbols": 490,
-       "max_symbol_share": 0.006458110765122819
+       "max_symbol_share": 0.006446036854767448
       }
      },
      {
@@ -3886,8 +3886,8 @@
        "dn": 0.0005948225931400319
       },
       "breadth": {
-       "symbols": 562,
-       "max_symbol_share": 0.005259835618725171
+       "symbols": 563,
+       "max_symbol_share": 0.005257959337758276
       }
      },
      {
@@ -3944,7 +3944,7 @@
       },
       "breadth": {
        "symbols": 558,
-       "max_symbol_share": 0.006474995980901768
+       "max_symbol_share": 0.006462772332389658
       }
      }
     ]
@@ -4008,7 +4008,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004544430497891925
+       "max_symbol_share": 0.004524453747192158
       }
      },
      {
@@ -4065,7 +4065,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002455349925089192
+       "max_symbol_share": 0.002444825795476645
       }
      },
      {
@@ -4122,7 +4122,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004065733309463776
+       "max_symbol_share": 0.004047847135501308
       }
      },
      {
@@ -4179,7 +4179,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002796056180017691
+       "max_symbol_share": 0.002793302063749741
       }
      },
      {
@@ -4236,7 +4236,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002627622748757674
+       "max_symbol_share": 0.002613579014055772
       }
      }
     ],
@@ -4295,7 +4295,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0030066339507041073
+       "max_symbol_share": 0.002998638843118994
       }
      },
      {
@@ -4352,7 +4352,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003593259113188309
+       "max_symbol_share": 0.003577590353718372
       }
      },
      {
@@ -4409,7 +4409,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024074631357207344
+       "max_symbol_share": 0.002408619075542936
       }
      }
     ]
@@ -4473,7 +4473,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003786422571631684
+       "max_symbol_share": 0.003777216612939628
       }
      },
      {
@@ -4530,7 +4530,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025097216647460715
+       "max_symbol_share": 0.002505091475415447
       }
      },
      {
@@ -4587,7 +4587,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0036714346422076927
+       "max_symbol_share": 0.003652678987686109
       }
      },
      {
@@ -4644,7 +4644,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003208814637546368
+       "max_symbol_share": 0.0032003559754240044
       }
      },
      {
@@ -4701,7 +4701,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002623824587251376
+       "max_symbol_share": 0.0026248805163840232
       }
      }
     ],
@@ -4760,7 +4760,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026672832202698023
+       "max_symbol_share": 0.0026660315313930976
       }
      },
      {
@@ -4817,7 +4817,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0034899269781970177
+       "max_symbol_share": 0.003475163106806084
       }
      },
      {
@@ -4874,7 +4874,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024583762522151333
+       "max_symbol_share": 0.0024539530122015996
       }
      }
     ]
@@ -4938,7 +4938,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003085469441364238
+       "max_symbol_share": 0.0030930409779900995
       }
      },
      {
@@ -4995,7 +4995,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002561683787830271
+       "max_symbol_share": 0.002560819462227913
       }
      },
      {
@@ -5052,7 +5052,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00350561525602237
+       "max_symbol_share": 0.003483947044004931
       }
      },
      {
@@ -5109,7 +5109,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0036671563420169577
+       "max_symbol_share": 0.003661078892282351
       }
      },
      {
@@ -5166,7 +5166,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027217474791796092
+       "max_symbol_share": 0.0027263212752120115
       }
      }
     ],
@@ -5225,7 +5225,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002681857383719274
+       "max_symbol_share": 0.002686912438491786
       }
      },
      {
@@ -5282,7 +5282,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003299105010694188
+       "max_symbol_share": 0.0032820378225589604
       }
      },
      {
@@ -5339,7 +5339,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026311305797721593
+       "max_symbol_share": 0.0026329735451918576
       }
      }
     ]
@@ -5402,8 +5402,8 @@
        "dn": 0.017509153427303137
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003433196266562235
+       "symbols": 593,
+       "max_symbol_share": 0.0034268658518964218
       }
      },
      {
@@ -5459,8 +5459,8 @@
        "dn": 0.010388024818789754
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0028221478490686475
+       "symbols": 593,
+       "max_symbol_share": 0.0028170418027333973
       }
      },
      {
@@ -5516,8 +5516,8 @@
        "dn": 0.0016656278137410219
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0031983990527145977
+       "symbols": 593,
+       "max_symbol_share": 0.0031900655338649385
       }
      },
      {
@@ -5573,8 +5573,8 @@
        "dn": -0.010480954309680102
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.004295711065882873
+       "symbols": 593,
+       "max_symbol_share": 0.0042840704953876355
       }
      },
      {
@@ -5630,8 +5630,8 @@
        "dn": -0.013536411597834253
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0030637281797153103
+       "symbols": 593,
+       "max_symbol_share": 0.0030848754084522975
       }
      }
     ],
@@ -5689,8 +5689,8 @@
        "dn": 0.015181000073073547
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0029897145967417997
+       "symbols": 593,
+       "max_symbol_share": 0.0029804481047955643
       }
      },
      {
@@ -5746,8 +5746,8 @@
        "dn": 0.0011848774811527574
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0031312858465355232
+       "symbols": 593,
+       "max_symbol_share": 0.0031208527817963684
       }
      },
      {
@@ -5803,8 +5803,8 @@
        "dn": -0.013011808658212554
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0028936143371888576
+       "symbols": 593,
+       "max_symbol_share": 0.0028879032415639228
       }
      }
     ]
@@ -5867,8 +5867,8 @@
        "dn": -0.05808654499258131
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.005664816317418613
+       "symbols": 593,
+       "max_symbol_share": 0.005635265525709835
       }
      },
      {
@@ -5925,7 +5925,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004678138062228511
+       "max_symbol_share": 0.004652664484304741
       }
      },
      {
@@ -5982,7 +5982,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029063813180913614
+       "max_symbol_share": 0.002898525941379664
       }
      },
      {
@@ -6039,7 +6039,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003028146230993206
+       "max_symbol_share": 0.0030148175073232268
       }
      },
      {
@@ -6096,7 +6096,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.006262939510226003
+       "max_symbol_share": 0.006241063492676895
       }
      }
     ],
@@ -6154,8 +6154,8 @@
        "dn": -0.05134296470108715
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.005237575765399983
+       "symbols": 593,
+       "max_symbol_share": 0.0052334242900512465
       }
      },
      {
@@ -6212,7 +6212,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028295478804266964
+       "max_symbol_share": 0.0028217970999621623
       }
      },
      {
@@ -6269,7 +6269,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004661475723371563
+       "max_symbol_share": 0.004648304834185608
       }
      }
     ]
@@ -6333,7 +6333,7 @@
       },
       "breadth": {
        "symbols": 584,
-       "max_symbol_share": 0.008081472595229802
+       "max_symbol_share": 0.00808431731957884
       }
      },
      {
@@ -6390,7 +6390,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.003730521149700392
+       "max_symbol_share": 0.0037218425904709694
       }
      },
      {
@@ -6447,7 +6447,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00343978009591653
+       "max_symbol_share": 0.0034208892599490504
       }
      },
      {
@@ -6504,7 +6504,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003467076811412623
+       "max_symbol_share": 0.003464868418516702
       }
      },
      {
@@ -6561,7 +6561,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.007129316739470865
+       "max_symbol_share": 0.007108561451643076
       }
      }
     ],
@@ -6619,8 +6619,8 @@
        "dn": -0.07024403399753973
       },
       "breadth": {
-       "symbols": 588,
-       "max_symbol_share": 0.006138951309892918
+       "symbols": 589,
+       "max_symbol_share": 0.006129629748316018
       }
      },
      {
@@ -6677,7 +6677,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003265411901908063
+       "max_symbol_share": 0.0032500147727944216
       }
      },
      {
@@ -6734,7 +6734,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.005284278330432976
+       "max_symbol_share": 0.005273416880598821
       }
      }
     ]
@@ -6797,8 +6797,8 @@
        "dn": -0.0982499465417179
       },
       "breadth": {
-       "symbols": 516,
-       "max_symbol_share": 0.009207126948775056
+       "symbols": 518,
+       "max_symbol_share": 0.009199847257814241
       }
      },
      {
@@ -6855,7 +6855,7 @@
       },
       "breadth": {
        "symbols": 556,
-       "max_symbol_share": 0.004407918142498819
+       "max_symbol_share": 0.0044441389037347175
       }
      },
      {
@@ -6911,8 +6911,8 @@
        "dn": -0.0026299728317640825
       },
       "breadth": {
-       "symbols": 574,
-       "max_symbol_share": 0.0038433504894179304
+       "symbols": 575,
+       "max_symbol_share": 0.0038531845828301743
       }
      },
      {
@@ -6968,8 +6968,8 @@
        "dn": 0.046351039859556686
       },
       "breadth": {
-       "symbols": 583,
-       "max_symbol_share": 0.004647353782883328
+       "symbols": 585,
+       "max_symbol_share": 0.004628202540965247
       }
      },
      {
@@ -7026,7 +7026,7 @@
       },
       "breadth": {
        "symbols": 537,
-       "max_symbol_share": 0.0076409623883118664
+       "max_symbol_share": 0.007597230974079904
       }
      }
     ],
@@ -7085,7 +7085,7 @@
       },
       "breadth": {
        "symbols": 550,
-       "max_symbol_share": 0.0064633899717009054
+       "max_symbol_share": 0.006450688073394496
       }
      },
      {
@@ -7141,8 +7141,8 @@
        "dn": -0.002506939896623317
       },
       "breadth": {
-       "symbols": 581,
-       "max_symbol_share": 0.0034946077826149974
+       "symbols": 582,
+       "max_symbol_share": 0.0034635120863803106
       }
      },
      {
@@ -7198,8 +7198,8 @@
        "dn": 0.08826923269762571
       },
       "breadth": {
-       "symbols": 582,
-       "max_symbol_share": 0.005427793531307674
+       "symbols": 583,
+       "max_symbol_share": 0.005417994835307089
       }
      }
     ]
@@ -7262,8 +7262,8 @@
        "dn": -0.097904330494684
       },
       "breadth": {
-       "symbols": 497,
-       "max_symbol_share": 0.00926941753662492
+       "symbols": 498,
+       "max_symbol_share": 0.009184554399952992
       }
      },
      {
@@ -7319,8 +7319,8 @@
        "dn": -0.04685191092811383
       },
       "breadth": {
-       "symbols": 542,
-       "max_symbol_share": 0.005339407577833896
+       "symbols": 543,
+       "max_symbol_share": 0.005338437888149395
       }
      },
      {
@@ -7376,8 +7376,8 @@
        "dn": -0.0013941804486439224
       },
       "breadth": {
-       "symbols": 565,
-       "max_symbol_share": 0.004316345783949147
+       "symbols": 567,
+       "max_symbol_share": 0.004276830018128314
       }
      },
      {
@@ -7433,8 +7433,8 @@
        "dn": 0.041923236557690535
       },
       "breadth": {
-       "symbols": 573,
-       "max_symbol_share": 0.004654115145237724
+       "symbols": 574,
+       "max_symbol_share": 0.004611821340175753
       }
      },
      {
@@ -7490,8 +7490,8 @@
        "dn": 0.11167897177742087
       },
       "breadth": {
-       "symbols": 514,
-       "max_symbol_share": 0.007818431987924918
+       "symbols": 517,
+       "max_symbol_share": 0.0077466538695653165
       }
      }
     ],
@@ -7549,8 +7549,8 @@
        "dn": -0.08096069814786949
       },
       "breadth": {
-       "symbols": 526,
-       "max_symbol_share": 0.006441135483304621
+       "symbols": 527,
+       "max_symbol_share": 0.006428324857367295
       }
      },
      {
@@ -7606,8 +7606,8 @@
        "dn": -0.0012521424872822817
       },
       "breadth": {
-       "symbols": 571,
-       "max_symbol_share": 0.003742734106437695
+       "symbols": 574,
+       "max_symbol_share": 0.0037291224304398813
       }
      },
      {
@@ -7664,7 +7664,7 @@
       },
       "breadth": {
        "symbols": 569,
-       "max_symbol_share": 0.0056921186473366065
+       "max_symbol_share": 0.005686409399637467
       }
      }
     ]
@@ -7728,7 +7728,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002430566738595983
+       "max_symbol_share": 0.002422415646506123
       }
      },
      {
@@ -7785,7 +7785,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002593149511681038
+       "max_symbol_share": 0.00258355932348387
       }
      },
      {
@@ -7842,7 +7842,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028855298656654295
+       "max_symbol_share": 0.002877833201129753
       }
      },
      {
@@ -7899,7 +7899,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023709616525537996
+       "max_symbol_share": 0.002361163985405269
       }
      },
      {
@@ -7956,7 +7956,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002558215098017979
+       "max_symbol_share": 0.002549048240791644
       }
      }
     ],
@@ -8015,7 +8015,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002306301652892562
+       "max_symbol_share": 0.0023017788218425753
       }
      },
      {
@@ -8072,7 +8072,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028859431275082147
+       "max_symbol_share": 0.0028764093379383252
       }
      },
      {
@@ -8129,7 +8129,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002376070171888963
+       "max_symbol_share": 0.0023671910661360526
       }
      }
     ]
@@ -8193,7 +8193,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002485467426843048
+       "max_symbol_share": 0.0024768817273002203
       }
      },
      {
@@ -8250,7 +8250,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026484605688038543
+       "max_symbol_share": 0.002644812017204117
       }
      },
      {
@@ -8307,7 +8307,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029108281079401523
+       "max_symbol_share": 0.0029028352378955833
       }
      },
      {
@@ -8364,7 +8364,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002464973418434634
+       "max_symbol_share": 0.002458627020503537
       }
      },
      {
@@ -8421,7 +8421,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025855025475760643
+       "max_symbol_share": 0.0025825691621475287
       }
      }
     ],
@@ -8480,7 +8480,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023629971951520446
+       "max_symbol_share": 0.0023554516088541413
       }
      },
      {
@@ -8537,7 +8537,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002820158565940305
+       "max_symbol_share": 0.002811123319744098
       }
      },
      {
@@ -8594,7 +8594,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023513168412419936
+       "max_symbol_share": 0.002346529991586455
       }
      }
     ]
@@ -8658,7 +8658,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029452897038056065
+       "max_symbol_share": 0.0029297272369688174
       }
      },
      {
@@ -8715,7 +8715,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002542079554024348
+       "max_symbol_share": 0.0025347966711487444
       }
      },
      {
@@ -8771,8 +8771,8 @@
        "dn": 0.001378666110717075
       },
       "breadth": {
-       "symbols": 590,
-       "max_symbol_share": 0.0028585695241672812
+       "symbols": 592,
+       "max_symbol_share": 0.002845912235153144
       }
      },
      {
@@ -8828,8 +8828,8 @@
        "dn": -0.002465568056113643
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.0027782617067512675
+       "symbols": 592,
+       "max_symbol_share": 0.0027619227161329446
       }
      },
      {
@@ -8886,7 +8886,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003093061094860778
+       "max_symbol_share": 0.0030922192830429625
       }
      }
     ],
@@ -8945,7 +8945,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0025545622671122744
+       "max_symbol_share": 0.002552979767839252
       }
      },
      {
@@ -9001,8 +9001,8 @@
        "dn": 0.000838142011739651
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.002743022136669875
+       "symbols": 592,
+       "max_symbol_share": 0.002732895561428844
       }
      },
      {
@@ -9059,7 +9059,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0025629048459570175
+       "max_symbol_share": 0.0025586132698367623
       }
      }
     ]
@@ -9122,8 +9122,8 @@
        "dn": -0.0460089809739041
       },
       "breadth": {
-       "symbols": 548,
-       "max_symbol_share": 0.010725581854763383
+       "symbols": 552,
+       "max_symbol_share": 0.010705079218437684
       }
      },
      {
@@ -9179,8 +9179,8 @@
        "dn": -0.021030764252124745
       },
       "breadth": {
-       "symbols": 569,
-       "max_symbol_share": 0.007300907867030274
+       "symbols": 572,
+       "max_symbol_share": 0.00726096041439873
       }
      },
      {
@@ -9236,8 +9236,8 @@
        "dn": -0.0018656960366716935
       },
       "breadth": {
-       "symbols": 549,
-       "max_symbol_share": 0.006799610957876054
+       "symbols": 552,
+       "max_symbol_share": 0.0067733990147783255
       }
      },
      {
@@ -9293,8 +9293,8 @@
        "dn": 0.02066676402339973
       },
       "breadth": {
-       "symbols": 508,
-       "max_symbol_share": 0.007270091447826847
+       "symbols": 509,
+       "max_symbol_share": 0.007237434474911725
       }
      },
      {
@@ -9350,8 +9350,8 @@
        "dn": 0.04911843308224956
       },
       "breadth": {
-       "symbols": 427,
-       "max_symbol_share": 0.010713210432492262
+       "symbols": 429,
+       "max_symbol_share": 0.010694337369837244
       }
      }
     ],
@@ -9409,8 +9409,8 @@
        "dn": -0.03698512313816149
       },
       "breadth": {
-       "symbols": 571,
-       "max_symbol_share": 0.006450496475149123
+       "symbols": 574,
+       "max_symbol_share": 0.006438108893526045
       }
      },
      {
@@ -9467,7 +9467,7 @@
       },
       "breadth": {
        "symbols": 561,
-       "max_symbol_share": 0.005481912664693557
+       "max_symbol_share": 0.0054667102874481205
       }
      },
      {
@@ -9524,7 +9524,7 @@
       },
       "breadth": {
        "symbols": 493,
-       "max_symbol_share": 0.006462615913364892
+       "max_symbol_share": 0.006450916076372057
       }
      }
     ]
@@ -9587,8 +9587,8 @@
        "dn": -0.046673316284051275
       },
       "breadth": {
-       "symbols": 433,
-       "max_symbol_share": 0.010727616951869703
+       "symbols": 435,
+       "max_symbol_share": 0.010706943749134562
       }
      },
      {
@@ -9644,8 +9644,8 @@
        "dn": -0.021850145973710877
       },
       "breadth": {
-       "symbols": 520,
-       "max_symbol_share": 0.008126781241903447
+       "symbols": 523,
+       "max_symbol_share": 0.00806914205970737
       }
      },
      {
@@ -9701,8 +9701,8 @@
        "dn": -0.000773995454084131
       },
       "breadth": {
-       "symbols": 518,
-       "max_symbol_share": 0.0076768348217947
+       "symbols": 523,
+       "max_symbol_share": 0.007664278087910254
       }
      },
      {
@@ -9758,8 +9758,8 @@
        "dn": 0.020866322978524587
       },
       "breadth": {
-       "symbols": 484,
-       "max_symbol_share": 0.008154303516260031
+       "symbols": 486,
+       "max_symbol_share": 0.008118370247339537
       }
      },
      {
@@ -9815,8 +9815,8 @@
        "dn": 0.04988499138368213
       },
       "breadth": {
-       "symbols": 391,
-       "max_symbol_share": 0.010812474665036558
+       "symbols": 393,
+       "max_symbol_share": 0.010792735212641813
       }
      }
     ],
@@ -9874,8 +9874,8 @@
        "dn": -0.03759634514612736
       },
       "breadth": {
-       "symbols": 513,
-       "max_symbol_share": 0.0064515378620751155
+       "symbols": 515,
+       "max_symbol_share": 0.006439115383925529
       }
      },
      {
@@ -9931,8 +9931,8 @@
        "dn": -0.0014857486142970666
       },
       "breadth": {
-       "symbols": 544,
-       "max_symbol_share": 0.0058967212520268765
+       "symbols": 547,
+       "max_symbol_share": 0.005886876950790331
       }
      },
      {
@@ -9988,8 +9988,8 @@
        "dn": 0.03986792589885568
       },
       "breadth": {
-       "symbols": 466,
-       "max_symbol_share": 0.006476650312800146
+       "symbols": 467,
+       "max_symbol_share": 0.006464879388307113
       }
      }
     ]
@@ -10052,8 +10052,8 @@
        "dn": -0.046366392859925276
       },
       "breadth": {
-       "symbols": 386,
-       "max_symbol_share": 0.010729516816888504
+       "symbols": 388,
+       "max_symbol_share": 0.010708697005487594
       }
      },
      {
@@ -10109,8 +10109,8 @@
        "dn": -0.022642396860380776
       },
       "breadth": {
-       "symbols": 477,
-       "max_symbol_share": 0.008651648004978372
+       "symbols": 478,
+       "max_symbol_share": 0.008602334797044019
       }
      },
      {
@@ -10166,8 +10166,8 @@
        "dn": -0.0005821600381437642
       },
       "breadth": {
-       "symbols": 507,
-       "max_symbol_share": 0.00810792131385474
+       "symbols": 511,
+       "max_symbol_share": 0.008098102234793576
       }
      },
      {
@@ -10223,8 +10223,8 @@
        "dn": 0.021453660195631885
       },
       "breadth": {
-       "symbols": 469,
-       "max_symbol_share": 0.00862957433339023
+       "symbols": 472,
+       "max_symbol_share": 0.008585198671950305
       }
      },
      {
@@ -10280,8 +10280,8 @@
        "dn": 0.05006973539760723
       },
       "breadth": {
-       "symbols": 378,
-       "max_symbol_share": 0.0108186791969837
+       "symbols": 380,
+       "max_symbol_share": 0.010798894516673657
       }
      }
     ],
@@ -10340,7 +10340,7 @@
       },
       "breadth": {
        "symbols": 477,
-       "max_symbol_share": 0.006452589183861931
+       "max_symbol_share": 0.006440189449013136
       }
      },
      {
@@ -10396,8 +10396,8 @@
        "dn": -0.0012190929766594527
       },
       "breadth": {
-       "symbols": 523,
-       "max_symbol_share": 0.00609183111370338
+       "symbols": 526,
+       "max_symbol_share": 0.006082823540295815
       }
      },
      {
@@ -10453,8 +10453,8 @@
        "dn": 0.04010881380585535
       },
       "breadth": {
-       "symbols": 458,
-       "max_symbol_share": 0.006479007522039407
+       "symbols": 459,
+       "max_symbol_share": 0.006467207446431768
       }
      }
     ]
@@ -10518,7 +10518,7 @@
       },
       "breadth": {
        "symbols": 304,
-       "max_symbol_share": 0.010738226055418227
+       "max_symbol_share": 0.010717182374001417
       }
      },
      {
@@ -10575,7 +10575,7 @@
       },
       "breadth": {
        "symbols": 409,
-       "max_symbol_share": 0.009490094510495503
+       "max_symbol_share": 0.009435524275832113
       }
      },
      {
@@ -10631,8 +10631,8 @@
        "dn": -0.0006824554780205383
       },
       "breadth": {
-       "symbols": 457,
-       "max_symbol_share": 0.008880043533025914
+       "symbols": 459,
+       "max_symbol_share": 0.008876509060272141
       }
      },
      {
@@ -10688,8 +10688,8 @@
        "dn": 0.022371102387404918
       },
       "breadth": {
-       "symbols": 437,
-       "max_symbol_share": 0.009474622631073204
+       "symbols": 439,
+       "max_symbol_share": 0.009433373974037255
       }
      },
      {
@@ -10745,8 +10745,8 @@
        "dn": 0.05076693673058119
       },
       "breadth": {
-       "symbols": 345,
-       "max_symbol_share": 0.010830010431479985
+       "symbols": 346,
+       "max_symbol_share": 0.010810075586328396
       }
      }
     ],
@@ -10805,7 +10805,7 @@
       },
       "breadth": {
        "symbols": 405,
-       "max_symbol_share": 0.006457928684940328
+       "max_symbol_share": 0.006445385397495463
       }
      },
      {
@@ -10861,8 +10861,8 @@
        "dn": -0.000759471295144698
       },
       "breadth": {
-       "symbols": 495,
-       "max_symbol_share": 0.006331428006354849
+       "symbols": 497,
+       "max_symbol_share": 0.006320329792228832
       }
      },
      {
@@ -10918,8 +10918,8 @@
        "dn": 0.0405062428019099
       },
       "breadth": {
-       "symbols": 432,
-       "max_symbol_share": 0.00648441289528449
+       "symbols": 433,
+       "max_symbol_share": 0.006472546294800117
       }
      }
     ]
@@ -10982,8 +10982,8 @@
        "dn": -0.0449616566763561
       },
       "breadth": {
-       "symbols": 274,
-       "max_symbol_share": 0.010747724317295189
+       "symbols": 275,
+       "max_symbol_share": 0.010726400522463571
       }
      },
      {
@@ -11039,8 +11039,8 @@
        "dn": -0.02247253364367091
       },
       "breadth": {
-       "symbols": 389,
-       "max_symbol_share": 0.009753346384250055
+       "symbols": 391,
+       "max_symbol_share": 0.009704944643392931
       }
      },
      {
@@ -11096,8 +11096,8 @@
        "dn": -0.0008790449409333823
       },
       "breadth": {
-       "symbols": 435,
-       "max_symbol_share": 0.0092124878940553
+       "symbols": 436,
+       "max_symbol_share": 0.00920600126860294
       }
      },
      {
@@ -11153,8 +11153,8 @@
        "dn": 0.02164020812723022
       },
       "breadth": {
-       "symbols": 422,
-       "max_symbol_share": 0.009766007760546635
+       "symbols": 423,
+       "max_symbol_share": 0.009717896081973971
       }
      },
      {
@@ -11210,8 +11210,8 @@
        "dn": 0.05108940529846867
       },
       "breadth": {
-       "symbols": 334,
-       "max_symbol_share": 0.01083891164909734
+       "symbols": 335,
+       "max_symbol_share": 0.010818800266135551
       }
      }
     ],
@@ -11269,8 +11269,8 @@
        "dn": -0.037124913219380495
       },
       "breadth": {
-       "symbols": 376,
-       "max_symbol_share": 0.006463402077307972
+       "symbols": 378,
+       "max_symbol_share": 0.00645077937766064
       }
      },
      {
@@ -11326,8 +11326,8 @@
        "dn": -0.0006911340154717727
       },
       "breadth": {
-       "symbols": 474,
-       "max_symbol_share": 0.006423971681230978
+       "symbols": 476,
+       "max_symbol_share": 0.006411999450991969
       }
      },
      {
@@ -11383,8 +11383,8 @@
        "dn": 0.040386448424789056
       },
       "breadth": {
-       "symbols": 423,
-       "max_symbol_share": 0.006489775135443623
+       "symbols": 424,
+       "max_symbol_share": 0.006477825257030296
       }
      }
     ]
@@ -11447,8 +11447,8 @@
        "dn": -0.044828753539154054
       },
       "breadth": {
-       "symbols": 257,
-       "max_symbol_share": 0.010762912769154604
+       "symbols": 260,
+       "max_symbol_share": 0.010741275550790302
       }
      },
      {
@@ -11504,8 +11504,8 @@
        "dn": -0.022734965518890038
       },
       "breadth": {
-       "symbols": 367,
-       "max_symbol_share": 0.01025441016325985
+       "symbols": 369,
+       "max_symbol_share": 0.010164853065745749
       }
      },
      {
@@ -11561,8 +11561,8 @@
        "dn": 0.0002078936249057528
       },
       "breadth": {
-       "symbols": 412,
-       "max_symbol_share": 0.00953440400120877
+       "symbols": 413,
+       "max_symbol_share": 0.0095246570971502
       }
      },
      {
@@ -11618,8 +11618,8 @@
        "dn": 0.02221789812036845
       },
       "breadth": {
-       "symbols": 411,
-       "max_symbol_share": 0.010061107203814106
+       "symbols": 413,
+       "max_symbol_share": 0.010010642688038921
       }
      },
      {
@@ -11676,7 +11676,7 @@
       },
       "breadth": {
        "symbols": 320,
-       "max_symbol_share": 0.010853736333839284
+       "max_symbol_share": 0.010833277000874424
       }
      }
     ],
@@ -11734,8 +11734,8 @@
        "dn": -0.03682003344418194
       },
       "breadth": {
-       "symbols": 363,
-       "max_symbol_share": 0.006472343355519853
+       "symbols": 365,
+       "max_symbol_share": 0.006459588895071005
       }
      },
      {
@@ -11792,7 +11792,7 @@
       },
       "breadth": {
        "symbols": 458,
-       "max_symbol_share": 0.006478331957668063
+       "max_symbol_share": 0.006465944030434103
       }
      },
      {
@@ -11849,7 +11849,7 @@
       },
       "breadth": {
        "symbols": 405,
-       "max_symbol_share": 0.0064985011564013
+       "max_symbol_share": 0.006486401796555731
       }
      }
     ]
@@ -11912,8 +11912,8 @@
        "dn": -0.04581428659050024
       },
       "breadth": {
-       "symbols": 244,
-       "max_symbol_share": 0.010787895346838768
+       "symbols": 245,
+       "max_symbol_share": 0.010765625989487684
       }
      },
      {
@@ -11969,8 +11969,8 @@
        "dn": -0.022182859780763398
       },
       "breadth": {
-       "symbols": 344,
-       "max_symbol_share": 0.01031886213628335
+       "symbols": 347,
+       "max_symbol_share": 0.010267638728304676
       }
      },
      {
@@ -12026,8 +12026,8 @@
        "dn": 0.0007941379428586526
       },
       "breadth": {
-       "symbols": 384,
-       "max_symbol_share": 0.00979776215484402
+       "symbols": 388,
+       "max_symbol_share": 0.009785435203009958
       }
      },
      {
@@ -12083,8 +12083,8 @@
        "dn": 0.0217340301683564
       },
       "breadth": {
-       "symbols": 394,
-       "max_symbol_share": 0.010347201165083785
+       "symbols": 396,
+       "max_symbol_share": 0.010326875105583357
       }
      },
      {
@@ -12141,7 +12141,7 @@
       },
       "breadth": {
        "symbols": 304,
-       "max_symbol_share": 0.010877971163931804
+       "max_symbol_share": 0.01085721082681328
       }
      }
     ],
@@ -12199,8 +12199,8 @@
        "dn": -0.03742660730701086
       },
       "breadth": {
-       "symbols": 348,
-       "max_symbol_share": 0.006486890413155032
+       "symbols": 351,
+       "max_symbol_share": 0.0064738943166298985
       }
      },
      {
@@ -12256,8 +12256,8 @@
        "dn": 0.0003532453703243843
       },
       "breadth": {
-       "symbols": 437,
-       "max_symbol_share": 0.006498955122026346
+       "symbols": 439,
+       "max_symbol_share": 0.0064863712509919055
       }
      },
      {
@@ -12314,7 +12314,7 @@
       },
       "breadth": {
        "symbols": 395,
-       "max_symbol_share": 0.00651336203914138
+       "max_symbol_share": 0.006501008981917461
       }
      }
     ]
@@ -12378,7 +12378,7 @@
       },
       "breadth": {
        "symbols": 227,
-       "max_symbol_share": 0.01081459234735027
+       "max_symbol_share": 0.010791954606672113
       }
      },
      {
@@ -12434,8 +12434,8 @@
        "dn": -0.02087152956942312
       },
       "breadth": {
-       "symbols": 335,
-       "max_symbol_share": 0.010201546570574873
+       "symbols": 336,
+       "max_symbol_share": 0.010186086852361633
       }
      },
      {
@@ -12491,8 +12491,8 @@
        "dn": 0.0025230792955183157
       },
       "breadth": {
-       "symbols": 369,
-       "max_symbol_share": 0.010000849803874211
+       "symbols": 371,
+       "max_symbol_share": 0.009986679994060298
       }
      },
      {
@@ -12548,8 +12548,8 @@
        "dn": 0.02217920791121014
       },
       "breadth": {
-       "symbols": 379,
-       "max_symbol_share": 0.010556776523984943
+       "symbols": 381,
+       "max_symbol_share": 0.010538784546073631
       }
      },
      {
@@ -12606,7 +12606,7 @@
       },
       "breadth": {
        "symbols": 299,
-       "max_symbol_share": 0.010905568963734994
+       "max_symbol_share": 0.01088433253005608
       }
      }
     ],
@@ -12664,8 +12664,8 @@
        "dn": -0.036654397333045485
       },
       "breadth": {
-       "symbols": 337,
-       "max_symbol_share": 0.006502866941750174
+       "symbols": 339,
+       "max_symbol_share": 0.006489549409129713
       }
      },
      {
@@ -12721,8 +12721,8 @@
        "dn": 0.0018197335625758648
       },
       "breadth": {
-       "symbols": 421,
-       "max_symbol_share": 0.006514601136732793
+       "symbols": 425,
+       "max_symbol_share": 0.0065017741182293145
       }
      },
      {
@@ -12779,7 +12779,7 @@
       },
       "breadth": {
        "symbols": 389,
-       "max_symbol_share": 0.006529545757275271
+       "max_symbol_share": 0.006516912367731482
       }
      }
     ]
@@ -12842,8 +12842,8 @@
        "dn": -0.04475302468313891
       },
       "breadth": {
-       "symbols": 210,
-       "max_symbol_share": 0.010872293335158692
+       "symbols": 211,
+       "max_symbol_share": 0.010848581026399193
       }
      },
      {
@@ -12899,8 +12899,8 @@
        "dn": -0.021758848647014606
       },
       "breadth": {
-       "symbols": 316,
-       "max_symbol_share": 0.010326529208834282
+       "symbols": 318,
+       "max_symbol_share": 0.010309535923247447
       }
      },
      {
@@ -12956,8 +12956,8 @@
        "dn": 0.0011825822691947097
       },
       "breadth": {
-       "symbols": 351,
-       "max_symbol_share": 0.010116997104848462
+       "symbols": 353,
+       "max_symbol_share": 0.010101399807549157
       }
      },
      {
@@ -13014,7 +13014,7 @@
       },
       "breadth": {
        "symbols": 364,
-       "max_symbol_share": 0.010912716604015769
+       "max_symbol_share": 0.010890994657847876
       }
      },
      {
@@ -13070,8 +13070,8 @@
        "dn": 0.051307999351112965
       },
       "breadth": {
-       "symbols": 285,
-       "max_symbol_share": 0.010963468911523609
+       "symbols": 286,
+       "max_symbol_share": 0.010941323220552721
       }
      }
     ],
@@ -13129,8 +13129,8 @@
        "dn": -0.03704447700946634
       },
       "breadth": {
-       "symbols": 322,
-       "max_symbol_share": 0.006537839892211395
+       "symbols": 326,
+       "max_symbol_share": 0.006523828490873573
       }
      },
      {
@@ -13186,8 +13186,8 @@
        "dn": 0.0008090377854653719
       },
       "breadth": {
-       "symbols": 402,
-       "max_symbol_share": 0.006550011205413796
+       "symbols": 406,
+       "max_symbol_share": 0.006536606631971881
       }
      },
      {
@@ -13243,8 +13243,8 @@
        "dn": 0.04014734001379833
       },
       "breadth": {
-       "symbols": 374,
-       "max_symbol_share": 0.006564062995163757
+       "symbols": 376,
+       "max_symbol_share": 0.006550814551054848
       }
      }
     ]
@@ -13307,8 +13307,8 @@
        "dn": -0.11094530081827028
       },
       "breadth": {
-       "symbols": 553,
-       "max_symbol_share": 0.01006572350608388
+       "symbols": 554,
+       "max_symbol_share": 0.010051577663444571
       }
      },
      {
@@ -13364,8 +13364,8 @@
        "dn": -0.05157837108337507
       },
       "breadth": {
-       "symbols": 575,
-       "max_symbol_share": 0.004836921112017225
+       "symbols": 576,
+       "max_symbol_share": 0.004820678873064724
       }
      },
      {
@@ -13421,8 +13421,8 @@
        "dn": 0.0006694568225346087
       },
       "breadth": {
-       "symbols": 590,
-       "max_symbol_share": 0.004278628423549709
+       "symbols": 591,
+       "max_symbol_share": 0.004252616995073891
       }
      },
      {
@@ -13479,7 +13479,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00495543987349282
+       "max_symbol_share": 0.004946863457585939
       }
      },
      {
@@ -13536,7 +13536,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.009100085780384886
+       "max_symbol_share": 0.009073007105936216
       }
      }
     ],
@@ -13595,7 +13595,7 @@
       },
       "breadth": {
        "symbols": 568,
-       "max_symbol_share": 0.006309425268951197
+       "max_symbol_share": 0.00629856745996185
       }
      },
      {
@@ -13652,7 +13652,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003954860751630603
+       "max_symbol_share": 0.003936134044095478
       }
      },
      {
@@ -13709,7 +13709,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.006180165107034234
+       "max_symbol_share": 0.006170609178893662
       }
      }
     ]
@@ -13773,7 +13773,7 @@
       },
       "breadth": {
        "symbols": 355,
-       "max_symbol_share": 0.010808908215616779
+       "max_symbol_share": 0.01078753891329786
       }
      },
      {
@@ -13830,7 +13830,7 @@
       },
       "breadth": {
        "symbols": 456,
-       "max_symbol_share": 0.007701553068199368
+       "max_symbol_share": 0.007708330098422621
       }
      },
      {
@@ -13886,8 +13886,8 @@
        "dn": 0.004648583199434675
       },
       "breadth": {
-       "symbols": 508,
-       "max_symbol_share": 0.00719212087056866
+       "symbols": 512,
+       "max_symbol_share": 0.007127643777385245
       }
      },
      {
@@ -13944,7 +13944,7 @@
       },
       "breadth": {
        "symbols": 517,
-       "max_symbol_share": 0.0076966288362849385
+       "max_symbol_share": 0.007703893649445111
       }
      },
      {
@@ -14001,7 +14001,7 @@
       },
       "breadth": {
        "symbols": 475,
-       "max_symbol_share": 0.010684058413976924
+       "max_symbol_share": 0.010663839605874467
       }
      }
     ],
@@ -14059,8 +14059,8 @@
        "dn": -0.1060843295244005
       },
       "breadth": {
-       "symbols": 429,
-       "max_symbol_share": 0.006499874074987005
+       "symbols": 430,
+       "max_symbol_share": 0.006486894110680806
       }
      },
      {
@@ -14116,8 +14116,8 @@
        "dn": 0.00555037399961833
       },
       "breadth": {
-       "symbols": 532,
-       "max_symbol_share": 0.005808396737525438
+       "symbols": 534,
+       "max_symbol_share": 0.005801971952035613
       }
      },
      {
@@ -14173,8 +14173,8 @@
        "dn": 0.1074716987486804
       },
       "breadth": {
-       "symbols": 535,
-       "max_symbol_share": 0.006525948381766635
+       "symbols": 537,
+       "max_symbol_share": 0.006512911807653072
       }
      }
     ]
@@ -14237,8 +14237,8 @@
        "dn": -0.13232732252825055
       },
       "breadth": {
-       "symbols": 317,
-       "max_symbol_share": 0.01086651502672711
+       "symbols": 319,
+       "max_symbol_share": 0.010844035328451972
       }
      },
      {
@@ -14294,8 +14294,8 @@
        "dn": -0.05662500411495655
       },
       "breadth": {
-       "symbols": 427,
-       "max_symbol_share": 0.0077592945345684025
+       "symbols": 430,
+       "max_symbol_share": 0.007765671597720495
       }
      },
      {
@@ -14351,8 +14351,8 @@
        "dn": 0.0028687385328280413
       },
       "breadth": {
-       "symbols": 480,
-       "max_symbol_share": 0.008254752094036377
+       "symbols": 481,
+       "max_symbol_share": 0.008217741789066613
       }
      },
      {
@@ -14408,8 +14408,8 @@
        "dn": 0.06772137454597421
       },
       "breadth": {
-       "symbols": 486,
-       "max_symbol_share": 0.008510687066643745
+       "symbols": 488,
+       "max_symbol_share": 0.008510647963077371
       }
      },
      {
@@ -14465,8 +14465,8 @@
        "dn": 0.12578555887416493
       },
       "breadth": {
-       "symbols": 433,
-       "max_symbol_share": 0.01073675052763131
+       "symbols": 435,
+       "max_symbol_share": 0.010715564362938149
       }
      }
     ],
@@ -14524,8 +14524,8 @@
        "dn": -0.10693745796354917
       },
       "breadth": {
-       "symbols": 410,
-       "max_symbol_share": 0.006534701280598399
+       "symbols": 411,
+       "max_symbol_share": 0.006521118527480594
       }
      },
      {
@@ -14581,8 +14581,8 @@
        "dn": 0.0043587706305134866
       },
       "breadth": {
-       "symbols": 515,
-       "max_symbol_share": 0.005967005484420479
+       "symbols": 517,
+       "max_symbol_share": 0.005958957577508001
       }
      },
      {
@@ -14639,7 +14639,7 @@
       },
       "breadth": {
        "symbols": 506,
-       "max_symbol_share": 0.00656451524003748
+       "max_symbol_share": 0.006550814551054848
       }
      }
     ]
@@ -14703,7 +14703,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00428237012220003
+       "max_symbol_share": 0.0042667983895178134
       }
      },
      {
@@ -14760,7 +14760,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002475274233193708
+       "max_symbol_share": 0.0024602298496478664
       }
      },
      {
@@ -14817,7 +14817,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003013484101013195
+       "max_symbol_share": 0.003000389216562662
       }
      },
      {
@@ -14874,7 +14874,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0030038389579786235
+       "max_symbol_share": 0.0029928782760678843
       }
      },
      {
@@ -14931,7 +14931,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028621819316369686
+       "max_symbol_share": 0.0028611750149825045
       }
      }
     ],
@@ -14990,7 +14990,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028261540667297858
+       "max_symbol_share": 0.0028260850079199528
       }
      },
      {
@@ -15047,7 +15047,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002872458443849845
+       "max_symbol_share": 0.0028617480532413466
       }
      },
      {
@@ -15104,7 +15104,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002803460671766777
+       "max_symbol_share": 0.0028012213222073316
       }
      }
     ]
@@ -15167,8 +15167,8 @@
        "dn": -0.11381362116438459
       },
       "breadth": {
-       "symbols": 504,
-       "max_symbol_share": 0.010040022004307321
+       "symbols": 505,
+       "max_symbol_share": 0.010025361383155539
       }
      },
      {
@@ -15224,8 +15224,8 @@
        "dn": -0.05023460943659461
       },
       "breadth": {
-       "symbols": 550,
-       "max_symbol_share": 0.004969491661949267
+       "symbols": 551,
+       "max_symbol_share": 0.004927583155737796
       }
      },
      {
@@ -15281,8 +15281,8 @@
        "dn": -0.0027983507290887943
       },
       "breadth": {
-       "symbols": 569,
-       "max_symbol_share": 0.004258991390353887
+       "symbols": 570,
+       "max_symbol_share": 0.0042209892846697215
       }
      },
      {
@@ -15338,8 +15338,8 @@
        "dn": 0.05724944470837867
       },
       "breadth": {
-       "symbols": 583,
-       "max_symbol_share": 0.004846700171402232
+       "symbols": 584,
+       "max_symbol_share": 0.00480340629365977
       }
      },
      {
@@ -15395,8 +15395,8 @@
        "dn": 0.12117037247267487
       },
       "breadth": {
-       "symbols": 542,
-       "max_symbol_share": 0.008820687950751534
+       "symbols": 545,
+       "max_symbol_share": 0.008777340123043079
       }
      }
     ],
@@ -15454,8 +15454,8 @@
        "dn": -0.0915007970547693
       },
       "breadth": {
-       "symbols": 540,
-       "max_symbol_share": 0.00645660707374139
+       "symbols": 541,
+       "max_symbol_share": 0.006444051563030921
       }
      },
      {
@@ -15511,8 +15511,8 @@
        "dn": -0.0014765490356805078
       },
       "breadth": {
-       "symbols": 577,
-       "max_symbol_share": 0.003936120244246125
+       "symbols": 578,
+       "max_symbol_share": 0.003901106355358468
       }
      },
      {
@@ -15568,8 +15568,8 @@
        "dn": 0.09976849857695985
       },
       "breadth": {
-       "symbols": 581,
-       "max_symbol_share": 0.006061470249561465
+       "symbols": 584,
+       "max_symbol_share": 0.006044583804941521
       }
      }
     ]
@@ -15632,8 +15632,8 @@
        "dn": -0.11534959960027916
       },
       "breadth": {
-       "symbols": 483,
-       "max_symbol_share": 0.010370954939831584
+       "symbols": 484,
+       "max_symbol_share": 0.010352963510380083
       }
      },
      {
@@ -15690,7 +15690,7 @@
       },
       "breadth": {
        "symbols": 538,
-       "max_symbol_share": 0.005401156768747078
+       "max_symbol_share": 0.005352062144775892
       }
      },
      {
@@ -15746,8 +15746,8 @@
        "dn": -0.0027039402689947867
       },
       "breadth": {
-       "symbols": 566,
-       "max_symbol_share": 0.00438968092950406
+       "symbols": 567,
+       "max_symbol_share": 0.004381208224237996
       }
      },
      {
@@ -15803,8 +15803,8 @@
        "dn": 0.05669670718931291
       },
       "breadth": {
-       "symbols": 573,
-       "max_symbol_share": 0.0049817937665706516
+       "symbols": 577,
+       "max_symbol_share": 0.0049932900536114495
       }
      },
      {
@@ -15861,7 +15861,7 @@
       },
       "breadth": {
        "symbols": 526,
-       "max_symbol_share": 0.009056520418587956
+       "max_symbol_share": 0.009025604081697789
       }
      }
     ],
@@ -15920,7 +15920,7 @@
       },
       "breadth": {
        "symbols": 524,
-       "max_symbol_share": 0.006495893432234774
+       "max_symbol_share": 0.006482687012609302
       }
      },
      {
@@ -15976,8 +15976,8 @@
        "dn": -0.001242801824585249
       },
       "breadth": {
-       "symbols": 572,
-       "max_symbol_share": 0.004179856144773393
+       "symbols": 574,
+       "max_symbol_share": 0.004155430252512871
       }
      },
      {
@@ -16033,8 +16033,8 @@
        "dn": 0.09966191387014262
       },
       "breadth": {
-       "symbols": 570,
-       "max_symbol_share": 0.006206003499056357
+       "symbols": 572,
+       "max_symbol_share": 0.006195529773076267
       }
      }
     ]
@@ -16098,7 +16098,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002258365405623435
+       "max_symbol_share": 0.00225412353638145
       }
      },
      {
@@ -16269,7 +16269,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003896118734504073
+       "max_symbol_share": 0.0038774368220844332
       }
      },
      {
@@ -16326,7 +16326,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0033617243668517026
+       "max_symbol_share": 0.0033359209449677946
       }
      }
     ],
@@ -16385,7 +16385,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002253895290613912
+       "max_symbol_share": 0.0022497106218998444
       }
      },
      {
@@ -16442,7 +16442,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004315563511576258
+       "max_symbol_share": 0.004302174041822167
       }
      },
      {
@@ -16499,7 +16499,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028640806923603762
+       "max_symbol_share": 0.0028417328771095517
       }
      }
     ]
@@ -16563,7 +16563,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0022135450116029147
+       "max_symbol_share": 0.002210281889930131
       }
      },
      {
@@ -16733,8 +16733,8 @@
        "dn": -0.006458567416946559
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.005832320777642771
+       "symbols": 591,
+       "max_symbol_share": 0.005798902350626489
       }
      },
      {
@@ -16791,7 +16791,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031748341479869565
+       "max_symbol_share": 0.0031730838572636743
       }
      }
     ],
@@ -16850,7 +16850,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0022135450116029147
+       "max_symbol_share": 0.002210281889930131
       }
      },
      {
@@ -16964,7 +16964,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0034432838371754016
+       "max_symbol_share": 0.003439440916386693
       }
      }
     ]
@@ -17028,7 +17028,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0021938431731094265
+       "max_symbol_share": 0.0021894346733950854
       }
      },
      {
@@ -17256,7 +17256,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004630958886347007
+       "max_symbol_share": 0.00464919306579759
       }
      }
     ],
@@ -17315,7 +17315,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0021938431731094265
+       "max_symbol_share": 0.0021894346733950854
       }
      },
      {
@@ -17429,7 +17429,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004675766720471612
+       "max_symbol_share": 0.004692788109277415
       }
      }
     ]
@@ -17493,7 +17493,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003153246942810103
+       "max_symbol_share": 0.0031409668474779696
       }
      },
      {
@@ -17550,7 +17550,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002454479965145522
+       "max_symbol_share": 0.002450367234356458
       }
      },
      {
@@ -17607,7 +17607,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002822349384861513
+       "max_symbol_share": 0.002808760596979193
       }
      },
      {
@@ -17664,7 +17664,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003057853378302611
+       "max_symbol_share": 0.0030485588825086263
       }
      },
      {
@@ -17721,7 +17721,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002685773199448983
+       "max_symbol_share": 0.0026776952495066557
       }
      }
     ],
@@ -17780,7 +17780,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026942973073809805
+       "max_symbol_share": 0.002688977113617922
       }
      },
      {
@@ -17837,7 +17837,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028231153893428043
+       "max_symbol_share": 0.002814130165705322
       }
      },
      {
@@ -17894,7 +17894,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027372179958792616
+       "max_symbol_share": 0.002732956941145014
       }
      }
     ]
@@ -17958,7 +17958,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003866821853973888
+       "max_symbol_share": 0.0038526187394945484
       }
      },
      {
@@ -18015,7 +18015,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023878356649147487
+       "max_symbol_share": 0.002384427009924372
       }
      },
      {
@@ -18072,7 +18072,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0030311589491224047
+       "max_symbol_share": 0.003019488398956254
       }
      },
      {
@@ -18129,7 +18129,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002385524192451377
+       "max_symbol_share": 0.0023827816033951447
       }
      },
      {
@@ -18186,7 +18186,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003470120647217851
+       "max_symbol_share": 0.0034549123909062966
       }
      }
     ],
@@ -18245,7 +18245,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025528428222099885
+       "max_symbol_share": 0.00255003604829456
       }
      },
      {
@@ -18302,7 +18302,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029175816638468584
+       "max_symbol_share": 0.002905612944915067
       }
      },
      {
@@ -18359,7 +18359,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025655479545103207
+       "max_symbol_share": 0.0025699944641515153
       }
      }
     ]
@@ -18423,7 +18423,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0036799140708915143
+       "max_symbol_share": 0.003658853445668795
       }
      },
      {
@@ -18480,7 +18480,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024174922834509704
+       "max_symbol_share": 0.0024051115038794192
       }
      },
      {
@@ -18537,7 +18537,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026768576617519214
+       "max_symbol_share": 0.0026773219100931834
       }
      },
      {
@@ -18594,7 +18594,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026270649175517196
+       "max_symbol_share": 0.002613156179704417
       }
      },
      {
@@ -18651,7 +18651,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003426272069906574
+       "max_symbol_share": 0.003407181188323
       }
      }
     ],
@@ -18710,7 +18710,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025361200077000895
+       "max_symbol_share": 0.002528318706484484
       }
      },
      {
@@ -18767,7 +18767,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002622753516697939
+       "max_symbol_share": 0.002624429986609006
       }
      },
      {
@@ -18824,7 +18824,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024643745641153756
+       "max_symbol_share": 0.0024547553629245514
       }
      }
     ]
@@ -18888,7 +18888,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0035047607587130156
+       "max_symbol_share": 0.0034894347669556067
       }
      },
      {
@@ -18945,7 +18945,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002500210509952263
+       "max_symbol_share": 0.002493488036608257
       }
      },
      {
@@ -19002,7 +19002,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027408967696265474
+       "max_symbol_share": 0.0027409336291801378
       }
      },
      {
@@ -19059,7 +19059,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025196179475979715
+       "max_symbol_share": 0.0025149317406143344
       }
      },
      {
@@ -19116,7 +19116,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0034629774645436352
+       "max_symbol_share": 0.0034395607713241984
       }
      }
     ],
@@ -19175,7 +19175,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024734881869615897
+       "max_symbol_share": 0.0024662223622951116
       }
      },
      {
@@ -19232,7 +19232,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026106347105640058
+       "max_symbol_share": 0.0026098733575962976
       }
      },
      {
@@ -19289,7 +19289,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025171324681528867
+       "max_symbol_share": 0.002504491611368796
       }
      }
     ]
@@ -19353,7 +19353,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0033947133627871477
+       "max_symbol_share": 0.0033824971226394988
       }
      },
      {
@@ -19410,7 +19410,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024863746238575316
+       "max_symbol_share": 0.0024712084937620186
       }
      },
      {
@@ -19467,7 +19467,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00281792937254106
+       "max_symbol_share": 0.0028129395218002813
       }
      },
      {
@@ -19524,7 +19524,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025424625813015595
+       "max_symbol_share": 0.002533342470212347
       }
      },
      {
@@ -19581,7 +19581,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0034420234847071787
+       "max_symbol_share": 0.0034166752674854644
       }
      }
     ],
@@ -19640,7 +19640,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025303558660424172
+       "max_symbol_share": 0.002520037890295034
       }
      },
      {
@@ -19697,7 +19697,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002728979664825318
+       "max_symbol_share": 0.0027233325368870255
       }
      },
      {
@@ -19754,7 +19754,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002607653358717263
+       "max_symbol_share": 0.002591654178318167
       }
      }
     ]
@@ -19818,7 +19818,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003313864469179555
+       "max_symbol_share": 0.0033023564199812817
       }
      },
      {
@@ -19875,7 +19875,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024524632670700087
+       "max_symbol_share": 0.0024440346063304996
       }
      },
      {
@@ -19932,7 +19932,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028358470068099205
+       "max_symbol_share": 0.0028328308609407655
       }
      },
      {
@@ -19989,7 +19989,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002497806856436606
+       "max_symbol_share": 0.0024933222233408377
       }
      },
      {
@@ -20046,7 +20046,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003392985371547084
+       "max_symbol_share": 0.003368067877536536
       }
      }
     ],
@@ -20105,7 +20105,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024701800127518193
+       "max_symbol_share": 0.00245528874323834
       }
      },
      {
@@ -20162,7 +20162,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026817609149872718
+       "max_symbol_share": 0.0026752088320439135
       }
      },
      {
@@ -20219,7 +20219,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025901385087608773
+       "max_symbol_share": 0.0025755605063551954
       }
      }
     ]
@@ -20283,7 +20283,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003045971568061858
+       "max_symbol_share": 0.0030367958069596615
       }
      },
      {
@@ -20340,7 +20340,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00256958758984364
+       "max_symbol_share": 0.002557994429447169
       }
      },
      {
@@ -20397,7 +20397,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002773880124273289
+       "max_symbol_share": 0.002765071784693077
       }
      },
      {
@@ -20454,7 +20454,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027339719811130987
+       "max_symbol_share": 0.002714518816161036
       }
      },
      {
@@ -20511,7 +20511,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003196782369050282
+       "max_symbol_share": 0.0031712746672637477
       }
      }
     ],
@@ -20570,7 +20570,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025400392786909865
+       "max_symbol_share": 0.002523236622097187
       }
      },
      {
@@ -20627,7 +20627,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026974461840672923
+       "max_symbol_share": 0.0026843928345876363
       }
      },
      {
@@ -20684,7 +20684,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026279380633617844
+       "max_symbol_share": 0.002614247649690815
       }
      }
     ]
@@ -20748,7 +20748,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002950672085565183
+       "max_symbol_share": 0.002940096337797212
       }
      },
      {
@@ -20805,7 +20805,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002523219680247907
+       "max_symbol_share": 0.002512104654580247
       }
      },
      {
@@ -20862,7 +20862,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002825109294523052
+       "max_symbol_share": 0.002805079166282434
       }
      },
      {
@@ -20919,7 +20919,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002683361212879268
+       "max_symbol_share": 0.0026665694144702686
       }
      },
      {
@@ -20976,7 +20976,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031963182585606357
+       "max_symbol_share": 0.003168592378145975
       }
      }
     ],
@@ -21035,7 +21035,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002540076474306498
+       "max_symbol_share": 0.0025219579844881607
       }
      },
      {
@@ -21092,7 +21092,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002745537365919768
+       "max_symbol_share": 0.0027282144994305495
       }
      },
      {
@@ -21149,7 +21149,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026214758063152197
+       "max_symbol_share": 0.002610423897244223
       }
      }
     ]
@@ -21213,7 +21213,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028365092170371743
+       "max_symbol_share": 0.002831219541402309
       }
      },
      {
@@ -21270,7 +21270,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025380710659898475
+       "max_symbol_share": 0.002518209750542532
       }
      },
      {
@@ -21327,7 +21327,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027598995691177205
+       "max_symbol_share": 0.0027511409395973153
       }
      },
      {
@@ -21384,7 +21384,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002800404021137415
+       "max_symbol_share": 0.0027824988343585965
       }
      },
      {
@@ -21441,7 +21441,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031185189537619173
+       "max_symbol_share": 0.003091473530471401
       }
      }
     ],
@@ -21500,7 +21500,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025322630024959395
+       "max_symbol_share": 0.0025180688803724378
       }
      },
      {
@@ -21557,7 +21557,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002695186498324772
+       "max_symbol_share": 0.0026859927540061118
       }
      },
      {
@@ -21614,7 +21614,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026828864679063454
+       "max_symbol_share": 0.002675147223517528
       }
      }
     ]
@@ -21678,7 +21678,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028127786064765146
+       "max_symbol_share": 0.0028098363532475757
       }
      },
      {
@@ -21735,7 +21735,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002579097380990599
+       "max_symbol_share": 0.002569610644854005
       }
      },
      {
@@ -21792,7 +21792,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028834000706758215
+       "max_symbol_share": 0.0028757310224319915
       }
      },
      {
@@ -21849,7 +21849,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026876297448378637
+       "max_symbol_share": 0.002664223923827709
       }
      },
      {
@@ -21905,8 +21905,8 @@
        "dn": -0.0017682273385293823
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003168830037459709
+       "symbols": 593,
+       "max_symbol_share": 0.0031434931203703103
       }
      }
     ],
@@ -21965,7 +21965,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025238100183833075
+       "max_symbol_share": 0.0025096815793233126
       }
      },
      {
@@ -22022,7 +22022,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027415119822419764
+       "max_symbol_share": 0.0027345100325561478
       }
      },
      {
@@ -22079,7 +22079,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002735828266139496
+       "max_symbol_share": 0.0027314775315612984
       }
      }
     ]
@@ -22143,7 +22143,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028373736870924387
+       "max_symbol_share": 0.002812779588360113
       }
      },
      {
@@ -22200,7 +22200,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025880423743005216
+       "max_symbol_share": 0.002571896692967706
       }
      },
      {
@@ -22257,7 +22257,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002692992351380077
+       "max_symbol_share": 0.0026826635293509247
       }
      },
      {
@@ -22313,8 +22313,8 @@
        "dn": -0.0029533130239776106
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026923930110870917
+       "symbols": 593,
+       "max_symbol_share": 0.002671064545336955
       }
      },
      {
@@ -22371,7 +22371,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0031594024428054273
+       "max_symbol_share": 0.003136275386190432
       }
      }
     ],
@@ -22430,7 +22430,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002639686673877645
+       "max_symbol_share": 0.0026335279984929147
       }
      },
      {
@@ -22487,7 +22487,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002612979057031562
+       "max_symbol_share": 0.002607029150620592
       }
      },
      {
@@ -22543,8 +22543,8 @@
        "dn": -0.0017343064342810188
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002720553052745523
+       "symbols": 593,
+       "max_symbol_share": 0.002708618721091327
       }
      }
     ]
@@ -22608,7 +22608,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002789064785619088
+       "max_symbol_share": 0.0027712911423949543
       }
      },
      {
@@ -22665,7 +22665,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002543448768452525
+       "max_symbol_share": 0.002525530523302876
       }
      },
      {
@@ -22722,7 +22722,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00262686541177802
+       "max_symbol_share": 0.00261703293621171
       }
      },
      {
@@ -22778,8 +22778,8 @@
        "dn": -0.0033123668351932034
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0027546289743416654
+       "symbols": 593,
+       "max_symbol_share": 0.0027392292598900424
       }
      },
      {
@@ -22835,8 +22835,8 @@
        "dn": 0.000479565605895349
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0032203056338951925
+       "symbols": 593,
+       "max_symbol_share": 0.0032074968737741618
       }
      }
     ],
@@ -22895,7 +22895,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026926249965788284
+       "max_symbol_share": 0.0026834105282197373
       }
      },
      {
@@ -22952,7 +22952,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025510670592323024
+       "max_symbol_share": 0.0025378673109742044
       }
      },
      {
@@ -23008,8 +23008,8 @@
        "dn": -0.001265530987951069
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0027593753967911135
+       "symbols": 593,
+       "max_symbol_share": 0.002753594790748856
       }
      }
     ]
@@ -23072,8 +23072,8 @@
        "dn": 0.004195644354458794
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003140151284350165
+       "symbols": 593,
+       "max_symbol_share": 0.0031192363695194954
       }
      },
      {
@@ -23129,8 +23129,8 @@
        "dn": 0.0016095801405923704
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002715864189297046
+       "symbols": 593,
+       "max_symbol_share": 0.002696381776447409
       }
      },
      {
@@ -23186,8 +23186,8 @@
        "dn": -0.00023009698225123776
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002840902882642302
+       "symbols": 593,
+       "max_symbol_share": 0.0028442815427140466
       }
      },
      {
@@ -23244,7 +23244,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027791443908732113
+       "max_symbol_share": 0.002770077098311727
       }
      },
      {
@@ -23301,7 +23301,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.00349925141484789
+       "max_symbol_share": 0.003468708722039792
       }
      }
     ],
@@ -23359,8 +23359,8 @@
        "dn": 0.003260112000299853
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0028857781523690864
+       "symbols": 593,
+       "max_symbol_share": 0.0028657421221280955
       }
      },
      {
@@ -23416,8 +23416,8 @@
        "dn": 4.364905824727483e-06
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026900971372959474
+       "symbols": 593,
+       "max_symbol_share": 0.0026886962943316354
       }
      },
      {
@@ -23474,7 +23474,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029416829107676372
+       "max_symbol_share": 0.0029160293010129226
       }
      }
     ]
@@ -23537,8 +23537,8 @@
        "dn": 0.0030595954773615097
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0031293683037515348
+       "symbols": 593,
+       "max_symbol_share": 0.003114948293155328
       }
      },
      {
@@ -23594,8 +23594,8 @@
        "dn": 0.0018087031631164874
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026556234799184905
+       "symbols": 593,
+       "max_symbol_share": 0.0026411242153732543
       }
      },
      {
@@ -23652,7 +23652,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002916862839561595
+       "max_symbol_share": 0.002932500396137174
       }
      },
      {
@@ -23709,7 +23709,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002778368168840645
+       "max_symbol_share": 0.0027692708672704762
       }
      },
      {
@@ -23766,7 +23766,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003548299104235961
+       "max_symbol_share": 0.0035173260471840677
       }
      }
     ],
@@ -23824,8 +23824,8 @@
        "dn": 0.0028326983960033636
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002840603582360455
+       "symbols": 593,
+       "max_symbol_share": 0.002824847740316804
       }
      },
      {
@@ -23881,8 +23881,8 @@
        "dn": 0.0014602811848042352
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002758811043130245
+       "symbols": 593,
+       "max_symbol_share": 0.002769819649043266
       }
      },
      {
@@ -23939,7 +23939,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0030188798533235337
+       "max_symbol_share": 0.0029925187032418953
       }
      }
     ]
@@ -24003,7 +24003,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003104608169466815
+       "max_symbol_share": 0.0031033529704920315
       }
      },
      {
@@ -24060,7 +24060,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027662944449101507
+       "max_symbol_share": 0.0027704344137371565
       }
      },
      {
@@ -24117,7 +24117,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027293310493373985
+       "max_symbol_share": 0.0027314165344661063
       }
      },
      {
@@ -24174,7 +24174,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003346436717712511
+       "max_symbol_share": 0.00332583326226852
       }
      },
      {
@@ -24231,7 +24231,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0036721712321485522
+       "max_symbol_share": 0.003661845675597355
       }
      }
     ],
@@ -24290,7 +24290,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029126841718193183
+       "max_symbol_share": 0.0029118806037342743
       }
      },
      {
@@ -24347,7 +24347,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002630509945788736
+       "max_symbol_share": 0.002617869715077146
       }
      },
      {
@@ -24404,7 +24404,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0031695300740662152
+       "max_symbol_share": 0.0031482338342464747
       }
      }
     ]
@@ -24468,7 +24468,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0031504459092671576
+       "max_symbol_share": 0.0031532584034118082
       }
      },
      {
@@ -24525,7 +24525,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027912309749165507
+       "max_symbol_share": 0.0027928854916948404
       }
      },
      {
@@ -24582,7 +24582,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028737348597975775
+       "max_symbol_share": 0.0028591099047109536
       }
      },
      {
@@ -24639,7 +24639,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0033267374068712734
+       "max_symbol_share": 0.0033413704664974407
       }
      },
      {
@@ -24696,7 +24696,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.0038756589064597277
+       "max_symbol_share": 0.0038415450764784664
       }
      }
     ],
@@ -24755,7 +24755,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029398905655877794
+       "max_symbol_share": 0.002951990755331442
       }
      },
      {
@@ -24812,7 +24812,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002672671436670433
+       "max_symbol_share": 0.002663508356362679
       }
      },
      {
@@ -24869,7 +24869,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0033106502340608424
+       "max_symbol_share": 0.003326338613884892
       }
      }
     ]
@@ -24933,7 +24933,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.0033728014970426726
+       "max_symbol_share": 0.003358134811118716
       }
      },
      {
@@ -24990,7 +24990,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.0031378552468431208
+       "max_symbol_share": 0.003132132978121652
       }
      },
      {
@@ -25047,7 +25047,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003063828264598471
+       "max_symbol_share": 0.003042989709685927
       }
      },
      {
@@ -25104,7 +25104,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0035228447754913853
+       "max_symbol_share": 0.0035025764677436887
       }
      },
      {
@@ -25160,8 +25160,8 @@
        "dn": 0.00834049261127251
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.004103545994098625
+       "symbols": 590,
+       "max_symbol_share": 0.004102504710530653
       }
      }
     ],
@@ -25220,7 +25220,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.0030570265393307498
+       "max_symbol_share": 0.003060231462365791
       }
      },
      {
@@ -25277,7 +25277,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002874037680634141
+       "max_symbol_share": 0.0028617347088108432
       }
      },
      {
@@ -25334,7 +25334,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.0035441477831584358
+       "max_symbol_share": 0.003545834477939549
       }
      }
     ]
@@ -25397,8 +25397,8 @@
        "dn": 0.0009520297057850069
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.0035933553725796185
+       "symbols": 589,
+       "max_symbol_share": 0.0035604324060384933
       }
      },
      {
@@ -25454,8 +25454,8 @@
        "dn": 0.003462645800143549
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.003541474216004713
+       "symbols": 589,
+       "max_symbol_share": 0.003538721517607297
       }
      },
      {
@@ -25511,8 +25511,8 @@
        "dn": -0.0022186917713226673
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.003360147324250781
+       "symbols": 591,
+       "max_symbol_share": 0.0033678897583471015
       }
      },
      {
@@ -25568,8 +25568,8 @@
        "dn": -0.0010303117613386092
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.003649250207447955
+       "symbols": 590,
+       "max_symbol_share": 0.003684077833526017
       }
      },
      {
@@ -25626,7 +25626,7 @@
       },
       "breadth": {
        "symbols": 584,
-       "max_symbol_share": 0.005046936741837564
+       "max_symbol_share": 0.005078445680926753
       }
      }
     ],
@@ -25684,8 +25684,8 @@
        "dn": 0.002195414857845468
       },
       "breadth": {
-       "symbols": 588,
-       "max_symbol_share": 0.003324323953517088
+       "symbols": 589,
+       "max_symbol_share": 0.0032938649556150676
       }
      },
      {
@@ -25741,8 +25741,8 @@
        "dn": -0.0010301431293069374
       },
       "breadth": {
-       "symbols": 590,
-       "max_symbol_share": 0.003272287301325414
+       "symbols": 592,
+       "max_symbol_share": 0.0032832848106525564
       }
      },
      {
@@ -25798,8 +25798,8 @@
        "dn": 0.002570131819391308
       },
       "breadth": {
-       "symbols": 588,
-       "max_symbol_share": 0.00390635226616658
+       "symbols": 589,
+       "max_symbol_share": 0.003917108575860017
       }
      }
     ]
@@ -25863,7 +25863,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002654565057247113
+       "max_symbol_share": 0.0026423426358272704
       }
      },
      {
@@ -25920,7 +25920,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025679204160462656
+       "max_symbol_share": 0.0025607126354161317
       }
      },
      {
@@ -25977,7 +25977,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004148169240127875
+       "max_symbol_share": 0.004123173389278466
       }
      },
      {
@@ -26034,7 +26034,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002423345252250172
+       "max_symbol_share": 0.002421654554828441
       }
      },
      {
@@ -26091,7 +26091,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026845550333781843
+       "max_symbol_share": 0.002676438746928325
       }
      }
     ],
@@ -26150,7 +26150,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002366304444699904
+       "max_symbol_share": 0.0023599824826042526
       }
      },
      {
@@ -26207,7 +26207,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0036594853419942446
+       "max_symbol_share": 0.0036445580588365134
       }
      },
      {
@@ -26264,7 +26264,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002425978467170803
+       "max_symbol_share": 0.002420519627173098
       }
      }
     ]
@@ -26328,7 +26328,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026156218877648693
+       "max_symbol_share": 0.0026037446155158443
       }
      },
      {
@@ -26385,7 +26385,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002574072112922015
+       "max_symbol_share": 0.002573200152549418
       }
      },
      {
@@ -26442,7 +26442,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0038195397108988665
+       "max_symbol_share": 0.0037995450826518854
       }
      },
      {
@@ -26499,7 +26499,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025200512655368943
+       "max_symbol_share": 0.0025132141931254056
       }
      },
      {
@@ -26556,7 +26556,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002790683543864294
+       "max_symbol_share": 0.0027708578042242673
       }
      }
     ],
@@ -26615,7 +26615,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023466070571555343
+       "max_symbol_share": 0.002340469735482034
       }
      },
      {
@@ -26672,7 +26672,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00350049720025048
+       "max_symbol_share": 0.003484333992242184
       }
      },
      {
@@ -26729,7 +26729,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024596202595789413
+       "max_symbol_share": 0.0024525621159015936
       }
      }
     ]
@@ -26793,7 +26793,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026777712670619054
+       "max_symbol_share": 0.0026653567691091984
       }
      },
      {
@@ -26850,7 +26850,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026041046577323294
+       "max_symbol_share": 0.002607173051916004
       }
      },
      {
@@ -26907,7 +26907,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0036848152291271336
+       "max_symbol_share": 0.003661652183799066
       }
      },
      {
@@ -26964,7 +26964,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025260505729610854
+       "max_symbol_share": 0.002519194372797851
       }
      },
      {
@@ -27021,7 +27021,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002729752344522565
+       "max_symbol_share": 0.0027126137617209047
       }
      }
     ],
@@ -27080,7 +27080,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023826582900054027
+       "max_symbol_share": 0.0023761664087134666
       }
      },
      {
@@ -27137,7 +27137,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003426711992583032
+       "max_symbol_share": 0.003413742501866488
       }
      },
      {
@@ -27194,7 +27194,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024594323786224577
+       "max_symbol_share": 0.002443366530780742
       }
      }
     ]
@@ -27257,8 +27257,8 @@
        "dn": -0.0003864981496690123
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026320395713535557
+       "symbols": 593,
+       "max_symbol_share": 0.002628478395921253
       }
      },
      {
@@ -27315,7 +27315,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002549198001463509
+       "max_symbol_share": 0.0025356017426342707
       }
      },
      {
@@ -27372,7 +27372,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0037937979650658053
+       "max_symbol_share": 0.0037717093825842987
       }
      },
      {
@@ -27429,7 +27429,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024644660902493998
+       "max_symbol_share": 0.0024602655278700945
       }
      },
      {
@@ -27486,7 +27486,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002788235781414523
+       "max_symbol_share": 0.0027706039354678364
       }
      }
     ],
@@ -27545,7 +27545,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024251025405093497
+       "max_symbol_share": 0.0024272251173996224
       }
      },
      {
@@ -27602,7 +27602,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003528483156019131
+       "max_symbol_share": 0.00351714414093367
       }
      },
      {
@@ -27659,7 +27659,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002422650740174624
+       "max_symbol_share": 0.002413358489198765
       }
      }
     ]
@@ -27722,8 +27722,8 @@
        "dn": -0.0009493585561330398
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026662273533249806
+       "symbols": 593,
+       "max_symbol_share": 0.0026537966482655774
       }
      },
      {
@@ -27779,8 +27779,8 @@
        "dn": -0.0024211705839747855
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026007519091784323
+       "symbols": 593,
+       "max_symbol_share": 0.0025931123825974306
       }
      },
      {
@@ -27836,8 +27836,8 @@
        "dn": -0.0011370439467567883
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0038902289291965274
+       "symbols": 593,
+       "max_symbol_share": 0.0038672113564804924
       }
      },
      {
@@ -27893,8 +27893,8 @@
        "dn": 0.0015238619124863795
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0025484255304319037
+       "symbols": 593,
+       "max_symbol_share": 0.0025456115729245387
       }
      },
      {
@@ -27951,7 +27951,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002801200076972867
+       "max_symbol_share": 0.0027791085608249748
       }
      }
     ],
@@ -28009,8 +28009,8 @@
        "dn": -0.0015164586176250605
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002409117100299054
+       "symbols": 593,
+       "max_symbol_share": 0.002403656659615079
       }
      },
      {
@@ -28066,8 +28066,8 @@
        "dn": -0.0011796083878444774
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003580089476104863
+       "symbols": 593,
+       "max_symbol_share": 0.003561724029851133
       }
      },
      {
@@ -28124,7 +28124,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024601936993378817
+       "max_symbol_share": 0.0024414810353644827
       }
      }
     ]
@@ -28187,8 +28187,8 @@
        "dn": 0.0005068770804772527
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002756450268224654
+       "symbols": 593,
+       "max_symbol_share": 0.0027323231886189976
       }
      },
      {
@@ -28244,8 +28244,8 @@
        "dn": -0.001924683432955543
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026138058065082012
+       "symbols": 593,
+       "max_symbol_share": 0.0026083837802001937
       }
      },
      {
@@ -28302,7 +28302,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003743118622672604
+       "max_symbol_share": 0.003727582371750313
       }
      },
      {
@@ -28359,7 +28359,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002741029706183544
+       "max_symbol_share": 0.002730108356609536
       }
      },
      {
@@ -28416,7 +28416,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.00283122715864559
+       "max_symbol_share": 0.0028064570334919874
       }
      }
     ],
@@ -28474,8 +28474,8 @@
        "dn": -0.0004920689593269634
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0024438581984748855
+       "symbols": 593,
+       "max_symbol_share": 0.0024224572980103844
       }
      },
      {
@@ -28532,7 +28532,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0035343125584503215
+       "max_symbol_share": 0.003520323348218651
       }
      },
      {
@@ -28589,7 +28589,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0024926709410722572
+       "max_symbol_share": 0.002478704958324568
       }
      }
     ]
@@ -28652,8 +28652,8 @@
        "dn": 0.0029704762165207454
       },
       "breadth": {
-       "symbols": 590,
-       "max_symbol_share": 0.0028829811043967124
+       "symbols": 591,
+       "max_symbol_share": 0.0028573624853123663
       }
      },
      {
@@ -28710,7 +28710,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002649260210783157
+       "max_symbol_share": 0.0026434303694403563
       }
      },
      {
@@ -28767,7 +28767,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0037888057808766534
+       "max_symbol_share": 0.0037749245345839975
       }
      },
      {
@@ -28824,7 +28824,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002747216050509593
+       "max_symbol_share": 0.002744931034711021
       }
      },
      {
@@ -28881,7 +28881,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028479201688186274
+       "max_symbol_share": 0.002829258565873869
       }
      }
     ],
@@ -28940,7 +28940,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.00247988838503432
+       "max_symbol_share": 0.002485574554689904
       }
      },
      {
@@ -28997,7 +28997,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0035879768724378746
+       "max_symbol_share": 0.00357337596679672
       }
      },
      {
@@ -29054,7 +29054,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0025149505040608622
+       "max_symbol_share": 0.002513829377976467
       }
      }
     ]
@@ -29118,7 +29118,7 @@
       },
       "breadth": {
        "symbols": 589,
-       "max_symbol_share": 0.0027902211957962463
+       "max_symbol_share": 0.0027650939174612785
       }
      },
      {
@@ -29175,7 +29175,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.002875742636834787
+       "max_symbol_share": 0.0028633360997335753
       }
      },
      {
@@ -29232,7 +29232,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003426125162960858
+       "max_symbol_share": 0.0034086057796543115
       }
      },
      {
@@ -29289,7 +29289,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028351312489701204
+       "max_symbol_share": 0.002809648547863571
       }
      },
      {
@@ -29346,7 +29346,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029195624283143156
+       "max_symbol_share": 0.0029112277698782273
       }
      }
     ],
@@ -29404,8 +29404,8 @@
        "dn": 0.0009203817847420748
       },
       "breadth": {
-       "symbols": 590,
-       "max_symbol_share": 0.002515628103159667
+       "symbols": 591,
+       "max_symbol_share": 0.0024956319746152456
       }
      },
      {
@@ -29462,7 +29462,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0033753274798773345
+       "max_symbol_share": 0.003355745220981391
       }
      },
      {
@@ -29519,7 +29519,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002631268260445348
+       "max_symbol_share": 0.002607553163019813
       }
      }
     ]
@@ -29582,8 +29582,8 @@
        "dn": -0.002902933209174008
       },
       "breadth": {
-       "symbols": 584,
-       "max_symbol_share": 0.003038676590387321
+       "symbols": 585,
+       "max_symbol_share": 0.0030107911524473855
       }
      },
      {
@@ -29640,7 +29640,7 @@
       },
       "breadth": {
        "symbols": 586,
-       "max_symbol_share": 0.0029559445649924064
+       "max_symbol_share": 0.002935524454255128
       }
      },
      {
@@ -29697,7 +29697,7 @@
       },
       "breadth": {
        "symbols": 586,
-       "max_symbol_share": 0.00371800770557097
+       "max_symbol_share": 0.0037066028179390366
       }
      },
      {
@@ -29753,8 +29753,8 @@
        "dn": -0.0023666548341628735
       },
       "breadth": {
-       "symbols": 586,
-       "max_symbol_share": 0.0029443092966682325
+       "symbols": 587,
+       "max_symbol_share": 0.002967782964741448
       }
      },
      {
@@ -29810,8 +29810,8 @@
        "dn": 0.0005039606952825237
       },
       "breadth": {
-       "symbols": 586,
-       "max_symbol_share": 0.0030613746062362374
+       "symbols": 587,
+       "max_symbol_share": 0.0030376361499523416
       }
      }
     ],
@@ -29870,7 +29870,7 @@
       },
       "breadth": {
        "symbols": 586,
-       "max_symbol_share": 0.0026209784058104156
+       "max_symbol_share": 0.0026285268251781428
       }
      },
      {
@@ -29926,8 +29926,8 @@
        "dn": -0.0019724246217123764
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.0036306424549447454
+       "symbols": 588,
+       "max_symbol_share": 0.0036260222370235666
       }
      },
      {
@@ -29983,8 +29983,8 @@
        "dn": -0.00026894154051793073
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.002903883822277277
+       "symbols": 589,
+       "max_symbol_share": 0.002877085956579135
       }
      }
     ]
@@ -30047,8 +30047,8 @@
        "dn": -0.0034347406811732206
       },
       "breadth": {
-       "symbols": 577,
-       "max_symbol_share": 0.0034438728977417826
+       "symbols": 579,
+       "max_symbol_share": 0.0034109961264959243
       }
      },
      {
@@ -30105,7 +30105,7 @@
       },
       "breadth": {
        "symbols": 579,
-       "max_symbol_share": 0.0031710820767900244
+       "max_symbol_share": 0.0031747798585383914
       }
      },
      {
@@ -30161,8 +30161,8 @@
        "dn": -0.01321853173576848
       },
       "breadth": {
-       "symbols": 578,
-       "max_symbol_share": 0.003937671448706455
+       "symbols": 580,
+       "max_symbol_share": 0.003924215701217668
       }
      },
      {
@@ -30218,8 +30218,8 @@
        "dn": -0.01833205008240585
       },
       "breadth": {
-       "symbols": 574,
-       "max_symbol_share": 0.003107760116101227
+       "symbols": 575,
+       "max_symbol_share": 0.003131223427552346
       }
      },
      {
@@ -30275,8 +30275,8 @@
        "dn": -0.011844279810290292
       },
       "breadth": {
-       "symbols": 573,
-       "max_symbol_share": 0.0033812631888894343
+       "symbols": 575,
+       "max_symbol_share": 0.0033561695436727336
       }
      }
     ],
@@ -30335,7 +30335,7 @@
       },
       "breadth": {
        "symbols": 579,
-       "max_symbol_share": 0.002777562443962422
+       "max_symbol_share": 0.002751073483650018
       }
      },
      {
@@ -30391,8 +30391,8 @@
        "dn": -0.012878441259851048
       },
       "breadth": {
-       "symbols": 578,
-       "max_symbol_share": 0.003839874310068385
+       "symbols": 580,
+       "max_symbol_share": 0.0038263399084639627
       }
      },
      {
@@ -30448,8 +30448,8 @@
        "dn": -0.014390720019564096
       },
       "breadth": {
-       "symbols": 574,
-       "max_symbol_share": 0.0028323825949501907
+       "symbols": 576,
+       "max_symbol_share": 0.002835861940521106
       }
      }
     ]
@@ -30513,7 +30513,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002651937034268369
+       "max_symbol_share": 0.0026461184922890956
       }
      },
      {
@@ -30570,7 +30570,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002428397971573459
+       "max_symbol_share": 0.0024266376585843114
       }
      },
      {
@@ -30627,7 +30627,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002362378473799665
+       "max_symbol_share": 0.0023548638232436642
       }
      },
      {
@@ -30684,7 +30684,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024327003406646205
+       "max_symbol_share": 0.002420206146637029
       }
      },
      {
@@ -30741,7 +30741,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004623119073028762
+       "max_symbol_share": 0.004600380958947795
       }
      }
     ],
@@ -30800,7 +30800,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024890996611662878
+       "max_symbol_share": 0.002482980089916506
       }
      },
      {
@@ -30857,7 +30857,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023550489445122425
+       "max_symbol_share": 0.0023513695086448544
       }
      },
      {
@@ -30914,7 +30914,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031903820131154365
+       "max_symbol_share": 0.003178317271909944
       }
      }
     ]
@@ -30978,7 +30978,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026379196641393788
+       "max_symbol_share": 0.002632163672722922
       }
      },
      {
@@ -31035,7 +31035,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024055741765617827
+       "max_symbol_share": 0.00240617836199569
       }
      },
      {
@@ -31092,7 +31092,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024175239101122624
+       "max_symbol_share": 0.002403149842829709
       }
      },
      {
@@ -31149,7 +31149,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025117304306968105
+       "max_symbol_share": 0.0025092190726407116
       }
      },
      {
@@ -31206,7 +31206,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.005031539533680221
+       "max_symbol_share": 0.0050031687453923855
       }
      }
     ],
@@ -31265,7 +31265,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025148036379097575
+       "max_symbol_share": 0.0025110194430522895
       }
      },
      {
@@ -31322,7 +31322,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002401401618510923
+       "max_symbol_share": 0.002396049929509009
       }
      },
      {
@@ -31379,7 +31379,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003444316877152698
+       "max_symbol_share": 0.003427459421512986
       }
      }
     ]
@@ -31443,7 +31443,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027359485952371193
+       "max_symbol_share": 0.002720768317594088
       }
      },
      {
@@ -31500,7 +31500,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002490911101138795
+       "max_symbol_share": 0.0024864929918291733
       }
      },
      {
@@ -31557,7 +31557,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00247275848019626
+       "max_symbol_share": 0.0024643136446060106
       }
      },
      {
@@ -31614,7 +31614,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025343129497104725
+       "max_symbol_share": 0.002535921979566486
       }
      },
      {
@@ -31671,7 +31671,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003689426473757186
+       "max_symbol_share": 0.0036747808186367277
       }
      }
     ],
@@ -31730,7 +31730,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002565866320571058
+       "max_symbol_share": 0.002568061345273017
       }
      },
      {
@@ -31787,7 +31787,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023899647486701108
+       "max_symbol_share": 0.002384699766299423
       }
      },
      {
@@ -31844,7 +31844,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00279158874241664
+       "max_symbol_share": 0.002786832507102741
       }
      }
     ]
@@ -31908,7 +31908,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002975438596491228
+       "max_symbol_share": 0.002975279494330915
       }
      },
      {
@@ -31965,7 +31965,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025100826353047353
+       "max_symbol_share": 0.002526995842823009
       }
      },
      {
@@ -32022,7 +32022,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024832623778159
+       "max_symbol_share": 0.0024833422561648167
       }
      },
      {
@@ -32079,7 +32079,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002573002993882067
+       "max_symbol_share": 0.002574309807539695
       }
      },
      {
@@ -32136,7 +32136,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003495955147222186
+       "max_symbol_share": 0.0034764433177793086
       }
      }
     ],
@@ -32195,7 +32195,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027119031507690868
+       "max_symbol_share": 0.0027076648933156856
       }
      },
      {
@@ -32252,7 +32252,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024489137336955956
+       "max_symbol_share": 0.002448330929720777
       }
      },
      {
@@ -32309,7 +32309,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027583886315262303
+       "max_symbol_share": 0.002750012605840577
       }
      }
     ]
@@ -32372,8 +32372,8 @@
        "dn": -0.004446896352272689
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0033400437257830595
+       "symbols": 593,
+       "max_symbol_share": 0.003315258557980546
       }
      },
      {
@@ -32430,7 +32430,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025730144506407523
+       "max_symbol_share": 0.0025614047191941493
       }
      },
      {
@@ -32487,7 +32487,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025632385072777274
+       "max_symbol_share": 0.0025604772660654863
       }
      },
      {
@@ -32544,7 +32544,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027448447161739216
+       "max_symbol_share": 0.002733883991039415
       }
      },
      {
@@ -32600,8 +32600,8 @@
        "dn": 0.004497069879279891
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003089769260835482
+       "symbols": 593,
+       "max_symbol_share": 0.00306504784808099
       }
      }
     ],
@@ -32660,7 +32660,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029360679344924835
+       "max_symbol_share": 0.002918259060348978
       }
      },
      {
@@ -32717,7 +32717,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025698691323495647
+       "max_symbol_share": 0.002568234073974452
       }
      },
      {
@@ -32774,7 +32774,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002852917834135907
+       "max_symbol_share": 0.002837212195994463
       }
      }
     ]
@@ -32838,7 +32838,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003524271087105416
+       "max_symbol_share": 0.0035042713006411246
       }
      },
      {
@@ -32895,7 +32895,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025414759289344967
+       "max_symbol_share": 0.0025344328828634344
       }
      },
      {
@@ -32952,7 +32952,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026925136367000274
+       "max_symbol_share": 0.002684314669002855
       }
      },
      {
@@ -33008,8 +33008,8 @@
        "dn": 0.0030752359150852393
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002698270624130249
+       "symbols": 593,
+       "max_symbol_share": 0.0026876961802332357
       }
      },
      {
@@ -33065,8 +33065,8 @@
        "dn": 0.004761273714548653
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0030892943815508125
+       "symbols": 593,
+       "max_symbol_share": 0.0030645860424794104
       }
      }
     ],
@@ -33125,7 +33125,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003041376010804511
+       "max_symbol_share": 0.003032950219297679
       }
      },
      {
@@ -33182,7 +33182,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026462974041207006
+       "max_symbol_share": 0.00263621638209082
       }
      },
      {
@@ -33238,8 +33238,8 @@
        "dn": 0.003964356040350281
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.00287879978006441
+       "symbols": 593,
+       "max_symbol_share": 0.0028641730495202154
       }
      }
     ]
@@ -33302,8 +33302,8 @@
        "dn": -0.004907623802059891
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003790945255442683
+       "symbols": 593,
+       "max_symbol_share": 0.0038053490609589306
       }
      },
      {
@@ -33359,8 +33359,8 @@
        "dn": 0.0008744013419832442
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002768344656723076
+       "symbols": 593,
+       "max_symbol_share": 0.00275070068084719
       }
      },
      {
@@ -33416,8 +33416,8 @@
        "dn": 0.0012268680694458856
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026944341251283845
+       "symbols": 593,
+       "max_symbol_share": 0.00270127416958023
       }
      },
      {
@@ -33473,8 +33473,8 @@
        "dn": 0.003745404101139993
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0026525082931885425
+       "symbols": 593,
+       "max_symbol_share": 0.002633661005559951
       }
      },
      {
@@ -33530,8 +33530,8 @@
        "dn": 0.00507132918416342
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003308532148965178
+       "symbols": 593,
+       "max_symbol_share": 0.003307806641292308
       }
      }
     ],
@@ -33589,8 +33589,8 @@
        "dn": -0.0027760647726519094
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0032029089271760343
+       "symbols": 593,
+       "max_symbol_share": 0.003217778746571379
       }
      },
      {
@@ -33646,8 +33646,8 @@
        "dn": 0.0017165383683664381
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002659661666904917
+       "symbols": 593,
+       "max_symbol_share": 0.0026611580132446886
       }
      },
      {
@@ -33703,8 +33703,8 @@
        "dn": 0.004666049228310765
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0028906255134836705
+       "symbols": 593,
+       "max_symbol_share": 0.0028887837790295408
       }
      }
     ]
@@ -33767,8 +33767,8 @@
        "dn": -0.0036262803647157393
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.00404525451302114
+       "symbols": 593,
+       "max_symbol_share": 0.004057422142673402
       }
      },
      {
@@ -33824,8 +33824,8 @@
        "dn": -0.00028929674968219965
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.002741100734904226
+       "symbols": 593,
+       "max_symbol_share": 0.0027302286485042385
       }
      },
      {
@@ -33882,7 +33882,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002632068757869382
+       "max_symbol_share": 0.0026329784347561835
       }
      },
      {
@@ -33939,7 +33939,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0026776108349018464
+       "max_symbol_share": 0.0026867882563243782
       }
      },
      {
@@ -33996,7 +33996,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0034497248800406575
+       "max_symbol_share": 0.003443335434080516
       }
      }
     ],
@@ -34054,8 +34054,8 @@
        "dn": -0.0024679935189962365
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003122979277635612
+       "symbols": 593,
+       "max_symbol_share": 0.003139878669367526
       }
      },
      {
@@ -34112,7 +34112,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002662440403912973
+       "max_symbol_share": 0.0026587672230407385
       }
      },
      {
@@ -34169,7 +34169,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0030296643658780757
+       "max_symbol_share": 0.003027865765923388
       }
      }
     ]
@@ -34233,7 +34233,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004452494648443932
+       "max_symbol_share": 0.004413339252604915
       }
      },
      {
@@ -34290,7 +34290,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.002806002020674411
+       "max_symbol_share": 0.002814154299621062
       }
      },
      {
@@ -34347,7 +34347,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027756282642292284
+       "max_symbol_share": 0.002786105745277824
       }
      },
      {
@@ -34404,7 +34404,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028170008316439417
+       "max_symbol_share": 0.0028316594836539995
       }
      },
      {
@@ -34461,7 +34461,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003515043589198384
+       "max_symbol_share": 0.003514734002032882
       }
      }
     ],
@@ -34520,7 +34520,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0032286306248489674
+       "max_symbol_share": 0.0032067391258821807
       }
      },
      {
@@ -34577,7 +34577,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0027530679310582046
+       "max_symbol_share": 0.0027302232567288465
       }
      },
      {
@@ -34634,7 +34634,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003210807197725247
+       "max_symbol_share": 0.003214043463858114
       }
      }
     ]
@@ -34698,7 +34698,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0046507221727751
+       "max_symbol_share": 0.004609653413458179
       }
      },
      {
@@ -34755,7 +34755,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029527711558084814
+       "max_symbol_share": 0.002950888008863634
       }
      },
      {
@@ -34812,7 +34812,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028469735145191227
+       "max_symbol_share": 0.0028239545010063627
       }
      },
      {
@@ -34869,7 +34869,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029062753856403875
+       "max_symbol_share": 0.0028806810079092574
       }
      },
      {
@@ -34926,7 +34926,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0037378442283418373
+       "max_symbol_share": 0.0037532460953245213
       }
      }
     ],
@@ -34985,7 +34985,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003386695427961172
+       "max_symbol_share": 0.003358075666361984
       }
      },
      {
@@ -35042,7 +35042,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0028858534772277754
+       "max_symbol_share": 0.0028656952073944936
       }
      },
      {
@@ -35099,7 +35099,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003427943327154341
+       "max_symbol_share": 0.0034372057073969826
       }
      }
     ]
@@ -35162,8 +35162,8 @@
        "dn": -0.008540360192288265
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.004969893273157007
+       "symbols": 591,
+       "max_symbol_share": 0.004941019068624529
       }
      },
      {
@@ -35220,7 +35220,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0030973055232297914
+       "max_symbol_share": 0.003080854121890034
       }
      },
      {
@@ -35277,7 +35277,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003008080442109548
+       "max_symbol_share": 0.0029877674417573747
       }
      },
      {
@@ -35334,7 +35334,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003081743411850277
+       "max_symbol_share": 0.003080854121890034
       }
      },
      {
@@ -35391,7 +35391,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.004202114989640775
+       "max_symbol_share": 0.00422025499693781
       }
      }
     ],
@@ -35449,8 +35449,8 @@
        "dn": -0.007144737554329261
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.0037646062704139458
+       "symbols": 592,
+       "max_symbol_share": 0.0037310113430711403
       }
      },
      {
@@ -35507,7 +35507,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0029782156743531204
+       "max_symbol_share": 0.002966297276194201
       }
      },
      {
@@ -35564,7 +35564,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0037324678959322287
+       "max_symbol_share": 0.003743100866367165
       }
      }
     ]
@@ -35627,8 +35627,8 @@
        "dn": -0.016271510232463315
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.005160212978551582
+       "symbols": 588,
+       "max_symbol_share": 0.005124460880494046
       }
      },
      {
@@ -35684,8 +35684,8 @@
        "dn": -0.0062709500597124546
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.0034976414986224885
+       "symbols": 590,
+       "max_symbol_share": 0.003467971792920977
       }
      },
      {
@@ -35741,8 +35741,8 @@
        "dn": 0.0007497928650770369
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.003259358343888646
+       "symbols": 592,
+       "max_symbol_share": 0.0032294375831188695
       }
      },
      {
@@ -35799,7 +35799,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.003502233590729166
+       "max_symbol_share": 0.0035156888751612493
       }
      },
      {
@@ -35855,8 +35855,8 @@
        "dn": 0.019724702997299115
       },
       "breadth": {
-       "symbols": 586,
-       "max_symbol_share": 0.0051589922246945905
+       "symbols": 587,
+       "max_symbol_share": 0.005182516701247178
       }
      }
     ],
@@ -35914,8 +35914,8 @@
        "dn": -0.012738217337345148
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.004206586477182767
+       "symbols": 590,
+       "max_symbol_share": 0.004170847029970825
       }
      },
      {
@@ -35971,8 +35971,8 @@
        "dn": 0.0005642658920188004
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.00327835952813616
+       "symbols": 592,
+       "max_symbol_share": 0.00324841597158283
       }
      },
      {
@@ -36029,7 +36029,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004395416641405652
+       "max_symbol_share": 0.004400282338935058
       }
      }
     ]
@@ -36093,7 +36093,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004517378679148525
+       "max_symbol_share": 0.004490441012154797
       }
      },
      {
@@ -36150,7 +36150,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023034896148643094
+       "max_symbol_share": 0.0022954643462075935
       }
      },
      {
@@ -36207,7 +36207,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023322780758329295
+       "max_symbol_share": 0.002329448431881978
       }
      },
      {
@@ -36321,7 +36321,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026467191376507828
+       "max_symbol_share": 0.002628190522617805
       }
      }
     ],
@@ -36380,7 +36380,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025484624355222502
+       "max_symbol_share": 0.0025413138795314385
       }
      },
      {
@@ -36437,7 +36437,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002316152473019163
+       "max_symbol_share": 0.002313652404748844
       }
      },
      {
@@ -36494,7 +36494,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002654463214448774
+       "max_symbol_share": 0.0026359958118709254
       }
      }
     ]
@@ -36558,7 +36558,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.004673618898610673
+       "max_symbol_share": 0.004647199030612924
       }
      },
      {
@@ -36615,7 +36615,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023756444621471843
+       "max_symbol_share": 0.002370737406086974
       }
      },
      {
@@ -36672,7 +36672,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002365877707809822
+       "max_symbol_share": 0.002355944266707041
       }
      },
      {
@@ -36729,7 +36729,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024991461050362963
+       "max_symbol_share": 0.002486087198794105
       }
      },
      {
@@ -36786,7 +36786,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027420242272272184
+       "max_symbol_share": 0.002728733383001068
       }
      }
     ],
@@ -36845,7 +36845,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003403653490082831
+       "max_symbol_share": 0.003387243190512106
       }
      },
      {
@@ -36902,7 +36902,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002309780521472729
+       "max_symbol_share": 0.002300746137955567
       }
      },
      {
@@ -36959,7 +36959,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025054646524024496
+       "max_symbol_share": 0.0024944097317802505
       }
      }
     ]
@@ -37023,7 +37023,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.005512167316021132
+       "max_symbol_share": 0.005482649928043861
       }
      },
      {
@@ -37080,7 +37080,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002404239281021548
+       "max_symbol_share": 0.0024017857808319235
       }
      },
      {
@@ -37137,7 +37137,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0024188951964069943
+       "max_symbol_share": 0.002420217638636626
       }
      },
      {
@@ -37194,7 +37194,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025206701273191323
+       "max_symbol_share": 0.0025094548569756995
       }
      },
      {
@@ -37251,7 +37251,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026483466030615558
+       "max_symbol_share": 0.0026256179351608227
       }
      }
     ],
@@ -37310,7 +37310,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0035848889592874013
+       "max_symbol_share": 0.003573284073197483
       }
      },
      {
@@ -37367,7 +37367,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0023987677396180235
+       "max_symbol_share": 0.002394089907618569
       }
      },
      {
@@ -37424,7 +37424,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002535801408041255
+       "max_symbol_share": 0.002529208761454608
       }
      }
     ]
@@ -37488,7 +37488,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0056093189964157705
+       "max_symbol_share": 0.005584132218349838
       }
      },
      {
@@ -37545,7 +37545,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002455994154189532
+       "max_symbol_share": 0.002443008574399678
       }
      },
      {
@@ -37602,7 +37602,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002481955273262879
+       "max_symbol_share": 0.0024879092718836774
       }
      },
      {
@@ -37659,7 +37659,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025461802611298763
+       "max_symbol_share": 0.0025638167428380337
       }
      },
      {
@@ -37716,7 +37716,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027719023990690405
+       "max_symbol_share": 0.0027766503994219025
       }
      }
     ],
@@ -37775,7 +37775,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0037243857844955824
+       "max_symbol_share": 0.0037156414004649043
       }
      },
      {
@@ -37832,7 +37832,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002454203566662623
+       "max_symbol_share": 0.002446695698384339
       }
      },
      {
@@ -37889,7 +37889,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026599372527622424
+       "max_symbol_share": 0.0026583235280416314
       }
      }
     ]
@@ -37953,7 +37953,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.006091894901054334
+       "max_symbol_share": 0.006068605458807137
       }
      },
      {
@@ -38010,7 +38010,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026911009607145805
+       "max_symbol_share": 0.002680228595396634
       }
      },
      {
@@ -38067,7 +38067,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025779536824089427
+       "max_symbol_share": 0.002580932486453816
       }
      },
      {
@@ -38124,7 +38124,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002683852439399638
+       "max_symbol_share": 0.002663050962363484
       }
      },
      {
@@ -38181,7 +38181,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0031131444396106113
+       "max_symbol_share": 0.0031162543735378067
       }
      }
     ],
@@ -38240,7 +38240,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003916331419387681
+       "max_symbol_share": 0.003909887598596618
       }
      },
      {
@@ -38297,7 +38297,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0025657538569694854
+       "max_symbol_share": 0.0025693142474834713
       }
      },
      {
@@ -38354,7 +38354,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028967665821663926
+       "max_symbol_share": 0.002890177277586809
       }
      }
     ]
@@ -38418,7 +38418,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.006166627137005532
+       "max_symbol_share": 0.006138803039321809
       }
      },
      {
@@ -38475,7 +38475,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002720438014101687
+       "max_symbol_share": 0.0027137359239558915
       }
      },
      {
@@ -38532,7 +38532,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.002673435943575078
+       "max_symbol_share": 0.0026674765374625417
       }
      },
      {
@@ -38589,7 +38589,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0027264452213696224
+       "max_symbol_share": 0.002702436264508718
       }
      },
      {
@@ -38646,7 +38646,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003211459100791452
+       "max_symbol_share": 0.0031995482990636614
       }
      }
     ],
@@ -38705,7 +38705,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003968850304984953
+       "max_symbol_share": 0.003964858670741023
       }
      },
      {
@@ -38762,7 +38762,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0026349783738970046
+       "max_symbol_share": 0.0026261969838873066
       }
      },
      {
@@ -38819,7 +38819,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029771352809204576
+       "max_symbol_share": 0.0029659543351462283
       }
      }
     ]
@@ -38883,7 +38883,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.006313423819967827
+       "max_symbol_share": 0.006265131612836759
       }
      },
      {
@@ -38940,7 +38940,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.00286261825158412
+       "max_symbol_share": 0.002837497223953134
       }
      },
      {
@@ -38997,7 +38997,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0029549580891705895
+       "max_symbol_share": 0.0029336764937284853
       }
      },
      {
@@ -39054,7 +39054,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0030443221976568075
+       "max_symbol_share": 0.0030220734314230922
       }
      },
      {
@@ -39111,7 +39111,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0038085971740121315
+       "max_symbol_share": 0.003775585128800024
       }
      }
     ],
@@ -39170,7 +39170,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003984385376003583
+       "max_symbol_share": 0.003979358449457114
       }
      },
      {
@@ -39227,7 +39227,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.0028186695096950485
+       "max_symbol_share": 0.0027967324023827848
       }
      },
      {
@@ -39284,7 +39284,7 @@
       },
       "breadth": {
        "symbols": 593,
-       "max_symbol_share": 0.003387675936361492
+       "max_symbol_share": 0.0033764384615184747
       }
      }
     ]
@@ -39348,7 +39348,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.006319613644274278
+       "max_symbol_share": 0.006264461633676711
       }
      },
      {
@@ -39404,8 +39404,8 @@
        "dn": -0.004284117743068305
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0032286623020340356
+       "symbols": 593,
+       "max_symbol_share": 0.0032003362844897445
       }
      },
      {
@@ -39461,8 +39461,8 @@
        "dn": 0.00018811989295192122
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.003071404697982179
+       "symbols": 593,
+       "max_symbol_share": 0.003064236355486066
       }
      },
      {
@@ -39518,8 +39518,8 @@
        "dn": 0.002199560820626001
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0034975582671347566
+       "symbols": 593,
+       "max_symbol_share": 0.0035059740237227462
       }
      },
      {
@@ -39575,8 +39575,8 @@
        "dn": 0.00789739419263763
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.004210563289069
+       "symbols": 592,
+       "max_symbol_share": 0.004173802534312008
       }
      }
     ],
@@ -39634,8 +39634,8 @@
        "dn": -0.002767605931574435
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.004007478533234073
+       "symbols": 593,
+       "max_symbol_share": 0.003985355472179677
       }
      },
      {
@@ -39691,8 +39691,8 @@
        "dn": 1.5316621689742682e-05
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0030024399741449275
+       "symbols": 593,
+       "max_symbol_share": 0.0029762833109787164
       }
      },
      {
@@ -39748,8 +39748,8 @@
        "dn": 0.006193131347277836
       },
       "breadth": {
-       "symbols": 592,
-       "max_symbol_share": 0.0037877941553363607
+       "symbols": 593,
+       "max_symbol_share": 0.0037586540240397517
       }
      }
     ]
@@ -39813,7 +39813,7 @@
       },
       "breadth": {
        "symbols": 587,
-       "max_symbol_share": 0.006255107052633202
+       "max_symbol_share": 0.006200088198437753
       }
      },
      {
@@ -39870,7 +39870,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.0038704965920155795
+       "max_symbol_share": 0.003836224575964485
       }
      },
      {
@@ -39926,8 +39926,8 @@
        "dn": -0.006111658177416768
       },
       "breadth": {
-       "symbols": 591,
-       "max_symbol_share": 0.0033948159943382873
+       "symbols": 592,
+       "max_symbol_share": 0.0033647006731593334
       }
      },
      {
@@ -39984,7 +39984,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.004175462354456261
+       "max_symbol_share": 0.0041586699275084175
       }
      },
      {
@@ -40041,7 +40041,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.005670103092783505
+       "max_symbol_share": 0.005619833254790731
       }
      }
     ],
@@ -40100,7 +40100,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.004409306564025674
+       "max_symbol_share": 0.004370355102839221
       }
      },
      {
@@ -40157,7 +40157,7 @@
       },
       "breadth": {
        "symbols": 592,
-       "max_symbol_share": 0.0031152606625005973
+       "max_symbol_share": 0.0031167197741331994
       }
      },
      {
@@ -40214,7 +40214,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.004346189202240809
+       "max_symbol_share": 0.00430783268678483
       }
      }
     ]
@@ -40277,8 +40277,8 @@
        "dn": 0.006527829650176731
       },
       "breadth": {
-       "symbols": 580,
-       "max_symbol_share": 0.006420792409968598
+       "symbols": 582,
+       "max_symbol_share": 0.006363521987590801
       }
      },
      {
@@ -40335,7 +40335,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.004242721249186028
+       "max_symbol_share": 0.004204634411916679
       }
      },
      {
@@ -40392,7 +40392,7 @@
       },
       "breadth": {
        "symbols": 590,
-       "max_symbol_share": 0.003814165623323198
+       "max_symbol_share": 0.003780064921396364
       }
      },
      {
@@ -40448,8 +40448,8 @@
        "dn": -0.00307383306440967
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.004047659003188454
+       "symbols": 588,
+       "max_symbol_share": 0.0040117002379521476
       }
      },
      {
@@ -40505,8 +40505,8 @@
        "dn": 0.01574489389846334
       },
       "breadth": {
-       "symbols": 585,
-       "max_symbol_share": 0.0062208922228737425
+       "symbols": 586,
+       "max_symbol_share": 0.006165513648073639
       }
      }
     ],
@@ -40564,8 +40564,8 @@
        "dn": 0.003909197261012798
       },
       "breadth": {
-       "symbols": 589,
-       "max_symbol_share": 0.004865714059944847
+       "symbols": 590,
+       "max_symbol_share": 0.004822088430173292
       }
      },
      {
@@ -40622,7 +40622,7 @@
       },
       "breadth": {
        "symbols": 591,
-       "max_symbol_share": 0.003693240912842467
+       "max_symbol_share": 0.0036603581351858576
       }
      },
      {
@@ -40678,8 +40678,8 @@
        "dn": 0.008790060485059925
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.004656900000403544
+       "symbols": 588,
+       "max_symbol_share": 0.004660761613242109
       }
      }
     ]
@@ -40742,8 +40742,8 @@
        "dn": 0.011054530109764316
       },
       "breadth": {
-       "symbols": 561,
-       "max_symbol_share": 0.007421801942349888
+       "symbols": 565,
+       "max_symbol_share": 0.007353954841202939
       }
      },
      {
@@ -40799,8 +40799,8 @@
        "dn": -0.007304905342849555
       },
       "breadth": {
-       "symbols": 583,
-       "max_symbol_share": 0.00450554713980259
+       "symbols": 586,
+       "max_symbol_share": 0.004464224891573378
       }
      },
      {
@@ -40856,8 +40856,8 @@
        "dn": -0.007882332571681305
       },
       "breadth": {
-       "symbols": 586,
-       "max_symbol_share": 0.005236980824452372
+       "symbols": 588,
+       "max_symbol_share": 0.00522068216006008
       }
      },
      {
@@ -40914,7 +40914,7 @@
       },
       "breadth": {
        "symbols": 583,
-       "max_symbol_share": 0.004606045606726202
+       "max_symbol_share": 0.004564136333704217
       }
      },
      {
@@ -40970,8 +40970,8 @@
        "dn": 0.014624035361208654
       },
       "breadth": {
-       "symbols": 574,
-       "max_symbol_share": 0.006688155270114507
+       "symbols": 575,
+       "max_symbol_share": 0.006704799596936903
       }
      }
     ],
@@ -41030,7 +41030,7 @@
       },
       "breadth": {
        "symbols": 581,
-       "max_symbol_share": 0.005208069009314721
+       "max_symbol_share": 0.005160327586347488
       }
      },
      {
@@ -41086,8 +41086,8 @@
        "dn": -0.007978554610603317
       },
       "breadth": {
-       "symbols": 587,
-       "max_symbol_share": 0.004178636719770175
+       "symbols": 589,
+       "max_symbol_share": 0.004159516221296069
       }
      },
      {
@@ -41143,8 +41143,8 @@
        "dn": 0.007698520753813942
       },
       "breadth": {
-       "symbols": 582,
-       "max_symbol_share": 0.004841917922948073
+       "symbols": 583,
+       "max_symbol_share": 0.004844224535062276
       }
      }
     ]
