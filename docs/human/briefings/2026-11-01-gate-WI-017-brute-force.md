@@ -86,4 +86,19 @@ its own build; spot re-verified here); commission assumptions unchanged
 
 ## GATE DECISION
 
-_(pending admin — this section is appended when the decision lands)_
+**2026-11-01, admin (chat): "confirm. proceed with rec" → REC A+C ACCEPTED.**
+
+- WI-017 **closed as confirmation delivered**: assumptions confirmed — WI-015
+  positives real on USD (against amplitude targets); WI-016's thin-direction
+  verdict stands (first_touch best |IC| ≈ 0.03–0.06, first_touch_63 zero passes).
+- **A-route opened as WI-018**: condition-first study on first_touch targets at
+  w≈34 (the sweep's uniquely balanced 3-way region), vol + fib-structure
+  features, WI-011 cost overlay (20+5 bps). Expectation set at gate: it ships
+  only if a condition set survives costs; otherwise it closes as a documented
+  negative and the E5 factor screener stands as the MVP signal.
+- **C folded into WI-018**: prune recommendations computed (176 drop / 88 keep,
+  `reports/wi017/run5_prune_recs.{md,json}`); next WI verifies single-representative
+  families against its actual target before applying. Shipped WI-016 grid frozen
+  and untouched. `hurst_9` dead-column fix rides along.
+- Nothing auto-executed: the ADR is at `docs/workflow/designs/D-018-*.md`
+  (status: proposed) with open questions at the definition gate.

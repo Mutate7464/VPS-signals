@@ -4,6 +4,12 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-11-01 — WI-017 gate ACCEPT + WI-018 setup (admin chat "confirm. proceed with rec")
+
+- **Gate decision recorded both streams:** human brief GATE DECISION section appended (`docs/human/briefings/2026-11-01-gate-WI-017-brute-force.md`), board WI-017 → DONE as confirmation-delivered.
+- **REC C executed same day (PM-computed):** prune recommendations 176 drop / 88 keep with family-empty guard (first pass over-pruned whole families via pair cascades — range_pos lost all 17; guard added: never empty a family) → `reports/wi017/run5_prune_recs.{md,json}`. Caveats logged: single-representative families (atr_pct/fib_dist/range_pos) need target-specific re-check in WI-018; nothing applied to shipped panels.
+- **REC A opened as WI-018 (DESIGN):** ADR `docs/workflow/designs/D-018-condition-first-first-touch.md` (status proposed) — goal ladder G1 condition atlas (guaranteed) → G2 falsification probe → G3 cost overlay; 5 open definition-gate questions with PM RECs (bin granularity, CAD replication-if-pass, conjunction depth ≤2, BH-FDR 5%, memo-only ship shape). Pre-registered expectation: likely documented negative. Awaiting admin answers.
+
 ## 2026-11-01 — WI-017 gate brief (runs 1–4 delivered; two-session build)
 
 - **Runs 1–3 desktop session, run 4 Discord session** — both admin-ordered. PM re-verified run 4 despite its "PM recompute-verified" commit claim (claims are not evidence): pass column internally consistent (sign-match ∧ |IC|>margin) across all 43,560 cells; directional cells re-derived independently.
