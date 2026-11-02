@@ -2,12 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-11-02 — WI-019 **gate ACCEPT** (admin in-chat): MVP closeout DONE. E5 screener = MVP signal stands. **Phase 2 open — first sprint: P-1 module splits** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
+**Last updated:** 2026-11-02 — WI-020 kanban lock protocol integrated (admin in-chat); WI-019 gate ACCEPT: MVP closeout DONE. **Phase 2 open — first sprint: P-1 module splits** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
+| WI-020 | Kanban lock protocol: kanban WI staging + file locks + surgical-builder agent + orchestrator/synthesizer skills | G-003 | **DONE** (admin direction in chat, 2026-11-02) — merged into WORKFLOW.md (§2 file-lock governance, §6/§9 surgical-builder role); BOARD stays single source of truth; locks `.hermes/locks.json`; Hermes skills `kanban-orchestrator`/`expert-synthesizer`; opencode agent verified via `debug agents` | 2026-11-02 | none — closed | WORKFLOW.md §2/§6/§9; AGENTS.md constraint; `docs/kanban/_TEMPLATE_WI.md`; commits `a5c1ead` + this |
 | WI-019 | MVP closeout: (a) publish-ready summary (b) repo consolidation + refactor (c) process retro | G-001 | **DONE** (gate 2026-11-02: admin ACCEPT in-chat) — repo consolidated (`docs/{governance,architecture,execution,archive}/`), INDEX/AGENT routing, negative-knowledge register; source splits deferred to debt D-1 (first Phase 2 task); suite 662 passed EXIT:0 | 2026-11-02 | none — closed | Log `docs/plans/logs/WI-019-mvp-closeout.md`; ledger `docs/execution/WI_AND_RUN_LEDGER.md`; debt `docs/governance/MVP_CLOSURE_REPORT.md`; commit `c9b9b7c` |
 
 | WI-017 | Brute-force target/feature confirmation study, USD only | G-001 | **DONE** (gate 2026-11-01: admin ACCEPT REC A+C — closed as **confirmation delivered**) | 2026-11-01 | Warts logged for WI-018: shipped WI-016 `hurst_9` all-NaN (needs w≥12); stay5 DOA at w≥63 | Runs 1–4 + run-5 prune recs; commits `170e1e4` `8c7b7e3` `68f48dd` `a55dfa0` `f87c2e4`; verdict: WI-015 positives real on USD (amplitude), WI-016 thin-direction stands (first_touch |IC|≤0.06); gate brief + decision `docs/human/briefings/2026-11-01-gate-WI-017-brute-force.md`; tests 12, all runs recompute-verified |

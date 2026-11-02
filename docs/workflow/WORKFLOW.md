@@ -42,6 +42,7 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 - **WIP limits:** EXECUTING = 1. DESIGN+PLAN combined = 2.
 - **Classes of service:** normal (FIFO by admin order) and **EXPEDITE** (max 1) — reserved for breakage blocking the daily shortlist. Expedite rows are marked `⚡` and jump the queue.
 - **Flow awareness, minimal:** every row leaving BACKLOG gets a `since` date; anything sitting >7 days in BLOCKED or >3 days in EXECUTING is flagged at the weekly review. No story points, no velocity — plan steps *are* the estimate; budget is tracked via opencode spend.
+- **File-lock governance (admin 2026-11-02):** atomic/surgical WIs are staged in `docs/kanban/{draft,ready,in_progress,blocked,done}/` using `_TEMPLATE_WI.md` (frontmatter carries `write_files` line-range manifests + quiet `test_command`). BOARD.md stays the SINGLE source of truth — the kanban dirs are WI staging + lock bookkeeping, never a second board. Before a WI moves to in_progress, its `write_files` must be free in `.hermes/locks.json` (Hermes-managed, gitignored); the orchestrator registers locks on dispatch and releases them on done/blocked. Technique lives in the Hermes skills `kanban-orchestrator` (lock-governed dispatch + diff-only audit + two-strike breaker) and `expert-synthesizer` (persistent specialist agents after repeated two-strike failures in one domain).
 - **Row hygiene (token budget):** DONE rows are demoted at the weekly review once 7 days old — the Evidence/Blocker cells collapse to ONE line (verdict, commit hash, gate-brief path, test count). Full detail already lives in the plan, its log file, and PM_LOG; the board is a queue, not an archive. Target board size ≤5 KB.
 
 ## 3. Definitions (Scrum)
@@ -79,7 +80,7 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 |---|---|---|---|
 | **Interface / middle manager** | Hermes (GLM, cheapest) | Reads EXECUTION LOGs + board + handover → determines problems, what's next; verifies results; maintains board/handover; issues targeted execution tickets. Does NOT design. Ends every cycle close / proposal / gate brief in a decision memo, REC first (BLUF) — tiered: 3–5-line BLUF memo for routine/reversible calls, full memo (what happened / what's next / options with why + expected outcome + risk / REC with assumptions + review rule) for one-way or uncertain calls, SCQA for narrative briefs. PM recommends, admin decides. | ~$0.01/$0.20 per M |
 | **Strategist** | Planner (Sonnet, brief-fed) + troubleshooter (Opus, stuck-only) + guide (Sonnet, on-demand learning) | Design decisions, root-cause diagnosis, teaching. Always brief-fed; never explores. | $2/$10 · $4/$20 |
-| **Workhorse** | Build (DeepSeek V4 Pro) + reviewer/scribe (flash) | Executes plans, appends the EXECUTION LOG, records concerns; reviews; writes briefs + human docs. | ~$0.44/$0.89 · $0.09/$0.18 |
+| **Workhorse** | Build (DeepSeek V4 Pro) + surgical-builder (flash, single locked WI per session — reads only the WI file + its `write_files`/`read_only_files` line ranges) + reviewer/scribe (flash) | Executes plans, appends the EXECUTION LOG, records concerns; reviews; writes briefs + human docs. | ~$0.44/$0.89 · $0.09/$0.18 |
 
 **Execution ticket format** (the Interface's output — paste into opencode, or Hermes submits via tmux):
 
@@ -113,6 +114,7 @@ Constraints: n_jobs<=2, float32, bounded memory, no secrets, no live trading.
 - **Admin (you):** goals, READY ordering, gate sign-off, unblocking. Operating surface = BOARD.md + SESSION_HANDOVER.md only.
 - **Plan agent:** designs (ADRs) and plans. Writes nothing else.
 - **Build agent:** executes only the plan named in the board's EXECUTING row.
+- **Surgical-builder (flash):** executes exactly ONE `docs/kanban/in_progress/` WI per session, strictly within its `write_files` manifest; never reads beyond the WI + its named line ranges. Hermes (via the `kanban-orchestrator` skill) owns locks, dispatch, diff-only audit, and the two-strike breaker — Hermes never edits application source itself.
 - **Reviewer:** read-only QA; verdict APPROVE / FIX BEFORE COMMIT with file:line findings.
 - **Troubleshooter (Opus):** escalation-only; BLOCKED is an acceptable output, guessing is not.
 

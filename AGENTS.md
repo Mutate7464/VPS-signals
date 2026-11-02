@@ -14,6 +14,7 @@
   `matplotlib.pyplot.close('all')` + `gc.collect()` per batch.
 - Daily shortlist only. Human gate on every sprint gate. No auto-execution of orders.
   No secrets in git. (`.agents/rules/` — env-split, no-live-trading, quant-ml.)
+- File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
 - Commands: `uv sync`, `uv run pytest`.
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`
   (never loaded into agent context; refreshed by scribe).
