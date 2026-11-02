@@ -67,3 +67,6 @@ Thumbs.db
 /reports/wi017/targets/
 /reports/wi017/derived/
 /reports/wi017/features/
+
+# kanban lock registry (transient, Hermes-managed)
+.hermes/locks.json

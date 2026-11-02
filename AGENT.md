@@ -14,5 +14,10 @@ Python >=3.11 via `uv` (pyproject: quant-screener). numpy/pandas/pyarrow/sklearn
 4. Governance: `docs/governance/MVP_CLOSURE_REPORT.md`, `PHASE2_HANDOVER_RUNBOOK.md`; ledger: `docs/execution/WI_AND_RUN_LEDGER.md`
 5. Archived specs: `docs/archive/` (frozen Design baseline) — read-only history
 
+## Role boundaries (kanban lock protocol)
+- **Hermes (orchestrator/PM):** owns docs/, .hermes/locks.json, and opencode dispatch. Never edits application source or test files.
+- **OpenCode (builder):** reads ONLY this AGENT.md, its assigned `docs/kanban/in_progress/WI-XXX.md`, and the exact files/line-ranges in that WI's `write_files`/`read_only_files` manifest. Edits outside `write_files` are reverted by the orchestrator.
+- **Locks:** before any WI moves to in_progress, its `write_files` must be free in `.hermes/locks.json`; the orchestrator registers/releases them.
+
 ## Code style law
 Max 250 lines per source file; domain-package placement (src/<wi> / src/perfanalytics), no new monolithic utils/. Split existing oversize files only under a WI plan with targeted tests (debt register D-1).

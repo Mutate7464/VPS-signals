@@ -14,3 +14,7 @@ reports/wi017/features/
 reports/wi017/e5/
 .pytest_cache/
 __pycache__/
+.hermes/
+docs/kanban/draft/
+docs/kanban/done/
+docs/kanban/blocked/
