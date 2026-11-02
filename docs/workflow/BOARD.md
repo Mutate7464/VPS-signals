@@ -2,13 +2,13 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-11-01 — WI-018 **gate ACCEPT** (admin "accept all"): closed as documented negative; E5 screener = MVP. **WI-018 was the last research run pre-publish**; IBKR/ticker-download concerns dropped (WI-004, ELE re-download, HMMC/ICL, TRI/SPCX). D-019 G-gate recalibration ACCEPTED. **Next: WI-019 MVP closeout** (summarize prior work/spirit/conclusions + data/structure cleanup refactor + process retro: token minimization, communication, expectations) — awaiting admin ordering.
+**Last updated:** 2026-11-02 — WI-019 MVP closeout executed (repo consolidated: `docs/{governance,architecture,execution,archive}/`, INDEX/AGENT routing, negative-knowledge register); **awaiting admin ACCEPT on WI-019 QA/GATE**. E5 screener = MVP signal stands.
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
-
+| WI-019 | MVP closeout: (a) publish-ready summary (b) repo consolidation + refactor (c) process retro | G-001 | **QA/GATE** — executed PM-side 2026-11-02 per admin closeout spec: `git mv Design/ + plan.md → docs/archive/`; created `docs/governance/{MVP_CLOSURE_REPORT,PHASE2_HANDOVER_RUNBOOK}.md`, `docs/execution/WI_AND_RUN_LEDGER.md`, `docs/architecture/DECISIONS_AND_NEGATIVE_KNOWLEDGE.md` (ADR index + 12 negative entries); INDEX.md in src/+11 dirs; root `AGENT.md` + `.aiignore`/`.cursorrules`; README/docs-router links repaired; source splits DEFERRED to debt register D-1 (1st Phase 2 task) | 2026-11-02 | Awaiting admin ACCEPT; suite re-verify `logs/wi019_full_suite.out` | Log `docs/plans/logs/WI-019-mvp-closeout.md`; ledger `docs/execution/WI_AND_RUN_LEDGER.md` |
 | WI-017 | Brute-force target/feature confirmation study, USD only | G-001 | **DONE** (gate 2026-11-01: admin ACCEPT REC A+C — closed as **confirmation delivered**) | 2026-11-01 | Warts logged for WI-018: shipped WI-016 `hurst_9` all-NaN (needs w≥12); stay5 DOA at w≥63 | Runs 1–4 + run-5 prune recs; commits `170e1e4` `8c7b7e3` `68f48dd` `a55dfa0` `f87c2e4`; verdict: WI-015 positives real on USD (amplitude), WI-016 thin-direction stands (first_touch |IC|≤0.06); gate brief + decision `docs/human/briefings/2026-11-01-gate-WI-017-brute-force.md`; tests 12, all runs recompute-verified |
 | WI-016 | Triple-barrier fib-ladder labels + E5→yangzhang meta-labeled shortlist (CAD) | G-001 | **DONE** (re-gate 2026-10-31: admin ACCEPT after HOLD+fix) — suite 550 passed EXIT:0, PM-verified; shortlist `reports/wi016_shortlist_CAD.parquet` 133 TRADE / 15 NO_TRADE (89.9%) @ 20+5 bps, rule v2, OOF floor 0.5303; USD descriptive (addendum NOT_CLEAR all bands) | 2026-10-31 | Carries forward: paper-track daily behind human gate; discrimination ceiling (OOF precision 0.568 vs 0.545, AUC 0.51-0.53) = next iteration target (WI-017 route); tc_rating needs point-in-time history before live use; costs still assumptions | Gate brief + decisions `docs/human/briefings/2026-10-30-gate-WI-016-shortlist.md`; log `docs/plans/logs/WI-016-triple-barrier-fib-labels.md` STATUS: DONE; reports `reports/wi016_*` |
 
@@ -39,8 +39,7 @@
 
 | WI | Title | Goal | Size | Gate |
 |---|---|---|---|---|
-| WI-019 | MVP closeout: (a) publish-ready summary of prior work — spirit, conclusions, what survived the gates (E5 screener = MVP); (b) clean up + refactor existing data/structure for simplicity; (c) process retro on what worked / needs improvement — token minimization, communication, expectations | G-001 | M — decompose into (a)/(b)/(c) if needed | admin-ordered 2026-11-01 ("accept all" chat); D-019 recalibration governs any post-MVP research |
-| WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | signal direction pivoted to WI-009 (2026-10-24) |
+| WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | signal direction pivoted to WI-009 (2026-10-24); superseded by Phase-2 backlog in `docs/governance/PHASE2_HANDOVER_RUNBOOK.md` |
 
 ## Column policies
 BACKLOG → unprioritized ideas, size-tagged · READY → meets Definition of Ready, admin-ordered · DESIGN/PLAN → Plan agent working (WIP 2) · EXECUTING → Build active (WIP 1) · QA/GATE → reviewer + human gate · DONE → DoD met · BLOCKED → named owner + reason; aging >7d flagged weekly.

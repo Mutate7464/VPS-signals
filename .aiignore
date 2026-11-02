@@ -1,0 +1,16 @@
+# AI-tool ignores — keep transcripts/telemetry out of agent context (WI-019 closeout)
+logs/
+*.log
+*.out
+*.pid
+.agent_trace/
+tmp_runs/
+.venv/
+data/
+models/
+reports/wi017/targets/
+reports/wi017/derived/
+reports/wi017/features/
+reports/wi017/e5/
+.pytest_cache/
+__pycache__/
