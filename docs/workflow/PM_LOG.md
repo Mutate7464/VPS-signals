@@ -4,6 +4,12 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-11-02 — Cycle 24 (WI-019 MVP closeout executed PM-side; gate ACCEPT)
+
+- **Gate decision (admin in-chat 2026-11-02): ACCEPT** — WI-019 closed DONE: repo consolidation, governance docs (`docs/{governance,architecture,execution}/`), INDEX/AGENT routing, negative-knowledge register stand as delivered; suite 662 passed EXIT:0 verified (`logs/wi019_full_suite.out`); commit `c9b9b7c`.
+- **Phase 2 now open:** first sprint = P-1 module splits (debt D-1 blueprint, 34 files >250 lines) per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`; D-019 recalibration governs any post-MVP research; MVP baseline tag available on demand (`561f299`).
+- cursor: none — PM-side session; next cycle ingests any Phase-2 opencode sessions.
+
 ## 2026-11-02 — Cycle 24 (WI-019 MVP closeout executed PM-side; QA/GATE open)
 
 - **Admin closeout spec executed in-session** (3 steps, no Build dispatch — docs/consolidation work): discovery audit (34 source files >250 lines) → `git mv` `Design/` + root `plan.md` into `docs/archive/` (signals preserved, nothing deleted) → governance artifacts created: `docs/governance/MVP_CLOSURE_REPORT.md` (sign-off matrix, velocity variance, debt register D-1..D-10), `PHASE2_HANDOVER_RUNBOOK.md` (P-1..P-7 backlog + rollback to `561f299`), `docs/execution/WI_AND_RUN_LEDGER.md` (19-WI reconciliation), `docs/architecture/DECISIONS_AND_NEGATIVE_KNOWLEDGE.md` (6 ADRs + 12 negative entries) → INDEX.md in src/+11 dirs, root `AGENT.md` (<180 words), `.aiignore`/`.cursorrules`, README + docs-router links repaired.
