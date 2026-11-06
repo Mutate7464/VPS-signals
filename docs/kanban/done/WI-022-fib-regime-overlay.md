@@ -33,5 +33,5 @@ test_command: uv run pytest tests/test_fib_regime_overlay.py -q --tb=short --max
 - [ ] Do NOT run the full job (orchestrator checks UNGATED EVAL ALL screen_rate ≈ 0.2959).
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 1/2 | **Commit:** PENDING (staged for Hermes; no commit per file-lock protocol) | **Status:** DONE
+- **Notes / Error Trace:** `uv run pytest tests/test_fib_regime_overlay.py -q --tb=short --maxfail=1` → exit 0, 3 passed (0.59s) on first attempt. Full-universe job NOT run per DoD. Only write_files touched: scripts/fib_regime_overlay.py (249 lines) + tests/test_fib_regime_overlay.py (140 lines). Tests synthetic-only (tmp_path fixtures); no data/ or reports/ reads.
