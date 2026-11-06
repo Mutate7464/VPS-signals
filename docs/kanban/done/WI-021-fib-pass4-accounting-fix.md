@@ -32,5 +32,5 @@ test_command: uv run pytest tests/test_fib_walkforward_accounting.py -q --tb=sho
 - [ ] Do NOT run the full-universe job; the orchestrator runs it and checks golden values (EVAL bottom: n_events 20990, n_screened 1056, screen_rate_medplus 0.2959, base 0.2619).
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 1/2 | **Commit:** PENDING (left for Hermes) | **Status:** DONE
+- **Notes / Error Trace:** `uv run pytest tests/test_fib_walkforward_accounting.py -q --tb=short --maxfail=1` → exit 0, 4 passed (0.45s), first attempt. Created `scripts/fib_walkforward.py` (221 lines ≤250) and `tests/test_fib_walkforward_accounting.py` (105 lines); zero edits outside write_files. Fixes 1–5 implemented per Section 2; W=39/GRADE thresholds/CALIB_END/RSI/event def/10-bar clustering/screens/p10 block untouched; reads symbol-sequential; `--out` CLI + FIB_SMOKE + `EXIT:0` added as specified. Full-universe job NOT run (DoD) — orchestrator to verify golden values (EVAL bottom: n_events 20990, n_screened 1056, screen_rate_medplus 0.2959, base 0.2619).
