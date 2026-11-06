@@ -35,5 +35,5 @@ test_command: uv run pytest tests/test_fib_meta_model.py -q --tb=short --maxfail
 - [ ] Do NOT run the full job.
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 2/2 | **Commit:** PENDING | **Status:** DONE (tests green; PM to commit)
+- **Notes / Error Trace:** 1st run smoke failed: `KeyError: 'symbol'` at fib_event_features.py:108 — `rows` was empty because the event loop did `d = str(d)` on `iterrows()`'s integer row index instead of the event date, so `pos.get(d)` never matched and every event was skipped. Fix: `d = str(erow['date'])` (line 94-95 only change). Smoke `FIB_SMOKE=AAPL,MSFT,NVDA,JPM,XOM,RY,TD,SHOP,CNQ,ENB --out /tmp/opencode/wi024` → 1113 rows, EXIT:0. `uv run pytest tests/test_fib_meta_model.py -q --tb=short --maxfail=1` → 4 passed. Files: scripts/fib_event_features.py (129), scripts/fib_meta_model.py (228), tests/test_fib_meta_model.py (57). Zero edits outside write_files. Full-universe job NOT run; data/ and large reports/ files NOT read.
