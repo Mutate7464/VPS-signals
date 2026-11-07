@@ -4,13 +4,12 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
-## 2026-11-07 — Cycle 25 (admin direction — fib research ladder WI-027→030, definition gate)
+## 2026-11-07 — Cycle 25 (WI-027 DONE; admin direction — fib research ladder WI-027→030)
 
-- **Definition gate (admin in-chat 2026-11-07): direction CONFIRMED, plan/REC accepted** — new 3-stage research ladder (regime labels → entry-window falsification → confirmation classifier → conditional exit policy) replacing the frozen-exit-policy approach that returned NO_POLICY_CLEARS. Admin: step-by-step manual gates, no automated chain decisions.
-- **Overnight chain findings (WI-021..025) used as inputs:** fold5 COVID inversion (0/32 pass fold-stability bar, fold3 = 79% of edge), R1R2 regime overlay PASS (gated 0.352, keep 0.343), event_features.parquet (16 features, 76,049 bottoms), quantile model PASS (WI-025, beats baseline on all CAD/USD combos), entry-window probe (confirmation costs mean return 2.86→2.18% + ⅔ volume at 39d horizon — must re-measure under barrier sim before committing to WI-029).
-- **Ladder (each stage human-gated, no chain auto-proceeds):** WI-027 (stage 1: rule-based PIT regime labels → conditional edge table, DESIGN pending admin review) → WI-028 (stage 2a: entry-window falsification under real sim) → WI-029 (stage 2b: confirmation classifier, gated on 2a PASS) → WI-030 (stage 3: conditional exit policy). All pre-registered bars, fold-stability guard on every learned artifact, EVAL scored once at end.
-- **Setup committed:** BOARD row + charter `docs/tech_approach/fib_swings/README.md` + WI-027 draft `docs/kanban/draft/WI-027-fib-regime-labels.md`. No Build dispatch (admin: step-by-step).
-- cursor: none — PM-side setup; next cycle ingests WI-027 opencode session if admin dispatches it.
+- **WI-027 executed (admin "proceed" 2026-11-07): PASS** — surgical-builder (GLM-5.3) wrote `scripts/fib_regime_labels.py` + 4 synthetic tests; PM fixed one path bug (`load_bottom_events` + `regime_daily.csv` read from `--out` instead of `reports/fib_swings/`). Full-universe run EXIT:0, VERDICT: PASS — two fold-stable regime×market combos: `up_high/USD` n_folds_pos=5 edge=+22.75pp, `chop_normal/ALL` n_folds_pos=5 edge=+3.89pp. Fold5 dates isolated to down_high (n=440, 4/5 folds), up_high (n=77), chop_high (n=91), up_normal (n=57) — all with n_folds_pos<5.
+- **Definition gate (admin 2026-11-07): direction CONFIRMED, plan/REC accepted, WI-027b added to charter** — 3-stage research ladder (rule-based regime labels → unsupervised GMM/HMM → entry-window falsification → confirmation classifier → conditional exit policy). Admin: step-by-step manual gates.
+- **Overnight chain findings feed this:** fold5 COVID inversion, R1R2 PASS, event_features.parquet, quantile model PASS, entry-window probe. All confirmed and mapped.
+- cursor: none — PM-side execution; next cycle ingests WI-027b opencode session when dispatched.
 
 ## 2026-11-02 — Cycle 24 (WI-019 MVP closeout executed PM-side; gate ACCEPT)
 
