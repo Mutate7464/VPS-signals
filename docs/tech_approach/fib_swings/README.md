@@ -22,26 +22,33 @@
 4. **The quantile model (WI-025) provides a per-event magnitude prior** — predicted MFE/MAE beat per-symbol baselines; feeds confirmation and policy-learning stages.
 5. **Confirmation (delayed entry after a held low) is a symptom fix, not an assumption** — the close-to-close probe (120-symbol sample) showed confirmation costs mean return (2.86→2.18%) and volume (⅔ lost) with no hit-rate gain. It may still help under the actual barrier sim (entry→stop distance geometry) — must be measured before building any classifier.
 
-## New research ladder (WI-027→028→029→030)
+## Research ladder (WI-027→030, with supplements)
 
-Admin direction in chat 2026-11-07: build a 3-stage ML pipeline where regime awareness + confirmation + learned exit policy replace the frozen-exit-grid approach. **Step-by-step manual gates: each WI's results reviewed by admin before the next stage is drafted.**
+Admin direction in chat 2026-11-07: build a staged ML pipeline where regime awareness + confirmation + learned exit policy replace the frozen-exit-grid approach. **Step-by-step manual gates: each WI's results reviewed by admin before the next stage is drafted.** Brainstorm additions (2026-11-07): sector grouping, ensemble label probe, survival analysis, horizon-adaptive exit, sequential-bottom depth + volume ratio features.
 
 | Stage | WI | What | Gated on | Bar |
 |---|---|---|---|---|
-| 1 | **WI-027** | Rule-based point-in-time regime labels (3×2: trend × vol) → extended `regime_daily` + conditional edge table per regime | None (first) | ≥1 regime where screen edge is fold-stable (5/5 CALIB folds positive); fold5 isolated to identifiable regime(s) |
-| 1b | **WI-027b** | Unsupervised regime detection (sklearn GMM → HMM) on regime features (r1, r2, r1_s5, n_tickers + trailing return); soft state probabilities replace hard labels as downstream ML features | WI-027 results | Unsupervised states provide additional separation beyond rules; soft (continuous) membership avoids boundary artifacts and the circularity of rule-defined labels; state characterization must be interpretable (component means) |
-| 2a | **WI-028** | Entry-window falsification study: ±{0,3,5,10}d offsets × confirmation variants under the real first-touch barrier sim | WI-027 results | Quantifies the confirmation tradeoff under barriers; go/no-go decision for WI-029 |
-| 2b | **WI-029** | Confirmation classifier: per-event P(hold confirmed) from event+regime features; threshold on CALIB, EVAL scored once | WI-028 supports the premise | Selected events beat at-bottom entries on mean_ret + hit_rate, fold-stable |
-| 3 | **WI-030** | Conditional exit policy: per-event predicted best grid cell (target/stop/days) from features + regime; CALIB-trained, EVAL scored once | WI-027 + WI-029 (or WI-027 only if 2b is dead) | Learned policy's trade returns fold-stable on CALIB; EVAL net edge ≥ frozen-grid baseline |
+| 1 | **WI-027** | Rule-based point-in-time regime labels (3×2: trend × vol) → extended `regime_daily` + conditional edge table per regime | None (first) | ≥1 regime where screen edge is fold-stable; fold5 isolated ✓ **DONE — PASS** |
+| 1b | **WI-027b** | Unsupervised regime detection (sklearn GMM, 3–4 components) on r1/r2/r1_s5/n_tickers + trailing return/vol features → soft state probabilities as downstream ML features; compare vs WI-027 rules | WI-027 results | Any GMM state with n_folds_pos==5 AND fold5 isolation; soft probabilities continuous (no boundary artifacts) |
+| 1c | **WI-027c** | Sector grouping analysis: per-sector conditional edge tables using `config/sector_map.csv`; sector × regime interaction table (does sector explain variance regime misses?) | WI-027 + WI-027b | Per-sector fold-stability; ≥1 sector×regime combo with n_folds_pos==5 beyond the market-level regime alone |
+| S1 | **WI-027-ensemble** | Ensemble label probe: average all 32 exit policies' per-event returns → check CALIB fold-stability. All-bottoms ensemble is 5/5 fold-stable (+0.65%/trade ✓); screened ensemble is 4/5 (fold5 still negative). Provides a fallback label source (all-bottoms + screen as feature) if screened labels keep failing | WI-023 data | Already computed from `trade_labels_w39.parquet` — all-bottoms fold-stable 5/5; no new code needed yet |
+| 2a | **WI-028** | Entry-window falsification study: ±{0,3,5,10}d offsets × confirmation variants under the real first-touch barrier sim | WI-027 series | Quantifies the confirmation tradeoff under barriers; go/no-go decision for WI-029 |
+| 2b | **WI-029** | **Survival analysis** (replacing binary confirmation): Cox proportional hazards (`statsmodels PHReg`) or random survival forest on time-to-next-low per event; right-censored at 39d; survival probability at h ∈ {3,5,10,20}d becomes the feature for stage 3. Add new features: [sequential bottom depth](#feature-additions), volume-at-event ratio | WI-028 supports the premise | Survival model C-index > 0.55 on CALIB CV; selected high-survival-probability events beat at-bottom entries; fold-stable |
+| 3 | **WI-030** | Conditional exit policy + horizon-adaptive vertical barrier: per-event predicted best (target, stop) grid cell from features + regime + survival prob; max_days set per event from quantile model (WI-025) expected rally duration | WI-027 series + WI-029 (or ensemble label if 2b is dead) | Learned policy's trade returns fold-stable on CALIB; EVAL net edge ≥ frozen-grid baseline |
 
-**Guards, unchanged from the overnight chain:**
-- Fold-stability (5 contiguous date-block folds, all positive) applied to every learned artifact.
-- EVAL (Jul 2022→now) scored exactly once per stage — never used for selection.
-- Point-in-time trailing only — no future data in any label or feature.
-- n_jobs=2, float32 features, symbol-sequential reads.
-- Unscreened all-bottoms baseline reported alongside every screened number (the fold-stable reference).
+### Feature additions (fold into WI-029)
 
-WI-026 (calibration/intervals, parked in the overnight chain brief) stays deferred — not in this ladder.
+- **Sequential bottom depth**: count of consecutive new-39d-lows before a hold — computed from `trailing_events_w39.csv` (per symbol, date-sorted). Sustained sequential breakdowns behave differently from isolated flushes.
+- **Volume-at-event**: relative volume (event day volume / 20d median) from raw OHLCV — capitulation volume correlates with bottom-hold probability. Not yet in `event_features.parquet`.
+
+### Backlog
+
+| Item | Trigger | Cost |
+|---|---|---|
+| Synthetic data validation: generate GARCH + regime-switching OHLCV with known structure, run full pipeline on it — validates method before trusting EVAL scores | If WI-029/WI-030 show edge but fold-stability is borderline | Day |
+| Correlation-structure regime: eigenvalue of cross-sectional correlation matrix as a "market mode" feature. Streaming product-sum avoids full 903×903 matrix | If market-level regime alone doesn't fully isolate fold5 | Medium |
+| HMM upgrade (hmmlearn or torch): replace GMM with Markov-switching for temporal persistence — regimes should last. Pip-install needed | If GMM states are temporally fragmented (high-frequency switching) | Medium |
+| Horizon-adaptive multi-model: fit separate models for h ∈ {10,20,39}d exits, ensemble | If WI-030 shows horizon interacts with regime | Day |
 
 ## References
 
