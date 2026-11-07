@@ -4,6 +4,14 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-11-07 — Cycle 25 (admin direction — fib research ladder WI-027→030, definition gate)
+
+- **Definition gate (admin in-chat 2026-11-07): direction CONFIRMED, plan/REC accepted** — new 3-stage research ladder (regime labels → entry-window falsification → confirmation classifier → conditional exit policy) replacing the frozen-exit-policy approach that returned NO_POLICY_CLEARS. Admin: step-by-step manual gates, no automated chain decisions.
+- **Overnight chain findings (WI-021..025) used as inputs:** fold5 COVID inversion (0/32 pass fold-stability bar, fold3 = 79% of edge), R1R2 regime overlay PASS (gated 0.352, keep 0.343), event_features.parquet (16 features, 76,049 bottoms), quantile model PASS (WI-025, beats baseline on all CAD/USD combos), entry-window probe (confirmation costs mean return 2.86→2.18% + ⅔ volume at 39d horizon — must re-measure under barrier sim before committing to WI-029).
+- **Ladder (each stage human-gated, no chain auto-proceeds):** WI-027 (stage 1: rule-based PIT regime labels → conditional edge table, DESIGN pending admin review) → WI-028 (stage 2a: entry-window falsification under real sim) → WI-029 (stage 2b: confirmation classifier, gated on 2a PASS) → WI-030 (stage 3: conditional exit policy). All pre-registered bars, fold-stability guard on every learned artifact, EVAL scored once at end.
+- **Setup committed:** BOARD row + charter `docs/tech_approach/fib_swings/README.md` + WI-027 draft `docs/kanban/draft/WI-027-fib-regime-labels.md`. No Build dispatch (admin: step-by-step).
+- cursor: none — PM-side setup; next cycle ingests WI-027 opencode session if admin dispatches it.
+
 ## 2026-11-02 — Cycle 24 (WI-019 MVP closeout executed PM-side; gate ACCEPT)
 
 - **Gate decision (admin in-chat 2026-11-02): ACCEPT** — WI-019 closed DONE: repo consolidation, governance docs (`docs/{governance,architecture,execution}/`), INDEX/AGENT routing, negative-knowledge register stand as delivered; suite 662 passed EXIT:0 verified (`logs/wi019_full_suite.out`); commit `c9b9b7c`.

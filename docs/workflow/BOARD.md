@@ -2,12 +2,14 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-11-02 — WI-020 kanban lock protocol integrated (admin in-chat); WI-019 gate ACCEPT: MVP closeout DONE. **Phase 2 open — first sprint: P-1 module splits** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
+**Last updated:** 2026-11-07 — WI-027 fib regime labels (new research ladder stage 1, admin direction in chat); overnight chain WI-021..025 DONE, PM review pending. **Phase 2 open — first sprint: P-1 module splits** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
 
 ## ACTIVE
 
 | WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
 |---|---|---|---|---|---|---|
+| WI-027 | fib regime labels (rule-based PIT regime categories → conditional edge table; stage 1 of research ladder WI-027→028→029→030) | G-001 | **DESIGN** (admin direction in chat 2026-11-07) — spec at `docs/kanban/draft/WI-027-fib-regime-labels.md`; no Build dispatch (human review) | 2026-11-07 | none — awaiting charter/WI review | charter `docs/tech_approach/fib_swings/README.md`; draft `docs/kanban/draft/WI-027-fib-regime-labels.md` |
+| WI-021–025 | Fib overnight chain: pass-4 fix (WI-021), trade-label grid (WI-023), regime overlay (WI-022), meta features (WI-024), quantile model (WI-025) | G-001 | **DONE** (chain 2026-11-06, ALL_DONE EXIT:0; all 5 golden-accepted, local commits; PM review pending) | 2026-11-06 | WI-024 BLOCKED_PRECONDITION (research verdict — policy-null, meta-model not fit, chain correctly continued); findings feed new ladder | Overnight report `reports/fib_swings/OVERNIGHT_REPORT.md`; commits `3ef0adc` `c24feb8` `87695a2` `8ba70d3` `d123701`; 5 WI files `docs/kanban/done/WI-02{1,2,3,4,5}-*.md` |
 | WI-020 | Kanban lock protocol: kanban WI staging + file locks + surgical-builder agent + orchestrator/synthesizer skills | G-003 | **DONE** (admin direction in chat, 2026-11-02) — merged into WORKFLOW.md (§2 file-lock governance, §6/§9 surgical-builder role); BOARD stays single source of truth; locks `.hermes/locks.json`; Hermes skills `kanban-orchestrator`/`expert-synthesizer`; opencode agent verified via `debug agents` | 2026-11-02 | none — closed | WORKFLOW.md §2/§6/§9; AGENTS.md constraint; `docs/kanban/_TEMPLATE_WI.md`; commits `a5c1ead` + this |
 | WI-019 | MVP closeout: (a) publish-ready summary (b) repo consolidation + refactor (c) process retro | G-001 | **DONE** (gate 2026-11-02: admin ACCEPT in-chat) — repo consolidated (`docs/{governance,architecture,execution,archive}/`), INDEX/AGENT routing, negative-knowledge register; source splits deferred to debt D-1 (first Phase 2 task); suite 662 passed EXIT:0 | 2026-11-02 | none — closed | Log `docs/plans/logs/WI-019-mvp-closeout.md`; ledger `docs/execution/WI_AND_RUN_LEDGER.md`; debt `docs/governance/MVP_CLOSURE_REPORT.md`; commit `c9b9b7c` |
 
