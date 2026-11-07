@@ -1,0 +1,3 @@
+# META MODEL (WI-024)
+
+VERDICT: BLOCKED_PRECONDITION (no exit policy cleared)
