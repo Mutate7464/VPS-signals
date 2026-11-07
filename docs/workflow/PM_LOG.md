@@ -4,12 +4,17 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
-## 2026-11-07 — Cycle 25 (WI-027 DONE; admin direction — fib research ladder WI-027→030)
+## 2026-11-07 — Cycle 25 (fib research ladder: 3 WIs executed, charter established, session close)
 
-- **WI-027 executed (admin "proceed" 2026-11-07): PASS** — surgical-builder (GLM-5.3) wrote `scripts/fib_regime_labels.py` + 4 synthetic tests; PM fixed one path bug (`load_bottom_events` + `regime_daily.csv` read from `--out` instead of `reports/fib_swings/`). Full-universe run EXIT:0, VERDICT: PASS — two fold-stable regime×market combos: `up_high/USD` n_folds_pos=5 edge=+22.75pp, `chop_normal/ALL` n_folds_pos=5 edge=+3.89pp. Fold5 dates isolated to down_high (n=440, 4/5 folds), up_high (n=77), chop_high (n=91), up_normal (n=57) — all with n_folds_pos<5.
-- **Definition gate (admin 2026-11-07): direction CONFIRMED, plan/REC accepted, WI-027b added to charter** — 3-stage research ladder (rule-based regime labels → unsupervised GMM/HMM → entry-window falsification → confirmation classifier → conditional exit policy). Admin: step-by-step manual gates.
-- **Overnight chain findings feed this:** fold5 COVID inversion, R1R2 PASS, event_features.parquet, quantile model PASS, entry-window probe. All confirmed and mapped.
-- cursor: none — PM-side execution; next cycle ingests WI-027b opencode session when dispatched.
+- **WI-027 (rule-based regime labels): PASS** — `up_high/USD` 5/5 fold-stable +22.75pp, `chop_normal/ALL` 5/5 +3.89pp. Fold5 isolated to failing regimes. Rule-based labels chosen for downstream.
+- **WI-027b (unsupervised GMM): FAIL** — 0 pooled fold-stable states. Per-market 5/5 combos found but don't aggregate. Soft probs kept as supplementary features.
+- **WI-028 (entry-window study): INCONCLUSIVE → k=0 dominates** — at-bottom entry 5/5 +0.73% full vol; k=3/5 worse on every metric. Confirmation falsified. At-bottom entry adopted.
+- **Four cheap probes:** ensemble all-bottoms label 5/5 fold-stable (adopted as y), ensemble screened 4/5, regime-gated too sparse, sector grouping no 5/5, sequential depth no isolation. GMM probe showed random-CV 20/20 passes while blocked-CV catches regime concentration.
+- **Decisions:** all-bottoms ensemble as label; screen_bottom promoted to filter→feature; at-bottom entry; WI-027 rules as regime features; fold-stability guard unchanged; EVAL virgin.
+- **Charter:** `docs/tech_approach/fib_swings/README.md` — full ladder WI-027→030 with supplements (sector, ensemble, survival, backlog).
+- **Session findings:** `docs/tech_approach/fib_swings/FINDINGS_2026-11-07.md`.
+- **Next (admin-gated): WI-030** — conditional exit policy on the stable all-bottoms ensemble label, regime + event features, horizon-adaptive optional.
+- cursor: none — PM-side execution; next cycle ingests WI-030 opencode session when dispatched.
 
 ## 2026-11-02 — Cycle 24 (WI-019 MVP closeout executed PM-side; gate ACCEPT)
 

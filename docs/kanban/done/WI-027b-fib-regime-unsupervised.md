@@ -57,5 +57,5 @@ test_command: uv run pytest tests/test_fib_regime_unsupervised.py -q --tb=short 
 - [ ] Do NOT run the full-universe job and do NOT read files under `data/` — tests use synthetic data only.
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 1/2 | **Commit:** PENDING | **Status:** DONE
+- **Notes / Error Trace:** `uv run pytest tests/test_fib_regime_unsupervised.py -q --tb=short --maxfail=1` → `4 passed in 5.11s` (exit 0, first attempt, zero fix attempts used). New files only: `scripts/fib_regime_unsupervised.py` (242 lines — `cross_section()` reused for ret63/ret126/realized_vol63 on the per-(market, date) close series; CALIB-only pooled `GaussianMixture(n_components∈{3,4}, random_state=0, n_init=10, covariance_type='full')` with CALIB-fit StandardScaler, one frozen predict for CALIB+EVAL; gmm{3,4}_s*_prob float32 + gmm{3,4}_label Int64 appended to regime_daily_soft.csv; per-state edge via WI-023 group_stats + fold5 callout + WI-027 comparison + VERDICT in GMM_STATES.md; --out/--smoke CLI) and `tests/test_fib_regime_unsupervised.py` (4 synthetic-only tests: fit reproducibility, probs sum to 1 @ 1e-6, Hungarian-matched seed stability, fold5-isolation PASS detection). Full-universe job NOT run; no data/ reads and no writes outside write_files (full in-memory chain verified with a synthetic sanity run in /tmp/opencode). regime_daily_soft.csv + GMM_STATES.md materialize when Hermes runs the driver. DoD: all 3 boxes met.

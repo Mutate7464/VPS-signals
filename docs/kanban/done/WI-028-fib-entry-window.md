@@ -53,5 +53,10 @@ test_command: uv run pytest tests/test_fib_entry_window.py -q --tb=short --maxfa
 - [ ] Do NOT run the full-universe job and do NOT read files under `data/` — tests use synthetic data only.
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 2/2 | **Commit:** PENDING | **Status:** DONE
+- **Notes / Error Trace:** Two synthetic-data fixes in tests (20→40 bars so
+  simulate() has runway; test-3 geometry: break-low 95.5 stays above k=0 stop
+  95, event low 96). Final `uv run pytest tests/test_fib_entry_window.py -q
+  --tb=short --maxfail=1` → 4 passed, exit 0. Full-universe job NOT run; no
+  reads under data/. k=0 rows sourced from trade_labels_w39.parquet
+  close-entry policies; k=3/5 confirmed-delay sims on raw OHLCV per blueprint.

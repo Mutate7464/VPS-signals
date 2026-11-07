@@ -64,5 +64,5 @@ test_command: uv run pytest tests/test_fib_regime_labels.py -q --tb=short --maxf
 - [ ] Do NOT run the full-universe job and do NOT read files under `data/` — tests use synthetic data only.
 
 ## 4. EXECUTION TELEMETRY (Appended on Completion/Block)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / Error Trace:** None
+- **Attempts:** 1/2 | **Commit:** PENDING | **Status:** DONE
+- **Notes / Error Trace:** None. `test_command` (`uv run pytest tests/test_fib_regime_labels.py -q --tb=short --maxfail=1`) passed on the first run — 4 passed, exit 0; two subsequent re-runs after line-count compliance rewrites (375→241 lines, behavior identical) also 4 passed. Files (both new, within write_files): `scripts/fib_regime_labels.py` (241 lines: trend 63/126d point-in-time labels with 0.001 flat-noise + ALL-pool fallback; atrp63/vol21 cross-sectional medians with CALIB-frozen (<2022-05-02) median cuts; regime_daily_extended.csv append-only; regime_conditional_edge.csv CALIB-only with WI-023 group_stats fold reuse; REGIME_LABELS.md + VERDICT + EXIT:0; --out/--smoke CLI with FIB_SMOKE fallback) and `tests/test_fib_regime_labels.py` (190 lines, 4 synthetic-only tests: trend categories incl. point-in-time index probe, vol categories incl. frozen-cut check, regime join incl. group_stats spy + fold sign agreement, fold5 isolation → PASS detection with 2 FAIL controls). Full-universe job NOT run (per DoD); no data/ reads; no files outside write_files touched.

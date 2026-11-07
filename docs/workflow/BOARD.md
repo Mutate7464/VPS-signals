@@ -2,7 +2,7 @@
 
 > Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
 
-**Last updated:** 2026-11-07 — WI-027 fib regime labels (new research ladder stage 1, admin direction in chat); overnight chain WI-021..025 DONE, PM review pending. **Phase 2 open — first sprint: P-1 module splits** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
+**Last updated:** 2026-11-07 — Cycle 25 closed: WI-027 PASS, WI-027b FAIL, WI-028 INCONCLUSIVE (k=0 dominates). Charter established. Next: WI-030 (exit policy). **Phase 2 open** per `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`.
 
 ## ACTIVE
 
