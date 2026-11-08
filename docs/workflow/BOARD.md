@@ -11,6 +11,7 @@
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## DONE (last 7 days)
+- [DONE] WI-031 | synthetic validation of fold-stability gate | G-001 | PASS 2026-11-08; ADOPT_LOOSE_4OF5 (chaotic detect 18/20 vs 17/20, FP 0/20); strict gate validated (FP 0/20, CONSTANT 20/20); 469 core-s
 - [DONE] WI-030 | fib conditional exit policy | G-001 | FAIL 2026-11-08; learned chooser 5/5 CALIB folds but below frozen cell on CALIB (+0.61% vs +1.07%) and EVAL (+0.80% vs +2.14%); frozen t15_s10_d39_close stands
 - [DONE] WI-028 | fib entry-window (stage 2a) | G-001 | INCONCLUSIVE; k=0 dominates; **at-bottom entry recommended** (PM-verified)
 - [DONE] WI-027b | fib regime unsupervised GMM | G-001 | FAIL; soft probs supplementary; rule-based labels chosen
