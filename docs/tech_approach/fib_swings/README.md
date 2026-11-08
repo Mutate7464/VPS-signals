@@ -50,6 +50,10 @@ Admin direction in chat 2026-11-07: build a staged ML pipeline where regime awar
 | HMM upgrade (hmmlearn or torch): replace GMM with Markov-switching for temporal persistence — regimes should last. Pip-install needed | If GMM states are temporally fragmented (high-frequency switching) | Medium |
 | Horizon-adaptive multi-model: fit separate models for h ∈ {10,20,39}d exits, ensemble | If WI-030 shows horizon interacts with regime | Day |
 
+## Gate decisions (fold-stability guard)
+
+- **2026-11-08 — ADOPT_LOOSE_4OF5 (admin, in chat):** the fold-stability bar for gating learned artifacts loosens from strict 5/5 to **4/5 folds positive** (n_folds_pos ≥ 4). Evidence (WI-031 synthetic validation, `reports/fib_swings/SYNTHETIC_VALIDATION.md`): chaotic-edge detection 18/20 vs 17/20 for strict, NULL false-positive 0/20 on both; `pooled_only_t2` rejected (detects 20/20 but FP 5/20); 3/5 adds nothing over 4/5. Strict 5/5 remains the bar for re-opening already-frozen decisions (WI-030's frozen cell, WI-027 regimes). Not retroactive: prior PASS/FAIL verdicts stand as issued.
+
 ## References
 
 - Overnight chain brief: `docs/workflow/briefs/2026-11-06-fib-overnight/`

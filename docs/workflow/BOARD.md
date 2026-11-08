@@ -3,7 +3,7 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-08 — WI-030 staged (admin ordered WI-030; WI-029 dead: its gate was WI-028 supporting the confirmation premise, which WI-028 falsified). **Next:** WI-030 execution.
+**Last updated:** 2026-11-08 — Cycle 27: ADOPT_LOOSE_4OF5 gate adopted (admin in chat; WI-031 verdict); fib ladder closed. **Next:** none queued — admin direction required for next research thread.
 
 ## ACTIVE
 - [WIP] none (EXECUTING = 0)
@@ -11,7 +11,7 @@
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## DONE (last 7 days)
-- [DONE] WI-031 | synthetic validation of fold-stability gate | G-001 | PASS 2026-11-08; ADOPT_LOOSE_4OF5 (chaotic detect 18/20 vs 17/20, FP 0/20); strict gate validated (FP 0/20, CONSTANT 20/20); 469 core-s
+- [DONE] WI-031 | synthetic validation of fold-stability gate | G-001 | PASS 2026-11-08; **ADOPT_LOOSE_4OF5 adopted 2026-11-08 (admin in chat, cycle 27)** — bar for gating learned artifacts loosens 5/5→4/5 (chaotic detect 18/20 vs 17/20, FP 0/20); strict gate validated; prior verdicts not retroactive
 - [DONE] WI-030 | fib conditional exit policy | G-001 | FAIL 2026-11-08; learned chooser 5/5 CALIB folds but below frozen cell on CALIB (+0.61% vs +1.07%) and EVAL (+0.80% vs +2.14%); frozen t15_s10_d39_close stands
 - [DONE] WI-028 | fib entry-window (stage 2a) | G-001 | INCONCLUSIVE; k=0 dominates; **at-bottom entry recommended** (PM-verified)
 - [DONE] WI-027b | fib regime unsupervised GMM | G-001 | FAIL; soft probs supplementary; rule-based labels chosen

@@ -1,7 +1,7 @@
 ---
 wi_id: WI-031
 title: Synthetic validation of the fold-stability gate — false-positive/false-negative rates and loosened-gate comparison for chaotic edge
-status: draft
+status: done
 agent: surgical-builder
 depends_on: [WI-030, WI-027]
 board_row: "BOARD.md ACTIVE — EXECUTING (fib ladder: guard validation)"
