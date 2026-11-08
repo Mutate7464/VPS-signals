@@ -3,7 +3,7 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-08 — Lean HITL workflow (D-020) applied; DONE rows demoted; PM_LOG rotated to 2 cycles. **Next:** no WI staged. Conflict unresolved: cycle 25 header said "Next: WI-030 (exit policy)"; the WI-028 row said "WI-029 next". Admin to order.
+**Last updated:** 2026-11-08 — WI-030 staged (admin ordered WI-030; WI-029 dead: its gate was WI-028 supporting the confirmation premise, which WI-028 falsified). **Next:** WI-030 execution.
 
 ## ACTIVE
 - [WIP] none (EXECUTING = 0)
@@ -11,6 +11,7 @@
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## DONE (last 7 days)
+- [DONE] WI-030 | fib conditional exit policy | G-001 | FAIL 2026-11-08; learned chooser 5/5 CALIB folds but below frozen cell on CALIB (+0.61% vs +1.07%) and EVAL (+0.80% vs +2.14%); frozen t15_s10_d39_close stands
 - [DONE] WI-028 | fib entry-window (stage 2a) | G-001 | INCONCLUSIVE; k=0 dominates; **at-bottom entry recommended** (PM-verified)
 - [DONE] WI-027b | fib regime unsupervised GMM | G-001 | FAIL; soft probs supplementary; rule-based labels chosen
 - [DONE] WI-027 | fib regime labels | G-001 | PASS; up_high/USD +22.75pp; chop_normal/ALL +3.89pp
