@@ -8,10 +8,14 @@
 
 ## Hard constraints (every task, every agent)
 
-- Host: 2 vCPU / 8 GB / no swap. `n_jobs=2` everywhere (never -1). Cast feature
+- Host: 2 vCPU / 8 GB / no swap — Hostinger KVM 2 with CPU credits. `n_jobs=2` everywhere (never -1). Cast feature
   DataFrames to `float32` immediately after calculation. No all-ticker uncompressed
   DataFrame — `pyarrow.dataset` or sequential symbol iteration. PDF charts: batch 10,
-  `matplotlib.pyplot.close('all')` + `gc.collect()` per batch.
+  `matplotlib.pyplot.close('all')` + `gc.collect()` per batch. **Burn rate (Hostinger
+  credit model, details in Hermes skill `hostinger-vps-cpu-credits`):** full balance =
+  3 h @ 100% CPU; sustained steady-state < 60% of vCPUs; heavy jobs get an explicit
+  core-hour cap in the WI spec, `n_jobs=2`, checkpointed; pause ≥ 30 min if modeled
+  balance < 25%.
 - Daily shortlist only. Human gate on every sprint gate. No auto-execution of orders.
   No secrets in git. (`.agents/rules/` — env-split, no-live-trading, quant-ml.)
 - File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
