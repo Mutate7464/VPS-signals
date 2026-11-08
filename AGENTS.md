@@ -18,3 +18,7 @@
 - Commands: `uv sync`, `uv run pytest`.
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`
   (never loaded into agent context; refreshed by scribe).
+- Roles, mode gates, token caps (WI spec ≤400 tokens, BOARD ≤5 KB, PM_LOG keep 2):
+  `docs/workflow/designs/D-020-lean-hitl-tri-role-workflow.md`. Mode prompts:
+  `docs/workflow/MODE_PROMPTS.md`. Data facts: `docs/workflow/DATA_CONTRACT.md`.
+  One role per session; hand off through files; `/clear` between roles.
