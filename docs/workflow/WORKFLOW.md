@@ -24,6 +24,8 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 
 **Provisional-verdict rule (admin, in chat, 2026-11-09):** every gate verdict (ADOPT / REJECT / INCONCLUSIVE, incl. `evaluate.verdict()` output in reports) is **PROVISIONAL — advisory only** until the admin ratifies it in chat. Board rows record the computed verdict prefixed `PROVISIONAL`; no adoption, rule change, artifact promotion, or thread close is applied from a computed verdict without an explicit admin decision. QA still blocks DONE regardless.
 
+**Two-layer ML gate (admin, in chat, 2026-11-09; `designs/D-023`):** ML work gates at exactly one of two layers. **Layer 1 (pickle library, predictive):** OOF AUC/IC + BH-FDR + calibration — stocks `data/models/`, licenses no trading claim. **Layer 2 (overlay, trading):** any ML bolted on top of frozen rules — decision parameters tuned on CALIB trading edge only, frozen before EVAL, judged by edge vs the named frozen baseline + fold stability + placebo on the edge. WI specs must state their layer; Layer-1 stats never justify a Layer-2 adoption, and a Layer-2 REJECT never retro-doubts the Layer-1 artifact.
+
 **Iteration rules**
 1. **Intent never changes silently.** Goals and designs are superseded (linked forward), never edited in place.
 2. **Deviations append, never rewrite.** Execution appends to `## DEVIATIONS`, then continues only if safe.

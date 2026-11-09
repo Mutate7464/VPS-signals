@@ -29,6 +29,10 @@
 - Gate verdicts are PROVISIONAL (admin, 2026-11-09): computed ADOPT/REJECT/INCONCLUSIVE
   labels are advisory until ratified by the admin in chat; nothing is adopted, promoted,
   or closed from a computed verdict alone (WORKFLOW.md "Provisional-verdict rule").
+- Two-layer ML gate (admin, 2026-11-09, `designs/D-023`): Layer 1 = pickle library gate
+  (predictive: OOF AUC/IC + BH-FDR; no trading claim); Layer 2 = overlay gate (trading:
+  decision params tuned on CALIB edge, judged vs frozen baseline). Every ML WI states its
+  layer; the layers never cross-justify.
   No secrets in git. (`.agents/rules/` — env-split, no-live-trading, quant-ml.)
 - File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
 - Commands: `uv sync`, `uv run pytest`.

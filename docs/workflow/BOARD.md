@@ -3,7 +3,7 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-09 — provisional-verdict rule adopted (verdicts advisory until admin ratifies in chat; see WORKFLOW.md). WI-037 PROVISIONAL REJECT, WI-039 PROVISIONAL robust, WI-038 in flight. **Next:** WI-038 close-out, then admin decision on D-022 thread.
+**Last updated:** 2026-11-09 — two-layer ML gate adopted (`designs/D-023`: Layer 1 pickle-library/predictive vs Layer 2 overlay/trading) + provisional-verdict rule (verdicts advisory until admin ratifies in chat). WI-037 PROVISIONAL REJECT (L2), WI-039 PROVISIONAL robust (L1), WI-038 in flight (L1). **Next:** WI-038 close-out, then admin decision on D-022 thread.
 
 ## ACTIVE
 - [DONE] WI-039 | regime audit of b_hold (robust vs concentrated) | G-001 | **PROVISIONAL PASS** 2026-11-09 — **ROBUST both markets**: top-regime excess-AUC share 0.36 USD / 0.45 CAD (<0.60 bar), every populated regime cell AUC >0.5 (224K/165K joined OOF rows, 658/381 symbols); b_hold signal NOT regime-gated; inference/join only, 0.03 core-h total (`reports/wi039_summary.md`); verdict PROVISIONAL — admin ratification pending (2026-11-09 rule)
