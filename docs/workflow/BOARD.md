@@ -10,7 +10,10 @@
 - [DONE] WI-035 | three-binary models, confirmatory no-edge run | G-001 | PASS 2026-11-09 — USD REJECT (1/5, −1.24pp, z −0.89); CAD ADOPT flagged record-only fat-tail (39/17,332 events, z +4.10); no-edge theory CONFIRMED; 96 pickles `data/models/wi035/`; tests 16/16
 - [DONE] WI-033 | swing-conditioned 3-class XGB under ADOPT_LOOSE_4OF5 | G-001 | FAIL 2026-11-09; REJECT both markets — USD 4/5 folds but pooled edge −0.15pp vs frozen rules (placebo z −19.7); CAD 2/5, edge −0.07pp; frozen fib rules stand; no pickle/shortlist written (`reports/wi033_summary.md`)
 - [DONE] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | PASS 2026-11-09; **probe CLEAR both markets** — USD 460,314 events / CAD 252,420, 13/19 FDR-sig features all same-sign + placebo clear (`reports/wi032_probe.md`)
-- [TODO] WI-034 binary-decompose probe | G-001 | in `ready/` but DEFERRED by admin 2026-11-09 (WI-035 runs directly; WI-034 may still run standalone for the record)
+- [TODO] WI-037 hold-filter tradeable gate | G-001 | staged `docs/kanban/draft/WI-037-hold-filter-tradeable-gate.md`; run order 1 of phase-2 batch; admin-approved in chat 2026-11-09 (cap 0.5 core-h)
+- [TODO] WI-039 regime audit of b_hold | G-001 | staged `docs/kanban/draft/WI-039-regime-audit-hold.md`; run order 2 (cap 0.3)
+- [TODO] WI-038 long-horizon gap fill | G-001 | staged `docs/kanban/draft/WI-038-long-horizon-gap-fill.md`; run order 3 after ≥30 min idle (cap 2.0)
+- [TODO] WI-034 binary-decompose probe | G-001 | in `ready/` but DEFERRED by admin 2026-11-09 (superseded by WI-035/036 outcome; keep for the record only)
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## DONE (last 7 days)

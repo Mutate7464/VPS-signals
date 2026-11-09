@@ -15,7 +15,16 @@
   credit model, details in Hermes skill `hostinger-vps-cpu-credits`):** full balance =
   3 h @ 100% CPU; sustained steady-state < 60% of vCPUs; heavy jobs get an explicit
   core-hour cap in the WI spec, `n_jobs=2`, checkpointed; pause ≥ 30 min if modeled
-  balance < 25%.
+  balance < 25%. **VPS pacing policy (updated 2026-11-09, measured on WI-035/036 —
+  bursts of 0.3 and 2.55 core-h left balance ~100%):** (1) default per-WI compute cap
+  is **2.5 core-h** (raise per-WI by explicit admin approval only); (2) bursts under
+  the cap run full speed — throttle only makes sense for jobs modeled > 3 core-h, in
+  which case cap the process at ~1.0–1.1 cores (below the 1.2 vCPU baseline = no
+  credit drain) instead of pausing; (3) after any burst ≥ 1 core-h, leave ≥ 30 min
+  idle before the next; (4) track balance with
+  `python3 ~/.hermes/skills/devops/hostinger-vps-cpu-credits/scripts/credit_monitor.py
+  --vcpus 2 --state <user-writable-path>` before dispatching each WI (default
+  /var/lib state needs root — always pass an explicit --state).
 - Daily shortlist only. Human gate on every sprint gate. No auto-execution of orders.
   No secrets in git. (`.agents/rules/` — env-split, no-live-trading, quant-ml.)
 - File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
