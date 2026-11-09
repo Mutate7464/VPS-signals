@@ -6,7 +6,8 @@
 **Last updated:** 2026-11-09 — New thread (admin direction in chat 2026-11-09, "proceed"): swing-conditioned buy/sell/hold ML per D-021; WI-032 probe in progress, WI-033 queued behind it.
 
 ## ACTIVE
-- [WIP] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | locks registered; WI-033 in draft, depends_on WI-032
+- [WIP] WI-033 | swing-conditioned 3-class XGB under ADOPT_LOOSE_4OF5 vs frozen fib baseline | G-001 | locks registered (D-021, admin-approved 2026-11-09)
+- [DONE] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | PASS 2026-11-09; **probe CLEAR both markets** — USD 460,314 events / CAD 252,420, 13/19 FDR-sig features all same-sign + placebo clear (`reports/wi032_probe.md`)
 - [TODO] none (`docs/kanban/ready/` empty)
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
