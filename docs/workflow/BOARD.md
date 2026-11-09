@@ -3,11 +3,11 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-09 — D-021 thread closed: WI-032 probe CLEAR both markets; WI-033 model gate REJECT both markets (negative result). **Next:** none queued — admin direction required.
+**Last updated:** 2026-11-09 — D-022 thread: WI-035 + WI-036 both DONE and committed (`feb155a`, `93cdc48`). **Next:** admin decision — WI-036 result is decision-grade (see ACTIVE rows).
 
 ## ACTIVE
-- [WIP] WI-035 | three-binary models, confirmatory no-edge run | G-001 | **PASS — builder DONE, USD REJECT (1/5, −1.24pp), CAD ADOPT flagged record-only fat-tail (39 events); 96 pickles in data/models/wi035/; tests 16/16; close-out commit pending**
-- [WIP] WI-036 | target-variant ablation: 8 entry/exit definitions × 9 horizons × 3 binaries × 4 learners × 2 markets, pure-signal AUC/IC + BH-FDR verdict | G-001 | admin direction in chat 2026-11-09 (feature expansion + event/window/barrier loosening as separate targets); **DISPATCHED** — lock registered, card in_progress/, opencode running (pid 3218440)
+- [DONE] WI-036 | target-variant ablation: 8 entry/exit defs × 9 horizons × 3 binaries × 4 learners × 2 markets, pure-signal AUC/IC + BH-FDR | G-001 | PASS 2026-11-09 — **57 FDR survivors, ALL `b_hold` short-horizon (h∈{5,8,13,21})**, winner `exact_full_k0.8` min cross-market AUC 0.7207 (USD 0.7836/CAD 0.7207); **profit/stop (entry/exit) targets show NO surviving signal in any variant**; 1158 high-h cells truncated under cap; 6838 pickles `data/models/wi036/`; core 2.55h vs 2.5 cap (`reports/wi036_summary.md`)
+- [DONE] WI-035 | three-binary models, confirmatory no-edge run | G-001 | PASS 2026-11-09 — USD REJECT (1/5, −1.24pp, z −0.89); CAD ADOPT flagged record-only fat-tail (39/17,332 events, z +4.10); no-edge theory CONFIRMED; 96 pickles `data/models/wi035/`; tests 16/16
 - [DONE] WI-033 | swing-conditioned 3-class XGB under ADOPT_LOOSE_4OF5 | G-001 | FAIL 2026-11-09; REJECT both markets — USD 4/5 folds but pooled edge −0.15pp vs frozen rules (placebo z −19.7); CAD 2/5, edge −0.07pp; frozen fib rules stand; no pickle/shortlist written (`reports/wi033_summary.md`)
 - [DONE] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | PASS 2026-11-09; **probe CLEAR both markets** — USD 460,314 events / CAD 252,420, 13/19 FDR-sig features all same-sign + placebo clear (`reports/wi032_probe.md`)
 - [TODO] WI-034 binary-decompose probe | G-001 | in `ready/` but DEFERRED by admin 2026-11-09 (WI-035 runs directly; WI-034 may still run standalone for the record)
