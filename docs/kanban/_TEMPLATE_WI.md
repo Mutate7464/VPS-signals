@@ -8,6 +8,7 @@ title: Short imperative action title
 status: draft
 agent: surgical-builder
 depends_on: []
+gate_layer: "1 | 2 | N/A  # D-023: 1=pickle-library/predictive, 2=overlay/trading, N/A=infra"
 board_row: "(BOARD.md row this WI executes, if any)"
 write_files:
   - src/module/target.py:40-95
@@ -19,6 +20,7 @@ test_command: uv run pytest tests/module/test_target.py -q --tb=short --maxfail=
 
 ## 1. Objective and invariant
 - One sentence: the behavioural change. Name the host invariant that applies (n_jobs=2, float32, symbol-sequential reads).
+- `gate_layer` discipline (D-023): L1 DoD carries no trading metrics; L2 DoD names its frozen baseline + decision-parameter tuning criterion and carries no predictive metrics beyond pickle provenance.
 
 ## 2. I/O contract and blueprint (literal)
 - Input: `<exact path>`, schema `<col:dtype, ...>` (from `DATA_CONTRACT.md` or a metadata probe).
