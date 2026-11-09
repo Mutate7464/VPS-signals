@@ -53,6 +53,7 @@ Admin direction in chat 2026-11-07: build a staged ML pipeline where regime awar
 ## Gate decisions (fold-stability guard)
 
 - **2026-11-08 — ADOPT_LOOSE_4OF5 (admin, in chat):** the fold-stability bar for gating learned artifacts loosens from strict 5/5 to **4/5 folds positive** (n_folds_pos ≥ 4). Evidence (WI-031 synthetic validation, `reports/fib_swings/SYNTHETIC_VALIDATION.md`): chaotic-edge detection 18/20 vs 17/20 for strict, NULL false-positive 0/20 on both; `pooled_only_t2` rejected (detects 20/20 but FP 5/20); 3/5 adds nothing over 4/5. Strict 5/5 remains the bar for re-opening already-frozen decisions (WI-030's frozen cell, WI-027 regimes). Not retroactive: prior PASS/FAIL verdicts stand as issued.
+- **2026-11-09 — verdicts PROVISIONAL until admin ratification (admin, in chat):** the gate arithmetic (4/5 folds + pooled edge > 0 + placebo z ≥ 2.0, `evaluate.verdict()`) is computed and reported for the record, but its ADOPT/REJECT/INCONCLUSIVE label is advisory only. No adoption/rule change/promotion follows a computed verdict without an explicit admin decision in chat. Doc-only change — the bar is enforced at PM-decision level, no source constant changed (grep: `src/swing_bsh/evaluate.py` computes and reports; application is a PM step). Not retroactive: WI-037 REJECT / WI-039 robust / WI-038 (pending) stand as computed but await admin disposition.
 
 ## References
 

@@ -22,6 +22,8 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 | QA/GATE | Verdict + gate brief | Reviewer / Admin | APPROVE; failed gate = hard stop |
 | DONE | Board row + evidence | Admin | QA passed and gate signed where applicable |
 
+**Provisional-verdict rule (admin, in chat, 2026-11-09):** every gate verdict (ADOPT / REJECT / INCONCLUSIVE, incl. `evaluate.verdict()` output in reports) is **PROVISIONAL — advisory only** until the admin ratifies it in chat. Board rows record the computed verdict prefixed `PROVISIONAL`; no adoption, rule change, artifact promotion, or thread close is applied from a computed verdict without an explicit admin decision. QA still blocks DONE regardless.
+
 **Iteration rules**
 1. **Intent never changes silently.** Goals and designs are superseded (linked forward), never edited in place.
 2. **Deviations append, never rewrite.** Execution appends to `## DEVIATIONS`, then continues only if safe.
