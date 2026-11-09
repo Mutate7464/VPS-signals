@@ -3,10 +3,11 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-09 — New thread (admin direction in chat 2026-11-09, "proceed"): swing-conditioned buy/sell/hold ML per D-021; WI-032 probe in progress, WI-033 queued behind it.
+**Last updated:** 2026-11-09 — D-021 thread closed: WI-032 probe CLEAR both markets; WI-033 model gate REJECT both markets (negative result). **Next:** none queued — admin direction required.
 
 ## ACTIVE
-- [WIP] WI-033 | swing-conditioned 3-class XGB under ADOPT_LOOSE_4OF5 vs frozen fib baseline | G-001 | locks registered (D-021, admin-approved 2026-11-09)
+- [WIP] none (EXECUTING = 0)
+- [DONE] WI-033 | swing-conditioned 3-class XGB under ADOPT_LOOSE_4OF5 | G-001 | FAIL 2026-11-09; REJECT both markets — USD 4/5 folds but pooled edge −0.15pp vs frozen rules (placebo z −19.7); CAD 2/5, edge −0.07pp; frozen fib rules stand; no pickle/shortlist written (`reports/wi033_summary.md`)
 - [DONE] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | PASS 2026-11-09; **probe CLEAR both markets** — USD 460,314 events / CAD 252,420, 13/19 FDR-sig features all same-sign + placebo clear (`reports/wi032_probe.md`)
 - [TODO] none (`docs/kanban/ready/` empty)
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
