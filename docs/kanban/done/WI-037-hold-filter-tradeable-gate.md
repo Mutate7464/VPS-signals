@@ -2,7 +2,8 @@
 ---
 wi_id: WI-037
 title: Use winning b_hold model (exact_full_k0.8 xgb h13) as a veto filter on frozen fib entries; gate vs frozen baseline
-status: draft
+status: done
+verdict: REJECT both markets — RATIFIED 2026-11-09 (admin in chat); Layer-2 trading verdict; WI-036 Layer-1 pickles unaffected
 agent: surgical-builder
 depends_on: []
 board_row: "D-022 thread phase 2 (admin direction in chat 2026-11-09: test ML for tradeable decisions)"

@@ -2,7 +2,8 @@
 ---
 wi_id: WI-039
 title: Break down winning b_hold model performance by WI-027 regime label (up_high/chop_normal etc.), both markets
-status: draft
+status: done
+verdict: PASS — RATIFIED 2026-11-09 (admin in chat); robust across regimes, not regime-gated
 agent: surgical-builder
 depends_on: []
 board_row: "D-022 thread phase 2 (admin direction in chat 2026-11-09: regime changes)"

@@ -4,6 +4,14 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-11-09 — Cycle 29 (admin ratifies WI-039/WI-037; Layer-1 focus; WI-038 full run dispatched)
+
+- **Admin ratification in chat ("focus on layer 1 improvements … approve ones that provisional pass"):** WI-039 PROVISIONAL PASS → **PASS RATIFIED** (b_hold robust across regimes, NOT regime-gated; Layer-1 artifact stands). WI-037 PROVISIONAL REJECT → **REJECT RATIFIED, confirmed as a Layer-2 trading verdict** (overlay gate vs frozen rules; τ tuned on CALIB edge — `hold_filter_gate.py:110 pick_tau()`); per D-023 it does not retro-doubt the WI-036 Layer-1 pickles.
+- **Admin direction:** focus on Layer 1 (pickle library) improvements; proceed with model development. All open provisional verdicts now resolved; WI-036 PASS and earlier verdicts stand as issued.
+- **WI-038 (Layer-1 long-horizon gap fill):** builder pass audited earlier (test_command exit 0, smoke 0.126 core-h); PM dispatched the full-universe run `python -m src.swing_bsh.binary_grid_longh --market ALL` (cap 2.0 core-h, h∈{34,55,89,144,233}); credit balance 100% (3.0 h burst room) at dispatch. Verdict to be recorded on completion — PROVISIONAL until admin ratifies.
+- **Next (admin-gated):** WI-038 close-out + ratification; then next Layer-1 direction per D-023 §4 coverage audit (remaining gap: admin-deferred WI-034 binary-decompose probe).
+- cursor: none — doc-adoption cycle; no new opencode sessions to ingest.
+
 ## 2026-11-09 — Cycle 28 (gate verdicts become PROVISIONAL — admin ratification required)
 
 - **Admin direction in chat ("confirm gate protocol … change to human intervention instead of automatic"):** every computed gate verdict (ADOPT/REJECT/INCONCLUSIVE, `evaluate.verdict()`) is now **PROVISIONAL — advisory only** until the admin ratifies it in chat. No adoption, rule change, artifact promotion, or thread close follows a computed verdict without an explicit admin decision. Doc-only change — grep evidence: the bar (`FOLD_THRESHOLD`=4, `PLACEBO_Z_MIN`=2.0 in `src/swing_bsh/evaluate.py`) is computed/reported by code, application is a PM-level step; no source constant changed.
