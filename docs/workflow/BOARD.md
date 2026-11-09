@@ -3,10 +3,10 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-08 — Cycle 27: ADOPT_LOOSE_4OF5 gate adopted (admin in chat; WI-031 verdict); fib ladder closed. **Next:** none queued — admin direction required for next research thread.
+**Last updated:** 2026-11-09 — New thread (admin direction in chat 2026-11-09, "proceed"): swing-conditioned buy/sell/hold ML per D-021; WI-032 probe in progress, WI-033 queued behind it.
 
 ## ACTIVE
-- [WIP] none (EXECUTING = 0)
+- [WIP] WI-032 | swing-event sampling + 3-class first-touch labels + probe (D-021) | G-001 | locks registered; WI-033 in draft, depends_on WI-032
 - [TODO] none (`docs/kanban/ready/` empty)
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
