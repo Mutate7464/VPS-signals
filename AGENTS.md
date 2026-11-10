@@ -38,6 +38,8 @@
 - Commands: `uv sync`, `uv run pytest`.
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`
   (never loaded into agent context; refreshed by scribe).
+- Sprint entry point (token-optimized state + next-series specs): the newest brief in
+  `docs/workflow/briefs/` (currently `2026-11-10-D-025-tiered-sprint-brief.md`).
 - Roles, mode gates, token caps (WI spec ≤400 tokens, BOARD ≤5 KB, PM_LOG keep 2):
   `docs/workflow/designs/D-020-lean-hitl-tri-role-workflow.md`. Mode prompts:
   `docs/workflow/MODE_PROMPTS.md`. Data facts: `docs/workflow/DATA_CONTRACT.md`.
