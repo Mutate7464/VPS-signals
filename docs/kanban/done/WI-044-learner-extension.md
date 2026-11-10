@@ -1,7 +1,8 @@
 ---
 wi_id: WI-044
 title: L1 learner extension — RandomForest, ExtraTrees, isotonic-calibrated winner, elastic-net logistic on the winning b_hold cells (all existing deps)
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-10) — 6 BH-FDR survivors join the L1 library (Layer 1, D-023); best cell random_forest/b_hold/h21 min cross-market AUC 0.7341; predictive license only, no trading claim
 gate_layer: L1
 agent: surgical-builder
 depends_on: []

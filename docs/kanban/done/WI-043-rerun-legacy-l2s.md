@@ -1,7 +1,8 @@
 ---
 wi_id: WI-043
 title: Port and rerun the three legacy L2 questions (WI-012 cross-market gate, WI-018 first_touch_34 cost overlay, WI-011 condition-first meta) under the D-024 harness
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-10) — wi012 REJECT (cross-market transfer closed), wi018/wi011 INERT; legacy three closed permanently per D-024 pre-committed closure; no deployment
 gate_layer: L2
 agent: surgical-builder
 depends_on: [WI-042]

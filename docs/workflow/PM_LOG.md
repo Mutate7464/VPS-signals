@@ -4,7 +4,11 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
-## 2026-11-10 — Cycle 31 (WI-038 ratified; D-024 L2 rebuild drafted; rerun WIs 041–043 staged for gate)
+## 2026-11-10 — Cycle 31
+
+- **WI-043 + WI-044 RATIFIED (admin in chat 2026-11-10 "proceed with recs"):** WI-043 (Layer 2) — wi012 REJECT / wi018+wi011 INERT, legacy three closed permanently; locks registry emptied (the chain close-out had been blocked from cron-mode writes, release recorded in BOARD first). WI-044 (Layer 1) — 6 BH-FDR survivors join the L1 pickle library (best random_forest/b_hold/h21, min cross-market AUC 0.7341). Doc-only: both done-cards got `status: done` + `verdict:` lines, BOARD rows stripped of PROVISIONAL and marked RATIFIED with the layer noted.
+- **Admin direction (2026-11-10) — next sprint:** update docs to a TIERED workflow — Tier 1 features+metafeatures, Tier 2 predictions (high/low/upward/downward/volatility/hold), Tier 3 trade action/strategy — considering (a) feature/TA additions for missing elements, (b) prediction expansion, (c) other trade mechanisms. Staged per the new-research-thread protocol: status summary + D-025 + WI drafts + approval matrix, gate on admin.
+- **Remaining probe WI (deferred):** CALIB->EVAL edge-decay decomposition (tau-mass vs fold concentration vs cost floor) — the open question from the WI-042 close-out; drafted as part of the sprint matrix. (WI-038 ratified; D-024 L2 rebuild drafted; rerun WIs 041–043 staged for gate)
 
 - **WI-042 (rerun modern four L2s) RATIFIED (admin in chat 2026-11-10 "proceed with recs"):** builder EXIT:0 (12 tests); PM full-universe run EXIT:0 (29.2s, USD 32,100 + CAD 17,256 entries; 91 cells / 30 tested, BH-FDR family `wi042_modern_l2_rerun` α=0.05): {ADOPT 20, INCONCLUSIVE 1, INERT 49, REJECT 21}. Admin ratified PM's recommendation: closures stand (REJECT/INERT — the four original overlay questions 037/033/030/028 are closed permanently per the pre-committed D-024 closure); the 20 computed ADOPTs are "statistically real, economically nil" — placebo z to +5.88 with q to 2e-8, but EVAL edges ~0.00000 against 25 bps costs — **no deployment**. Card `done/`, locks released; report `reports/l2/rerun_modern.{md,json}`. Known gaps recorded in the card: wi033 raw h21 USD INERT from a missing manifest cell; chop_normal untestable everywhere (<200 CALIB events). Layer-2 verdict does not retro-doubt the Layer-1 artifacts it consumed (D-023).
 
