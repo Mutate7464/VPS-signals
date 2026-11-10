@@ -34,4 +34,7 @@ test_command: uv run pytest tests/test_l2_rerun_legacy.py -q --tb=short --maxfai
 - [ ] No edits outside write_files; test_command exit 0; stdout <=5 lines. Core-hour cap: 1.5.
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
+- **Attempts:** 1/2 | **Commit:** cbf9022 | **Status:** DONE
+- Evidence: `uv run pytest tests/test_l2_rerun_legacy.py -q --tb=short --maxfail=1` → 13 passed; `uv run python -m src.l2_overlay.rerun_legacy` → 42 cells, 5 tested, {'REJECT': 5, 'INERT': 37}, 16.8 s.
+- **Result:** wi012 tuned on USD CALIB (tau 0.50) and judged on CAD → REJECT (CAD CALIB edge −0.46 bps); wi018 (h34 mass) and wi011 (cadence 2.0k–4.6k firings/yr) INERT. Reports: `reports/l2/rerun_legacy.{md,json}`.
+- **PM full-run (2026-11-10):** credit 100% pre-run; `uv run python -m src.l2_overlay.rerun_legacy` EXIT:0, 17.2 s — reproduced builder numbers exactly (42 cells, 5 tested, {REJECT 5, INERT 37}); pytest 13 passed re-verified. Verdicts PROVISIONAL until admin ratifies.
