@@ -33,4 +33,6 @@ test_command: uv run pytest tests/test_l2_overlay_harness.py -q --tb=short --max
 - [ ] test_command exit 0; stdout <=5 lines. Core-hour cap: 0.5 (smoke only, synthetic).
 
 ## 4. Telemetry footer (executor fills, <=3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
+- **Attempts:** 1/2 | **Commit:** PENDING (HEAD 05e214f; no commit made) | **Status:** DONE
+- **Evidence:** `uv run pytest tests/test_l2_overlay_harness.py -q --tb=short --maxfail=1` → 14 passed (0.9s); `L2_SMOKE=1 uv run python -m src.l2_overlay.harness --question wi037 --out /tmp/l2_smoke` → ADOPT tau=0.70 z=+38.90, report written; `--inert` → INERT, no EVAL burn. Cap: 0.5 core-h (synthetic smoke only).
+
