@@ -12,6 +12,13 @@
 - **Next (admin-gated):** WI-038 close-out + ratification; then next Layer-1 direction per D-023 §4 coverage audit (remaining gap: admin-deferred WI-034 binary-decompose probe).
 - cursor: none — doc-adoption cycle; no new opencode sessions to ingest.
 
+## 2026-11-09 — Cycle 29b (WI-040 approved; L2 rebuild queued as the following WI)
+
+- **Admin approval in chat ("approve. proceed with current WI; next WI will include rebuilding L2 method and layer"):** WI-040 (L1 library consolidation — manifest across wi035/036/038 pickles, winner-cell calibration + Brier, permutation attribution, `--infer` entrypoint; cap 0.5 core-h) APPROVED — dispatch after WI-038 closes; lock manifest `src/swing_bsh/library_audit.py` + `tests/test_swing_bsh_library_audit.py`.
+- **Admin direction for the WI after WI-040: rebuild the Layer-2 method/layer.** All seven prior L2 attempts (WI-011/012/018/028/030/033/037) REJECTed vs the frozen rules; a rebuild must therefore come as a NEW design doc naming why the prior mechanism failed and what structurally changes — present matrix for admin gate before drafting WIs. Sequence: WI-038 close-out → WI-040 → L2 rebuild design + matrix.
+- **WI-038 run note:** full-universe attempt 1 died at the PM's own tool timeout (EXIT 143, no grid output; partial pickles written — overwritten by attempt 2, idempotent). Attempt 2 relaunched as a tracked background process with notify-on-complete.
+- cursor: none.
+
 ## 2026-11-09 — Cycle 28 (gate verdicts become PROVISIONAL — admin ratification required)
 
 - **Admin direction in chat ("confirm gate protocol … change to human intervention instead of automatic"):** every computed gate verdict (ADOPT/REJECT/INCONCLUSIVE, `evaluate.verdict()`) is now **PROVISIONAL — advisory only** until the admin ratifies it in chat. No adoption, rule change, artifact promotion, or thread close follows a computed verdict without an explicit admin decision. Doc-only change — grep evidence: the bar (`FOLD_THRESHOLD`=4, `PLACEBO_Z_MIN`=2.0 in `src/swing_bsh/evaluate.py`) is computed/reported by code, application is a PM-level step; no source constant changed.
