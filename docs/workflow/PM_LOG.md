@@ -4,6 +4,13 @@
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
 
+## 2026-11-10 — Cycle 31 (WI-038 ratified; D-024 L2 rebuild drafted; rerun WIs 041–043 staged for gate)
+
+- **Admin ratification in chat ("accept changes. work on next WI. rerun old L2s"):** WI-038 PROVISIONAL PASS → **PASS RATIFIED** — 20 long-h b_hold FDR survivors (h∈{34,55,89}, both markets) join the L1 pickle library. Doc-only: board row + header; the grid artifacts were already committed in `5d080eb`.
+- **Admin direction: rebuild L2 and rerun the old L2s.** Drafted `designs/D-024-l2-overlay-rebuild.md`: named failure mechanisms of all 7 prior L2 REJECTs (inert τ grids on thin probability mass; predictive-stat selection judged on trading edge; strong frozen baseline; cross-market non-transfer; bespoke per-WI scripts), and the structural rebuild — one `src/l2_overlay/` harness (CALIB-only edge tuning, feasibility precheck with INERT verdict, ≥200-CALIB-event floor, 5-seed edge placebo, one-shot EVAL, cross-WI BH-FDR), library-first inputs via the WI-040 manifest incl. the new long-h survivors. Rerun waiver recorded in the design per protocol.
+- **WI drafts staged:** WI-041 harness (cap 0.5), WI-042 rerun modern four 037/033/030/028 (cap 1.0), WI-043 rerun legacy three 012/018/011 (cap 1.5, depends WI-042). Pre-committed closure: REJECT under the harness closes an overlay question permanently. Approval matrix presented in chat 2026-11-10 — dispatch gated on admin approval of the matrix.
+- cursor: none — design/adoption cycle.
+
 ## 2026-11-10 — Cycle 30 (WI-038 full-run close-out PROVISIONAL PASS; WI-040 done PM-verified)
 
 - **WI-038 (L1 long-horizon gap fill) full-universe run: EXIT:0** (attempt 3, detached Popen; watchdog cron fired the close-out). 552 cells scored, 408 truncated by the 2.0 core-h cap (h=233 dropped, then 144; core USD 0.62 h + CAD 1.24 h ≈ 1.86 total, within cap). Winner `tol2_full_k0.8` — best cell mlp_torch|b_hold|h34, min cross-market AUC 0.6962 (CAD 0.8399); 20 BH-FDR survivors, all b_hold, h∈{34,55,89}, both markets; zero starved folds. Expectation (b_hold family again, weaker at long h than WI-036 short-h 0.7207) confirmed. Report `reports/wi038_summary.md`, pickles `data/models/wi038/`. **Verdict PROVISIONAL PASS (Layer 1) — pending admin ratification in chat.** WI card archived to `docs/kanban/done/`, locks released; cycles 27–29 rotated to `archive/PM_LOG-2026-11-09-cycles-27-29.md`.
@@ -11,9 +18,3 @@
 - **Next (admin-gated):** (1) ratify WI-038 in chat; (2) L2 method/layer rebuild — new design doc naming why all seven prior L2 attempts REJECTed and what structurally changes; approval matrix before any dispatch.
 - cursor: wi038 watchdog cron (22ed59fa56b6, removed by its own close-out) + surgical-builder WI-040 session (killed, artifacts verified above); no pending sessions.
 
-## 2026-11-09 — Cycle 29b (WI-040 approved; L2 rebuild queued as the following WI)
-
-- **Admin approval in chat ("approve. proceed with current WI; next WI will include rebuilding L2 method and layer"):** WI-040 (L1 library consolidation — manifest across wi035/036/038 pickles, winner-cell calibration + Brier, permutation attribution, `--infer` entrypoint; cap 0.5 core-h) APPROVED — dispatch after WI-038 closes; lock manifest `src/swing_bsh/library_audit.py` + `tests/test_swing_bsh_library_audit.py`.
-- **Admin direction for the WI after WI-040: rebuild the Layer-2 method/layer.** All seven prior L2 attempts (WI-011/012/018/028/030/033/037) REJECTed vs the frozen rules; a rebuild must therefore come as a NEW design doc naming why the prior mechanism failed and what structurally changes — present matrix for admin gate before drafting WIs. Sequence: WI-038 close-out → WI-040 → L2 rebuild design + matrix.
-- **WI-038 run note:** full-universe attempt 1 died at the PM's own tool timeout (EXIT 143, no grid output; partial pickles written — overwritten by attempt 2, idempotent). Attempt 2 relaunched as a tracked background process with notify-on-complete.
-- cursor: none.
