@@ -9,7 +9,7 @@
 ### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
 - [DONE] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
 - [DONE] WI-045 | edge-decay probe on WI-042 artifacts (`reports/l2/rerun_modern.json`) | T3 prep | 0.3 core-h
-- [TODO] WI-047 | feature gap inventory + research shortlist | T1 | 0.2 core-h
+- [DONE] WI-047 | feature gap inventory + research shortlist | T1 | 0.2 core-h
 - [TODO] WI-048 | target families `up`/`high_low`/`vol_expand` × h ladder, BH-FDR, probe-first dry-run | T2 | 2.0 core-h (PM full grid)
 - [TODO] WI-049 | mechanism survey doc (depends WI-045) | T3 | 0.1 core-h
 
