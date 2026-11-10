@@ -12,6 +12,8 @@ write_files:
 read_only_files:
   - src/l2_overlay/harness.py
   - src/swing_bsh/library_audit.py
+  - src/swing_bsh/hold_regime_audit.py
+  - src/swing_bsh/binary_features_ext.py
   - src/swing_bsh/hold_filter_gate.py
   - src/swing_bsh/evaluate.py
   - scripts/fib_exit_policy.py
@@ -22,13 +24,14 @@ test_command: uv run pytest tests/test_l2_rerun_modern.py -q --tb=short --maxfai
 
 ## 1. Objective and invariant
 - Rerun the four rejected overlays — WI-037 (b_hold veto), WI-033 (3-class swing overlay), WI-030 (exit chooser), WI-028 (entry-window chooser) — through `harness.run_overlay`, each vs its NAMED frozen baseline + costs, inputs from the WI-040 manifest now including WI-038 long-h survivors (h in {34,55,89}).
+- Input wiring (D-024 §2): model probabilities via manifest `--infer` (features recomputed causally at the decision bar — WI-016 grid + WI-036 expansion incl. event-quality metafeatures `swing_depth_atr`/`bars_since_opp`/`dd_age`, cross-sectional/sector/breadth blocks); **regime metafeatures** (WI-027 labels via `hold_regime_audit`) as an explicit conditioning axis — regime-conditioned and unconditional cells share ONE BH-FDR family (no conditioning free-lunch).
 - Structural changes vs the originals (D-024 §2): CALIB-only tuning with edge criterion, feasibility precheck (INERT before EVAL burn), 5-seed placebo on edge, BH-FDR across the 4 reruns as ONE family. Admin rerun waiver recorded (D-024 §2).
 - Pre-committed closure: REJECT under this harness closes that overlay question permanently.
 
 ## 2. I/O contract and blueprint (literal)
 - Output: `reports/l2/rerun_modern.md` (per overlay: verdict INERT/ADOPT/REJECT, tau, calib/eval edge, folds, placebo z, FDR-adjusted p) + `reports/l2/rerun_modern.json`.
 - Smoke: `L2_SMOKE=5` on 5 symbols per market to /tmp (never touches EVAL scoring on partial data — smoke stops at feasibility precheck).
-- Tests: each of the 4 questions maps to a baseline config; FDR family = 4; smoke excludes EVAL.
+- Tests: each of the 4 questions maps to a baseline config; FDR family = every tested cell (question × regime-conditioning), never pooled with WI-043's family; smoke excludes EVAL.
 
 ## 3. Definition of Done (binary)
 - [ ] All four overlays produce verdicts (INERT allowed and honest); FDR table across the family.
