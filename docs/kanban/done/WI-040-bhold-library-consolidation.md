@@ -36,4 +36,6 @@ test_command: uv run pytest tests/test_swing_bsh_library_audit.py -q --tb=short 
 - [ ] Stdout ≤5 lines. Core-hour cap: 0.5 (permutation over a subset: ≤5 seeds × ≤2 markets winner cell only).
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
+- **Attempts:** 1/2 | **Commit:** PENDING (HEAD 5d080eb; no commit made) | **Status:** DONE — killed at session layer (EXIT 130) after completing artifacts; PM-verified 2026-11-10
+- **Notes:** test_command exit 0 (7 passed); manifest 9,745 rows == 96+6,838+2,811 pickles, all paths resolve; calibration (USD Brier skill +0.327, ECE 0.0009) + CAD + top-20 permutation attribution both markets complete; `--infer` smoke exit 0 (test-covered); no SHAP dep; only manifest files touched.
+- **PM close-out bullet (2026-11-10):** builder session killed by the runtime after artifacts landed (mtimes postdate log's last write); PM independently re-verified every DoD item above before closing — no re-dispatch needed.
