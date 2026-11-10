@@ -1,7 +1,8 @@
 ---
 wi_id: WI-042
 title: Rerun the four modern L2 overlays (037/033/030/028) under the D-024 harness with multi-horizon library inputs
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-10) — closures stand (REJECT/INERT, per pre-committed D-024 closure); 20 computed ADOPTs ratified as "statistically real, economically nil" (EVAL edges ~0.00000 vs 25 bps costs) — NO deployment
 gate_layer: L2
 agent: surgical-builder
 depends_on: [WI-041]
@@ -39,4 +40,7 @@ test_command: uv run pytest tests/test_l2_rerun_modern.py -q --tb=short --maxfai
 - [ ] No edits outside write_files; test_command exit 0; stdout <=5 lines. Core-hour cap: 1.0 (inference + edge grids; learners are NOT re-trained).
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
+- **Attempts:** 2/2 (strike-1 resume: PRECHECK-OK cosmetic on the verified 341-line file) | **Commit:** PENDING (HEAD 80fb9bb; no commit made) | **Status:** DONE (code + tests only)
+- test_command `uv run pytest tests/test_l2_rerun_modern.py -q --tb=short --maxfail=1` → exit 0 (12 passed, 1.74s); smoke-mode cells that clear the precheck now carry verdict `PRECHECK-OK` (synthetic smoke check: verdicts {INERT, PRECHECK-OK}, family_size 0, no EVAL touched).
+- **full-universe run NOT run - PM owns it per WI contract** (smoke artifact `/tmp/l2_rerun_modern_smoke/rerun_modern.md` predates this cosmetic edit).
+- PM full-run 2026-11-10 (detached, EXIT:0, 29.2s, USD 32,100 + CAD 17,256 entries; 91 cells / 30 tested, family `wi042_modern_l2_rerun`, α=0.05): verdict counts {ADOPT 20, INCONCLUSIVE 1, INERT 49, REJECT 21}; `reports/l2/rerun_modern.{md,json}`. PM verdict: closures stand; all ADOPT edges are statistically real (placebo z to +5.88, q to 2e-8) but economically nil — EVAL edges ~0.00000 vs 25 bps costs — no deployment. RATIFIED (admin in chat 2026-11-10, "proceed with recs"). Known gaps: wi033 raw h21 USD INERT from missing manifest cell; chop_normal untestable (<200 CALIB events).
