@@ -3,9 +3,17 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-10 — WI-043 + WI-044 RATIFIED (admin in chat): all seven L2 questions closed permanently (D-024 batch complete); WI-044's 6 survivors join the L1 library. L1 library total: 32 FDR-gated b_hold cell-survivors across 4 learner generations. **Next sprint (admin direction 2026-11-10): tiered-workflow doc update (features/metafeatures -> prediction families -> trade action) — D-025 + WI drafts staged for approval gate.**
+**Last updated:** 2026-11-10 — D-025 tiered sprint IN PROGRESS (T1→T2→T3 per D-025 §1). Admin approved series 2026-11-10. WI-046 executing (T1 docs, 0 core-h). **Next:** WI-045 edge-decay probe (T3 prep, 0.3 core-h).
 
 ## ACTIVE
+### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
+- [WIP] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
+- [TODO] WI-045 | edge-decay probe on WI-042 artifacts (`reports/l2/rerun_modern.json`) | T3 prep | 0.3 core-h
+- [TODO] WI-047 | feature gap inventory + research shortlist | T1 | 0.2 core-h
+- [TODO] WI-048 | target families `up`/`high_low`/`vol_expand` × h ladder, BH-FDR, probe-first dry-run | T2 | 2.0 core-h (PM full grid)
+- [TODO] WI-049 | mechanism survey doc (depends WI-045) | T3 | 0.1 core-h
+
+### CLOSED (D-024 batch, all RATIFIED)
 - [DONE] WI-039 | regime audit of b_hold (robust vs concentrated) | G-001 | **PASS** 2026-11-09 — **ROBUST both markets**: top-regime excess-AUC share 0.36 USD / 0.45 CAD (<0.60 bar), every populated regime cell AUC >0.5 (224K/165K joined OOF rows, 658/381 symbols); b_hold signal NOT regime-gated; inference/join only, 0.03 core-h total (`reports/wi039_summary.md`); RATIFIED 2026-11-09 (admin in chat): b_hold robust both markets; Layer-1 library artifact stands un-gated
 - [DONE] WI-037 | P(hold) veto filter on frozen fib entries (tradeable downstream test) | G-001 | **REJECT** both markets 2026-11-09 — **RATIFIED 2026-11-09 (admin in chat) — Layer-2 trading verdict** (overlay gate vs frozen rules; τ tuned on CALIB edge; does not retro-doubt the Layer-1 b_hold pickles, which stand as library artifacts) — τ grid inert (calibrated P(hold) max ~0.011, prevalence ~0.4%); pooled edge +0.0001 USD (2/5 folds) / +0.0001 CAD (1/5); veto precision 0.96 USD / 0.63 CAD vs prevalence 0.004/0.005; no pickle, no shortlist (`reports/wi037_summary.md`); b_hold signal NOT tradeable as entry veto under frozen rules
 - [DONE] WI-036 | target-variant ablation: 8 entry/exit defs × 9 horizons × 3 binaries × 4 learners × 2 markets, pure-signal AUC/IC + BH-FDR | G-001 | PASS 2026-11-09 — **57 FDR survivors, ALL `b_hold` short-horizon (h∈{5,8,13,21})**, winner `exact_full_k0.8` min cross-market AUC 0.7207 (USD 0.7836/CAD 0.7207); **profit/stop (entry/exit) targets show NO surviving signal in any variant**; 1158 high-h cells truncated under cap; 6838 pickles `data/models/wi036/`; core 2.55h vs 2.5 cap (`reports/wi036_summary.md`)

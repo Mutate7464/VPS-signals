@@ -88,7 +88,19 @@ Kebab-case filenames. One topic per file. Mandatory header: `ID`, `Title`, `Goal
 
 **Halt banners** (end the turn with the one for your role): see `MODE_PROMPTS.md`.
 
-## 7. Ceremonies (light)
+## 7. Tier map (D-025)
+
+**Pipeline stages** — maps 1:1 onto the already-ratified gate layers (D-023/D-024). This section reorganizes the docs; it does not re-derive the protocol.
+
+| Tier | Contents | Gate | License |
+|---|---|---|---|
+| T1 — Features + metafeatures | The causal panel at the detection bar; feature gap research; attribution | D-023 §2 (no model claim; attribution + alignment stats only) | Feeds T2 |
+| T2 — Predictions | Target families × horizons × learners → FDR-gated pickle library | D-023 Layer 1 (OOF AUC/IC + BH-FDR + calibration) | Predictive only, NO trading claim |
+| T3 — Trade action / strategy | Overlays, entry/exit rules, mechanisms vs frozen baseline + costs | D-024 Layer 2 (CALIB-only tuning, placebo, one-shot EVAL) | Deployment only via ratified ADOPT |
+
+Cross-tier rules (carried unchanged): pre-committed closures; probe-first with core-hour caps; BH-FDR family = every tested cell; conditioning axes fold into the same family; two-strike breaker; computed verdicts PROVISIONAL until admin ratifies. Decisions and protocol detail: `designs/D-023-two-layer-ml-gate.md`, `designs/D-024-l2-overlay-rebuild.md`. Sprint brief: `docs/workflow/briefs/2026-11-10-D-025-tiered-sprint-brief.md`.
+
+## 8. Ceremonies (light)
 
 | Ceremony | Cadence | What |
 |---|---|---|
@@ -98,18 +110,18 @@ Kebab-case filenames. One topic per file. Mandatory header: `ID`, `Title`, `Goal
 
 Archives are append-only. Never rewrite archived content. Git is the audit trail, so no "kept for audit" blocks.
 
-## 8. Risk
+## 9. Risk
 
 `RISKS.md` is a living register (P / I / owner / response), reviewed weekly. A realized risk gets an immediate response WI.
 
-## 9. Decision memos
+## 10. Decision memos
 
 - **REC first (BLUF).** Routine, reversible: 3–5 lines (REC and why, 1–2 verified facts, the ask).
 - **One-way or uncertain:** what happened (verified facts; unverified labelled) / what's next / 2–4 options (what, why, expected outcome, risk-cost; "do nothing" counts) / REC with assumptions and a review trigger.
 - Tag domain (clear / complicated / complex / chaotic) and door (one-way / two-way).
 - PM recommends; admin decides. No auto-execution past a gate.
 
-## 10. Do not
+## 11. Do not
 
 - Start EXECUTE without a WI or plan file that is locked and on the board.
 - Move a card to DONE without a QA verdict.
@@ -118,7 +130,7 @@ Archives are append-only. Never rewrite archived content. Git is the audit trail
 - Create a second board or a parallel tracker.
 - Commit without explicit paths. Never `git add -A`.
 
-## 11. Read discipline (every agent, every session)
+## 12. Read discipline (every agent, every session)
 
 - **Grep before read.** Locate with search, then read ±40 lines. Never full-read a file over 150 lines when a grep or `STATUS:` marker answers the question.
 - **Logs:** tail ~20 rows plus the final `STATUS:` line.
