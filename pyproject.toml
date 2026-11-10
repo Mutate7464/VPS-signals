@@ -17,6 +17,8 @@ dependencies = [
     "ib_async>=0.6",
     "pandas_market_calendars>=4.4",
     "torch>=2.1.0",
+    "lightgbm>=4.5",
+    "catboost>=1.2",
 ]
 
 [[tool.uv.index]]

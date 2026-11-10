@@ -18,18 +18,19 @@ test_command: uv run pytest tests/test_swing_bsh_learner_ext.py -q --tb=short --
 ---
 
 ## 1. Objective and invariant
-- Widen the L1 library with learners suited to the data (event tabular, thin positives ~0.4-4%): RandomForest + ExtraTrees (bagged, low-variance on small folds), isotonic-calibrated XGB wrapper (CalibratedClassifierCV on the WI-036 winner learner — improves probability reliability, which the L2 τ grids depend on), elastic-net logistic (l1_ratio grid; sparse-selection cross-check on WI-040's attribution). All from installed deps (sklearn 1.8, xgboost-cpu) — NO new dependencies; LightGBM/CatBoost explicitly out of scope pending a separate adoption decision.
-- Targeted grid (not the full WI-036 sweep): top-2 variants (`exact_full_k0.8`, `tol2_full_k0.8`) x h in {13,21,34,55} x `b_hold` only x 2 markets x 4 new learners x 5 folds. BH-FDR within this grid; passers join `data/models/` and the WI-040 manifest.
+- Widen the L1 library with learners suited to the data (event tabular, thin positives ~0.4-4%): **LightGBM** and **CatBoost** (gradient boosting with native handling of small/imbalanced folds — deps ADOPTED by admin and installed 2026-11-10: lightgbm 4.7.0, catboost 1.2.10; both CPU, n_jobs=2/thread_count=2 enforced), RandomForest + ExtraTrees (bagged, low-variance on small folds), isotonic-calibrated XGB wrapper (CalibratedClassifierCV on the WI-036 winner learner — improves probability reliability, which the L2 τ grids depend on), elastic-net logistic (l1_ratio grid; sparse-selection cross-check on WI-040's attribution).
+- Targeted grid (not the full WI-036 sweep): top-2 variants (`exact_full_k0.8`, `tol2_full_k0.8`) x h in {13,21,34,55} x `b_hold` only x 2 markets x **6 new learners** x 5 folds. BH-FDR within this grid; passers join `data/models/` and the WI-040 manifest.
+- Env note (host-verified): no system libgomp on the VPS (no passwordless sudo); torch's bundled copy is preloaded via `.venv/.../sitecustomize.py` so lightgbm's dlopen resolves. If the venv is rebuilt (`uv sync`), re-create that sitecustomize or lightgbm imports fail.
 - n_jobs=2, float32, symbol-sequential; same purged/embargoed CV and placebo machinery as WI-036 (imported, never re-implemented).
 
 ## 2. I/O contract and blueprint (literal)
 - Output: `reports/wi044_summary.md` (ranking + FDR survivors + per-learner calibration note) + pickles `data/models/wi044/`; manifest refresh via library_audit scan.
 - Smoke: `WI044_SMOKE=5 --out /tmp/wi044_smoke`.
-- Tests: learner registry = exactly the 4 new learners; grid constants; embargo = max(20, h); no new deps (import guard).
+- Tests: learner registry = exactly the 6 new learners (incl. LightGBM n_jobs=2 + CatBoost thread_count=2); grid constants; embargo = max(20, h); import guard confirms all 6 import on a clean env.
 
 ## 3. Definition of Done (binary)
 - [ ] All cells scored with honest verdicts; FDR table; calibrated-wrapper reliability reported.
-- [ ] No edits outside write_files; test_command exit 0; stdout <=5 lines. Core-hour cap: 1.5.
+- [ ] No edits outside write_files; test_command exit 0; stdout <=5 lines. Core-hour cap: 2.0 (6 learners x 160 cells).
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
 - **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
