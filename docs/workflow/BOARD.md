@@ -3,14 +3,19 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-10 — D-025 tiered sprint IN PROGRESS (T1→T2→T3 per D-025 §1). Admin approved series 2026-11-10. WI-046 executing (T1 docs, 0 core-h). **Next:** WI-045 edge-decay probe (T3 prep, 0.3 core-h).
+**Last updated:** 2026-11-11 — D-025 tiered sprint IN PROGRESS. WI-048c grid `up` done (PROVISIONAL, PM-verified). **Next:** admin decides WI-048d (high_low) / WI-048e (vol_expand).
 
 ## ACTIVE
 ### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
 - [DONE] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
 - [DONE] WI-045 | edge-decay probe on WI-042 artifacts (`reports/l2/rerun_modern.json`) | T3 prep | 0.3 core-h
 - [DONE] WI-047 | feature gap inventory + research shortlist | T1 | 0.2 core-h
-- [TODO] WI-048 | target families `up`/`high_low`/`vol_expand` × h ladder, BH-FDR, probe-first dry-run | T2 | 2.0 core-h (PM full grid)
+- [DONE] WI-048a | label builders `up`/`high_low`/`vol_expand` + synthetic tests + smoke | T2 | **PM-verified 2026-11-11** — builder killed by Hermes tool timeout at 04:39:09 after all three locked files landed (998 lines; grid_targets_ext.py mtime postdates log last write — mid-edit provenance flagged in footer); PM-verified: tests 12 passed (1.40s), smoke EXIT:0 (probe 36 cells + grid smoke stops at label-density report per spec), only-manifest files touched; commit bd80bd5; locks released; card in `done/`. **Next:** WI-048b PM probe.
+- [DONE] WI-048b | label-density probe — PM-run full-universe | T2 | **PM-verified 2026-11-11** — `uv run python -m src.swing_bsh.targets_ext --probe` → EXIT:0, 36 cells, no sparse (all ≥ 25 positives), denser market = USD for all three families (mean prevalence up 0.546 / high_low 0.849 / vol_expand 0.499); geometry pinned per market (USD exact / CAD tol2); smoke gate for WI-048c/d/e passed; commit 3e4fb18; card in `done/`. **Next:** WI-048c grid `up` (PM training run).
+- [DONE] WI-048c | grid `up` family — PM-run full-universe | T2 | **PROVISIONAL — PM-verified 2026-11-11** — `uv run python -m src.swing_bsh.grid_targets_ext --family up --family-only` → EXIT:0; 24 cells scored, 0 truncated; placebo 24; BH-FDR (α=0.05, m=24) survivors 11 — 7 CAD (up h5–h21, both learners, best CAD AUC 0.6057 xgb h5) + 3 USD (h5/h8, AUC ≈ 0.503, marginal) ; core 1905.8s = 0.53 h ≤ 2.0; report `reports/t2_grid_up_summary.md`, pickles `data/models/wi048/` (55 + manifest); pytest 13 passed; card in `done/`. **Verdict PROVISIONAL pending admin ratification.** **Next:** admin decides WI-048d (high_low) / WI-048e (vol_expand).
+- [TODO] WI-048d/e | full grid per family ×24 cells (2 learners `xgboost`+`lightgbm` × 6 horizons × 2 markets, variant pin exact_full_k0.8 USD / tol2_full_k0.8 CAD), ONE BH-FDR family per sub-grid | T2 | 2.0 core-h each
+- [TODO] WI-048f | cross-family summary + FDR consolidation + winner-cell attribution | T2 | 0.3 core-h
+- [TODO] WI-048 | umbrella — aggregate 3.4 core-h (admin approved over-aggregate 2026-11-10), per-WI ≤2.0 | T2 | see sub-WI cards
 - [TODO] WI-049 | mechanism survey doc (depends WI-045) | T3 | 0.1 core-h
 
 ### CLOSED (D-024 batch, all RATIFIED)
