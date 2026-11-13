@@ -429,3 +429,82 @@ def test_mfe_mae_tail_rows_are_nan_and_bin_zero():
     bad = np.zeros(close.size)  # no usable ATR scale -> nothing is defined
     assert np.isnan(tg.mfe_mae_cont_labels(high, low, close, bad, bottom, t0, 5)[0])
     assert tg.mfe_mae_bin_labels(high, low, close, bad, bottom, t0, 5).tolist() == [0, 0, 0]
+
+
+# --------------------------------------------------------------------------- #
+# WI-060 — expansion-direction decomposition: A = move, B = up | move
+# --------------------------------------------------------------------------- #
+def test_move_families_are_their_own_fdr_grids():
+    assert tg.MOVE_FAMILIES == ("move_occur", "move_dir_up")
+    assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
+    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    for family in tg.MOVE_FAMILIES:
+        assert family not in tg.ALL_FAMILIES
+        assert family in grid.FAMILY_REPORT
+        assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24  # one BH-FDR family each
+    assert grid.FAMILY_REPORT["move_occur"] == "t2_grid_moveoccur_summary.md"
+    assert grid.FAMILY_REPORT["move_dir_up"] == "t2_grid_movedirup_summary.md"
+
+
+def test_move_occur_is_the_high_low_like_re_test():
+    high = np.full(12, 10.5)
+    low = np.full(12, 9.9)
+    high[2] = 11.0  # the `at_top` reference bar's extreme
+    high[5] = 11.1  # the move: re-touched inside [t0+1, t0+h]
+    t0, top = np.array([2], dtype=np.int64), np.array(["at_top"])
+    assert tg.move_occur_labels(high, low, top, t0, 5).tolist() == [1]
+    assert tg.move_occur_labels(high, low, top, t0, 2).tolist() == [0]  # bar 5 is t0 + 3
+    quiet = high.copy()
+    quiet[5] = 10.4  # never returns to the extreme
+    assert tg.move_occur_labels(quiet, low, top, t0, 5).tolist() == [0]
+    low[2], low[6] = 9.0, 8.9  # `at_bottom` side: level = low[t0]
+    bottom = np.array(["at_bottom"])
+    assert tg.move_occur_labels(high, low, bottom, t0, 5).tolist() == [1]
+    assert tg.move_occur_labels(high, low, bottom, t0, 3).tolist() == [0]  # bar 6 is t0 + 4
+    assert tg.move_occur_labels(high, low, bottom, np.array([7]), 5).tolist() == [0]  # no window
+    near = low.copy()
+    near[11] = 8.5  # exactly t0 + h = n - 1: the last window that exists still fires
+    assert tg.move_occur_labels(high, near, bottom, np.array([6]), 5).tolist() == [1]
+    assert tg.move_occur_labels(high, near, bottom, np.array([6]), 6).tolist() == [0]
+
+
+def test_move_dir_up_is_conditional_on_the_move():
+    low = np.full(14, 9.9)
+    low[1], low[4], low[7] = 9.0, 9.0, 9.0  # the event-window extreme at each reference bar
+    low[2], low[6] = 8.9, 8.9               # the move (re-test) for rows 0 and 1 only
+    high = np.full(14, 10.5)
+    close = np.full(14, 10.0)
+    close[4], close[7], close[10] = 10.4, 9.6, 10.4  # up / down / up
+    t0 = np.array([1, 4, 7], dtype=np.int64)
+    states = np.array(["at_bottom"] * 3)
+    move = tg.move_occur_labels(high, low, states, t0, 3)
+    up = tg.move_dir_up_labels(high, low, close, states, t0, 3)
+    assert move.dtype == np.int8 and move.tolist() == [1, 1, 0]
+    assert up.dtype == np.int8 and up.tolist() == [1, 0, 0]  # row 2 has no move -> excluded
+    assert (up <= move).all()  # B never fires without A
+    assert up.sum() / move.sum() == 0.5  # P(B|A) over the move rows only, not all 3 rows
+    assert np.isclose((move.sum() / move.size) * (up.sum() / move.sum()), 1.0 / 3.0)
+
+
+def test_move_dir_up_reads_only_the_forward_window():
+    high = np.full(12, 10.5)
+    low = np.full(12, 9.9)
+    low[2], low[8] = 9.0, 9.0  # reference extremes; only t0 = 2 gets a re-test
+    low[3] = 8.9               # the move at the first bar after t0
+    close = np.full(12, 10.0)
+    close[7] = 10.4            # t0 + h = 7 -> up
+    t0 = np.array([2, 8], dtype=np.int64)
+    states = np.array(["at_bottom"] * 2)
+    assert tg.move_occur_labels(high, low, states, t0, 5).tolist() == [1, 0]
+    assert tg.move_dir_up_labels(high, low, close, states, t0, 5).tolist() == [1, 0]
+    past = close.copy()
+    past[:2] = 20.0  # bars strictly before t0: never read
+    assert tg.move_dir_up_labels(high, low, past, states, t0, 5).tolist() == [1, 0]
+    late = close.copy()
+    late[8:] = 1.0  # bars strictly beyond t0 + h: never read
+    assert tg.move_dir_up_labels(high, low, late, states, t0, 5).tolist() == [1, 0]
+    outside = low.copy()
+    outside[3] = 9.9  # the move lands at bar 9, outside t0 = 2's window [3, 7]
+    outside[9] = 8.0
+    assert tg.move_occur_labels(high, outside, states[:1], t0[:1], 5).tolist() == [0]
+    assert tg.move_dir_up_labels(high, outside, close, states[:1], t0[:1], 5).tolist() == [0]

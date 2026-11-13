@@ -64,6 +64,15 @@ Built by :func:`mfe_mae_bin_labels` / :func:`mfe_mae_cont_labels`; kept outside
 `FAMILIES` / `ALL_FAMILIES` because the full-panel wiring is the PM-owned grid WI."""
 MFE_MAE_RATIO_THRESHOLD = 1.0
 """Cut of the `mfe_mae_bin` family: favourable / adverse excursion must exceed this."""
+MOVE_FAMILIES: tuple[str, ...] = ("move_occur", "move_dir_up")
+"""WI-060 — expansion-direction decomposition: A = a move happens (`move_occur`,
+`high_low`-like), B = its direction is up (`move_dir_up`, conditional on a move).
+
+Built by :func:`move_occur_labels` / :func:`move_dir_up_labels`; kept outside
+`FAMILIES` / `ALL_FAMILIES` because the full-panel wiring is the PM-owned grid WI.
+The pair is reported as the fixed product `P(A)·P(B|A)`, never as a stacked OOF
+feature.
+"""
 ALL_FAMILIES: tuple[str, ...] = FAMILIES + XSEC_FAMILIES
 HORIZONS: tuple[int, ...] = (5, 8, 13, 21, 34, 55)
 EVENT_MODES: tuple[str, ...] = ext.EVENT_MODES
@@ -186,6 +195,39 @@ def vol_expand_fwd_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESH
         good = prior > 0.0
         out[i[good]] = (fwd[good] / prior[good] > float(threshold)).astype("int8")
     return out
+
+
+# --------------------------------------------------------------------------- #
+# WI-060 — expansion-direction decomposition: A = move, B = up | move
+# --------------------------------------------------------------------------- #
+def move_occur_labels(high, low, states, t0, h: int) -> np.ndarray:
+    """A — 1 when the expansion move happens: the event-window extreme is re-touched.
+
+    `high_low`-like: the side-implied extreme at the reference bar (the low for an
+    `at_bottom` event, the high for an `at_top` event) is touched again inside
+    `[t0+1, t0+h]`; 0 where that forward window does not exist.
+    Unlike the `high_low` re-test, a truncated window never fires this label.
+    """
+    t0 = np.asarray(t0, dtype=np.int64)
+    out = high_low_labels(high, low, states, t0, h)
+    n, h = np.asarray(high, dtype="float64").size, int(h)
+    exists = (h > 0) & ((t0 + h) < n)  # t0 + h >= n -> no window, label 0
+    return np.where(exists, out, np.int8(0)).astype("int8")
+
+
+def move_dir_up_labels(high, low, close, states, t0, h: int) -> np.ndarray:
+    """B — 1 when the move of :func:`move_occur_labels` happens *upward*.
+
+    Conditional by construction: `close[t0+h] > close[t0]` counts only on the rows
+    where A = 1, so a no-move row can never fire B and is excluded from B's
+    denominator (`P(B|A) = B.sum() / A.sum()`). Report the pair as the fixed product
+    `P(A)·P(B|A)` — never as a stacked OOF feature.
+    """
+    close = np.asarray(close, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    move = move_occur_labels(high, low, states, t0, h)
+    up = up_labels(close, t0, h)
+    return (move & up).astype("int8")
 
 
 # --------------------------------------------------------------------------- #
