@@ -70,7 +70,7 @@ def candidate_features(panel: pd.DataFrame) -> list[str]:
                                                      "swing_", "bars_since_", "dd_age",
                                                      "dow", "month", "cs_", "sec_", "srel_",
                                                      "breadth_", "semivar_", "rv_skew_",
-                                                     "regime_"))]
+                                                     "jump_", "regime_"))]
     return [f for f in wi016_feature_names() + ext if f in panel.columns]
 
 
@@ -302,6 +302,43 @@ def _realized_asymmetry(close, windows=ASYM_WINDOWS) -> pd.DataFrame:
     return pd.DataFrame(out, index=c.index).astype("float32")
 
 
+JUMP_WINDOWS: tuple[int, ...] = (21, 55)
+"""Trailing windows (bars) for `_jump_intensity`."""
+JUMP_SIGMA_MULT: float = 4.0
+"""A bar counts as a jump when `|r_t| > JUMP_SIGMA_MULT * sigma_{w,t}`."""
+
+
+def _jump_intensity(close, windows=JUMP_WINDOWS, mult=JUMP_SIGMA_MULT) -> pd.DataFrame:
+    """Bipower-style jump variation and jump count over trailing windows (causal).
+
+    Tail-plausibility block: splits a window's variance into a diffusive and a jump
+    part. With log returns `r_t = log(close_t / close_{t-1})` over each trailing `w`-bar
+    window, `rv_{w,t} = mean(r^2)` (realized variance) and `bv_{w,t} = (pi/2) *
+    mean(|r_t| * |r_{t-1}|)` (bipower variation; the `pi/2` factor makes it an unbiased
+    variance estimator under a jump-free diffusion). The per-bar scale is
+    `sigma_{w,t} = sqrt(bv_{w,t})`, so `jump_var_ratio_{w} = max(rv - bv, 0) / rv` is the
+    share of window variance attributable to jumps: ~0 on a smooth (jump-free) window,
+    ~1 when a single bar dominates. `jump_count_{w}` counts the bars of the window whose
+    return exceeds `mult * sigma_{w,t}` (the threshold uses the same trailing window, so
+    it is causal too). Both columns are per-bar and dimensionless (a ratio and a count).
+    NaN until `w` prior returns exist (ratio: bar `w+1` onwards) and until `w` jump
+    indicators exist (count: bar `2w` onwards, so a count is never a partial window);
+    only returns `<= t` are read. float32 throughout.
+    """
+    c = pd.Series(np.asarray(close, dtype="float64"))
+    r = np.log(c / c.shift(1))
+    a = r.abs()
+    bp = (math.pi / 2.0) * a * a.shift(1)
+    out: dict[str, pd.Series] = {}
+    for w in windows:
+        rv = (r * r).rolling(w, min_periods=w).mean()
+        bv = bp.rolling(w, min_periods=w).mean()
+        out[f"jump_var_ratio_{w}"] = (rv - bv).clip(lower=0.0) / (rv + 1e-18)
+        hot = (a > mult * np.sqrt(bv.clip(lower=0.0))).where(bv.notna())
+        out[f"jump_count_{w}"] = hot.rolling(w, min_periods=w).sum()
+    return pd.DataFrame(out, index=c.index).astype("float32")
+
+
 REGIME_WIN: int = 233
 """Trailing median window (bars) that defines the vol / hurst regime threshold."""
 REGIME_SOURCES: tuple[tuple[str, str, str], ...] = (
@@ -422,11 +459,12 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
         eq = _event_quality(high, low, close, atr, idx, bottom, swings)
         ss = _swing_structure(high, low, close, atr, idx, swings)
         ra = _realized_asymmetry(close).iloc[idx].reset_index(drop=True)
+        ji = _jump_intensity(close).iloc[idx].reset_index(drop=True)
         rga = _regime_age(fdf, idx)
         cal = pd.DataFrame({
             "dow": pd.Series(pd.DatetimeIndex(dates[idx]).dayofweek, dtype="float32"),
             "month": pd.Series(pd.DatetimeIndex(dates[idx]).month, dtype="float32")})
-        parts.append(pd.concat([keep, ext, eq, ss, ra, rga, cal], axis=1))
+        parts.append(pd.concat([keep, ext, eq, ss, ra, ji, rga, cal], axis=1))
         lab = first_touch_labels(high, low, close, atr, idx, states, variants, horizons)
         for key, targets in lab.items():
             slot = label_parts.setdefault(key, {b: [] for b in BINARY_COLUMNS})
