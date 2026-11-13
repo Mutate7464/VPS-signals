@@ -69,7 +69,7 @@ def candidate_features(panel: pd.DataFrame) -> list[str]:
     ext = [c for c in panel.columns if c.startswith(("volume_", "vwap_dist", "bar_count_",
                                                      "swing_", "bars_since_", "dd_age",
                                                      "dow", "month", "cs_", "sec_", "srel_",
-                                                     "breadth_"))]
+                                                     "breadth_", "semivar_", "rv_skew_"))]
     return [f for f in wi016_feature_names() + ext if f in panel.columns]
 
 
@@ -266,6 +266,41 @@ def _swing_structure(high, low, close, atr, idx, swings, ks=SWING_LEG_KS) -> pd.
     return pd.DataFrame(out, index=np.arange(n))
 
 
+ASYM_WINDOWS: tuple[int, ...] = (21, 55)
+"""Trailing realized-semivariance windows (bars) for `_realized_asymmetry`."""
+
+
+def _realized_asymmetry(close, windows=ASYM_WINDOWS) -> pd.DataFrame:
+    """Realized up/down semivariance, ratio and skew over trailing windows (causal).
+
+    Payoff-shape block, distinct from the WI-047 range levels. With log returns
+    `r_t = log(close_t / close_{t-1})` over each trailing `w`-bar window:
+    `semivar_up_{w} = mean(r^2 * 1[r>0])` and `semivar_dn_{w} = mean(r^2 * 1[r<0])`
+    (realized semivariance, log-return^2 per bar, dimensionless);
+    `semivar_ratio_{w} = (up + eps) / (dn + eps)`, so 1.0 on a flat window and
+    >1 when the upside leg dominates; `rv_skew_{w} = sqrt(w) * sum(r^3) /
+    sum(r^2)^1.5` (realized skewness). Only returns `<= t` are read; NaN until `w`
+    prior returns exist (price bar `w` and earlier). float32 throughout.
+    """
+    c = pd.Series(np.asarray(close, dtype="float64"))
+    r = np.log(c / c.shift(1))
+    r2 = r * r
+    up = r2 * (r > 0).astype("float64")
+    dn = r2 * (r < 0).astype("float64")
+    r3 = r * r2
+    out: dict[str, pd.Series] = {}
+    for w in windows:
+        mu = up.rolling(w, min_periods=w).mean()
+        md = dn.rolling(w, min_periods=w).mean()
+        s2 = r2.rolling(w, min_periods=w).sum()
+        s3 = r3.rolling(w, min_periods=w).sum()
+        out[f"semivar_up_{w}"] = mu
+        out[f"semivar_dn_{w}"] = md
+        out[f"semivar_ratio_{w}"] = (mu + 1e-12) / (md + 1e-12)
+        out[f"rv_skew_{w}"] = np.sqrt(w) * s3 / (s2.fillna(0.0) ** 1.5 + 1e-18)
+    return pd.DataFrame(out, index=c.index).astype("float32")
+
+
 # --------------------------------------------------------------------------- #
 # Panel driver
 # --------------------------------------------------------------------------- #
@@ -324,10 +359,11 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
         ext = ext.iloc[idx].reset_index(drop=True)
         eq = _event_quality(high, low, close, atr, idx, bottom, swings)
         ss = _swing_structure(high, low, close, atr, idx, swings)
+        ra = _realized_asymmetry(close).iloc[idx].reset_index(drop=True)
         cal = pd.DataFrame({
             "dow": pd.Series(pd.DatetimeIndex(dates[idx]).dayofweek, dtype="float32"),
             "month": pd.Series(pd.DatetimeIndex(dates[idx]).month, dtype="float32")})
-        parts.append(pd.concat([keep, ext, eq, ss, cal], axis=1))
+        parts.append(pd.concat([keep, ext, eq, ss, ra, cal], axis=1))
         lab = first_touch_labels(high, low, close, atr, idx, states, variants, horizons)
         for key, targets in lab.items():
             slot = label_parts.setdefault(key, {b: [] for b in BINARY_COLUMNS})
