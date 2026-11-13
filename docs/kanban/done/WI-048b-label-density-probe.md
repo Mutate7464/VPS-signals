@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048b
 title: T2 label-density probe — measure prevalence per family/horizon on both markets, dry-run selection
-status: draft
+status: done
+verdict: n/a — PM-run probe, smoke gate for WI-048c/d/e PASSED (36 cells, 0 sparse, denser market USD for all three families)
 agent: pm
 depends_on: [WI-048a]
 gate_layer: "1"
@@ -31,7 +32,7 @@ core_hours_cap: 0.2
 - [ ] Core-hour cap: 0.2 (label computation only, n_jobs=2).
 
 ## 4. Execution Telemetry
-- Commit: PENDING (HEAD bd80bd5; no commit made)
+- Commit: 3e4fb18
 - Test Status: PASS — full-universe probe run by PM: `uv run python -m src.swing_bsh.targets_ext --probe` → EXIT:0, 36 cells, reports/t2_label_density_probe.md
 - Result: no sparse cells (all 36 ≥ 25 positives); denser market = USD for all three families (mean prevalence: up 0.546, high_low 0.849, vol_expand 0.499); geometry pinned per market (USD exact, CAD tol2)
 - Notes: PM-run (no builder); smoke gate for WI-048c/d/e passed. Full-universe job NOT run by builder — run by PM.

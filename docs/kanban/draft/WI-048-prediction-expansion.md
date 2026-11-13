@@ -1,32 +1,31 @@
 ---
 wi_id: WI-048
-title: T2 prediction expansion — directional, extreme-touch, and volatility target families on the D-023 grid
+title: T2 prediction expansion — umbrella (split into WI-048a/b/c/d/e/f, 2026-11-10)
 status: draft
-agent: surgical-builder
-depends_on: [WI-047]
+agent: pm
+depends_on: []
 gate_layer: "1"
 board_row: "D-025 tiered workflow (admin direction 2026-11-10)"
-write_files:
-  - src/swing_bsh/targets_ext.py
-  - src/swing_bsh/grid_targets_ext.py
-  - tests/test_targets_ext.py
-read_only_files:
-  - src/swing_bsh/binary_grid.py
-  - src/swing_bsh/train.py
-  - reports/tiered_workflow_status_2026-11-10.md
-  - docs/workflow/designs/D-025-tiered-workflow.md
-test_command: uv run pytest tests/test_targets_ext.py -q --tb=short --maxfail=1
+core_hours_cap: 3.4 (aggregate)
 ---
 
 ## 1. Objective and invariant
-- Implement three new TARGET FAMILIES as explicit grid axes (never merged with label-geometry knobs): (a) directional `up` (close t+h > close t, h in ladder), (b) extreme-touch `high_low` (window high/low touched within h), (c) volatility `vol_expand` (realized-vol ratio t-window vs prior window above threshold). Each family × horizon ladder (5,8,13,21,34,55) × 2–3 library learners × 2 markets = ONE BH-FDR family; probe-first: dry-run on the denser measured label-density market, smoke before full grid.
-- Correctness invariants are not budget knobs: purged/embargoed CV (embargo max(20,h)), CALIB-only selection, float32, symbol-sequential, n_jobs=2, rho prune 0.3. Grep pyproject before proposing learners — library learners only.
+- Implement three TARGET FAMILIES as explicit grid axes (never merged with label-geometry knobs):
+  (a) directional `up`, (b) extreme-touch `high_low` (event-window extreme re-test), (c) volatility `vol_expand`.
+- ONE BH-FDR family per sub-grid (m=24 each); learners = `xgboost` + `lightgbm` (library learners only);
+  variant pinning = `exact_full_k0.8` (USD) / `tol2_full_k0.8` (CAD).
+- Correctness invariants are not budget knobs: purged/embargoed CV (embargo max(20,h)), CALIB-only selection,
+  float32, symbol-sequential, n_jobs=2, rho prune 0.3.
 
-## 2. I/O contract and blueprint (literal)
-- Output: `reports/t2_targets_ext_summary.md` (+ pickles `data/models/wi048/` in WI-040 manifest schema, only for FDR survivors); target-ranking table (which family is most predictable, cross-market min AUC + rank-IC) + BH-FDR survivor table + feature attribution on the winner cell.
-- Smoke: `WI048_SMOKE=5` to /tmp, excludes EVAL; smoke stops at label-density report.
-- Builder delivers code + synthetic tests + smoke only; PM owns the full grid run (cap 2.0 core-h).
+## 2. Split (admin-approved 2026-11-10: over-aggregate OK, per-WI caps hold)
+- WI-048a | builder | label builders + synthetic tests + smoke | 0.05
+- WI-048b | PM | label-density probe (prevalence per family/h/Market, dry-run) | 0.2
+- WI-048c | PM | full grid `up` (24 cells) | 2.0
+- WI-048d | PM | full grid `high_low` (24 cells) | 2.0
+- WI-048e | PM | full grid `vol_expand` (24 cells) | 2.0
+- WI-048f | PM | cross-family summary + FDR + attribution | 0.3
+- Aggregate: ~3.4 core-h vs 2.0 original; per-WI cap 2.0 ≤ 2.5 policy default. No WI breaches its own cap.
 
 ## 3. Definition of Done (binary)
-- [ ] Label builders per family verified on synthetic series (causality: features read at detection bar only); target-ranking table + FDR table produced by PM full run.
-- [ ] No edits outside write_files; test_command exit 0; stdout ≤5 lines. Core-hour cap: 2.0 (PM-run).
+- [ ] WI-048a–f all done; `reports/t2_targets_ext_summary.md` produced; no single WI over its cap.
+- [ ] Verdict PROVISIONAL until admin ratification in chat.

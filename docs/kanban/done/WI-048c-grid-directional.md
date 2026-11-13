@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048c
 title: T2 full grid — `up` family (24 cells: 2 learners × 6 horizons × 2 markets)
-status: draft
+status: done
+verdict: PROVISIONAL — 24 cells scored, 0 truncated, 11 BH-FDR survivors (8 CAD h5–h21 both learners + 3 USD h5/h8 marginal); Layer-1 pure-signal, no deployment claim; PENDING admin ratification in chat
 agent: pm
 depends_on: [WI-048b]
 gate_layer: "1"
@@ -31,6 +32,6 @@ core_hours_cap: 2.0
 - [ ] Core-hour cap: 2.0, declared in the run footer.
 
 ## Execution Telemetry Footer
-- Commit: 5880906 (PM close-out commit; no builder commit)
+- Commit: f94d5e3 (PM close-out commit; no builder commit)
 - Test Status: PASS (uv run pytest tests/test_targets_ext.py -q --maxfail=1 → 13 passed)
 - Index Updated: Y — full-universe PM run EXIT:0; 24 cells scored, 0 truncated, placebo 24, BH-FDR survivors 11, pickles 55 (survivors × 5 folds) + manifest.parquet; core 1905.8s = 0.53 h ≤ 2.0 cap; report reports/t2_grid_up_summary.md derives from persisted artifacts (pickle count verified vs survivor table)

@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048a
 title: T2 label builders — `up` / `high_low` / `vol_expand` families + synthetic tests + smoke
-status: draft
+status: done
+verdict: n/a — infrastructure WI (label builders + tests + smoke), no gate verdict; PM-verified 2026-11-11
 agent: surgical-builder
 depends_on: []
 gate_layer: "1"
@@ -39,7 +40,7 @@ core_hours_cap: 0.05
 - [ ] No edits outside write_files; test_command exit 0; stdout ≤5 lines. Core-hour cap: 0.05 (build+tests only).
 
 ## 4. Execution Telemetry
-- Commit: PENDING (HEAD 60ee921; no commit made)
+- Commit: bd80bd5
 - Test Status: PASS — `uv run pytest tests/test_targets_ext.py -q --maxfail=1` → 12 passed (1.40s)
 - Smoke: PM-run — `WI048_SMOKE=5 uv run python -m src.swing_bsh.targets_ext --probe` → EXIT:0, 36 cells, /tmp/wi048_smoke; `WI048_SMOKE=5 uv run python -m src.swing_bsh.grid_targets_ext --family up` → EXIT:0 (smoke stops at label-density report per spec)
 - Notes: builder killed by Hermes tool timeout at 04:39:09 UTC after all three locked files landed (998 lines; grid_targets_ext.py mtime 04:39:02 POSTDATES log last write 04:38:48 — mid-edit provenance, flagged). PM-verified: tests exit 0, smoke exits 0 with correct artifact, git status shows only-manifest files + pre-existing untracked junk. Builder did not run smoke itself; PM ran it. Full-universe job NOT run.
