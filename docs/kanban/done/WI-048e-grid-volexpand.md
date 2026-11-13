@@ -29,3 +29,12 @@ core_hours_cap: 2.0
 ## 3. Definition of Done (binary)
 - [ ] 24 cells scored or truncated-and-reported; FDR table; pickles for survivors only.
 - [ ] Core-hour cap: 2.0, declared in the run footer.
+
+---
+
+## Execution Telemetry Footer
+
+- Commit: PENDING (HEAD d92a7f4; no commit made)
+- Test Status: PASS — chain stage EXIT:0 (log logs/wi-048def_run.out, marker EXIT_E:0, chain done 2026-11-13T05:59:32Z); artifacts PM-verified this session
+- Index Updated: Y — PM-run outputs; untracked data/ + reports/ artifacts stay out of git
+- PM-run verdict (PROVISIONAL): 24 cells scored, 0 truncated; BH-FDR survivors 24 — 12 USD + 12 CAD (all horizons, both learners); best min-AUC family (min AUC 0.7068 lightgbm/h13, min rank-IC +0.3581); report reports/t2_grid_volexpand_summary.md; 121 pickles on disk.
