@@ -220,6 +220,52 @@ def _cross_sectional(panel: pd.DataFrame) -> pd.DataFrame:
     return r.add_prefix("cs_").astype("float32")
 
 
+SWING_LEG_KS: tuple[int, ...] = (1, 3)
+"""Leg ranks reported by `_swing_structure` (rank 1 = the detection swing itself)."""
+
+
+def _swing_structure(high, low, close, atr, idx, swings, ks=SWING_LEG_KS) -> pd.DataFrame:
+    """Trailing swing-leg geometry at each detection bar (causal, ATR-normalized).
+
+    `swings` is the `detect_swings` list (each leg is confirmed at its own bar, so
+    every read is `<= t`). Ranks count newest-first among the swings at or before
+    `t`, so `k=1` is the detection swing itself and `k=3` three swings back. Per
+    rank `k`: `swing_leg_len_{k}` = |extreme_k - extreme_{k+1}| / ATR_t (impulse
+    amplitude, ATRs) and `swing_leg_dur_{k}` = bars between the two extremes (a
+    unitless count, like `bars_since_opp`). `swing_depth_atr_prev` = |close_t -
+    extreme_prev| / ATR_t, the distance to the previous swing level. NaN until the
+    required prior swing exists; float32 throughout.
+    """
+    t = np.asarray(idx, dtype=np.int64)
+    m, n = len(swings), t.size
+    bars = np.array([int(b) for b, _ in swings], dtype=np.int64)
+    ext = np.zeros(0, dtype="float64")
+    if m:
+        pos = np.clip(bars, 0, max(np.size(low) - 1, 0))
+        sides = np.array([s for _, s in swings])
+        ext = np.where(sides == "at_bottom", low[pos], high[pos]).astype("float64")
+    rank = np.searchsorted(bars, t, side="right") - 1  # newest swing at/before t
+    denom = np.asarray(atr, dtype="float64")[t] + 1e-12
+    leg_abs = np.abs(np.diff(ext)) if m > 1 else np.zeros(0)
+    dur_gap = np.diff(bars).astype("float64") if m > 1 else np.zeros(0)
+    out: dict[str, np.ndarray] = {}
+    for k in ks:
+        j = rank - (int(k) - 1)
+        ok = (j >= 1) & (j < m)
+        prior = np.clip(j, 1, max(m - 1, 1)) - 1
+        leg = np.where(ok, leg_abs[prior] / denom, np.nan) if leg_abs.size else np.full(n, np.nan)
+        dur = np.where(ok, dur_gap[prior], np.nan) if dur_gap.size else np.full(n, np.nan)
+        out[f"swing_leg_len_{k}"] = leg.astype("float32")
+        out[f"swing_leg_dur_{k}"] = dur.astype("float32")
+    jp = rank - 1
+    okp = (jp >= 0) & (jp < m)
+    depth = np.full(n, np.nan)
+    if m:
+        depth = np.abs(close[t] - ext[np.clip(jp, 0, max(m - 1, 0))]) / denom
+    out["swing_depth_atr_prev"] = np.where(okp, depth, np.nan).astype("float32")
+    return pd.DataFrame(out, index=np.arange(n))
+
+
 # --------------------------------------------------------------------------- #
 # Panel driver
 # --------------------------------------------------------------------------- #
@@ -277,10 +323,11 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
         keep["atr"] = atr[idx].astype("float32")
         ext = ext.iloc[idx].reset_index(drop=True)
         eq = _event_quality(high, low, close, atr, idx, bottom, swings)
+        ss = _swing_structure(high, low, close, atr, idx, swings)
         cal = pd.DataFrame({
             "dow": pd.Series(pd.DatetimeIndex(dates[idx]).dayofweek, dtype="float32"),
             "month": pd.Series(pd.DatetimeIndex(dates[idx]).month, dtype="float32")})
-        parts.append(pd.concat([keep, ext, eq, cal], axis=1))
+        parts.append(pd.concat([keep, ext, eq, ss, cal], axis=1))
         lab = first_touch_labels(high, low, close, atr, idx, states, variants, horizons)
         for key, targets in lab.items():
             slot = label_parts.setdefault(key, {b: [] for b in BINARY_COLUMNS})
