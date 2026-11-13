@@ -41,7 +41,10 @@ SUMMARY_NAME = "t2_targets_ext_summary.md"
 FAMILY_REPORT = {"up": "t2_grid_up_summary.md",
                  "high_low": "t2_grid_highlow_summary.md",
                  "vol_expand": "t2_grid_volexpand_summary.md",
-                 "vol_expand_fwd": "t2_grid_volexpandfwd_summary.md"}
+                 "vol_expand_fwd": "t2_grid_volexpandfwd_summary.md",
+                 "xsec_vol_rank_bin": "t2_grid_xsecvolrankbin_summary.md",
+                 "xsec_vol_rank_cont": "t2_grid_xsecvolrankcont_summary.md"}
+"""Per-family report names; every entry is its own BH-FDR family (m=24)."""
 LEARNERS: tuple[str, ...] = ("xgboost", "lightgbm")
 PRUNE_RHO = 0.3
 PINNED_K = 0.8
@@ -96,9 +99,10 @@ def load_panel(market: str, *, cache_dir=None, limit: int | None = None,
         pp, lp = _cache_paths(cache_dir, market)
         if pp.exists() and lp.exists():
             blob = np.load(lp)
-            keys = [tg.label_key(f, e, h) for f in tg.FAMILIES
+            keys = [tg.label_key(f, e, h) for f in tg.ALL_FAMILIES
                     for e in tg.EVENT_MODES for h in tg.HORIZONS]
-            return pd.read_parquet(pp), {k: blob[_blob_key(k)] for k in keys}
+            return pd.read_parquet(pp), {k: blob[_blob_key(k)] for k in keys
+                                         if _blob_key(k) in blob.files}
     panel, labels = tg.build_targets_panel(market, allow_fixture=allow_fixture, max_symbols=limit)
     if cache_dir is not None and limit is None and not panel.empty:
         pp, lp = _cache_paths(cache_dir, market)
@@ -315,7 +319,7 @@ def build_family_report(family: str, results: list[dict], path: Path,
 
 def _load_cells(model_dir) -> list[dict]:
     cells: list[dict] = []
-    for family in tg.FAMILIES:
+    for family in tg.ALL_FAMILIES:
         p = Path(model_dir) / f"{family}_cells.json"
         if p.exists():
             cells += json.loads(p.read_text()).get("cells", [])
@@ -401,7 +405,7 @@ def _winner_attribution(pair: pd.DataFrame, *, model_dir, cache_dir, allow_fixtu
 # --------------------------------------------------------------------------- #
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="WI-048 T2 target-family grid (D-025 tier 2)")
-    parser.add_argument("--family", default=None, choices=list(tg.FAMILIES))
+    parser.add_argument("--family", default=None, choices=list(tg.ALL_FAMILIES))
     parser.add_argument("--family-only", action="store_true", help="Score only --family.")
     parser.add_argument("--consolidate", action="store_true", help="Cross-family summary only.")
     parser.add_argument("--market", default="ALL", help="USD | CAD | ALL (default ALL)")
@@ -449,7 +453,7 @@ def main(argv: list[str] | None = None) -> int:
         print("[wi048.grid] --family-only requires --family")
         return 2
     else:
-        families = tg.FAMILIES
+        families = tg.ALL_FAMILIES
     learners = tuple(s.strip() for s in args.learners.split(",") if s.strip())
     cfg = train.load_settings()
     budget = binary_grid.CoreBudget(args.core_hours)

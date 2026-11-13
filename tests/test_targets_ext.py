@@ -259,3 +259,88 @@ def test_sidecar_round_trip_and_empty_consolidate(tmp_path):
                                cache_dir=None)
     assert "no family cells on disk" in summary.read_text()
     assert (tmp_path / "empty" / "manifest.parquet").exists()
+
+
+# --------------------------------------------------------------------------- #
+# WI-058 — forward cross-sectional vol rank (same-date ranks, two families)
+# --------------------------------------------------------------------------- #
+def _universe(vols, n: int = 40, bar0: int = 10, h: int = 5):
+    """`{symbol: closes}` with `vols[symbol]` set on the forward bars `[bar0+1, bar0+h]`."""
+    shape = np.array([1.0, -0.8, 1.2, -1.0, 0.9])[:h]
+    out = {}
+    for symbol, v in vols.items():
+        r = np.full(n - 1, 0.0005)
+        r[bar0:bar0 + h] = 0.0005 + v * shape
+        out[symbol] = _closes(r)
+    return out
+
+
+def _xsec_panel(symbols, bars, dates):
+    return pd.DataFrame({"symbol": symbols, "bar": bars, "date": pd.to_datetime(dates)})
+
+
+def test_xsec_vol_rank_is_a_same_date_rank_over_the_crafted_universe():
+    closes = _universe({"A": 0.0002, "B": 0.01, "C": 0.05})
+    panel = _xsec_panel(["A", "B", "C"], [10, 10, 10], ["2020-01-06"] * 3)
+    cont = tg.xsec_vol_rank_cont_labels(panel, closes, 5)
+    assert cont.dtype == np.float32
+    assert np.allclose(cont, [0.0, 0.5, 1.0])  # quiet -> loud
+    assert tg.xsec_vol_rank_bin_labels(panel, closes, 5).tolist() == [0, 0, 1]
+    # ranks are relative: one name per date has no cross-section at all
+    solo = _xsec_panel(["C"], [10], ["2020-01-06"])
+    assert np.isnan(tg.xsec_vol_rank_cont_labels(solo, closes, 5)[0])
+
+
+def test_xsec_vol_rank_tail_rows_are_nan_and_bin_zero():
+    closes = _universe({"A": 0.0002, "B": 0.05})
+    panel = _xsec_panel(["A", "B", "B"], [10, 10, 38], ["2020-01-06", "2020-01-06", "2020-01-07"])
+    cont = tg.xsec_vol_rank_cont_labels(panel, closes, 5)
+    assert np.isclose(cont[0], 0.0) and np.isclose(cont[1], 1.0)
+    assert np.isnan(cont[2])  # 38 + 5 >= 40 -> no forward window
+    assert tg.xsec_vol_rank_bin_labels(panel, closes, 5).tolist() == [0, 1, 0]
+
+
+def test_xsec_vol_rank_reads_only_the_forward_window():
+    closes = _universe({"A": 0.0002, "B": 0.01, "C": 0.05})
+    panel = _xsec_panel(["A", "B", "C"], [10, 10, 10], ["2020-01-06"] * 3)
+    base = tg.xsec_vol_rank_cont_labels(panel, closes, 5)
+    past = {s: c.copy() for s, c in closes.items()}
+    for c in past.values():
+        c[:10] *= 1.5  # bars strictly before t0: no log-return inside the window moves
+    assert np.allclose(tg.xsec_vol_rank_cont_labels(panel, past, 5), base)
+    late = {s: c.copy() for s, c in closes.items()}
+    for c in late.values():
+        c[16:] *= 3.0  # bars strictly beyond t0 + h
+    assert np.allclose(tg.xsec_vol_rank_cont_labels(panel, late, 5), base)
+
+
+def test_xsec_families_are_registered_as_their_own_fdr_grids():
+    assert tg.XSEC_FAMILIES == ("xsec_vol_rank_bin", "xsec_vol_rank_cont")
+    assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
+    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    assert 0.5 < tg.XSEC_TOP_FRAC < 1.0
+    for family in tg.XSEC_FAMILIES:
+        assert family in grid.FAMILY_REPORT
+        assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24  # one BH-FDR family each
+    assert grid.FAMILY_REPORT["xsec_vol_rank_bin"] == "t2_grid_xsecvolrankbin_summary.md"
+    assert grid.FAMILY_REPORT["xsec_vol_rank_cont"] == "t2_grid_xsecvolrankcont_summary.md"
+    assert tg.label_key("xsec_vol_rank_bin", "exact", 5) == ("xsec_vol_rank_bin", "exact", 5)
+
+
+def test_build_targets_panel_wires_the_xsec_families(monkeypatch):
+    n, close = 40, _universe({"A": 0.01})
+    frame = pd.DataFrame({"date": pd.date_range("2020-01-01", periods=n),
+                          "open": close["A"], "high": close["A"] * 1.01,
+                          "low": close["A"] * 0.99, "close": close["A"]})
+    idx = np.array([10, 12], dtype=np.int64)
+    monkeypatch.setattr(tg, "iter_events",
+                        lambda *a, **k: iter([("A", frame, idx, np.array(["at_bottom", "at_top"]),
+                                               None)]))
+    monkeypatch.setattr(tg.ext, "build_variant_panel",
+                        lambda *a, **k: (pd.DataFrame({"symbol": ["A"] * 2}), None))
+    panel, labels = tg.build_targets_panel("USD", families=tg.XSEC_FAMILIES, horizons=(5,))
+    assert len(panel) == 2
+    assert set(labels) == {(f, e, 5) for f in tg.XSEC_FAMILIES for e in tg.EVENT_MODES}
+    for key, arr in labels.items():
+        assert arr.shape == (2,)
+        assert arr.dtype == (np.float32 if key[0] == "xsec_vol_rank_cont" else np.int8)

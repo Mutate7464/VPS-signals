@@ -17,6 +17,11 @@ Features are always read at the detection bar only (causal); labels look forward
     ``vol_expand_fwd(t0, h)`` FORWARD-looking: realized vol of ``[t0+1, t0+h]``
                           exceeds ``VOL_RATIO_THRESHOLD`` x the trailing
                           ``[t0-h+1, t0]``
+    ``xsec_vol_rank_bin`` / ``xsec_vol_rank_cont(t0, h)`` WI-058 — forward realized
+                          vol of ``[t0+1, t0+h]`` ranked at ``t0+h`` against the
+                          same-date events of the market: top-tercile flag (binary)
+                          or rank in ``[0, 1]`` (continuous). Market-wide, so it is
+                          computed per market, never per symbol.
 
 A window that does not exist (not enough forward / backward bars) is labelled 0,
 mirroring the WI-035/036 first-touch convention. Symbol-sequential reads, float32,
@@ -50,19 +55,25 @@ PROBE_NAME = "t2_label_density_probe.md"
 DEFAULT_SMOKE_DIR = "/tmp/wi048_smoke"
 
 FAMILIES: tuple[str, ...] = ("up", "high_low", "vol_expand", "vol_expand_fwd")
+XSEC_FAMILIES: tuple[str, ...] = ("xsec_vol_rank_bin", "xsec_vol_rank_cont")
+"""WI-058 — same-date cross-sectional forward-vol-rank families (market-wide)."""
+ALL_FAMILIES: tuple[str, ...] = FAMILIES + XSEC_FAMILIES
 HORIZONS: tuple[int, ...] = (5, 8, 13, 21, 34, 55)
 EVENT_MODES: tuple[str, ...] = ext.EVENT_MODES
 PINNED_EVENT: dict[str, str] = {"USD": "exact", "CAD": "tol2"}
 """Per-market label geometry pinned by WI-048c (variant `*_full_k0.8`)."""
 VOL_RATIO_THRESHOLD = 1.0
+XSEC_TOP_FRAC = 2.0 / 3.0
+"""Top-tercile cut of the same-date cross-sectional vol rank (WI-058 binary family)."""
 MIN_POSITIVES = 25
 """Sparse-cell flag for the density probe (CB-04 calibration floor)."""
 
-__all__ = ["DEFAULT_SMOKE_DIR", "EVENT_MODES", "FAMILIES", "HORIZONS", "MIN_POSITIVES",
-           "PINNED_EVENT", "PROBE_NAME", "VOL_RATIO_THRESHOLD", "build_probe_report",
-           "build_targets_panel", "high_low_labels", "iter_events", "label_key", "main",
-           "probe_table", "target_labels", "up_labels", "vol_expand_fwd_labels",
-           "vol_expand_labels"]
+__all__ = ["ALL_FAMILIES", "DEFAULT_SMOKE_DIR", "EVENT_MODES", "FAMILIES", "HORIZONS",
+           "MIN_POSITIVES", "PINNED_EVENT", "PROBE_NAME", "VOL_RATIO_THRESHOLD",
+           "XSEC_FAMILIES", "XSEC_TOP_FRAC", "build_probe_report", "build_targets_panel",
+           "high_low_labels", "iter_events", "label_key", "main", "probe_table",
+           "target_labels", "up_labels", "vol_expand_fwd_labels", "vol_expand_labels",
+           "xsec_vol_rank_bin_labels", "xsec_vol_rank_cont_labels"]
 
 
 def label_key(family: str, event: str, h: int) -> tuple[str, str, int]:
@@ -170,9 +181,78 @@ def vol_expand_fwd_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESH
     return out
 
 
+# --------------------------------------------------------------------------- #
+# WI-058 — forward cross-sectional vol rank (market-wide, same-date ranks)
+# --------------------------------------------------------------------------- #
+def _forward_vol(close, t0, h: int) -> np.ndarray:
+    """Realized vol of `[t0+1, t0+h]`; NaN where that forward window does not exist."""
+    close = np.asarray(close, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    n, h = close.size, int(h)
+    lr = _log_returns(close)
+    c1 = np.concatenate([[0.0], np.cumsum(lr)])
+    c2 = np.concatenate([[0.0], np.cumsum(lr * lr)])
+    out = np.full(t0.size, np.nan)
+    ok = (h >= 2) & (t0 >= 0) & (t0 + h < n)
+    if ok.any():
+        i = np.flatnonzero(ok)
+        out[i] = _win_std(c1, c2, t0[i] + 1, t0[i] + h)
+    return out
+
+
+def _xsec_rank(values, dates) -> np.ndarray:
+    """Same-date cross-sectional rank in `[0, 1]`: `(average_rank - 1) / (n_date - 1)`."""
+    df = pd.DataFrame({"d": np.asarray(dates), "v": np.asarray(values, dtype="float64")})
+    g = df.groupby("d")["v"]
+    rk = g.rank(method="average").to_numpy("float64")
+    den = g.transform("count").to_numpy("float64") - 1.0
+    return (rk - 1.0) / np.where(den > 0.0, den, np.nan)
+
+
+def _xsec_vol(panel: pd.DataFrame, closes, h: int) -> np.ndarray:
+    """Per-row forward vol from `{symbol: close}` and each row's reference `bar`."""
+    bars = np.asarray(panel["bar"], dtype=np.int64)
+    syms = panel["symbol"].astype(str).to_numpy()
+    vol = np.full(bars.size, np.nan)
+    for sym in pd.unique(syms):
+        sel = syms == sym
+        vol[sel] = _forward_vol(closes[sym], bars[sel], h)
+    return vol
+
+
+def _bin_from_rank(rank, top_frac: float = XSEC_TOP_FRAC) -> np.ndarray:
+    """Top-tercile flag of a rank array; 0 where the rank is NaN (no forward window)."""
+    rank = np.asarray(rank, dtype="float64")
+    out = np.zeros(rank.size, dtype="int8")
+    ok = np.isfinite(rank)
+    out[ok] = (rank[ok] >= float(top_frac)).astype("int8")
+    return out
+
+
+def xsec_vol_rank_cont_labels(panel: pd.DataFrame, closes, h: int) -> np.ndarray:
+    """Continuous label: same-date cross-sectional rank of the forward realized vol.
+
+    `panel` = one market's event rows (`symbol`, `bar` = the reference bar `t0`,
+    `date`); `closes` maps symbol -> that symbol's close series. The vol is read from
+    `[t0+1, t0+h]` only, so the label is forward-looking. NaN where that window does
+    not exist or the date carries a single name (rank undefined).
+    """
+    return _xsec_rank(_xsec_vol(panel, closes, h), panel["date"].to_numpy()).astype("float32")
+
+
+def xsec_vol_rank_bin_labels(panel: pd.DataFrame, closes, h: int,
+                             top_frac: float = XSEC_TOP_FRAC) -> np.ndarray:
+    """Binary label: the forward vol sits in its date's top tercile (0 if no window)."""
+    return _bin_from_rank(xsec_vol_rank_cont_labels(panel, closes, h), top_frac)
+
+
 def target_labels(high, low, close, idx, states, families=FAMILIES,
                   horizons=HORIZONS) -> dict:
-    """`{label_key(family, event, h): int8 array}` for one symbol's events."""
+    """`{label_key(family, event, h): int8 array}` for one symbol's events.
+
+    Per-symbol families only; the `XSEC_FAMILIES` need the market's full event set and
+    are built by :func:`build_targets_panel` (see :func:`xsec_vol_rank_cont_labels`).
+    """
     idx = np.asarray(idx, dtype=np.int64)
     states = np.asarray(states)
     high = np.asarray(high, dtype="float64")
@@ -224,13 +304,15 @@ def iter_events(market: str, *, min_date: str = train.MIN_DATE, allow_fixture: b
         yield symbol, g, idx, states, atr
 
 
-def build_targets_panel(market: str, *, families=FAMILIES, horizons=HORIZONS,
+def build_targets_panel(market: str, *, families=ALL_FAMILIES, horizons=HORIZONS,
                         min_date: str = train.MIN_DATE, allow_fixture: bool = False,
                         max_symbols: int | None = None):
-    """Stream one market -> (feature panel, `{label_key: int8}`) for the T2 families.
+    """Stream one market -> (feature panel, `{label_key: label array}`) for the T2 families.
 
     The panel is the WI-036 variant panel (features read at the detection bar only);
-    the labels are the three T2 families, aligned row-for-row with the panel.
+    the labels are the T2 families, aligned row-for-row with the panel. The
+    `XSEC_FAMILIES` are ranked across the market's events on the same date, so they are
+    built once per market from the collected event rows (never per symbol).
     """
     panel, _ = ext.build_variant_panel(
         market, min_date=min_date, allow_fixture=allow_fixture, max_symbols=max_symbols,
@@ -240,17 +322,38 @@ def build_targets_panel(market: str, *, families=FAMILIES, horizons=HORIZONS,
         return panel, {}
     parts: dict = {}
     n_rows = 0
-    for _symbol, g, idx, states, _atr in iter_events(
+    xsec = tuple(f for f in families if f in XSEC_FAMILIES)
+    per_symbol = tuple(f for f in families if f in FAMILIES)
+    xrows: list[tuple] = []
+    for symbol, g, idx, states, _atr in iter_events(
         market, min_date=min_date, allow_fixture=allow_fixture, max_symbols=max_symbols
     ):
         n_rows += int(idx.size)
-        lab = target_labels(g["high"].to_numpy("float64"), g["low"].to_numpy("float64"),
-                            g["close"].to_numpy("float64"), idx, states, families, horizons)
+        high = g["high"].to_numpy("float64")
+        low = g["low"].to_numpy("float64")
+        close = g["close"].to_numpy("float64")
+        lab = target_labels(high, low, close, idx, states, per_symbol, horizons)
         for key, arr in lab.items():
             parts.setdefault(key, []).append(arr)
+        if xsec:
+            xrows.append((symbol, close, ext._entry_bars(high, low, idx, states == "at_bottom"),
+                          g["date"].to_numpy()))
     if n_rows != len(panel):
         raise RuntimeError(f"label/panel row mismatch for {market}: {n_rows} != {len(panel)}")
-    return panel, {k: np.concatenate(v).astype("int8") for k, v in parts.items()}
+    if xsec and xrows:
+        closes = {row[0]: row[1] for row in xrows}
+        for event in EVENT_MODES:
+            frame = pd.DataFrame({
+                "symbol": np.concatenate([[s] * bars[event].size
+                                          for s, _c, bars, _d in xrows]),
+                "bar": np.concatenate([bars[event] for _s, _c, bars, _d in xrows]),
+                "date": np.concatenate([dates[bars[event]] for _s, _c, bars, dates in xrows])})
+            for h in horizons:
+                cont = xsec_vol_rank_cont_labels(frame, closes, int(h))
+                for family in xsec:
+                    arr = cont if family == "xsec_vol_rank_cont" else _bin_from_rank(cont)
+                    parts.setdefault(label_key(family, event, int(h)), []).append(arr)
+    return panel, {k: np.concatenate(v).astype(v[0].dtype) for k, v in parts.items()}
 
 
 # --------------------------------------------------------------------------- #
