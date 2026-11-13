@@ -24,7 +24,11 @@
   idle before the next; (4) track balance with
   `python3 ~/.hermes/skills/devops/hostinger-vps-cpu-credits/scripts/credit_monitor.py
   --vcpus 2 --state <user-writable-path>` before dispatching each WI (default
-  /var/lib state needs root — always pass an explicit --state).
+  /var/lib state needs root — always pass an explicit --state). **(5) The cap is a
+  sizing/timing guardrail, NOT a hard wall:** WIs are *sized* to it, run
+  checkpointed and pausable, and report `START_UTC` / projected core-h / `END_UTC` /
+  `NEXT_ALLOWED_RUN_UTC` in their spec and run footer; a job must **pause and hand
+  back to the human** when the modeled credit balance < 25%.
 - Daily shortlist only. Human gate on every sprint gate. No auto-execution of orders.
 - Gate verdicts are PROVISIONAL (admin, 2026-11-09): computed ADOPT/REJECT/INCONCLUSIVE
   labels are advisory until ratified by the admin in chat; nothing is adopted, promoted,
@@ -39,12 +43,20 @@
   calibration. Do NOT present economic-magnitude or cost analysis at T1/T2 (that belongs
   to T3/Layer 2). Any FDR-surviving predictor is ACCEPTED and integrated into the L1
   pickle library: there is no effect-size floor and no economic bar at L1.
+- Product north-star vs current step (admin, 2026-11-13): the product objective (a
+  manual screener targeting ~10% per trade at ~200 trades/yr, judged by EV) is an
+  **aspiration that shapes and ranks design — it is NOT a gate on any sprint step**.
+  Each step is judged by its own tier gate (L1 predictive-only; L2 economic); the
+  aspiration enters only as an EV-proxy rationale. Never block, fail, or stall a
+  current step for not reaching the aspiration.
 - File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
 - Commands: `uv sync`, `uv run pytest`.
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`
   (never loaded into agent context; refreshed by scribe).
-- Sprint entry point (token-optimized state + next-series specs): the newest brief in
-  `docs/workflow/briefs/` (currently `2026-11-10-D-025-tiered-sprint-brief.md`).
+- Sprint entry point (token-optimized state + next-series specs): the newest *sprint*
+  brief in `docs/workflow/briefs/` (currently `2026-11-10-D-025-tiered-sprint-brief.md`).
+  Batch-planner *input* briefs also sit in this dir — ignore them when picking the
+  sprint entry point.
 - Roles, mode gates, token caps (WI spec ≤400 tokens, BOARD ≤5 KB, PM_LOG keep 2):
   `docs/workflow/designs/D-020-lean-hitl-tri-role-workflow.md`. Mode prompts:
   `docs/workflow/MODE_PROMPTS.md`. Data facts: `docs/workflow/DATA_CONTRACT.md`.

@@ -3,9 +3,17 @@
 > Rules: `WORKFLOW.md` §2. Row format: `designs/D-020` §5. Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/`.
 > Full pre-flat board (2026-11-07, 16 KB): `archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-13 — D-025 tiered sprint: WI-048 sub-batch COMPLETE (a–f all PM-verified; d/e/f closed 2026-11-13, verdicts PROVISIONAL pending admin ratification). All FDR survivors accepted into the L1 library (predictive-only rule). Locks registry: release of d/e/f RECORDED on the BOARD umbrella row — cron-mode write protection blocked `.hermes/locks.json`; next interactive session must verify/empty `active_locks`.
+**Last updated:** 2026-11-13 — **D-026 L0/L1 extension sprint opens** (admin-accepted; plan `docs/plans/26-W46-L0L1-extension-review-v2.md`, design `D-026`): Phase 0 harness WI-050 PM-verified DONE. D-025 WI-048 sub-batch COMPLETE (verdicts PROVISIONAL); locks registry **EMPTY** (d/e/f cleared 2026-11-13 interactive).
 
 ## ACTIVE
+### D-026 SPRINT (L0/L1 extension — T1/T2, admin-accepted 2026-11-13)
+- Source: plan `docs/plans/26-W46-L0L1-extension-review-v2.md` (Opus) → design `docs/workflow/designs/D-026-l0l1-extension.md` (accepted). Order: Phase 0 → L0 → L1 → L1.5.
+- **Integrity (verified 2026-11-13, PM):** `vol_expand` label is BACKWARD-looking (`src/swing_bsh/targets_ext.py:111-133`) — quarantine its WI-048 survivors, re-target forward before use. `close`/`atr` levels confirmed excluded from feature lists (PASS).
+- [DONE] WI-050 | Phase 0 precision@k / top-decile diagnostic harness | N/A | **PM-verified 2026-11-13** — new `src/swing_bsh/precision_diag.py` + `tests/test_precision_diag.py`; `uv run pytest tests/test_precision_diag.py` 6 passed (0.31s); only-manifest files; DoD INDEX.md item N/A (no such file); builder EXIT:0; card in `done/`
+- [TODO] WI-051…056 | L0 blocks: swing-structure history · realized asymmetry/semivariance/skew · regime age/run-length · jump intensity · universe vol-dispersion (net-new precondition) · effort-vs-result | T1 | one R12 BH-FDR family each, ≤2.0 core-h — draft after Phase 0
+- [TODO] WI-057…060 | L1 targets: forward cross-sectional vol rank · payoff-ratio MFE/MAE · expansion-direction A·B · sample-uniqueness weighting | T2 | m=24 families, predictive-only
+- [TODO] WI-061 | L1.5 meta-label (swing-side primary) + seed-averaging companion | T2 | permuted-label leakage test mandatory DoD
+
 ### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
 - [DONE] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
 - [DONE] WI-045 | edge-decay probe on WI-042 artifacts (`reports/l2/rerun_modern.json`) | T3 prep | 0.3 core-h
