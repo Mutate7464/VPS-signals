@@ -57,6 +57,13 @@ DEFAULT_SMOKE_DIR = "/tmp/wi048_smoke"
 FAMILIES: tuple[str, ...] = ("up", "high_low", "vol_expand", "vol_expand_fwd")
 XSEC_FAMILIES: tuple[str, ...] = ("xsec_vol_rank_bin", "xsec_vol_rank_cont")
 """WI-058 — same-date cross-sectional forward-vol-rank families (market-wide)."""
+MFE_MAE_FAMILIES: tuple[str, ...] = ("mfe_mae_bin", "mfe_mae_cont")
+"""WI-059 — payoff-ratio families (ATR-normalized MFE/MAE over `[t0+1, t0+h]`).
+
+Built by :func:`mfe_mae_bin_labels` / :func:`mfe_mae_cont_labels`; kept outside
+`FAMILIES` / `ALL_FAMILIES` because the full-panel wiring is the PM-owned grid WI."""
+MFE_MAE_RATIO_THRESHOLD = 1.0
+"""Cut of the `mfe_mae_bin` family: favourable / adverse excursion must exceed this."""
 ALL_FAMILIES: tuple[str, ...] = FAMILIES + XSEC_FAMILIES
 HORIZONS: tuple[int, ...] = (5, 8, 13, 21, 34, 55)
 EVENT_MODES: tuple[str, ...] = ext.EVENT_MODES
@@ -178,6 +185,70 @@ def vol_expand_fwd_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESH
         prior = _win_std(c1, c2, t0[i] - h + 1, t0[i])
         good = prior > 0.0
         out[i[good]] = (fwd[good] / prior[good] > float(threshold)).astype("int8")
+    return out
+
+
+# --------------------------------------------------------------------------- #
+# WI-059 — payoff ratio: ATR-normalized MFE/MAE over [t0+1, t0+h]
+# --------------------------------------------------------------------------- #
+def _forward_extremes(high, low, t0, h: int) -> tuple[np.ndarray, np.ndarray]:
+    """Highest high / lowest low of `[t0+1, t0+h]`; NaN unless that window is complete."""
+    high = np.asarray(high, dtype="float64")
+    low = np.asarray(low, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    n, h = high.size, int(h)
+    if h <= 0 or t0.size == 0:
+        nan = np.full(t0.size, np.nan)
+        return nan.copy(), nan.copy()
+    pos = t0[:, None] + np.arange(1, h + 1)[None, :]
+    pc = np.clip(pos, 0, max(n - 1, 0))
+    full = ((t0 + h) < n)[:, None]  # every window bar exists iff `t0 + h < n`
+    hi = np.where(full, high[pc], -np.inf).max(axis=1)
+    lo = np.where(full, low[pc], np.inf).min(axis=1)
+    return np.where(full[:, 0], hi, np.nan), np.where(full[:, 0], lo, np.nan)
+
+
+def _mfe_mae_excursions(high, low, close, atr, states, t0, h: int):
+    """ATR-normalized `(favourable, adverse)` excursions over `[t0+1, t0+h]`.
+
+    Both are measured against the reference close `close[t0]` and scaled by `atr[t0]`;
+    the direction is the swing's own (`at_bottom` -> up, `at_top` -> down). NaN where
+    the forward window does not exist or the ATR scale is not positive/finite.
+    """
+    close = np.asarray(close, dtype="float64")
+    atr = np.asarray(atr, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    bottom = np.asarray(states) == "at_bottom"
+    hi, lo = _forward_extremes(high, low, t0, h)
+    up, dn = hi - close[t0], close[t0] - lo
+    fav = np.where(bottom, up, dn)
+    adv = np.where(bottom, dn, up)
+    a0 = atr[t0]
+    scale = np.where(np.isfinite(a0) & (a0 > 0.0), a0, np.nan)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return fav / scale, adv / scale
+
+
+def mfe_mae_cont_labels(high, low, close, atr, states, t0, h: int) -> np.ndarray:
+    """Continuous payoff label: `log(MFE / MAE)` in ATR units over `[t0+1, t0+h]`.
+
+    float32; NaN where the forward window does not exist, the ATR scale is not
+    positive/finite, or the adverse excursion is not positive (ratio undefined).
+    """
+    fav, adv = _mfe_mae_excursions(high, low, close, atr, states, t0, h)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        ratio = np.where(adv > 0.0, fav / adv, np.nan)
+        out = np.log(np.where(ratio > 0.0, ratio, np.nan))
+    return out.astype("float32")
+
+
+def mfe_mae_bin_labels(high, low, close, atr, states, t0, h: int,
+                       threshold: float = MFE_MAE_RATIO_THRESHOLD) -> np.ndarray:
+    """Binary payoff label: `MFE / MAE > threshold` (ATR units); 0 where undefined."""
+    fav, adv = _mfe_mae_excursions(high, low, close, atr, states, t0, h)
+    out = np.zeros(fav.size, dtype="int8")
+    ok = np.isfinite(fav) & np.isfinite(adv) & (adv > 0.0)
+    out[ok] = (fav[ok] > float(threshold) * adv[ok]).astype("int8")
     return out
 
 

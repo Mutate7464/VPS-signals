@@ -344,3 +344,88 @@ def test_build_targets_panel_wires_the_xsec_families(monkeypatch):
     for key, arr in labels.items():
         assert arr.shape == (2,)
         assert arr.dtype == (np.float32 if key[0] == "xsec_vol_rank_cont" else np.int8)
+
+
+# --------------------------------------------------------------------------- #
+# WI-059 — payoff ratio: ATR-normalized MFE/MAE over [t0+1, t0+h]
+# --------------------------------------------------------------------------- #
+def _mfe_path(t0: int = 2, n: int = 12):
+    """Flat path with a +3.0 favourable high and a 1.5 adverse low inside `[t0+1, t0+h]`."""
+    close = np.full(n, 10.0)
+    low = np.full(n, 9.9)
+    high = np.full(n, 10.1)
+    high[t0 + 3] = 13.0  # favourable (bottom event): 13.0 - 10.0 = 3.0
+    low[t0 + 4] = 8.5    # adverse: 10.0 - 8.5 = 1.5
+    return high, low, close, np.full(n, 0.5)
+
+
+def test_mfe_mae_families_are_their_own_fdr_grids():
+    assert tg.MFE_MAE_FAMILIES == ("mfe_mae_bin", "mfe_mae_cont")
+    assert tg.MFE_MAE_RATIO_THRESHOLD == 1.0
+    assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
+    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    for family in tg.MFE_MAE_FAMILIES:
+        assert family not in tg.ALL_FAMILIES
+        assert family in grid.FAMILY_REPORT
+        assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24  # one BH-FDR family each
+    assert grid.FAMILY_REPORT["mfe_mae_bin"] == "t2_grid_mfemaebin_summary.md"
+    assert grid.FAMILY_REPORT["mfe_mae_cont"] == "t2_grid_mfemaecont_summary.md"
+    assert grid.CORE_HOUR_CAP == 2.0  # cap 2.0 core-h per family
+
+
+def test_mfe_mae_ratio_is_known_on_a_crafted_path():
+    high, low, close, atr = _mfe_path()
+    t0, bottom = np.array([2], dtype=np.int64), np.array(["at_bottom"])
+    cont = tg.mfe_mae_cont_labels(high, low, close, atr, bottom, t0, 5)
+    assert cont.dtype == np.float32
+    assert np.isclose(cont[0], np.log(2.0), atol=1e-6)  # 3.0/0.5 ATR vs 1.5/0.5 ATR
+    assert tg.mfe_mae_bin_labels(high, low, close, atr, bottom, t0, 5).tolist() == [1]
+    assert tg.mfe_mae_bin_labels(high, low, close, atr, bottom, t0, 5,
+                                 threshold=3.0).tolist() == [0]
+    mild = high.copy()
+    mild[2 + 3] = 11.0  # 1.0 favourable -> 2 ATR against the 3 ATR adverse
+    assert np.isclose(tg.mfe_mae_cont_labels(mild, low, close, atr, bottom, t0, 5)[0],
+                      np.log(2.0 / 3.0), atol=1e-6)
+    assert tg.mfe_mae_bin_labels(mild, low, close, atr, bottom, t0, 5).tolist() == [0]
+    flat = high.copy()
+    flat[2 + 3] = 11.5  # 3 ATR favourable == 3 ATR adverse: the ratio is exactly 1
+    assert np.isclose(tg.mfe_mae_cont_labels(flat, low, close, atr, bottom, t0, 5)[0], 0.0,
+                      atol=1e-6)
+    assert tg.mfe_mae_bin_labels(flat, low, close, atr, bottom, t0, 5).tolist() == [0]
+
+
+def test_mfe_mae_side_implied_direction():
+    high, low, close, atr = _mfe_path()
+    t0, top = np.array([2], dtype=np.int64), np.array(["at_top"])
+    # down-side event: favourable = the lowest low (3 ATR), adverse = the highest high (6 ATR)
+    cont = tg.mfe_mae_cont_labels(high, low, close, atr, top, t0, 5)
+    assert np.isclose(cont[0], np.log(0.5), atol=1e-6)
+    assert tg.mfe_mae_bin_labels(high, low, close, atr, top, t0, 5).tolist() == [0]
+
+
+def test_mfe_mae_window_starts_at_t0_plus_one_and_stops_at_t0_plus_h():
+    high, low, close, atr = _mfe_path()
+    t0, bottom = np.array([2], dtype=np.int64), np.array(["at_bottom"])
+    base = tg.mfe_mae_cont_labels(high, low, close, atr, bottom, t0, 5)
+    ref = high.copy(), low.copy()
+    ref[0][2], ref[1][2] = 40.0, 1.0  # the reference bar itself is outside the window
+    assert np.allclose(tg.mfe_mae_cont_labels(ref[0], ref[1], close, atr, bottom, t0, 5), base)
+    late = high.copy(), low.copy()
+    late[0][8], late[1][8] = 40.0, 1.0  # t0 + h = 7: strictly past the window
+    assert np.allclose(tg.mfe_mae_cont_labels(late[0], late[1], close, atr, bottom, t0, 5), base)
+    first = high.copy(), low.copy()
+    first[0][3] = 20.0  # the first bar after t0 does move the label
+    assert not np.allclose(tg.mfe_mae_cont_labels(first[0], first[1], close, atr, bottom, t0, 5),
+                           base)
+
+
+def test_mfe_mae_tail_rows_are_nan_and_bin_zero():
+    high, low, close, atr = _mfe_path()
+    t0 = np.array([2, 7, 11], dtype=np.int64)  # t0 + h = 7 exists; 12 and 16 do not
+    bottom = np.array(["at_bottom"] * 3)
+    cont = tg.mfe_mae_cont_labels(high, low, close, atr, bottom, t0, 5)
+    assert np.isfinite(cont[0]) and np.isnan(cont[1]) and np.isnan(cont[2])
+    assert tg.mfe_mae_bin_labels(high, low, close, atr, bottom, t0, 5).tolist() == [1, 0, 0]
+    bad = np.zeros(close.size)  # no usable ATR scale -> nothing is defined
+    assert np.isnan(tg.mfe_mae_cont_labels(high, low, close, bad, bottom, t0, 5)[0])
+    assert tg.mfe_mae_bin_labels(high, low, close, bad, bottom, t0, 5).tolist() == [0, 0, 0]

@@ -43,7 +43,9 @@ FAMILY_REPORT = {"up": "t2_grid_up_summary.md",
                  "vol_expand": "t2_grid_volexpand_summary.md",
                  "vol_expand_fwd": "t2_grid_volexpandfwd_summary.md",
                  "xsec_vol_rank_bin": "t2_grid_xsecvolrankbin_summary.md",
-                 "xsec_vol_rank_cont": "t2_grid_xsecvolrankcont_summary.md"}
+                 "xsec_vol_rank_cont": "t2_grid_xsecvolrankcont_summary.md",
+                 "mfe_mae_bin": "t2_grid_mfemaebin_summary.md",
+                 "mfe_mae_cont": "t2_grid_mfemaecont_summary.md"}
 """Per-family report names; every entry is its own BH-FDR family (m=24)."""
 LEARNERS: tuple[str, ...] = ("xgboost", "lightgbm")
 PRUNE_RHO = 0.3
