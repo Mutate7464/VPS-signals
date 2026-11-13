@@ -221,6 +221,74 @@ def test_resolve_out_dir_never_writes_the_real_report_in_a_dry_run(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# WI-061 — average-uniqueness sample weights (method variant)
+# --------------------------------------------------------------------------- #
+def test_average_uniqueness_is_one_for_non_overlapping_events():
+    w = le.average_uniqueness([0, 10, 20], [5, 5, 5], 30)
+    assert w.dtype == np.float32 and w.shape == (3,)
+    assert np.allclose(w, 1.0)
+    assert le.average_uniqueness([], [], 0).shape == (0,)
+
+
+def test_average_uniqueness_is_reciprocal_count_for_full_overlap():
+    assert np.allclose(le.average_uniqueness([0, 0], [4, 4], 8), 0.5)
+    assert np.allclose(le.average_uniqueness([0, 0, 0, 0], [4, 4, 4, 4], 8), 0.25)
+
+
+def test_average_uniqueness_is_monotone_in_overlap():
+    seq = [le.average_uniqueness([0] + [0] * k, [10] + [10] * k, 40)[0] for k in range(5)]
+    assert seq == sorted(seq, reverse=True)
+    assert seq[0] == pytest.approx(1.0) and seq[-1] == pytest.approx(0.2)
+
+
+def test_average_uniqueness_is_causal_and_clipped():
+    w = le.average_uniqueness([0, 1, 2], [3, 3, 3], 5)
+    assert w.dtype == np.float32 and ((w > 0.0) & (w <= 1.0)).all()
+    # an event outside the first event's span cannot change its weight
+    assert le.average_uniqueness([0], [3], 30)[0] == le.average_uniqueness([0, 20], [3, 3], 30)[0]
+    # a span hanging past the series end stays bounded by the covered bars
+    tail = le.average_uniqueness([3], [100], 6)
+    assert tail.shape == (1,) and 0.0 < float(tail[0]) <= 1.0
+
+
+def test_sample_weight_is_forwarded_to_the_estimator(monkeypatch):
+    seen: dict = {}
+
+    class Recorder:
+        def __init__(self, **kw):
+            seen["kw"] = kw
+
+        def fit(self, X, y, sample_weight=None):
+            seen["w"] = None if sample_weight is None else np.asarray(sample_weight, dtype="float64")
+            return self
+
+        def predict_proba(self, X):
+            return np.zeros((len(X), 2))
+
+    import lightgbm
+    monkeypatch.setattr(lightgbm, "LGBMClassifier", Recorder)
+    Xf, yf, _, _ = _block()
+    weights = np.full(len(yf), 0.5, dtype="float32")
+    le.fit_new_learner("lightgbm", _small_params("lightgbm"), Xf, yf, Xf, yf,
+                       sample_weight=weights)
+    assert seen["w"] is not None and seen["w"].shape == (len(yf),)
+    assert np.allclose(seen["w"], 0.5) and seen["kw"]["n_jobs"] == 2
+    le.fit_new_learner("lightgbm", _small_params("lightgbm"), Xf, yf, Xf, yf)  # default = unweighted
+    assert seen["w"] is None
+
+
+@pytest.mark.parametrize("learner", NEW6)
+def test_weighted_fit_runs_for_every_extension_learner(learner):
+    Xf, yf, Xc, yc = _block(120)
+    w = np.clip(np.random.default_rng(7).random(len(yf)), 0.1, 1.0).astype("float32")
+    model = le.fit_new_learner(learner, _small_params(learner), Xf, yf, Xc, yc, sample_weight=w)
+    p = np.asarray(model.predict_proba(Xc), dtype="float64")
+    assert p.shape[0] == len(yc) and np.isfinite(p).all()
+    with pytest.raises(ValueError):
+        le.fit_new_learner("xgboost", {}, Xf, yf, Xc, yc, sample_weight=w)
+
+
+# --------------------------------------------------------------------------- #
 # main(): dry run writes the report under --out only, no wi044 pickles
 # --------------------------------------------------------------------------- #
 def test_main_dry_run_writes_only_the_smoke_report(monkeypatch, tmp_path):

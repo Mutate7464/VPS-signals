@@ -74,16 +74,48 @@ CALIB_STATS: dict[str, dict] = {}
 """Per-cell OOF calibration diagnostics keyed by tag (recording wrapper; cleared on mode exit)."""
 
 __all__ = ["BINARY", "CALIB_STATS", "CORE_HOUR_CAP", "HORIZONS", "MARKETS", "MODEL_DIR",
-           "NEW_LEARNERS", "REPORT_NAME", "VARIANTS", "ElasticNetLogistic", "build_report",
-           "calibration_stats", "embargo_for", "fdr_m_total", "fit_new_learner",
-           "horizon_splitter", "import_learner_deps", "learner_calibration", "learner_kwargs",
-           "learner_extension_mode", "main", "new_learner_params", "refresh_manifest",
-           "resolve_out_dir", "run_extension"]
+           "NEW_LEARNERS", "REPORT_NAME", "VARIANTS", "ElasticNetLogistic", "average_uniqueness",
+           "build_report", "calibration_stats", "concurrency", "embargo_for", "fdr_m_total",
+           "fit_new_learner", "horizon_splitter", "import_learner_deps", "learner_calibration",
+           "learner_kwargs", "learner_extension_mode", "main", "new_learner_params",
+           "refresh_manifest", "resolve_out_dir", "run_extension"]
 
 
 def embargo_for(h: int) -> int:
     """``max(20, h)`` via the shared WI-033 floor (never re-derived here)."""
     return train.embargo_for([h])
+
+
+# --------------------------------------------------------------------------- #
+# WI-061 — average-uniqueness sample weights (method variant, no new cell family)
+# --------------------------------------------------------------------------- #
+def concurrency(t0, h, n: int) -> np.ndarray:
+    """Events spanning each bar in ``[0, n)`` (floor 1 where no event covers it)."""
+    conc = np.zeros(int(n), dtype="int64")
+    for s, hh in zip(np.asarray(t0, dtype="int64").ravel(), np.asarray(h, dtype="int64").ravel()):
+        if hh > 0:
+            conc[int(s): int(s) + int(hh)] += 1
+    return np.maximum(conc, 1)
+
+
+def average_uniqueness(t0, h, n: int) -> np.ndarray:
+    """Mean ``1/concurrency`` over each event's own ``h``-bar span, in ``(0, 1]``.
+
+    Lopez de Prado average uniqueness: events sharing no bar keep weight ``1.0``,
+    ``k`` fully overlapping events get ``1/k``. Reads only the event's forward span
+    (causal per event); clipped to ``(0, 1]`` and returned as ``float32[m]``.
+    """
+    t0 = np.asarray(t0, dtype="int64").ravel()
+    h = np.asarray(h, dtype="int64").ravel()
+    if t0.size == 0:
+        return np.zeros(0, dtype="float32")
+    conc = concurrency(t0, h, n)
+    out = np.ones(t0.size, dtype="float64")
+    for i, (s, hh) in enumerate(zip(t0, h)):
+        seg = conc[int(s): int(s) + max(int(hh), 0)]
+        if seg.size:
+            out[i] = float(np.mean(1.0 / seg))
+    return np.clip(out, 1e-12, 1.0).astype("float32")
 
 
 def horizon_splitter(h: int, n_splits: int = N_SPLITS) -> PurgedWalkForwardSplit:
@@ -156,7 +188,7 @@ class ElasticNetLogistic:
         return p if p.ndim == 2 else np.column_stack([1.0 - p, p])
 
 
-def _fit_elasticnet(kw: dict, X_fit, y_fit, X_cal, y_cal) -> ElasticNetLogistic:
+def _fit_elasticnet(kw: dict, X_fit, y_fit, X_cal, y_cal, sample_weight=None) -> ElasticNetLogistic:
     """Fit one saga elastic-net per ``l1_ratio``; keep the lowest calibration-block log-loss."""
     from sklearn.metrics import log_loss
     ratios, best, best_ll, best_r = tuple(kw.pop("l1_ratios")), None, np.inf, float(EL_L1_RATIOS[0])
@@ -164,26 +196,34 @@ def _fit_elasticnet(kw: dict, X_fit, y_fit, X_cal, y_cal) -> ElasticNetLogistic:
         pipe = Pipeline([("impute", SimpleImputer(strategy="median")),
                          ("scale", StandardScaler()),
                          ("clf", LogisticRegression(solver="saga", l1_ratio=float(r),
-                                                    **kw))]).fit(X_fit, y_fit)
+                                                    **kw))]).fit(
+            X_fit, y_fit, clf__sample_weight=sample_weight)
         ll = float(log_loss(y_cal, pipe.predict_proba(X_cal)[:, 1], labels=[0, 1]))
         if ll < best_ll:
             best, best_ll, best_r = pipe, ll, float(r)
     return ElasticNetLogistic(best, best_r)
 
 
-def fit_new_learner(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal):
-    """Fit one extension learner (uncalibrated output — the WI-035 fold calibrator follows)."""
+def fit_new_learner(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal, sample_weight=None):
+    """Fit one extension learner (uncalibrated output — the WI-035 fold calibrator follows).
+
+    WI-061: an optional ``sample_weight`` array (e.g. :func:`average_uniqueness`) is
+    forwarded to the underlying estimator's ``fit``; the default ``None`` keeps the
+    unweighted WI-044 path unchanged. Weights touch the fit only, never the fold
+    calibration block.
+    """
     kw = learner_kwargs(learner, params)
     if learner == "lightgbm":
         from lightgbm import LGBMClassifier
-        return LGBMClassifier(**kw).fit(X_fit, y_fit)
+        return LGBMClassifier(**kw).fit(X_fit, y_fit, sample_weight=sample_weight)
     if learner == "catboost":
         from catboost import CatBoostClassifier
-        return CatBoostClassifier(**kw).fit(X_fit, y_fit)
+        return CatBoostClassifier(**kw).fit(X_fit, y_fit, sample_weight=sample_weight)
     if learner in ("random_forest", "extra_trees"):
         cls = RandomForestClassifier if learner == "random_forest" else ExtraTreesClassifier
         return Pipeline([("impute", SimpleImputer(strategy="median")),
-                         ("clf", cls(**kw))]).fit(X_fit, y_fit)
+                         ("clf", cls(**kw))]).fit(X_fit, y_fit,
+                                                  clf__sample_weight=sample_weight)
     if learner == "xgboost_isotonic":
         from sklearn.calibration import CalibratedClassifierCV
         from xgboost import XGBClassifier
@@ -193,9 +233,10 @@ def fit_new_learner(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal):
         if folds < 2:
             # Too thin to split internally: the per-fold WI-035 calibrator still calibrates the
             # base fit — no fabricated inner folds, no silently dropped cell.
-            return base.fit(X_fit, y_fit)
-        return CalibratedClassifierCV(estimator=base, method="isotonic", cv=folds).fit(X_fit, y_fit)
-    return _fit_elasticnet(kw, X_fit, y_fit, X_cal, y_cal)
+            return base.fit(X_fit, y_fit, sample_weight=sample_weight)
+        return CalibratedClassifierCV(estimator=base, method="isotonic", cv=folds).fit(
+            X_fit, y_fit, sample_weight=sample_weight)
+    return _fit_elasticnet(kw, X_fit, y_fit, X_cal, y_cal, sample_weight=sample_weight)
 
 
 def _extended_fit_learner(orig):
