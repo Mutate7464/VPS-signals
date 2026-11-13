@@ -70,7 +70,7 @@ def candidate_features(panel: pd.DataFrame) -> list[str]:
                                                      "swing_", "bars_since_", "dd_age",
                                                      "dow", "month", "cs_", "sec_", "srel_",
                                                      "breadth_", "semivar_", "rv_skew_",
-                                                     "jump_", "regime_"))]
+                                                     "jump_", "regime_", "disp_"))]
     return [f for f in wi016_feature_names() + ext if f in panel.columns]
 
 
@@ -219,6 +219,54 @@ def _cross_sectional(panel: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(index=panel.index)
     r = panel.groupby("date")[cols].rank(pct=True)
     return r.add_prefix("cs_").astype("float32")
+
+
+DISP_SOURCES: tuple[tuple[str, str, str], ...] = (
+    ("disp_atr_pct_21", "atr_pct_21", "iqr"),
+    ("disp_entropy_39", "entropy_39", "std"),
+)
+"""``(output column, source column, spread measure)`` triples for `_universe_dispersion`."""
+
+
+def _spread(values, how: str) -> float:
+    """Cross-sectional spread of one date's non-null values (`iqr` or population `std`)."""
+    v = np.asarray(values, dtype="float64")
+    v = v[np.isfinite(v)]
+    if v.size == 0:
+        return np.nan
+    if how == "iqr":
+        return float(np.subtract(*np.percentile(v, [75.0, 25.0])))
+    return float(np.std(v, ddof=0))
+
+
+def _universe_dispersion(panel: pd.DataFrame, sources=DISP_SOURCES) -> pd.DataFrame:
+    """Date-keyed market-wide vol-regime spread across the panel's same-date rows (causal).
+
+    Per date, the cross-sectional dispersion of the two regime anchors: the
+    inter-quartile range of `atr_pct_21` (robust to the level's fat right tail) and the
+    population standard deviation of `entropy_39` (bounded, near-symmetric) — the
+    "IQR / std" pair of the WI-056 contract, one measure per feature. Every statistic
+    reads only rows sharing the row's own date (a date-level broadcast, merged like the
+    breadth block), so no other symbol's future or past enters a row. Dispersion is
+    measured over the panel's event rows on that date: a date with a single event row
+    (or one non-null value) yields 0.0 and an all-null date yields NaN. Returns a
+    `date`-keyed frame of float32 `disp_*` columns.
+    """
+    if "date" not in panel.columns:
+        return pd.DataFrame()
+    keys = np.asarray(panel["date"])
+    df = pd.DataFrame({"date": keys})
+    specs: list[tuple[str, str]] = []
+    for name, col, how in sources:
+        if col in panel.columns:
+            df[name] = pd.to_numeric(panel[col], errors="coerce").to_numpy("float64")
+            specs.append((name, how))
+    if not specs:
+        return pd.DataFrame({"date": keys[:0]})
+    keyed = df.groupby("date", sort=True)
+    out = pd.DataFrame({name: keyed[name].agg(lambda x, h=how: _spread(x, h))
+                        for name, how in specs}).reset_index()
+    return out.astype({name: "float32" for name, _ in specs})
 
 
 SWING_LEG_KS: tuple[int, ...] = (1, 3)
@@ -478,6 +526,7 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
                       columns=["date", "breadth_bottom", "breadth_top"]).astype(
         {"breadth_bottom": "float32", "breadth_top": "float32"})
     panel = panel.merge(bd, on="date", how="left")
+    panel = panel.merge(_universe_dispersion(panel), on="date", how="left")
     if with_sector:
         panel = pd.concat([panel, _sector_block(panel, load_sector_map())], axis=1)
     panel = pd.concat([panel, _cross_sectional(panel)], axis=1)
