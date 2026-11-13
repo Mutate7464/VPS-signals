@@ -70,7 +70,8 @@ def candidate_features(panel: pd.DataFrame) -> list[str]:
                                                      "swing_", "bars_since_", "dd_age",
                                                      "dow", "month", "cs_", "sec_", "srel_",
                                                      "breadth_", "semivar_", "rv_skew_",
-                                                     "jump_", "regime_", "disp_"))]
+                                                     "jump_", "regime_", "disp_",
+                                                      "effort_"))]
     return [f for f in wi016_feature_names() + ext if f in panel.columns]
 
 
@@ -448,6 +449,40 @@ def _regime_age(fdf: pd.DataFrame, idx, win: int = REGIME_WIN) -> pd.DataFrame:
     return pd.DataFrame(out, index=np.arange(t.size))
 
 
+CLIMAX_WINDOWS: tuple[int, ...] = (21, 55)
+"""Trailing effort/result windows (bars) for `_climax`."""
+
+
+def _climax(volume, high, low, atr, windows=CLIMAX_WINDOWS) -> pd.DataFrame:
+    """Volume-per-range "climax" effort/result ratio and its trailing z-score (causal).
+
+    Relational volume-vs-range block (net-new probe; the volume family is otherwise
+    silent in the library). Per bar, effort is relative volume
+    `effort_t = volume_t / mean(volume[t-w+1 .. t])` (1.0 on an average bar) and result
+    is the ATR-normalized range `result_t = (high_t - low_t) / atr_t` (ATR units).
+    `effort_result_{w} = effort_t / (result_t + eps)` is the volume spent per unit of
+    range: high on a wide bar on thin volume (a "climax" of range without effort),
+    low when heavy volume moves price little. `effort_result_z_{w}` is the trailing
+    z-score of that per-bar ratio over the same `w` bars (population std), so a value
+    of -2 means today's efficiency is two window-sigmas below its recent norm. Every
+    read is trailing (`<= t`), so the block is causal; NaN until `w` bars of volume
+    exist (ratio: bar `w`) and until `w` ratio values exist (z: bar `2w-1`). A NaN
+    ATR or volume yields NaN. Both columns are ratios, float32 and dimensionless.
+    """
+    vol = pd.Series(np.asarray(volume, dtype="float64"))
+    res = pd.Series((np.asarray(high, dtype="float64") - np.asarray(low, dtype="float64"))
+                    / (np.asarray(atr, dtype="float64") + 1e-12))
+    out: dict[str, pd.Series] = {}
+    for w in windows:
+        effort = vol / (vol.rolling(w, min_periods=w).mean() + 1e-12)
+        s = effort / (res + 1e-12)
+        mu = s.rolling(w, min_periods=w).mean()
+        sd = s.rolling(w, min_periods=w).std(ddof=0)
+        out[f"effort_result_{w}"] = s
+        out[f"effort_result_z_{w}"] = (s - mu) / (sd + 1e-12)
+    return pd.DataFrame(out, index=vol.index).astype("float32")
+
+
 # --------------------------------------------------------------------------- #
 # Panel driver
 # --------------------------------------------------------------------------- #
@@ -509,10 +544,11 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
         ra = _realized_asymmetry(close).iloc[idx].reset_index(drop=True)
         ji = _jump_intensity(close).iloc[idx].reset_index(drop=True)
         rga = _regime_age(fdf, idx)
+        cl = _climax(g["volume"].to_numpy("float64"), high, low, atr).iloc[idx].reset_index(drop=True)
         cal = pd.DataFrame({
             "dow": pd.Series(pd.DatetimeIndex(dates[idx]).dayofweek, dtype="float32"),
             "month": pd.Series(pd.DatetimeIndex(dates[idx]).month, dtype="float32")})
-        parts.append(pd.concat([keep, ext, eq, ss, ra, ji, rga, cal], axis=1))
+        parts.append(pd.concat([keep, ext, eq, ss, ra, ji, rga, cl, cal], axis=1))
         lab = first_touch_labels(high, low, close, atr, idx, states, variants, horizons)
         for key, targets in lab.items():
             slot = label_parts.setdefault(key, {b: [] for b in BINARY_COLUMNS})
