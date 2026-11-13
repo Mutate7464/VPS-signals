@@ -1,6 +1,6 @@
-"""WI-048a — T2 target-family label builders (`up` / `high_low` / `vol_expand`).
+"""WI-048a — T2 target-family label builders (`up` / `high_low` / `vol_expand` / `vol_expand_fwd`).
 
-Three target families as explicit grid axes (never merged with the WI-036
+Four target families as explicit grid axes (never merged with the WI-036
 label-geometry knobs). Every label is read against the event's **reference bar**
 `t0`: the detected swing bar for the `exact` geometry, the +/-2 shoulder extreme
 bar for `tol2` (the `_entry_bars` convention of :mod:`binary_features_ext`).
@@ -10,9 +10,13 @@ Features are always read at the detection bar only (causal); labels look forward
     ``high_low(t0, h)``   the event-window extreme (the low at an ``at_bottom``
                           event, the high at an ``at_top`` event) is touched
                           again inside ``[t0+1, t0+h]`` (re-test)
-    ``vol_expand(t0, h)`` realized vol of the ``h`` log-returns ending at ``t0``
-                          exceeds ``VOL_RATIO_THRESHOLD`` x the previous ``h``
-                          (prior window of the same length)
+    ``vol_expand(t0, h)`` QUARANTINED / backward-looking — kept only for WI-048
+                          reproducibility, never promoted: realized vol of the ``h``
+                          log-returns ending at ``t0`` exceeds ``VOL_RATIO_THRESHOLD``
+                          x the previous ``h`` (prior window of the same length)
+    ``vol_expand_fwd(t0, h)`` FORWARD-looking: realized vol of ``[t0+1, t0+h]``
+                          exceeds ``VOL_RATIO_THRESHOLD`` x the trailing
+                          ``[t0-h+1, t0]``
 
 A window that does not exist (not enough forward / backward bars) is labelled 0,
 mirroring the WI-035/036 first-touch convention. Symbol-sequential reads, float32,
@@ -45,7 +49,7 @@ REPORTS_DIR = BASE_DIR / "reports"
 PROBE_NAME = "t2_label_density_probe.md"
 DEFAULT_SMOKE_DIR = "/tmp/wi048_smoke"
 
-FAMILIES: tuple[str, ...] = ("up", "high_low", "vol_expand")
+FAMILIES: tuple[str, ...] = ("up", "high_low", "vol_expand", "vol_expand_fwd")
 HORIZONS: tuple[int, ...] = (5, 8, 13, 21, 34, 55)
 EVENT_MODES: tuple[str, ...] = ext.EVENT_MODES
 PINNED_EVENT: dict[str, str] = {"USD": "exact", "CAD": "tol2"}
@@ -57,7 +61,8 @@ MIN_POSITIVES = 25
 __all__ = ["DEFAULT_SMOKE_DIR", "EVENT_MODES", "FAMILIES", "HORIZONS", "MIN_POSITIVES",
            "PINNED_EVENT", "PROBE_NAME", "VOL_RATIO_THRESHOLD", "build_probe_report",
            "build_targets_panel", "high_low_labels", "iter_events", "label_key", "main",
-           "probe_table", "target_labels", "up_labels", "vol_expand_labels"]
+           "probe_table", "target_labels", "up_labels", "vol_expand_fwd_labels",
+           "vol_expand_labels"]
 
 
 def label_key(family: str, event: str, h: int) -> tuple[str, str, int]:
@@ -108,15 +113,24 @@ def _win_std(c1, c2, s, e):
     return np.sqrt(np.maximum(var, 0.0))
 
 
-def vol_expand_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESHOLD) -> np.ndarray:
-    """1 when realized vol of the `h` log-returns ending at `t0` beats the prior `h`."""
-    close = np.asarray(close, dtype="float64")
-    t0 = np.asarray(t0, dtype=np.int64)
+def _log_returns(close: np.ndarray) -> np.ndarray:
+    """Log-returns of `close`, first bar pinned to 0.0 (non-finite -> 0.0)."""
     lr = np.zeros(close.size, dtype="float64")
     if close.size > 1:
         with np.errstate(divide="ignore", invalid="ignore"):
             lr[1:] = np.log(close[1:] / close[:-1])
-    lr = np.nan_to_num(lr, nan=0.0, posinf=0.0, neginf=0.0)
+    return np.nan_to_num(lr, nan=0.0, posinf=0.0, neginf=0.0)
+
+
+def vol_expand_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESHOLD) -> np.ndarray:
+    """QUARANTINED (backward-looking) — realized vol of the `h` returns ending at `t0`.
+
+    1 when that vol beats the prior `h`. Kept for WI-048 reproducibility only; use
+    :func:`vol_expand_fwd_labels` (forward window) for any new work.
+    """
+    close = np.asarray(close, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    lr = _log_returns(close)
     c1 = np.concatenate([[0.0], np.cumsum(lr)])
     c2 = np.concatenate([[0.0], np.cumsum(lr * lr)])
     out = np.zeros(t0.size, dtype="int8")
@@ -130,6 +144,29 @@ def vol_expand_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESHOLD)
         good = prior > 0.0
         idx = np.flatnonzero(ok)[good]
         out[idx] = (cur[good] / prior[good] > float(threshold)).astype("int8")
+    return out
+
+
+def vol_expand_fwd_labels(close, t0, h: int, threshold: float = VOL_RATIO_THRESHOLD) -> np.ndarray:
+    """1 when realized vol of `[t0+1, t0+h]` beats the trailing `[t0-h+1, t0]`.
+
+    FORWARD-looking: the forward window reads bars `> t0` only. 0 where that window
+    does not exist (`t0+h >= n`) or the trailing window has no prior vol.
+    """
+    close = np.asarray(close, dtype="float64")
+    t0 = np.asarray(t0, dtype=np.int64)
+    n, h = close.size, int(h)
+    lr = _log_returns(close)
+    c1 = np.concatenate([[0.0], np.cumsum(lr)])
+    c2 = np.concatenate([[0.0], np.cumsum(lr * lr)])
+    out = np.zeros(t0.size, dtype="int8")
+    ok = (h > 0) & (t0 + h < n) & (t0 - h + 1 >= 0)
+    if ok.any():
+        i = np.flatnonzero(ok)
+        fwd = _win_std(c1, c2, t0[i] + 1, t0[i] + h)
+        prior = _win_std(c1, c2, t0[i] - h + 1, t0[i])
+        good = prior > 0.0
+        out[i[good]] = (fwd[good] / prior[good] > float(threshold)).astype("int8")
     return out
 
 
@@ -153,6 +190,8 @@ def target_labels(high, low, close, idx, states, families=FAMILIES,
                 out[label_key("high_low", event, h)] = high_low_labels(high, low, states, t0, h)
             if "vol_expand" in families:
                 out[label_key("vol_expand", event, h)] = vol_expand_labels(close, t0, h)
+            if "vol_expand_fwd" in families:
+                out[label_key("vol_expand_fwd", event, h)] = vol_expand_fwd_labels(close, t0, h)
     return out
 
 

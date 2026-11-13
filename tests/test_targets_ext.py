@@ -19,7 +19,7 @@ from src.swing_bsh import targets_ext as tg
 # Spec: three families x ladder x 2 learners x 2 markets, pinned variants
 # --------------------------------------------------------------------------- #
 def test_spec_constants_match_the_wi():
-    assert tg.FAMILIES == ("up", "high_low", "vol_expand")
+    assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
     assert tg.HORIZONS == (5, 8, 13, 21, 34, 55)
     assert tg.EVENT_MODES == ("exact", "tol2")
     assert tg.PINNED_EVENT == {"USD": "exact", "CAD": "tol2"}
@@ -31,6 +31,7 @@ def test_spec_constants_match_the_wi():
     assert grid.MODEL_DIR.name == "wi048" and grid.SUMMARY_NAME == "t2_targets_ext_summary.md"
     assert grid.FAMILY_REPORT["high_low"] == "t2_grid_highlow_summary.md"
     assert grid.FAMILY_REPORT["vol_expand"] == "t2_grid_volexpand_summary.md"
+    assert grid.FAMILY_REPORT["vol_expand_fwd"] == "t2_grid_volexpandfwd_summary.md"
     # one BH-FDR family per sub-grid: 6 horizons x 2 learners x 2 markets
     assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24
 
@@ -119,6 +120,44 @@ def test_vol_expand_reads_only_up_to_the_reference_bar():
     after = close.copy()
     after[16:] *= 3.0  # forward bars only
     assert tg.vol_expand_labels(after, t0, 5)[0] == before
+
+
+# --------------------------------------------------------------------------- #
+# `vol_expand_fwd` — forward window [t0+1, t0+h] vs the trailing [t0-h+1, t0]
+# --------------------------------------------------------------------------- #
+def test_vol_expand_fwd_ratio_and_missing_forward_window():
+    close = _closes(np.concatenate([_QUIET, _LOUD]))  # 21 bars, 10 h
+    t0 = np.array([10], dtype=np.int64)
+    assert tg.vol_expand_fwd_labels(close, t0, 10).tolist() == [1]  # loud forward, quiet trailing
+    rev = _closes(np.concatenate([_LOUD, _QUIET]))
+    assert tg.vol_expand_fwd_labels(rev, t0, 10).tolist() == [0]
+    assert tg.vol_expand_fwd_labels(close, t0, 10, threshold=500.0).tolist() == [0]
+    # the backward-looking family still answers its own (unchanged) question
+    assert tg.vol_expand_labels(close, np.array([20]), 10).tolist() == [1]
+    assert tg.vol_expand_labels(rev, np.array([20]), 10).tolist() == [0]
+
+
+def test_vol_expand_fwd_tail_rows_have_no_forward_window():
+    close = _closes(np.concatenate([_QUIET, _LOUD]))  # 21 bars
+    t0 = np.array([11, 20, 25], dtype=np.int64)
+    assert tg.vol_expand_fwd_labels(close, t0, 10).tolist() == [0, 0, 0]  # t0+h >= n
+    assert tg.vol_expand_fwd_labels(close, np.array([10]), 11).tolist() == [0]  # 21 >= 21
+
+
+def test_vol_expand_fwd_window_holds_only_indices_after_t0():
+    h = 5
+    t0 = np.array([10], dtype=np.int64)
+    # `_closes` return r[j] lands on the log-return of bar j+1 (close[j+1]/close[j])
+    spike = np.tile([0.0001, 0.0002], 10)
+    spike[10] = 0.06  # the return of bar t0+1: the first bar after t0
+    assert tg.vol_expand_fwd_labels(_closes(spike), t0, h).tolist() == [1]
+    ref_only = spike.copy()
+    ref_only[10] = 0.0001
+    ref_only[9] = 0.06  # the return ending at the reference bar itself -> trailing only
+    assert tg.vol_expand_fwd_labels(_closes(ref_only), t0, h).tolist() == [0]
+    late = spike.copy()
+    late[16:] = 0.2  # bars strictly beyond t0 + h
+    assert tg.vol_expand_fwd_labels(_closes(late), t0, h).tolist() == [1]
 
 
 # --------------------------------------------------------------------------- #

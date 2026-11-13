@@ -40,7 +40,8 @@ REPORTS_DIR = BASE_DIR / "reports"
 SUMMARY_NAME = "t2_targets_ext_summary.md"
 FAMILY_REPORT = {"up": "t2_grid_up_summary.md",
                  "high_low": "t2_grid_highlow_summary.md",
-                 "vol_expand": "t2_grid_volexpand_summary.md"}
+                 "vol_expand": "t2_grid_volexpand_summary.md",
+                 "vol_expand_fwd": "t2_grid_volexpandfwd_summary.md"}
 LEARNERS: tuple[str, ...] = ("xgboost", "lightgbm")
 PRUNE_RHO = 0.3
 PINNED_K = 0.8
