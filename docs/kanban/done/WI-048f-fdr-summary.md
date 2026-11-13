@@ -28,3 +28,12 @@ core_hours_cap: 0.3
 
 ## 3. Definition of Done (binary)
 - [ ] Target-ranking table + FDR table + winner-cell attribution produced; no new training; core-hour cap 0.3.
+
+---
+
+## Execution Telemetry Footer
+
+- Commit: PENDING (HEAD d92a7f4; no commit made)
+- Test Status: PASS — chain stage EXIT:0 (log logs/wi-048def_run.out, marker EXIT_F:0, chain done 2026-11-13T05:59:32Z); artifacts PM-verified this session
+- Index Updated: Y — PM-run outputs; untracked data/ + reports/ artifacts stay out of git
+- PM-run verdict (PROVISIONAL): 72 cells joined; family ranking by cross-market min AUC — vol_expand 0.7068 > high_low 0.6089 > up 0.5038; winner cell USD|lightgbm|vol_expand|h13 attribution (TreeSHAP + linear) recorded; report reports/t2_targets_ext_summary.md.
