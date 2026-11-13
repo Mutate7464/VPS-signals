@@ -13,8 +13,8 @@
 - [DONE] WI-051 | forward `vol_expand_fwd` label + `vol_expand` quarantine note | N/A | **PM-verified 2026-11-13** — `targets_ext.py` (+fwd label, FAMILIES, docstring) + `grid_targets_ext.py` (SUMMARY_NAME); `uv run pytest tests/test_targets_ext.py` 16 passed; forward window asserts t>t0; only-manifest files; card in `done/`
 - [DONE] WI-052 | L0-1 swing-structure history block | T1 | **PM-verified 2026-11-13** — `_swing_structure` in `binary_features_ext.py` (`swing_leg_len/dur_{1,3}`, `swing_depth_atr_prev`); test 6 passed; downstream feature_inventory+targets_ext 24 passed; only-manifest; card in `done/`
 - [DONE] WI-053…057 | L0-2…L0-6 blocks: realized asymmetry · regime age/run-length · jump intensity · universe vol-dispersion (net-new **confirmed**, disjoint from WI-047 #3) · effort-vs-result | T1 | **PM-verified 2026-11-13** — each block + tests green (7/7/7/7/8 passed), only-manifest diffs to `binary_features_ext.py`, cards in `done/`; R12 grid runs pending (PM core-hours)
-- [TODO] WI-058…061 | L1 targets: forward cross-sectional vol rank · payoff-ratio MFE/MAE · expansion-direction A·B · sample-uniqueness weighting | T2 | m=24 families, predictive-only — staged in `draft/`
-- [TODO] WI-062 | L1.5 meta-label (swing-side primary) + seed-averaging companion | T2 | permuted-label leakage test mandatory DoD — staged in `draft/`
+- [DONE] WI-058…061 | L1 targets: forward x-sec vol rank (bin+cont) · payoff-ratio MFE/MAE (bin+cont) · expansion-direction A/B · average-uniqueness weighting | T2 | **PM-verified 2026-11-13** — labels/module + tests green (21/26/30/30 passed); families registered in `grid_targets_ext`; cards in `done/`; full grid runs pending (PM core-hours)
+- [DONE] WI-062 | L1.5 meta-label (swing-side primary) + permuted-label leakage test | T2 | **PM-verified 2026-11-13** — new `meta_label_ext.py` + test (10 passed); Layer-1 predictive; not-stacking per D-026; card in `done/`
 
 ### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
 - [DONE] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
