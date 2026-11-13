@@ -69,7 +69,8 @@ def candidate_features(panel: pd.DataFrame) -> list[str]:
     ext = [c for c in panel.columns if c.startswith(("volume_", "vwap_dist", "bar_count_",
                                                      "swing_", "bars_since_", "dd_age",
                                                      "dow", "month", "cs_", "sec_", "srel_",
-                                                     "breadth_", "semivar_", "rv_skew_"))]
+                                                     "breadth_", "semivar_", "rv_skew_",
+                                                     "regime_"))]
     return [f for f in wi016_feature_names() + ext if f in panel.columns]
 
 
@@ -301,6 +302,67 @@ def _realized_asymmetry(close, windows=ASYM_WINDOWS) -> pd.DataFrame:
     return pd.DataFrame(out, index=c.index).astype("float32")
 
 
+REGIME_WIN: int = 233
+"""Trailing median window (bars) that defines the vol / hurst regime threshold."""
+REGIME_SOURCES: tuple[tuple[str, str, str], ...] = (
+    ("vol", "atr_pct_21", "regime_state_vol"),
+    ("hurst", "hurst_63", "regime_state_hurst"),
+)
+"""``(block, source column, optional WI-047 state column)`` triples for `_regime_age`."""
+
+
+def _runs(state: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Bars since the current run of `state` started, and the prior run's length."""
+    age = np.zeros(state.size, dtype="float64")
+    prev = np.full(state.size, np.nan, dtype="float64")
+    start, last = 0, np.nan
+    for t in range(state.size):
+        if t and state[t] != state[t - 1]:
+            last, start = float(t - start), t
+        age[t] = t - start
+        prev[t] = last
+    return age, prev
+
+
+def _regime_age(fdf: pd.DataFrame, idx, win: int = REGIME_WIN) -> pd.DataFrame:
+    """Bars since the current vol / hurst regime began + the previous vol run (causal).
+
+    The regime state at bar `t` is the trailing percentile comparison
+    `src_t > median(src[t - win + 1 .. t])` (strictly above the trailing median =
+    regime 1), so only bars `<= t` are read — no future look. Soft dependency on
+    WI-047 #1 (regime percentiles): when the optional state column (`regime_state_vol`,
+    `regime_state_hurst`) is present in `fdf` it is used verbatim; otherwise the state is
+    derived inline from the existing `atr_pct_21` / `hurst_63` columns. `regime_age_*`
+    counts bars since the last flip (0 at the flip bar); `regime_prev_dur_vol` is the
+    length of the vol run preceding the current one (NaN until the first flip). Both are
+    NaN until `win` observations exist, and run counting starts at that first defined bar
+    (the first run is therefore left-truncated). Counts, float32 and dimensionless.
+    """
+    t = np.asarray(idx, dtype=np.int64)
+    out: dict[str, np.ndarray] = {}
+    for name, src, state_col in REGIME_SOURCES:
+        if state_col in fdf.columns:
+            state = pd.to_numeric(fdf[state_col], errors="coerce").to_numpy("float64")
+        elif src in fdf.columns:
+            s = pd.to_numeric(fdf[src], errors="coerce")
+            med = s.rolling(win, min_periods=win).median()
+            state = np.where(s.isna().to_numpy() | med.isna().to_numpy(), np.nan,
+                             (s > med).to_numpy(dtype="float64"))
+        else:
+            state = np.full(len(fdf), np.nan)
+        age = np.full(len(fdf), np.nan)
+        prev = np.full(len(fdf), np.nan)
+        first = np.flatnonzero(np.isfinite(state))
+        if first.size:
+            seg = pd.Series(state[first[0]:]).ffill().to_numpy()  # interior gaps carry over
+            a, p = _runs(seg)
+            age[first[0]:], prev[first[0]:] = a, p
+        out[f"regime_age_{name}"] = age[t].astype("float32")
+        if name == "vol":
+            out["regime_prev_dur_vol"] = prev[t].astype("float32")
+    return pd.DataFrame(out, index=np.arange(t.size))
+
+
 # --------------------------------------------------------------------------- #
 # Panel driver
 # --------------------------------------------------------------------------- #
@@ -360,10 +422,11 @@ def build_variant_panel(market: str, *, min_date: str = train.MIN_DATE,
         eq = _event_quality(high, low, close, atr, idx, bottom, swings)
         ss = _swing_structure(high, low, close, atr, idx, swings)
         ra = _realized_asymmetry(close).iloc[idx].reset_index(drop=True)
+        rga = _regime_age(fdf, idx)
         cal = pd.DataFrame({
             "dow": pd.Series(pd.DatetimeIndex(dates[idx]).dayofweek, dtype="float32"),
             "month": pd.Series(pd.DatetimeIndex(dates[idx]).month, dtype="float32")})
-        parts.append(pd.concat([keep, ext, eq, ss, ra, cal], axis=1))
+        parts.append(pd.concat([keep, ext, eq, ss, ra, rga, cal], axis=1))
         lab = first_touch_labels(high, low, close, atr, idx, states, variants, horizons)
         for key, targets in lab.items():
             slot = label_parts.setdefault(key, {b: [] for b in BINARY_COLUMNS})
