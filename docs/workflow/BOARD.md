@@ -10,9 +10,10 @@
 - Source: plan `docs/plans/26-W46-L0L1-extension-review-v2.md` (Opus) → design `docs/workflow/designs/D-026-l0l1-extension.md` (accepted). Order: Phase 0 → L0 → L1 → L1.5.
 - **Integrity (verified 2026-11-13, PM):** `vol_expand` label is BACKWARD-looking (`src/swing_bsh/targets_ext.py:111-133`) — quarantine its WI-048 survivors, re-target forward before use. `close`/`atr` levels confirmed excluded from feature lists (PASS).
 - [DONE] WI-050 | Phase 0 precision@k / top-decile diagnostic harness | N/A | **PM-verified 2026-11-13** — new `src/swing_bsh/precision_diag.py` + `tests/test_precision_diag.py`; `uv run pytest tests/test_precision_diag.py` 6 passed (0.31s); only-manifest files; DoD INDEX.md item N/A (no such file); builder EXIT:0; card in `done/`
-- [TODO] WI-051…056 | L0 blocks: swing-structure history · realized asymmetry/semivariance/skew · regime age/run-length · jump intensity · universe vol-dispersion (net-new precondition) · effort-vs-result | T1 | one R12 BH-FDR family each, ≤2.0 core-h — draft after Phase 0
-- [TODO] WI-057…060 | L1 targets: forward cross-sectional vol rank · payoff-ratio MFE/MAE · expansion-direction A·B · sample-uniqueness weighting | T2 | m=24 families, predictive-only
-- [TODO] WI-061 | L1.5 meta-label (swing-side primary) + seed-averaging companion | T2 | permuted-label leakage test mandatory DoD
+- [DONE] WI-051 | forward `vol_expand_fwd` label + `vol_expand` quarantine note | N/A | **PM-verified 2026-11-13** — `targets_ext.py` (+fwd label, FAMILIES, docstring) + `grid_targets_ext.py` (SUMMARY_NAME); `uv run pytest tests/test_targets_ext.py` 16 passed; forward window asserts t>t0; only-manifest files; card in `done/`
+- [TODO] WI-052…057 | L0 blocks: swing-structure history · realized asymmetry/semivariance/skew · regime age/run-length · jump intensity · universe vol-dispersion (net-new precondition) · effort-vs-result | T1 | one R12 BH-FDR family each, ≤2.0 core-h — staged in `draft/`
+- [TODO] WI-058…061 | L1 targets: forward cross-sectional vol rank · payoff-ratio MFE/MAE · expansion-direction A·B · sample-uniqueness weighting | T2 | m=24 families, predictive-only — staged in `draft/`
+- [TODO] WI-062 | L1.5 meta-label (swing-side primary) + seed-averaging companion | T2 | permuted-label leakage test mandatory DoD — staged in `draft/`
 
 ### D-025 SPRINT (Tiered workflow — T1→T2→T3, admin approved 2026-11-10)
 - [DONE] WI-046 | tier map in WORKFLOW+BOARD | T1 | doc-only (0 core-h)
