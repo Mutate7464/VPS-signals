@@ -34,6 +34,11 @@
   decision params tuned on CALIB edge, judged vs frozen baseline). Every ML WI states its
   layer; the layers never cross-justify.
   No secrets in git. (`.agents/rules/` — env-split, no-live-trading, quant-ml.)
+- L1/T1 gate discipline — PREDICTIVE ONLY (admin direction, 2026-11-13): Tier 1 and
+  Tier 2 (Layer 1) gate evidence is predictive statistics only — OOF AUC/IC + BH-FDR +
+  calibration. Do NOT present economic-magnitude or cost analysis at T1/T2 (that belongs
+  to T3/Layer 2). Any FDR-surviving predictor is ACCEPTED and integrated into the L1
+  pickle library: there is no effect-size floor and no economic bar at L1.
 - File-lock protocol (2026-11-02): surgical WIs staged in `docs/kanban/` with `write_files` manifests; locks in `.hermes/locks.json`; technique in WORKFLOW.md §2 + Hermes skills `kanban-orchestrator`/`expert-synthesizer`. Hermes never edits source; OpenCode surgical-builder reads only the WI + its locked line ranges.
 - Commands: `uv sync`, `uv run pytest`.
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`

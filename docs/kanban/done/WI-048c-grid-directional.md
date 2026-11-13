@@ -2,7 +2,7 @@
 wi_id: WI-048c
 title: T2 full grid — `up` family (24 cells: 2 learners × 6 horizons × 2 markets)
 status: done
-verdict: PROVISIONAL — 24 cells scored, 0 truncated, 11 BH-FDR survivors (8 CAD h5–h21 both learners + 3 USD h5/h8 marginal); Layer-1 pure-signal, no deployment claim; PENDING admin ratification in chat
+verdict: RATIFIED (admin in chat 2026-11-13, Layer 1) — 24 cells scored, 0 truncated, 11 BH-FDR survivors (8 CAD h5–h21 both learners + 3 USD h5/h8); all 11 accepted into the L1 pickle library (55 fold pickles + manifest, `data/models/wi048/`, WI-040 schema); predictive license only, no trading claim, EVAL split unburned
 agent: pm
 depends_on: [WI-048b]
 gate_layer: "1"

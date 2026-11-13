@@ -3,6 +3,13 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-13 — Cycle 32 (L1 predictive-only rule; WI-048c ratified; WI-048d dispatched)
+
+- **Admin direction (2026-11-13): T1/T2 gate evidence is PREDICTIVE-ONLY.** Gate evidence at Tier 1 and Tier 2 (Layer 1) = OOF AUC/IC + BH-FDR + calibration. No economic-magnitude or cost analysis is presented at T1/T2 — cost/edge analysis belongs to T3/Layer 2 only. Any FDR-surviving predictor is ACCEPTED and integrated into the L1 pickle library: no effect-size floor, no economic bar at L1. Landed doc-only in `AGENTS.md` (hard constraints) + `WORKFLOW.md` §7 (tier map) in one commit.
+- **WI-048c RATIFIED (admin in chat 2026-11-13, Layer 1):** 24 cells, 0 truncated, 11 BH-FDR survivors (8 CAD `up` h5–h21 both learners + 3 USD h5/h8). All 11 accepted into the L1 library (55 fold pickles + `data/models/wi048/manifest.parquet`, WI-040 schema). Predictive license only — no trading claim; EVAL split unburned. Card frontmatter set `verdict: RATIFIED`; PROVISIONAL prefix stripped from the BOARD row.
+- **Kanban bookkeeping (commit f40a92a):** WI-048a/b/c cards closed (`status: done` + `verdict:` lines; stale telemetry-footer SHAs corrected 048a→bd80bd5, 048b→3e4fb18, 048c 5880906→f94d5e3); WI-048d/e/f drafts staged into git (were untracked); duplicate WI-045/046/047 cards in `draft/` removed (identical cards already in `done/`, so HEAD carried both copies); BOARD header + D-025 rows refreshed.
+- **Dispatched (admin: "ratify and dispatch"):** WI-048d grid `high_low` — PM full-universe run, detached Popen + monitor watchdog cron; close-out chain d → e → f. Credit check before launch: balance 100%, burst_left 3.00 h @100% (each sub-grid ≈ 0.53 core-h, under the 1 core-h pause threshold).
+- cursor: opencode session cursor unchanged; pending = WI-048d watchdog cron.
 
 ## 2026-11-10 — Cycle 31
 
@@ -19,11 +26,3 @@
 - **WI drafts staged:** WI-041 harness (cap 0.5), WI-042 rerun modern four 037/033/030/028 (cap 1.0), WI-043 rerun legacy three 012/018/011 (cap 1.5, depends WI-042). Pre-committed closure: REJECT under the harness closes an overlay question permanently. Approval matrix presented in chat 2026-11-10 — dispatch gated on admin approval of the matrix.
 - **ML dependency adoption (admin in chat 2026-11-10 "adopt other MLs and integrate into workflow … install deps"):** lightgbm 4.7.0 + catboost 1.2.10 added via `uv add` (commit pending in same batch as pyproject+uv.lock); both import, fit on synthetic thin-positive data, and the full existing test subset passes (14/14). VPS confirmed before install: 2 vCPU, 6.2 GB RAM available, 69 GB disk free, credits 100%. Host quirk: no system `libgomp.so.1` and no passwordless sudo — lightgbm's dlopen resolves via torch's bundled copy preloaded by `.venv/lib/python3.14/site-packages/sitecustomize.py`; a venv rebuild must re-create that file (recorded in WI-044 env note).
 - cursor: none — design/adoption cycle.
-
-## 2026-11-10 — Cycle 30 (WI-038 full-run close-out PROVISIONAL PASS; WI-040 done PM-verified)
-
-- **WI-038 (L1 long-horizon gap fill) full-universe run: EXIT:0** (attempt 3, detached Popen; watchdog cron fired the close-out). 552 cells scored, 408 truncated by the 2.0 core-h cap (h=233 dropped, then 144; core USD 0.62 h + CAD 1.24 h ≈ 1.86 total, within cap). Winner `tol2_full_k0.8` — best cell mlp_torch|b_hold|h34, min cross-market AUC 0.6962 (CAD 0.8399); 20 BH-FDR survivors, all b_hold, h∈{34,55,89}, both markets; zero starved folds. Expectation (b_hold family again, weaker at long h than WI-036 short-h 0.7207) confirmed. Report `reports/wi038_summary.md`, pickles `data/models/wi038/`. **Verdict PROVISIONAL PASS (Layer 1) — pending admin ratification in chat.** WI card archived to `docs/kanban/done/`, locks released; cycles 27–29 rotated to `archive/PM_LOG-2026-11-09-cycles-27-29.md`.
-- **WI-040 (L1 library consolidation) DONE:** builder session was killed by the runtime (EXIT 130) AFTER all artifacts landed; PM independently verified every DoD item before closing (no re-dispatch): tests 7/7, manifest 9,745 rows == 96+6,838+2,811 with 100% path resolution, winner-cell calibration usable (USD Brier skill +0.327, ECE 0.0009), top-20 permutation attribution both markets, `--infer` smoke exit 0. Library now indexed: `data/models/wi040/manifest.parquet` + `reports/wi040_{library_manifest,calibration}.md`. Lesson: builder dispatches that run long (WI-040 took ~40 min) also die at the tool-session layer — same Popen/watchdog lesson as the PM full-run dispatches.
-- **Next (admin-gated):** (1) ratify WI-038 in chat; (2) L2 method/layer rebuild — new design doc naming why all seven prior L2 attempts REJECTed and what structurally changes; approval matrix before any dispatch.
-- cursor: wi038 watchdog cron (22ed59fa56b6, removed by its own close-out) + surgical-builder WI-040 session (killed, artifacts verified above); no pending sessions.
-
