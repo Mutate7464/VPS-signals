@@ -1,5 +1,12 @@
 # D-026 Phase 1 — L0 R12 consolidated summary (RATIFIED, admin in chat 2026-11-14)
 
+> **QUARANTINE NOTE (added 2026-11-14, PM):** this banner applies to the *xsec_vol_rank_cont*
+> grid results elsewhere on disk, not to this doc's L0 verdicts. The cont family's first
+> run was silently binarized by `cell_cv`'s `dtype="int8"` cast (ranks <1.0 → 0, ==1.0 → 1):
+> its 24/24 "survivors" and ICs (+0.44–0.66) measure a top-of-date *indicator*, NOT the
+> registered continuous rank target. Cont results are quarantined pending a regression
+> read-out path (new WI); the bin family and all L0 R12 verdicts in this doc are unaffected.
+
 - Generated (UTC): 2026-11-14T01:05Z · **RATIFIED 2026-11-14 (admin in chat, Layer 1)** —
   verdicts stand as computed: L0-5 survives, L0-2/L0-4 absorbed, L0-1/L0-3/L0-6 no delta.
 - Scope: the six net-new L0 feature blocks (WI-052…057) on the R12 reference grid

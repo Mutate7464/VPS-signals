@@ -365,11 +365,13 @@ def xsec_vol_rank_bin_labels(panel: pd.DataFrame, closes, h: int,
 
 
 def target_labels(high, low, close, idx, states, families=FAMILIES,
-                  horizons=HORIZONS) -> dict:
-    """`{label_key(family, event, h): int8 array}` for one symbol's events.
+                  horizons=HORIZONS, atr=None) -> dict:
+    """`{label_key(family, event, h): label array}` for one symbol's events.
 
     Per-symbol families only; the `XSEC_FAMILIES` need the market's full event set and
     are built by :func:`build_targets_panel` (see :func:`xsec_vol_rank_cont_labels`).
+    The WI-059/060 families (`mfe_mae_*`, `move_*`) require `atr` (ATR-scaled
+    excursion geometry) — pass it to compute them; KeyError-free skip otherwise.
     """
     idx = np.asarray(idx, dtype=np.int64)
     states = np.asarray(states)
@@ -390,6 +392,18 @@ def target_labels(high, low, close, idx, states, families=FAMILIES,
                 out[label_key("vol_expand", event, h)] = vol_expand_labels(close, t0, h)
             if "vol_expand_fwd" in families:
                 out[label_key("vol_expand_fwd", event, h)] = vol_expand_fwd_labels(close, t0, h)
+            if "mfe_mae_bin" in families and atr is not None:
+                out[label_key("mfe_mae_bin", event, h)] = mfe_mae_bin_labels(
+                    high, low, close, np.asarray(atr, dtype="float64"), states, t0, h)
+            if "mfe_mae_cont" in families and atr is not None:
+                out[label_key("mfe_mae_cont", event, h)] = mfe_mae_cont_labels(
+                    high, low, close, np.asarray(atr, dtype="float64"), states, t0, h)
+            if "move_occur" in families:
+                out[label_key("move_occur", event, h)] = move_occur_labels(
+                    high, low, states, t0, h)
+            if "move_dir_up" in families:
+                out[label_key("move_dir_up", event, h)] = move_dir_up_labels(
+                    high, low, close, states, t0, h)
     return out
 
 
@@ -441,16 +455,16 @@ def build_targets_panel(market: str, *, families=ALL_FAMILIES, horizons=HORIZONS
     parts: dict = {}
     n_rows = 0
     xsec = tuple(f for f in families if f in XSEC_FAMILIES)
-    per_symbol = tuple(f for f in families if f in FAMILIES)
+    per_symbol = tuple(f for f in families if f not in XSEC_FAMILIES)
     xrows: list[tuple] = []
-    for symbol, g, idx, states, _atr in iter_events(
+    for symbol, g, idx, states, atr in iter_events(
         market, min_date=min_date, allow_fixture=allow_fixture, max_symbols=max_symbols
     ):
         n_rows += int(idx.size)
         high = g["high"].to_numpy("float64")
         low = g["low"].to_numpy("float64")
         close = g["close"].to_numpy("float64")
-        lab = target_labels(high, low, close, idx, states, per_symbol, horizons)
+        lab = target_labels(high, low, close, idx, states, per_symbol, horizons, atr=atr)
         for key, arr in lab.items():
             parts.setdefault(key, []).append(arr)
         if xsec:

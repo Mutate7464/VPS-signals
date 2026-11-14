@@ -1,5 +1,13 @@
 # WI-048 — T2 grid `xsec_vol_rank_cont` (D-025 tier 2)
 
+> **QUARANTINED 2026-11-14 (PM):** `cell_cv` casts labels to int8 (`binary_grid.py:199`),
+> which silently binarized this family's continuous rank labels (ranks <1.0 → 0, ==1.0 → 1).
+> The 24/24 "survivors" and ICs below measure a top-of-date *indicator*, not the registered
+> continuous rank target — do NOT cite as the cont-family verdict. Re-run blocked on a
+> regression read-out path (regression objectives + `model.predict` OOF in `cell_cv`),
+> to be scoped as a new WI. The bin family (`xsec_vol_rank_bin`) is unaffected (labels are
+> 0/1 by construction).
+
 - Generated (UTC): 2026-11-14T02:30:22Z
 - Grid: `xsec_vol_rank_cont` x 6 horizons (5, 8, 13, 21, 34, 55) x 2 learners x 2 markets; verdict = pooled OOF AUC + rank-IC (no tau grid, no EVAL)
 - Learners: xgboost, lightgbm; variant pinned per market {'USD': 'exact', 'CAD': 'tol2'} (`*_full_k0.8`); rho prune 0.3
