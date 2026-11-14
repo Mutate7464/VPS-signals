@@ -1,28 +1,34 @@
-"""WI-041 — Layer-2 overlay harness (D-024 §2): one protocol, not seven scripts.
+"""WI-041/065 — Layer-2 overlay harness (D-024 §2): feasibility → CALIB-only tau → one-shot EVAL
+→ 5-seed placebo → per-fold edges → verdict. WI-065 adds the wi040∪wi048 union loader (cell-key
+dedup + no-cell-twice assertion), the mandatory fold report, the hashed pre-registration + EVAL lock
+and the CALIB-failure stop flag. No learner refit, no EVAL read while tuning, no AUC selection.
 
-Owns the overlay decision protocol once: feasibility precheck → tau tuned on CALIB-period
-edge only → one-shot EVAL → 5-seed placebo on the edge → per-fold edges → verdict. Never
-re-fits a learner, never reads EVAL while tuning, never selects on AUC (D-023 layering);
-probabilities arrive pre-scored from the WI-040 library (question adapters: WI-042).
+    uv run python -m src.l2_overlay.harness --smoke                     # reports/l2_harness_smoke/
     L2_SMOKE=1 uv run python -m src.l2_overlay.harness --question wi037 --out /tmp/l2_smoke
-    uv run python -m src.l2_overlay.harness --question wi037 --prepared /tmp/wi042/USD.parquet
+    uv run python -m src.l2_overlay.harness --prepared /tmp/wi042/USD.parquet
 
 A `--prepared` parquet carries `p, ret` (or `r_frozen`), `fold`, `date`: CALIB is `date < --calib-end`, EVAL `date >= --eval-start`.
 """
 from __future__ import annotations
 
-import argparse, datetime as dt, os
+import argparse, datetime as dt, hashlib, json, os
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+from src.l2_overlay.fold_report import (FOLD_CEILING_SHARE, fold_report as build_fold_report,
+                                        write_fold_report)
 from src.swing_bsh.evaluate import selection_edge
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 REPORTS_DIR = BASE_DIR / "reports" / "l2"
-DEFAULT_SMOKE_DIR = "/tmp/l2_smoke"
+DEFAULT_SMOKE_DIR = BASE_DIR / "reports" / "l2_harness_smoke"
+DEFAULT_SMOKE_Q = "wi037"
+UNION_ROOT = BASE_DIR / "data" / "models"
+WI040_MANIFEST, WI048_MANIFEST = UNION_ROOT / "wi040" / "manifest.parquet", UNION_ROOT / "wi048" / "manifest.parquet"
+CELL_KEY = ("market", "learner", "variant", "family", "horizon", "fold")  # D-027 §4: family=`binary`, horizon=`h`
 N_JOBS = 2                      # repo law; nothing here fans out, kept explicit
 MIN_CALIB_EVENTS = 200          # D-024 §2 per-cell CALIB event floor
 N_PLACEBO_SEEDS = 5             # CB-05 form without refits: probability permutations
@@ -31,9 +37,15 @@ CALIB_END, EVAL_START = "2022-05-02", "2022-07-01"   # frozen windows (WI-037 li
 TAU_GRID: tuple[float, ...] = (0.1, 0.2, 0.3, 0.5, 0.7)
 QUESTION_SEEDS = {"wi037": 41, "wi033": 42, "wi030": 43, "wi028": 44, "wi012": 45,
                   "wi018": 46, "wi011": 47}
+PREREG_NAME, PREREG_VERSION = "l2_prereg_template.json", 1
+MATERIALITY_FLOOR_BPS = 10.0    # D-027 §11.1: ADOPT requires net CALIB edge ≥ 10 bps
+MIN_NAMES_PER_DATE = 20         # D-027 §11.3: xsec INERT precheck name floor
+XSEC_MIN_CALIB_EVENTS = 200     # D-027 §7: ≥200 CALIB events + a τ span (the D-024 floor)
 __all__ = ["OverlayResult", "run_overlay", "classify", "feasible", "pick_tau_by_calib_edge",
            "placebo_z", "score_eval", "fold_edges", "selected_mask", "synthetic_fixture",
-           "write_report", "main"]
+           "write_report", "main", "load_union", "assert_no_duplicate_cells", "xsec_inert_precheck",
+           "preregistration_template", "prereg_hash", "write_preregistration", "load_preregistration",
+           "EvalLockError", "assert_eval_unlocked", "eval_read", "calib_stop"]
 
 
 @dataclass
@@ -53,6 +65,7 @@ class OverlayResult:
     tau_table: list = field(default_factory=list)
     baseline: str = ""
     smoke: bool = False
+    fold_report: dict = field(default_factory=dict)   # WI-065 mandatory column (empty only if INERT)
 
 
 def _fmt(x, spec: str = "{:.4f}") -> str:
@@ -76,6 +89,20 @@ def feasible(calib_probs, tau_grid=TAU_GRID, min_events=MIN_CALIB_EVENTS):
         return False, f"INERT: mass max {p.max():.4f} below tau range [{lo:.2f}, {hi:.2f}] — no operating point"
     if p.min() >= hi:
         return False, f"INERT: mass min {p.min():.4f} at/above tau range [{lo:.2f}, {hi:.2f}]"
+    return True, ""
+
+
+def xsec_inert_precheck(calib_probs, names_per_date, tau_grid=TAU_GRID, min_events=XSEC_MIN_CALIB_EVENTS,
+                        min_names=MIN_NAMES_PER_DATE):
+    """D-027 §7 INERT precheck for a *ranking* construction: CALIB floor + τ span + min names/date."""
+    ok, reason = feasible(calib_probs, tau_grid, min_events)
+    if not ok:
+        return False, reason.replace("INERT:", "INERT (xsec):")
+    counts = np.asarray(names_per_date, dtype="float64")
+    counts = counts[np.isfinite(counts)]
+    thin = int((counts < float(min_names)).sum())
+    if counts.size == 0 or thin:
+        return False, f"INERT (xsec): {thin}/{counts.size} dates below the {int(min_names)}-name floor"
     return True, ""
 
 
@@ -171,10 +198,10 @@ def run_overlay(name, baseline, probs, events, tau_grid=TAU_GRID, calib_mask=Non
     tau, calib_edge = float(best["tau"]), float(best["calib_edge"])
     eval_edge = score_eval(p, ret, ev, tau)                 # the one and only EVAL touch
     z = placebo_z(p, ret, tau, seed0=seed0, n_seeds=n_seeds)
+    rows = fold_edges(p, ret, folds, tau, calib | ev)
     return OverlayResult(name, classify(calib_edge, eval_edge, z), tau, calib_edge, eval_edge,
-                         fold_edges(p, ret, folds, tau, calib | ev), z, "",
-                         int(calib.sum()), int(ev.sum()), int(best["n_selected"]), table,
-                         base_name, smoke)
+                         rows, z, "", int(calib.sum()), int(ev.sum()), int(best["n_selected"]),
+                         table, base_name, smoke, build_fold_report(rows))   # fails closed if empty
 
 
 def synthetic_fixture(question, n_calib: int = 240, n_eval: int = 120, inert: bool = False) -> dict:
@@ -193,6 +220,11 @@ def synthetic_fixture(question, n_calib: int = 240, n_eval: int = 120, inert: bo
 def write_report(result: OverlayResult, path) -> Path:
     """`reports/l2/<name>.md` (or the `--out` dir in a smoke run): D-024 §2 protocol record."""
     tag = "  (smoke / synthetic fixture)" if result.smoke else ""
+    rep = result.fold_report or {}
+    fold_line = ("- Fold report: missing (INERT — no operating point)" if not rep else
+                 f"- Fold report: max-fold share {_fmt(rep['max_fold_share'])} "
+                 f"(ceiling {FOLD_CEILING_SHARE:.0%}, {'pass' if rep['fold_ceiling_ok'] else 'FAIL'}); "
+                 f"positive folds {rep['n_positive_folds']}/{rep['n_folds']}")
     lines = [f"# L2 overlay — {result.name} (D-024 §2 harness)", "",
              f"- Generated (UTC): {dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}",
              f"- Verdict: **{result.verdict}**{tag}  |  baseline `{result.baseline}`",
@@ -200,6 +232,7 @@ def write_report(result: OverlayResult, path) -> Path:
              f"{result.n_eval:,}; tau frozen on CALIB only: {_fmt(result.tau)}",
              f"- CALIB edge {_fmt(result.calib_edge)}; EVAL edge {_fmt(result.eval_edge)}; "
              f"placebo z {_fmt(result.placebo_z, '{:+.2f}')}",
+             fold_line,
              "- Layer separation: no learner refit, no AUC selection, EVAL read once after freeze."]
     if result.inert_reason:
         lines += ["", f"- {result.inert_reason}"]
@@ -215,32 +248,140 @@ def write_report(result: OverlayResult, path) -> Path:
     return path
 
 
+# ---------------------------------------------------- WI-065: union / pre-registration / gates
+def _cell_keys(frame: pd.DataFrame) -> pd.Series:
+    """D-027 §4 cell key: market/learner/variant/family/horizon/fold (family=`binary`, horizon=`h`)."""
+    d = frame.rename(columns={"binary": "family", "h": "horizon"})
+    missing = [c for c in CELL_KEY if c not in d.columns]
+    if missing:
+        raise KeyError(f"manifest missing cell-key columns {missing}")
+    return d[list(CELL_KEY)].astype(str).agg("|".join, axis=1)
+
+
+def assert_no_duplicate_cells(frame: pd.DataFrame) -> pd.Series:
+    """A cell key may enter the union exactly once; a repeated key is a defect (D-027 §4)."""
+    key = _cell_keys(frame)
+    dupes = key[key.duplicated(keep=False)]
+    if not dupes.empty:
+        raise ValueError(f"cell key entered twice: {sorted(set(dupes))[:3]} (n={int(dupes.size)})")
+    return key
+
+
+def load_union(paths=(WI040_MANIFEST, WI048_MANIFEST)) -> pd.DataFrame:
+    """wi040 ∪ wi048 with cell-key dedup + an assertion that no cell enters twice (no silent drops)."""
+    paths = tuple(Path(p) for p in paths)
+    frames = [pd.read_parquet(p) for p in paths]
+    union = pd.concat(frames, ignore_index=True)
+    union["cell_key"] = _cell_keys(union)
+    raw = int(len(union))
+    per = [{"source": p.parent.name, "rows": int(len(f))} for p, f in zip(paths, frames)]
+    union = union.drop_duplicates(subset=["cell_key"], keep="first").reset_index(drop=True)
+    assert_no_duplicate_cells(union)
+    union.attrs["union_report"] = {"n_raw": raw, "n_union": int(len(union)),
+                                   "n_dropped": raw - int(len(union)), "per_source": per}
+    return union
+
+
+def preregistration_template() -> dict:
+    """D-027 §7/§11 schema: constructions, params, FDR family list, materiality floor, hash field."""
+    return {"schema_version": PREREG_VERSION, "family_id": "l2_rebuild",
+            "constructions": ["(b) xsec top-k rank screener + hysteresis (LONG-ONLY first pass)",
+                              "(a) fixed time exits h13/h55 + hybrid on identical entries",
+                              "(c) vol-target entry-only sizing", "(d) within-market sector pairs"],
+            "params": {"tau_grid": list(TAU_GRID), "long_only": True,
+                       "min_names_per_date": MIN_NAMES_PER_DATE,
+                       "xsec_min_calib_events": XSEC_MIN_CALIB_EVENTS,
+                       "calib_end": CALIB_END, "eval_start": EVAL_START},
+            "fdr_family": [], "fdr_pooled_with_d024": False,
+            "materiality_floor_bps": MATERIALITY_FLOOR_BPS, "fold_ceiling_share": FOLD_CEILING_SHARE,
+            "eval_lock_released": False, "hash": ""}
+
+
+def prereg_hash(payload: dict) -> str:
+    """sha256 over the canonical (sorted, compact) payload minus its own hash field."""
+    body = {k: v for k, v in payload.items() if k != "hash"}
+    return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def write_preregistration(payload: dict, path) -> Path:
+    """Write the payload with its computed sha256 `hash` field."""
+    p = dict(payload)
+    p["hash"] = prereg_hash(p)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(p, indent=2, sort_keys=True) + "\n")
+    return path
+
+
+def load_preregistration(path) -> dict:
+    """Load a pre-registration file and verify its sha256; a mismatch is a hard failure."""
+    payload = json.loads(Path(path).read_text())
+    if payload.get("hash") != prereg_hash(payload):
+        raise ValueError(f"pre-registration hash mismatch in {path}")
+    return payload
+
+
+class EvalLockError(RuntimeError):
+    """Raised on any attempted EVAL read before the pre-registered lock is released."""
+
+
+def assert_eval_unlocked(prereg) -> None:
+    """D-027 §7: EVAL is unread until the pre-registration says the lock is released."""
+    if not isinstance(prereg, dict) or not prereg.get("eval_lock_released"):
+        raise EvalLockError("EVAL locked: eval_lock_released is false — no EVAL read is permitted")
+
+
+def eval_read(load, prereg, *args, **kwargs):
+    """Guarded EVAL read: raises EvalLockError before `load` is ever called while the lock holds."""
+    assert_eval_unlocked(prereg)
+    return load(*args, **kwargs)
+
+
+def calib_stop(calib_net_edge_bps, fold: dict, *, floor_bps: float = MATERIALITY_FLOOR_BPS) -> dict:
+    """D-027 §7/§11 CALIB-failure stop flag: below floor OR a fold-ceiling failure kills the card."""
+    reasons = []
+    if not np.isfinite(float(calib_net_edge_bps)) or float(calib_net_edge_bps) <= float(floor_bps):
+        reasons.append(f"CALIB net edge {_fmt(calib_net_edge_bps)} bps <= materiality floor "
+                       f"{float(floor_bps):.1f}")
+    if not fold.get("fold_ceiling_ok"):
+        reasons.append(f"fold ceiling failed (share {_fmt(fold.get('max_fold_share'))}, "
+                       f"positive folds {fold.get('n_positive_folds')}/{fold.get('n_folds')})")
+    return {"stop": bool(reasons), "reasons": reasons}
+
+
 def main(argv=None) -> int:
-    """CLI: synthetic smoke (`L2_SMOKE=1 --out DIR`) or a real run (`--prepared ...`)."""
-    ap = argparse.ArgumentParser(description="WI-041 L2 overlay harness (D-024 §2)")
-    ap.add_argument("--question", required=True, help="overlay question name (report id)")
-    ap.add_argument("--out", default=None, help="report dir (smoke uses /tmp)")
+    """CLI: `--smoke` (synthetic, `reports/l2_harness_smoke/`) or a real run (`--prepared ...`)."""
+    ap = argparse.ArgumentParser(description="WI-041/065 L2 overlay harness (D-024 §2)")
+    ap.add_argument("--question", default=None, help="overlay question name (report id)")
+    ap.add_argument("--out", default=None, help="report dir (smoke defaults to reports/l2_harness_smoke)")
     ap.add_argument("--prepared", default=None, help="prepared parquet: p,ret,fold,date")
     ap.add_argument("--baseline", default="frozen_fib_wi035", help="frozen baseline name")
     ap.add_argument("--calib-end", default=CALIB_END)
     ap.add_argument("--eval-start", default=EVAL_START)
     ap.add_argument("--inert", action="store_true", help="smoke only: force thin mass")
+    ap.add_argument("--smoke", action="store_true", help="synthetic smoke run (no data/ read)")
     ap.add_argument("--seeds", type=int, default=N_PLACEBO_SEEDS)
     args = ap.parse_args(argv)
-    smoke = os.environ.get("L2_SMOKE", "").strip() == "1" or args.prepared is None
+    question = args.question or DEFAULT_SMOKE_Q
+    smoke = args.smoke or os.environ.get("L2_SMOKE", "").strip() == "1" or args.prepared is None
     if smoke:
-        fx = synthetic_fixture(args.question, inert=args.inert)
-        res = run_overlay(args.question, args.baseline, fx["probs"], fx["events"], fx["tau_grid"],
+        fx = synthetic_fixture(question, inert=args.inert)
+        res = run_overlay(question, args.baseline, fx["probs"], fx["events"], fx["tau_grid"],
                           fx["calib_mask"], fx["eval_mask"], n_seeds=args.seeds, smoke=True)
     else:
         prep = pd.read_parquet(args.prepared)
         dates = pd.to_datetime(prep["date"])
-        res = run_overlay(args.question, args.baseline, prep["p"].to_numpy("float64"), prep,
+        res = run_overlay(question, args.baseline, prep["p"].to_numpy("float64"), prep,
                           TAU_GRID, (dates < args.calib_end).to_numpy(),
                           (dates >= args.eval_start).to_numpy(), n_seeds=args.seeds)
-    report = write_report(res, Path(args.out or DEFAULT_SMOKE_DIR) / f"{args.question}.md")
+    out_dir = Path(args.out or (DEFAULT_SMOKE_DIR if smoke else REPORTS_DIR))
+    report = write_report(res, out_dir / f"{question}.md")
     print(f"[l2.harness] {res.name}: verdict={res.verdict} tau={_fmt(res.tau)} "
           f"calib={_fmt(res.calib_edge)} eval={_fmt(res.eval_edge)} z={_fmt(res.placebo_z, '{:+.2f}')}")
+    if smoke:   # mandatory artifacts, written beside the smoke report (never under data/)
+        pre = write_preregistration(preregistration_template(), out_dir / PREREG_NAME)
+        folds = write_fold_report(dict(res.fold_report), out_dir / "fold_report.json")
+        print(f"[l2.harness] artifacts -> {pre.name}, {folds.name} in {out_dir}")
     print(f"[l2.harness] {'smoke' if smoke else 'run'} report -> {report} | EXIT:0")
     return 0
 

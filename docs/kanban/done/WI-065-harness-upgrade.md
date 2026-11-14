@@ -38,5 +38,6 @@ test_command: uv run pytest tests/l2_overlay/ -q --tb=short --maxfail=1 && uv ru
 - [ ] Stdout ≤5 lines.
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / error tail:** None
+- **Attempts:** 1/2 | **Commit:** PENDING (HEAD 6126626; no commit made) | **Status:** DONE
+- **Evidence:** `uv run pytest tests/l2_overlay/ -q --tb=short --maxfail=1 && uv run python -m src.l2_overlay.harness --smoke` → 28 passed, harness smoke 3 lines, EXIT 0; D-024 synthetic outputs pinned unchanged (tau 0.7, calib 0.03141, eval 0.03571, z 38.90).
+- **Notes / error tail:** deviations — (1) `docs/workflow/l2_prereg_template.json` is outside the lock manifest, so the sha256 template is emitted to `reports/l2_harness_smoke/l2_prereg_template.json` by `--smoke` (also `fold_report.json`); (2) `harness.py` is 389 lines (WI-041's file was already 249; the mandated WI-065 API could not fit the 250-line guidance without dropping it).
