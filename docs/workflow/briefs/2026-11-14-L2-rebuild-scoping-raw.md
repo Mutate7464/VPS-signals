@@ -15,12 +15,15 @@ families, meta-label layer, regression read-out, extended feature panel).
 
 ## PRODUCT OBJECTIVE (objective function — optimise THIS, not AUC)
 
-Manual screener for a single human operator: target ~10% gain per trade at
-~200 trades/year, judged on **expected value after costs** (25 bps cost floor per
-side inside `r_frozen`). This aspiration ranks and shapes design; it is NOT a gate
-on any individual sprint step — each step is judged by its own tier gate
-(L1 predictive-only; L2 economic). No automated order execution; Discord-private,
-single-user; IBKR Gateway stays manual on the operator's Mac.
+Manual screener for a single human operator: target **~10% gain per trade NET of
+costs** (25 bps per-side cost floor inside `r_frozen`; gross targets repeat the
+"economically nil ADOPT" trap at the goal level) at ~200 trades/year — the
+~10%/trade figure is the admin's aspiration; measured library edges are currently
+≤1 bp net, so the plan must state the magnitude path honestly (the aspiration
+shapes and ranks design; it is NOT a gate on any individual sprint step — each
+step is judged by its own tier gate: L1 predictive-only; L2 economic). No
+automated order execution; Discord-private, single-user; IBKR Gateway stays
+manual on the operator's Mac.
 
 ## CURRENT CONDITIONS (verified 2026-11-14)
 
@@ -47,12 +50,14 @@ single-user; IBKR Gateway stays manual on the operator's Mac.
   run** — a separate future gate); regression read-out path
   (`cell_cv(regression=True)`, float32 labels, OOF `fit_regressor`, WI-060).
 - **L2 inputs ruling (admin 2026-11-14):** L2 models consume the **FULL frozen L1
-  manifest** (all families, horizons, learners — the 1,015-row superset) plus the
+  manifest — the 1,015-row consolidated superset** (`data/models/wi040/manifest.parquet`
+  as consolidated by WI-059b; the 9,745-row WI-040 core is superseded lineage) plus the
   **full causal feature panel + regime metafeatures** via `--infer` — not just the
   top cells. More inputs = more correlation signal for the L2 layer, provided the
   L2 fit stays CALIB-only and regularised; redundancy across correlated cells is
   handled by regularisation/stack pruning inside the harness, never by silently
-  dropping library inputs.
+  dropping library inputs. This must be EARNED in the plan (regularisation /
+  pruning design), not asserted.
 - `vol_expand` label is BACKWARD-looking — quarantined (D-026 ruling); forward use
   only via `vol_expand_fwd`. The WI-058 cont top-of-date indicator artifact is
   retained for later use per admin (flagged not-continuous).
@@ -105,6 +110,12 @@ vs short bottom-decile — cost-amortizing);
   library-only — a small PM-owned driver WI is required first (wire primary swing
   sides + outcomes from the frozen fib baseline, features from the `--infer`
   panel, run `meta_oof` on both markets; ~0.2–0.5 core-h).
+
+- **Meta-label freeze clarification (admin 2026-11-14):** the full-universe
+  meta-label fit is **NOT an L1 refit** — it consumes frozen library OOF/manifest
+  predictions and fits only the small secondary meta-model (ratified WI-062
+  machinery). It is input-prep, same standing as `--infer`; the L1 freeze is
+  intact.
 
 ### Old-artifact relevance (admin question, 2026-11-14)
 - Older runs/models remain relevant as **evidence, not as verdicts**: gate records,
