@@ -142,11 +142,13 @@ def compute_mi(train: pd.DataFrame, feature_cols: list[str], max_rows: int = MAX
 def compute_vif_pruning(
     train: pd.DataFrame, feature_cols: list[str], mean_mi: dict,
     max_rows: int = MAX_VIF_ROWS, logger: logging.Logger | None = None,
+    vif_threshold: float = VIF_THRESHOLD,
 ) -> tuple[list[str], list[dict]]:
     """Iterative VIF pruning, dropping the lowest-MI feature of each collinear pair.
 
     Computes the correlation matrix ONCE from a ≤ max_rows subsample, then iterates
     on the matrix in-memory (deleting rows/cols of over-threshold features).
+    `vif_threshold` defaults to the Sprint-3 value; WI-016 passes the relaxed 8.0.
     """
     remaining = list(feature_cols)
     dropped: list[dict] = []
@@ -201,7 +203,7 @@ def compute_vif_pruning(
         except np.linalg.LinAlgError:
             inv = np.linalg.pinv(corr_sub)
         vif = np.diag(inv).astype("float64")
-        over = [(i_old, vif[i_old]) for i_old in range(n) if np.isfinite(vif[i_old]) and vif[i_old] > VIF_THRESHOLD]
+        over = [(i_old, vif[i_old]) for i_old in range(n) if np.isfinite(vif[i_old]) and vif[i_old] > vif_threshold]
         if not over:
             break
         # Among over-threshold features, drop the lowest mean-MI

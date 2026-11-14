@@ -1,0 +1,105 @@
+{
+  "label": "wi033_CAD",
+  "folds": [
+    {
+      "fold": 0,
+      "n_fit": 63276,
+      "n_calib": 18344,
+      "n_val": 28124,
+      "class_counts": {
+        "0": 1411,
+        "1": 15542,
+        "2": 11171
+      },
+      "calibration": [
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "best_iteration": 247,
+      "max_train_date": "2019-09-20",
+      "min_val_date": "2019-12-10",
+      "wall_sec": 7.8
+    },
+    {
+      "fold": 1,
+      "n_fit": 86160,
+      "n_calib": 23664,
+      "n_val": 30876,
+      "class_counts": {
+        "0": 983,
+        "1": 14927,
+        "2": 14966
+      },
+      "calibration": [
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "best_iteration": 187,
+      "max_train_date": "2021-02-01",
+      "min_val_date": "2021-04-22",
+      "wall_sec": 8.2
+    },
+    {
+      "fold": 2,
+      "n_fit": 108472,
+      "n_calib": 31444,
+      "n_val": 33300,
+      "class_counts": {
+        "0": 1284,
+        "1": 17038,
+        "2": 14978
+      },
+      "calibration": [
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "best_iteration": 226,
+      "max_train_date": "2022-06-14",
+      "min_val_date": "2022-09-02",
+      "wall_sec": 11.5
+    },
+    {
+      "fold": 3,
+      "n_fit": 131904,
+      "n_calib": 40652,
+      "n_val": 34684,
+      "class_counts": {
+        "0": 1083,
+        "1": 18984,
+        "2": 14617
+      },
+      "calibration": [
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "best_iteration": 285,
+      "max_train_date": "2023-10-25",
+      "min_val_date": "2024-01-16",
+      "wall_sec": 17.1
+    },
+    {
+      "fold": 4,
+      "n_fit": 157612,
+      "n_calib": 49084,
+      "n_val": 34780,
+      "class_counts": {
+        "0": 1151,
+        "1": 20435,
+        "2": 13194
+      },
+      "calibration": [
+        "isotonic",
+        "isotonic",
+        "isotonic"
+      ],
+      "best_iteration": 356,
+      "max_train_date": "2025-03-07",
+      "min_val_date": "2025-05-28",
+      "wall_sec": 25.7
+    }
+  ]
+}

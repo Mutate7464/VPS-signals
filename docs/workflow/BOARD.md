@@ -1,34 +1,41 @@
-# BOARD.md — Kanban (single source for "what now / what next")
+# BOARD.md — flat queue (single source for "what now / what next")
 
-> Rules & policies: `WORKFLOW.md` §2. Agents read this board at task start and update rows they touch. Admin orders READY top-down; the top row is "do next". Expedite rows (⚡) jump the queue.
+> Rules: `WORKFLOW.md` §2. **Rows are pointer-only:** one line per row — title, gate, verdict tag, evidence path. Verdict narratives, test counts and ratification quotes live in the WI card and the cited report; `PM_LOG.md` is the canonical decision record.
+> Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/` (cards hold detail); archived cards: `docs/archive/wi/` (indexed in `docs/execution/WI_AND_RUN_LEDGER.md`).
+> Full pre-lean board (2026-11-14, all per-WI narratives preserved): `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md`; older: `docs/workflow/archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-10-23 (v2 board)
+**Last updated:** 2026-11-14 (PM cycle 36) — RATIFICATION: WI-059b (cont families on regression read-out, min IC +0.6475 / +0.1665), WI-060 (move_occur 0.6033 / move_dir_up 0.6407), WI-061 (method variant), WI-062 (meta-label machinery) all RATIFIED (admin in chat, Layer 1). D-026 Phase 1 DONE + RATIFIED: L0 R12 (L0-5 survives; `disp_entropy_39` in), WI-058 bin (min AUC 0.8226, library best), WI-059a (weak), WI-048d/e/f (`vol_expand` quarantine upheld). **Cleanup (admin 2026-11-14):** WI-034 archived; WI-048 umbrella draft deleted; WI-049 folded into L2 rebuild scope; **L1 library FROZEN for the L2 rebuild** — larger-variant lower-ρ family PARKED post-rebuild. Locks EMPTY; `ready/` EMPTY; nothing in `in_progress/`. Next: L2 rebuild scoping brief.
 
 ## ACTIVE
+### D-026 SPRINT (L0/L1 extension — T1/T2; plan `docs/plans/26-W46-L0L1-extension-review-v2.md`, design `docs/workflow/designs/D-026-l0l1-extension.md`; order Phase 0 → L0 → L1 → L1.5)
+- Integrity ruling (PM-verified 2026-11-13): `vol_expand` label is BACKWARD-looking (`src/swing_bsh/targets_ext.py:111-133`) — survivors quarantined; forward use only via `vol_expand_fwd` (WI-051). `close`/`atr` levels confirmed excluded from feature lists (PASS).
+- [DONE] WI-059b | L1-2/1-1 continuous families on the regression read-out — PM-run full-universe | T2 | **PM-verified 2026-11-14** — `cell_cv(regression=True)` path (float32 labels, `model.predict` OOF, `fit_regressor`, no calibration; WI-044 wrapper forwards + guards); xsec_vol_rank_cont: 24 cells, 0 truncated, 24/24 BH survivors, best min cross-market rank-IC **+0.6475** (xgboost/h55; CAD +0.7135) — supersedes the quarantined binarized numbers; mfe_mae_cont: 24 cells, 24/24 survivors, best min IC **+0.1665** (xgboost/h55) — moderate payoff-ratio signal; reports `reports/l1_ext_cont/` (quarantined sidecar retained as `*_quarantined.json`), 240 pickles; manifest superset **1015 rows** via consolidate; cont p from the date-block t-stat (per-date ICs, plan §7; p underflows to 0 at ~4k dates), placebo skipped for cont by design; **RATIFIED (admin in chat 2026-11-14, Layer 1)**
+- [DONE] WI-060 | L1-3 `move_occur` + `move_dir_up` grids — PM-run full-universe | T2 | **PM-verified 2026-11-14** — chain EXIT:0; move_occur: 24 cells, 0 truncated, 24/24 BH-FDR survivors (placebo 24), best min cross-market AUC **0.6033** (xgboost/h5; min IC +0.1782), 0.54 core-h; move_dir_up: 24 cells, 0 truncated, 24/24 survivors (placebo 24), best min cross-market AUC **0.6407** (xgboost/h5; min IC +0.2230), 0.50 core-h — conditional direction B is better than chance (vs `up`'s 0.5038 unconditional), consistent with the plan's decomposition hypothesis; reports `reports/t2_grid_move{occur,dirup}_summary.md`, 240 pickles; **RATIFIED (admin in chat 2026-11-14, Layer 1)**; note: the A·B fixed-product screener score is a Phase-3/L2 read-out, not part of this verdict
+- [DONE] WI-061 | L1-4 average-uniqueness weighting (training variant: code+tests, `sample_weight=` opt-in, no cells by design per card m=12) | T2 | **RATIFIED (admin in chat 2026-11-14)** — card `done/`; a weighted-variant driver pass is NOT part of WI-061
+- [DONE] WI-050 | Phase 0 precision@k / top-decile diagnostic harness | N/A | card `docs/archive/wi/`
+- [DONE] WI-051 | forward `vol_expand_fwd` label + `vol_expand` quarantine note | N/A | card `docs/archive/wi/`
+- [DONE] WI-052 | L0-1 swing-structure history block | T1 | card `docs/archive/wi/`
+- [DONE] WI-053…057 | L0-2…L0-6 blocks — R12 verdict: L0-5 survives (`disp_entropy_39`), L0-2/L0-4 absorbed (Q1), L0-1/L0-3/L0-6 0/12; 21 of 27 block cols flagged not-kept | T1 | `reports/l0_r12_v2/l0_r12_consolidated.md`; cards `docs/archive/wi/`
+- [DONE] WI-058 | L1-1 xsec vol-rank grids — bin 24/24 survivors RATIFIED L1 (library best, min AUC 0.8226; manifest superset 535 rows); cont QUARANTINED (int8-cast top-of-date indicator retained under predictive license, admin "not unuseful for later use"; proper re-run = WI-059b) | T2 | `reports/t2_grid_xsecvolrankbin_summary.md`, `reports/t2_grid_xsecvolrankcont_summary.md`, `reports/l1_ext/`; card `done/`
+- [DONE] WI-059a | L1-2 `mfe_mae_bin` grid — 24/24 survivors RATIFIED L1 (weak lift, min AUC 0.5515) | T2 | `reports/t2_grid_mfemaebin_summary.md`; card `done/`
+- [DONE] WI-062 | L1.5 meta-label (swing-side primary) + permuted-label leakage test — not-stacking per D-026 | T2 | **RATIFIED (admin in chat 2026-11-14, Layer 1)** — machinery accepted; full-universe meta-label run is a separate future gate; card `done/`
 
-| WI | Title | Goal | Column | Since | Blocker / owner | Evidence |
-|---|---|---|---|---|---|---|
-| WI-002 | Diagnose & fix model signal (Gate 4 FAIL: all 4 USD targets ≈ random) | G-001 | **EXECUTING** — admin forked 2026-10-23: proceed E3–E5 with richer features (range/fib), relaxed VIF/MI, 8 h budget. New plan: `docs/plans/2026-10-23-WI-002-e3-e5-features-alignment-floor.md`. Key insight: fits cost ~15 min total; feature computation runs twice (~8 h) — plan kills the duplicate + vectorizes Hurst. | 2026-10-23 | Build to execute plan Steps 1–8 after admin go | `reports/diag_D002_e2.md` (E2 NULL verdict), new plan file |
-| WI-003 | Ingest Phase 1 validation runs + CAD download | G-002 | **DONE** | 2026-10-22 | 546 USD + 350 CAD synced (~97-98% coverage); verifier PASS (824/896 ok, leakage PASS, 72 quarantined); audit CSVs are failure-log style, true failure rate ≈1-2.5% from coverage | `reports/sprint1_ingestion_audit.md` (regenerated 2026-10-22) |
+### D-025 SPRINT (tiered workflow T1→T2→T3, admin approved 2026-11-10) — complete; WI-049 folded into L2 rebuild scope
+- [FOLDED] WI-049 | mechanism survey doc (depends WI-045, done) | T3 | folded into the L2 rebuild brief as its framing section (admin 2026-11-14) — do NOT dispatch standalone; card `docs/kanban/draft/WI-049-trade-mechanism-survey.md` retained as source material
+- **L1 FREEZE (admin 2026-11-14):** the L1 library is FROZEN for the L2 rebuild — the larger-variant family (lower ρ-prune threshold, parameter-max; re-admission population = the 21 not-kept L0 block cols) is PARKED as a post-rebuild WI, dispatch only after the L2 read-out shows parameter count is the binding constraint.
+- [DONE] WI-045…048f | tier map · edge-decay probe · feature-gap inventory · label builders + density probe · grids `up`/`high_low`/`vol_expand` + cross-family FDR consolidation — all PM-verified; survivors RATIFIED into the L1 library (`vol_expand` quarantined per D-026 ruling 2; re-integration carried by `vol_expand_fwd` + the admin's larger-scale lower-threshold variant) | T2 | `reports/t2_grid_up_summary.md`, `reports/t2_grid_highlow_summary.md`, `reports/t2_grid_volexpand_summary.md`, `reports/t2_targets_ext_summary.md`; cards `docs/archive/wi/`
 
-## DONE
-
-| WI | Title | Goal | Done | Evidence |
-|---|---|---|---|---|
-| WI-001 | Build & run pipeline v1 end-to-end (Sprints 1–5) | G-001 | 2026-10-22 ⚠ QA exception | Gate 4 FAILED; PDFs = structural demo only (`reports/`, `screener_*_20261021.pdf`) |
-| WI-000 | Adopt goal→design→plan→execute→QA workflow framework | G-003 | 2026-10-22 | `workflow/WORKFLOW.md`, `RISKS.md` |
-| WI-007 | Two-stream docs + human guide + guide/scribe agents | G-001 | DONE | `docs/human/GUIDE.md`; agents verified loaded (`debug agents`) |
-| WI-006 | Enforce blocking QA gates in agent workflow | G-003 | DONE | reviewer prompt gate check + WORKFLOW.md §1 rule 4 |
+### CLOSED
+- D-024 batch (WI-032…044) — all DONE + RATIFIED 2026-11-09/10: L2 reruns closed per D-024 pre-committed closure (REJECT/INERT permanent; 20 ADOPTs statistically real, economically nil — NO deployment); L1 library consolidated (WI-040 manifest 9,745 rows) | `reports/l2/rerun_modern.md`, `reports/l2/rerun_legacy.md`, `reports/wi040_library_manifest.md`; cards `docs/archive/wi/`
+- D-023 and earlier (WI-001…031) — closed; cards `docs/archive/wi/`, briefs `docs/human/briefings/`, per-WI one-liners in this file's git history
+- [DONE] WI-034 | binary-decompose probe | DEFERRED by admin 2026-11-09 (superseded by WI-035/036; question re-answered by WI-060's move decomposition) — card archived 2026-11-14 to `docs/archive/wi/`
+- [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## BACKLOG
-
-| WI | Title | Goal | Size | Gate |
-|---|---|---|---|---|
-| WI-004 | Ingest Phase 2 pacing restore (aggressive targets) | G-002 | S | deferred to next week by admin (2026-10-22); gate 1/3 clean runs |
-| WI-008 | Quarantine triage (72 tickers: 70 CB-01 extreme returns, 2 CB-02 short history) + BRK.B/ELE empty-response fix | G-002 | S/M | before next training run — **triage analysis DONE 2026-10-23**: 2 rows already clean (stale), ~44 corp-action level-step artifacts, ~26 flagged genuine-vol (several actually restructuring artifacts — needs per-case verification); BRK.B resolved (downloads as `BRK B`, in universe); ELE missing — needs Mac re-download. Execution plan pending admin decision. | `reports/wi008_quarantine_triage.md` |
-| WI-005 | Post-MVP: EP-06 index scraper · EP-07 Telegram digest · EP-08 regime-conditional tuning | G-001 | L — decompose | model signal restored (WI-002) |
+- [BACKLOG] WI-005 | Post-MVP: EP-06 index scraper, EP-07 Telegram digest, EP-08 regime tuning | superseded by `docs/governance/PHASE2_HANDOVER_RUNBOOK.md`
 
 ## Column policies
-BACKLOG → unprioritized ideas, size-tagged · READY → meets Definition of Ready, admin-ordered · DESIGN/PLAN → Plan agent working (WIP 2) · EXECUTING → Build active (WIP 1) · QA/GATE → reviewer + human gate · DONE → DoD met · BLOCKED → named owner + reason; aging >7d flagged weekly.
-
-**Risks:** `RISKS.md` (reviewed weekly). **Retros:** `retros/YYYY-WW.md`.
+- `[TODO]` = in `ready/`, meets DoR, admin-ordered. `[WIP]` = in `in_progress/`, locks registered, WIP limit 1.
+- `[BLOCKED]` = in `blocked/`, two-strike tripped, owner and 1-line reason on the row.
+- `[DONE]` = QA verdict and gate recorded. Rows are pointer-only (WORKFLOW §2): narrative lives in the card + cited report; PM_LOG is canonical.
+- Risks: `RISKS.md`. Data facts: `DATA_CONTRACT.md`. Decisions: `designs/`. Gate and cycle record: `PM_LOG.md` (newest 2 cycles).

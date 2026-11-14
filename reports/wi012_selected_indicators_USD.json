@@ -1,0 +1,29 @@
+{
+  "market": "USD",
+  "rule": {
+    "assoc_t_floor": 2.0,
+    "cluster_abs_corr": 0.9,
+    "max_selected": 6,
+    "already_represented": {
+      "kama_er_20": "er_20 \u2014 Step 2 uses the identical KAMA efficiency ratio (window 20)",
+      "atr_pct_20": "atr_pct_20 \u2014 identical ATR%/close primitive (window 20)",
+      "amihud_20": "amihud_20 \u2014 identical E5 Amihud illiquidity (window 20)"
+    }
+  },
+  "selected_indicators": [
+    "pct_from_high_f102",
+    "fib_dist_f102",
+    "di_spread_100",
+    "vwap_zscore_50",
+    "vwap_zscore_100",
+    "macd_norm_hist"
+  ],
+  "best_state": {
+    "pct_from_high_f102": "ch52_low",
+    "fib_dist_f102": "ch52_low",
+    "di_spread_100": "ch52_low",
+    "vwap_zscore_50": "trend_up",
+    "vwap_zscore_100": "trend_up",
+    "macd_norm_hist": "trend_down"
+  }
+}

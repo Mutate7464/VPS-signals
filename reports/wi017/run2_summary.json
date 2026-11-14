@@ -1,0 +1,166 @@
+{
+  "market": "USD",
+  "generated_utc": "2026-10-31T17:15:59Z",
+  "symbols_written": 593,
+  "definitions": {
+    "first_touch": "+1 up10 touched before dn10 in [t+1..t+w]; -1 dn first; 0 neither",
+    "days_to_up/dn": "trading days from t to FIRST barrier touch (NaN never)",
+    "rung": "(fwd peak - fwd bottom)/close_t",
+    "velocity": "signed rung / |bars between peak day and bottom day| (min 1); + when bottom precedes peak (bottom-to-peak per admin spec)"
+  },
+  "per_window": {
+    "3": {
+      "n_rows": 2338294,
+      "share_up_first": 0.041257,
+      "share_dn_first": 0.036819,
+      "share_neither": 0.921925,
+      "mean_rung": 0.076518,
+      "mean_velocity": -0.011994,
+      "mean_abs_velocity": 0.059332
+    },
+    "5": {
+      "n_rows": 2337108,
+      "share_up_first": 0.074553,
+      "share_dn_first": 0.066711,
+      "share_neither": 0.858736,
+      "mean_rung": 0.107261,
+      "mean_velocity": -0.017909,
+      "mean_abs_velocity": 0.060443
+    },
+    "6": {
+      "n_rows": 2336515,
+      "share_up_first": 0.090972,
+      "share_dn_first": 0.080955,
+      "share_neither": 0.828073,
+      "mean_rung": 0.121258,
+      "mean_velocity": -0.021153,
+      "mean_abs_velocity": 0.062104
+    },
+    "8": {
+      "n_rows": 2335329,
+      "share_up_first": 0.122474,
+      "share_dn_first": 0.107726,
+      "share_neither": 0.7698,
+      "mean_rung": 0.147132,
+      "mean_velocity": -0.028867,
+      "mean_abs_velocity": 0.066424
+    },
+    "9": {
+      "n_rows": 2334736,
+      "share_up_first": 0.137643,
+      "share_dn_first": 0.120283,
+      "share_neither": 0.742074,
+      "mean_rung": 0.159239,
+      "mean_velocity": -0.030554,
+      "mean_abs_velocity": 0.066615
+    },
+    "13": {
+      "n_rows": 2332364,
+      "share_up_first": 0.192633,
+      "share_dn_first": 0.16426,
+      "share_neither": 0.643106,
+      "mean_rung": 0.206574,
+      "mean_velocity": -0.041114,
+      "mean_abs_velocity": 0.067457
+    },
+    "15": {
+      "n_rows": 2331178,
+      "share_up_first": 0.216889,
+      "share_dn_first": 0.183179,
+      "share_neither": 0.599931,
+      "mean_rung": 0.229532,
+      "mean_velocity": -0.038951,
+      "mean_abs_velocity": 0.065253
+    },
+    "21": {
+      "n_rows": 2327620,
+      "share_up_first": 0.279571,
+      "share_dn_first": 0.230423,
+      "share_neither": 0.490006,
+      "mean_rung": 0.291956,
+      "mean_velocity": -0.038816,
+      "mean_abs_velocity": 0.065559
+    },
+    "24": {
+      "n_rows": 2325841,
+      "share_up_first": 0.305866,
+      "share_dn_first": 0.249584,
+      "share_neither": 0.444551,
+      "mean_rung": 0.320514,
+      "mean_velocity": -0.039125,
+      "mean_abs_velocity": 0.066182
+    },
+    "34": {
+      "n_rows": 2319911,
+      "share_up_first": 0.375617,
+      "share_dn_first": 0.29708,
+      "share_neither": 0.327304,
+      "mean_rung": 0.41341,
+      "mean_velocity": -0.040021,
+      "mean_abs_velocity": 0.069113
+    },
+    "39": {
+      "n_rows": 2316946,
+      "share_up_first": 0.402747,
+      "share_dn_first": 0.314366,
+      "share_neither": 0.282886,
+      "mean_rung": 0.458774,
+      "mean_velocity": -0.031503,
+      "mean_abs_velocity": 0.062802
+    },
+    "55": {
+      "n_rows": 2307458,
+      "share_up_first": 0.464796,
+      "share_dn_first": 0.352548,
+      "share_neither": 0.182656,
+      "mean_rung": 0.601305,
+      "mean_velocity": -0.015424,
+      "mean_abs_velocity": 0.053912
+    },
+    "63": {
+      "n_rows": 2302714,
+      "share_up_first": 0.486136,
+      "share_dn_first": 0.365437,
+      "share_neither": 0.148427,
+      "mean_rung": 0.676408,
+      "mean_velocity": -0.013602,
+      "mean_abs_velocity": 0.056637
+    },
+    "89": {
+      "n_rows": 2287307,
+      "share_up_first": 0.528239,
+      "share_dn_first": 0.39077,
+      "share_neither": 0.080991,
+      "mean_rung": 0.957233,
+      "mean_velocity": -0.014033,
+      "mean_abs_velocity": 0.059017
+    },
+    "102": {
+      "n_rows": 2279611,
+      "share_up_first": 0.540894,
+      "share_dn_first": 0.398044,
+      "share_neither": 0.061061,
+      "mean_rung": 1.104668,
+      "mean_velocity": -0.01364,
+      "mean_abs_velocity": 0.059631
+    },
+    "144": {
+      "n_rows": 2254747,
+      "share_up_first": 0.564204,
+      "share_dn_first": 0.410413,
+      "share_neither": 0.025383,
+      "mean_rung": 1.576062,
+      "mean_velocity": -0.006361,
+      "mean_abs_velocity": 0.058256
+    },
+    "233": {
+      "n_rows": 2202059,
+      "share_up_first": 0.578031,
+      "share_dn_first": 0.416499,
+      "share_neither": 0.005469,
+      "mean_rung": 2.231265,
+      "mean_velocity": -4e-05,
+      "mean_abs_velocity": 0.056473
+    }
+  }
+}

@@ -21,6 +21,7 @@ Exit code 0 = Gate 1 verified; 1 = CB-03 hard halt (data stale).
 
 from __future__ import annotations
 
+import csv
 import datetime as dt
 import hashlib
 import json
@@ -39,6 +40,7 @@ CONFIG_DIR = BASE_DIR / "config"
 RAW_DIR = BASE_DIR / "data" / "raw_ohlcv"
 FIXTURE_DIR = BASE_DIR / "data" / "raw_ohlcv_test"
 MANIFEST_PATH = BASE_DIR / "data" / "sync_manifest.json"
+DEAD_LETTER_PATH = BASE_DIR / "data" / "dead_letter_tickers.csv"
 REPORT_PATH = BASE_DIR / "reports" / "sprint1_ingestion_audit.md"
 
 WATCHLIST_COLUMNS = ["symbol", "sec_type", "exchange", "primary_exchange", "currency"]
@@ -54,6 +56,9 @@ CAD_FIXTURE = ["RY", "TD", "SHOP", "ENB", "CNQ"]
 N_BARS = 300
 CB02_MIN_BARS = 125
 CB03_MAX_LAG_TRADING_DAYS = 3
+# CB-01: single-day return bounds that mark an unverified corporate action.
+CB01_UPPER_RETURN = 1.0    # > +100%
+CB01_LOWER_RETURN = -0.5   # < -50%
 
 
 # --------------------------------------------------------------------------- #
@@ -117,6 +122,23 @@ def generate_fixture() -> int:
 # --------------------------------------------------------------------------- #
 # Parquet audit
 # --------------------------------------------------------------------------- #
+def cb01_spike_indices(df: pd.DataFrame) -> np.ndarray:
+    """Index positions where CB-01 trips (>+100% or <-50% single-day return).
+
+    Single source of truth for the CB-01 threshold; read-only (no state writes).
+    """
+    if len(df) < 2 or "close" not in df.columns:
+        return np.array([], dtype=int)
+    ret = df["close"].astype("float64").pct_change()
+    mask = (ret > CB01_UPPER_RETURN) | (ret < CB01_LOWER_RETURN)
+    return np.where(mask.to_numpy())[0]
+
+
+def cb01_spike_flag(df: pd.DataFrame) -> bool:
+    """CB-01 test: does `df` contain a single-day return > +100% or < -50%?"""
+    return bool(len(cb01_spike_indices(df)))
+
+
 def audit_parquet_dir(root: Path) -> tuple[list[dict], list[pd.Timestamp]]:
     files = sorted(root.rglob("*.parquet"))
     rows: list[dict] = []
@@ -147,10 +169,7 @@ def audit_parquet_dir(root: Path) -> tuple[list[dict], list[pd.Timestamp]]:
         non_f32 = [c for c in FLOAT_COLUMNS if c in df.columns and df[c].dtype != np.float32]
 
         # CB-01: single-day return > +100% or < -50%
-        spike = False
-        if len(df) >= 2:
-            ret = df["close"].astype("float64").pct_change()
-            spike = bool(((ret > 1.0) | (ret < -0.5)).any())
+        spike = cb01_spike_flag(df)
 
         reasons: list[str] = []
         if len(df) < CB02_MIN_BARS:  # CB-02
@@ -171,6 +190,77 @@ def audit_parquet_dir(root: Path) -> tuple[list[dict], list[pd.Timestamp]]:
         rows.append(entry)
 
     return rows, max_dates
+
+
+# --------------------------------------------------------------------------- #
+# CB-01 CLEAN_NOW re-check (read-only)
+# --------------------------------------------------------------------------- #
+def read_dead_letter_rows(path: Path | None = None) -> list[dict]:
+    """Read the dead-letter rows for the CLEAN_NOW re-check.
+
+    Strictly read-only: the CSV is opened for reading only and is never
+    rewritten, re-sorted, or appended to.
+    """
+    p = Path(path) if path is not None else DEAD_LETTER_PATH
+    if not p.exists():
+        return []
+    with open(p, newline="") as f:
+        return [dict(row) for row in csv.DictReader(f)]
+
+
+def cb01_clean_now_check(
+    dead_letter_path: Path | None = None,
+    raw_dir: Path | None = None,
+) -> list[dict]:
+    """Re-test every dead-letter ticker against CB-01 using on-disk parquet only.
+
+    A row whose parquet no longer trips CB-01 is a CLEAN_NOW *candidate*: the
+    quarantine reason may have been resolved upstream. This function is isolated
+    from the mutation path -- it never calls `quarantine_ticker()` and never
+    writes `dead_letter_tickers.csv` or any quarantine state.
+
+    Returns one entry per dead-letter row:
+      - status `CLEAN_NOW`  -> no CB-01 spike found on disk (candidate)
+      - status `SPIKE`      -> CB-01 still trips; keep quarantined
+      - status `NO_FILE`    -> no parquet on disk (owner action)
+      - status `READ_ERROR` -> parquet unreadable (owner action)
+    """
+    p = Path(dead_letter_path) if dead_letter_path is not None else DEAD_LETTER_PATH
+    root = Path(raw_dir) if raw_dir is not None else RAW_DIR
+
+    results: list[dict] = []
+    for row in read_dead_letter_rows(p):
+        symbol = (row.get("symbol") or "").strip()
+        market = (row.get("market") or "").strip()
+        entry: dict = {
+            "symbol": symbol,
+            "market": market,
+            "reason": (row.get("reason") or "").strip(),
+            "clean_now": False,
+        }
+
+        parquet_path = root / f"market={market}" / f"symbol={symbol}.parquet"
+        if not parquet_path.exists():
+            entry["status"] = "NO_FILE"
+            results.append(entry)
+            continue
+
+        try:
+            # Bounded column read: this check needs the close series only.
+            df = pd.read_parquet(parquet_path, columns=["date", "close"])
+        except Exception as exc:  # unreadable / corrupt parquet -> owner action
+            entry["status"] = "READ_ERROR"
+            entry["detail"] = str(exc)
+            results.append(entry)
+            continue
+
+        df = df.sort_values("date").reset_index(drop=True)
+        spike = cb01_spike_flag(df)
+        entry["status"] = "SPIKE" if spike else "CLEAN_NOW"
+        entry["clean_now"] = not spike
+        results.append(entry)
+
+    return results
 
 
 def check_manifest() -> dict:

@@ -1,0 +1,520 @@
+{
+  "files": {
+    "IBKRDownload/OldList/api-exported-logs.txt": 10404
+  },
+  "lines_parsed": 10404,
+  "lines_unparsed": 1227,
+  "distinct_templates": 2675,
+  "errors_flagged": 504,
+  "noise_flagged": 19,
+  "error_codes": {
+    "200": 14,
+    "0": 3,
+    "162": 485,
+    "366": 2
+  },
+  "errors_tail": [
+    {
+      "ts": "22:23:12:455",
+      "code": "162",
+      "msg": "4;2;473;162;Historical Market Data Service error message:API historical data query cancelled: 473;]"
+    },
+    {
+      "ts": "22:23:32:946",
+      "code": "162",
+      "msg": "4;2;474;162;Historical Market Data Service error message:API historical data query cancelled: 474;]"
+    },
+    {
+      "ts": "22:23:39:947",
+      "code": "162",
+      "msg": "4;2;475;162;Historical Market Data Service error message:API historical data query cancelled: 475;]"
+    },
+    {
+      "ts": "22:23:40:409",
+      "code": "162",
+      "msg": "4;2;476;162;Historical Market Data Service error message:API historical data query cancelled: 476;]"
+    },
+    {
+      "ts": "22:23:44:400",
+      "code": "162",
+      "msg": "4;2;477;162;Historical Market Data Service error message:API historical data query cancelled: 477;]"
+    },
+    {
+      "ts": "22:23:50:981",
+      "code": "162",
+      "msg": "4;2;478;162;Historical Market Data Service error message:API historical data query cancelled: 478;]"
+    },
+    {
+      "ts": "22:23:51:110",
+      "code": "162",
+      "msg": "4;2;479;162;Historical Market Data Service error message:API historical data query cancelled: 479;]"
+    },
+    {
+      "ts": "22:23:55:098",
+      "code": "162",
+      "msg": "4;2;480;162;Historical Market Data Service error message:API historical data query cancelled: 480;]"
+    },
+    {
+      "ts": "22:23:57:187",
+      "code": "162",
+      "msg": "4;2;481;162;Historical Market Data Service error message:API historical data query cancelled: 481;]"
+    },
+    {
+      "ts": "22:23:57:458",
+      "code": "162",
+      "msg": "4;2;482;162;Historical Market Data Service error message:API historical data query cancelled: 482;]"
+    },
+    {
+      "ts": "22:23:57:735",
+      "code": "162",
+      "msg": "4;2;483;162;Historical Market Data Service error message:API historical data query cancelled: 483;]"
+    },
+    {
+      "ts": "22:24:17:946",
+      "code": "162",
+      "msg": "4;2;484;162;Historical Market Data Service error message:API historical data query cancelled: 484;]"
+    },
+    {
+      "ts": "22:24:24:948",
+      "code": "162",
+      "msg": "4;2;485;162;Historical Market Data Service error message:API historical data query cancelled: 485;]"
+    },
+    {
+      "ts": "22:24:25:416",
+      "code": "162",
+      "msg": "4;2;486;162;Historical Market Data Service error message:API historical data query cancelled: 486;]"
+    },
+    {
+      "ts": "22:24:29:402",
+      "code": "162",
+      "msg": "4;2;487;162;Historical Market Data Service error message:API historical data query cancelled: 487;]"
+    },
+    {
+      "ts": "22:24:35:983",
+      "code": "162",
+      "msg": "4;2;488;162;Historical Market Data Service error message:API historical data query cancelled: 488;]"
+    },
+    {
+      "ts": "22:24:36:111",
+      "code": "162",
+      "msg": "4;2;489;162;Historical Market Data Service error message:API historical data query cancelled: 489;]"
+    },
+    {
+      "ts": "22:24:40:095",
+      "code": "162",
+      "msg": "4;2;490;162;Historical Market Data Service error message:API historical data query cancelled: 490;]"
+    },
+    {
+      "ts": "22:24:42:185",
+      "code": "162",
+      "msg": "4;2;491;162;Historical Market Data Service error message:API historical data query cancelled: 491;]"
+    },
+    {
+      "ts": "22:24:42:459",
+      "code": "162",
+      "msg": "4;2;492;162;Historical Market Data Service error message:API historical data query cancelled: 492;]"
+    },
+    {
+      "ts": "22:24:42:741",
+      "code": "162",
+      "msg": "4;2;493;162;Historical Market Data Service error message:API historical data query cancelled: 493;]"
+    },
+    {
+      "ts": "22:25:02:948",
+      "code": "162",
+      "msg": "4;2;494;162;Historical Market Data Service error message:API historical data query cancelled: 494;]"
+    },
+    {
+      "ts": "22:25:09:955",
+      "code": "162",
+      "msg": "4;2;495;162;Historical Market Data Service error message:API historical data query cancelled: 495;]"
+    },
+    {
+      "ts": "22:25:10:413",
+      "code": "162",
+      "msg": "4;2;496;162;Historical Market Data Service error message:API historical data query cancelled: 496;]"
+    },
+    {
+      "ts": "22:25:14:404",
+      "code": "162",
+      "msg": "4;2;497;162;Historical Market Data Service error message:API historical data query cancelled: 497;]"
+    },
+    {
+      "ts": "22:25:20:989",
+      "code": "162",
+      "msg": "4;2;498;162;Historical Market Data Service error message:API historical data query cancelled: 498;]"
+    },
+    {
+      "ts": "22:25:21:112",
+      "code": "162",
+      "msg": "4;2;499;162;Historical Market Data Service error message:API historical data query cancelled: 499;]"
+    },
+    {
+      "ts": "22:25:25:097",
+      "code": "162",
+      "msg": "4;2;500;162;Historical Market Data Service error message:API historical data query cancelled: 500;]"
+    },
+    {
+      "ts": "22:25:27:192",
+      "code": "162",
+      "msg": "4;2;501;162;Historical Market Data Service error message:API historical data query cancelled: 501;]"
+    },
+    {
+      "ts": "22:25:27:461",
+      "code": "162",
+      "msg": "4;2;502;162;Historical Market Data Service error message:API historical data query cancelled: 502;]"
+    },
+    {
+      "ts": "22:25:47:950",
+      "code": "162",
+      "msg": "4;2;504;162;Historical Market Data Service error message:API historical data query cancelled: 504;]"
+    },
+    {
+      "ts": "22:25:54:951",
+      "code": "162",
+      "msg": "4;2;505;162;Historical Market Data Service error message:API historical data query cancelled: 505;]"
+    },
+    {
+      "ts": "22:25:55:415",
+      "code": "162",
+      "msg": "4;2;506;162;Historical Market Data Service error message:API historical data query cancelled: 506;]"
+    },
+    {
+      "ts": "22:25:59:432",
+      "code": "162",
+      "msg": "4;2;507;162;Historical Market Data Service error message:API historical data query cancelled: 507;]"
+    },
+    {
+      "ts": "22:26:05:993",
+      "code": "162",
+      "msg": "4;2;508;162;Historical Market Data Service error message:API historical data query cancelled: 508;]"
+    },
+    {
+      "ts": "22:26:06:113",
+      "code": "162",
+      "msg": "4;2;509;162;Historical Market Data Service error message:API historical data query cancelled: 509;]"
+    },
+    {
+      "ts": "22:26:11:496",
+      "code": "162",
+      "msg": "4;2;511;162;Historical Market Data Service error message:API historical data query cancelled: 511;]"
+    },
+    {
+      "ts": "22:26:12:189",
+      "code": "162",
+      "msg": "4;2;512;162;Historical Market Data Service error message:API historical data query cancelled: 512;]"
+    },
+    {
+      "ts": "22:26:12:468",
+      "code": "162",
+      "msg": "4;2;513;162;Historical Market Data Service error message:API historical data query cancelled: 513;]"
+    },
+    {
+      "ts": "22:26:32:954",
+      "code": "162",
+      "msg": "4;2;514;162;Historical Market Data Service error message:API historical data query cancelled: 514;]"
+    },
+    {
+      "ts": "22:26:39:954",
+      "code": "162",
+      "msg": "4;2;515;162;Historical Market Data Service error message:API historical data query cancelled: 515;]"
+    },
+    {
+      "ts": "22:26:40:417",
+      "code": "162",
+      "msg": "4;2;516;162;Historical Market Data Service error message:API historical data query cancelled: 516;]"
+    },
+    {
+      "ts": "22:26:44:407",
+      "code": "162",
+      "msg": "4;2;517;162;Historical Market Data Service error message:API historical data query cancelled: 517;]"
+    },
+    {
+      "ts": "22:26:51:002",
+      "code": "162",
+      "msg": "4;2;518;162;Historical Market Data Service error message:API historical data query cancelled: 518;]"
+    },
+    {
+      "ts": "22:26:51:113",
+      "code": "162",
+      "msg": "4;2;519;162;Historical Market Data Service error message:API historical data query cancelled: 519;]"
+    },
+    {
+      "ts": "22:26:54:156",
+      "code": "162",
+      "msg": "4;2;520;162;Historical Market Data Service error message:API historical data query cancelled: 520;]"
+    },
+    {
+      "ts": "22:26:56:499",
+      "code": "162",
+      "msg": "4;2;521;162;Historical Market Data Service error message:API historical data query cancelled: 521;]"
+    },
+    {
+      "ts": "22:26:57:187",
+      "code": "162",
+      "msg": "4;2;522;162;Historical Market Data Service error message:API historical data query cancelled: 522;]"
+    },
+    {
+      "ts": "22:26:57:464",
+      "code": "162",
+      "msg": "4;2;523;162;Historical Market Data Service error message:API historical data query cancelled: 523;]"
+    },
+    {
+      "ts": "22:27:17:955",
+      "code": "162",
+      "msg": "4;2;524;162;Historical Market Data Service error message:API historical data query cancelled: 524;]"
+    }
+  ],
+  "rare_templates": [
+    {
+      "template_id": "20:3f8de5169f8e",
+      "count": 3,
+      "sample": "20;3;0;SPY;STK;;0.0;;;SMART;ARCA;USD;;;0;;1 day;1 D;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "9:29cf030a3f86",
+      "count": 3,
+      "sample": "9;8;286;0;KEY<REDACT>"
+    },
+    {
+      "template_id": "4:399016bd7ed5",
+      "count": 3,
+      "sample": "4;2;-1;0;Warning: Approaching max rate of 50 messages per second (44);]"
+    },
+    {
+      "template_id": "17:b987949ebece",
+      "count": 3,
+      "sample": "17;561;20061021 19:40:29 US/Eastern;20261021 19:40:29 US/Eastern;5026;20061026;10.6630;10.7420;10.6222;10.6549;25411453.74449339;10.66794279466232;18668;20061027;10.5841;10.6712;10.4073;10.4753;269370"
+    },
+    {
+      "template_id": "20:50831d08fdbf",
+      "count": 3,
+      "sample": "20;580;0;GAP;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:c0b9f154f8e1",
+      "count": 3,
+      "sample": "20;582;0;MTCH;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:9931df064329",
+      "count": 3,
+      "sample": "20;583;0;OR;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:c2dd145c9bb1",
+      "count": 3,
+      "sample": "20;584;0;QGEN;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:b708fc10aef6",
+      "count": 3,
+      "sample": "20;585;0;TFC;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:e988bc0b1ba5",
+      "count": 3,
+      "sample": "20;589;0;EMBJ;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:e88b6642ffa7",
+      "count": 3,
+      "sample": "20;600;0;HST;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:5b941165df6f",
+      "count": 3,
+      "sample": "17;601;20061021 19:41:41 US/Eastern;20261021 19:41:41 US/Eastern;2908;20150331;20.0000;20.0000;20.0000;20.0000;0;20;0;20150401;26.1500;26.8400;25.4900;26.1500;22288800;26.168;80627;20150402;26.7400;27"
+    },
+    {
+      "template_id": "20:e1d517898987",
+      "count": 3,
+      "sample": "20;605;0;TGTX;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:af597d54716b",
+      "count": 3,
+      "sample": "20;613;0;GE;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:09a9db615343",
+      "count": 3,
+      "sample": "20;615;0;ORKA;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:ebaf454bff9c",
+      "count": 3,
+      "sample": "20;627;0;TKO;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:35f9e3304295",
+      "count": 3,
+      "sample": "20;628;0;VIV;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:2d1d838e6a3c",
+      "count": 3,
+      "sample": "17;630;20061021 19:42:41 US/Eastern;20261021 19:42:41 US/Eastern;5026;20061027;7.9670;7.9882;7.8688;7.9227;2257200;7.916366123536892;3708;20061030;7.9304;8.0632;7.9208;8.0305;2755600;8.018961088981619"
+    },
+    {
+      "template_id": "20:c8cb8e25babb",
+      "count": 3,
+      "sample": "20;632;0;GEN;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:0b65d2f00c88",
+      "count": 3,
+      "sample": "20;639;0;HWM;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:f364d08ba4ef",
+      "count": 3,
+      "sample": "20;641;0;CTRE;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:40c64d8d3f2e",
+      "count": 3,
+      "sample": "20;645;0;OUT;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:2f94fed87869",
+      "count": 3,
+      "sample": "20;646;0;REG;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:1b15b0caaa8e",
+      "count": 3,
+      "sample": "20;651;0;BG;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:f5d81a9fec47",
+      "count": 3,
+      "sample": "20;655;0;OVV;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:d7322d7e093c",
+      "count": 3,
+      "sample": "20;659;0;XOM;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:580bab2a1006",
+      "count": 3,
+      "sample": "20;664;0;EQNR;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:3efb08cb4c9d",
+      "count": 3,
+      "sample": "17;666;20061021 19:44:40 US/Eastern;20261021 19:44:40 US/Eastern;5025;20061027;27.1814;27.5503;26.9544;27.0622;4235541.653093084;27.34145528573169;12321;20061030;26.9657;26.9714;26.1711;26.2733;515160"
+    },
+    {
+      "template_id": "20:5e2e5e85c962",
+      "count": 3,
+      "sample": "20;670;0;EQX;STK;;0.0;;;SMART;SMART;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:fa6f6115302a",
+      "count": 3,
+      "sample": "20;677;0;P;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:9c2d3f0b6849",
+      "count": 3,
+      "sample": "20;688;0;TRI;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:8d9d075a37e1",
+      "count": 3,
+      "sample": "20;697;0;PAAS;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:bb303bcf4c09",
+      "count": 3,
+      "sample": "20;701;0;ICL;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:1fd74ed9806e",
+      "count": 3,
+      "sample": "20;707;0;PAGP;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:6b9f5c5faecf",
+      "count": 3,
+      "sample": "17;709;20061021 19:46:32 US/Eastern;20261021 19:46:32 US/Eastern;2848;20150625;23.6337;24.7184;23.5281;24.3824;25354397;23.85350288596993;71752;20150626;24.4688;24.8528;23.7585;23.8545;3553654;24.3949"
+    },
+    {
+      "template_id": "20:a3a594630ef4",
+      "count": 3,
+      "sample": "20;715;0;BLK;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:3b2ce58f6ffa",
+      "count": 3,
+      "sample": "17;714;20061021 19:46:38 US/Eastern;20261021 19:46:38 US/Eastern;3487;20121210;21.3774;21.3774;20.1698;20.2218;699200;20.66035390984094;2189;20121211;20.2507;20.6205;20.1929;20.4067;1452900;20.4552467"
+    },
+    {
+      "template_id": "20:8abb84435973",
+      "count": 3,
+      "sample": "20;723;0;EXPD;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:f10245e590e1",
+      "count": 3,
+      "sample": "20;724;0;ABEV;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:7ce3264f698a",
+      "count": 3,
+      "sample": "20;748;0;NLY;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:24f2cda02c7f",
+      "count": 3,
+      "sample": "20;751;0;TTE;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:2f8d2c923766",
+      "count": 3,
+      "sample": "20;760;0;ROP;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:597f6b0ddc81",
+      "count": 3,
+      "sample": "20;764;0;BNY;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:90bf11688bba",
+      "count": 3,
+      "sample": "17;792;20061021 19:48:54 US/Eastern;20261021 19:48:54 US/Eastern;1596;20200616;38.3847;40.3650;36.6399;38.8209;26083788;38.72490146195837;77964;20200617;40.0422;45.3201;39.2571;42.4063;7880443;42.6924"
+    },
+    {
+      "template_id": "20:8d6064a68716",
+      "count": 3,
+      "sample": "20;799;0;IOVA;STK;;0.0;;;SMART;NASDAQ;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "17:d2f0dfb92134",
+      "count": 3,
+      "sample": "17;800;20061021 19:49:05 US/Eastern;20261021 19:49:05 US/Eastern;2213;20180102;38.6297;40.2086;38.0495;40.2086;828332;38.97630542763847;4355;20180103;40.3555;40.8843;40.1939;40.6566;2398477;40.5692283"
+    },
+    {
+      "template_id": "20:1d0dfbec36b3",
+      "count": 3,
+      "sample": "20;803;0;TXNM;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:63f16d4b92fb",
+      "count": 3,
+      "sample": "20;819;0;DINO;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:5f6a89ef0232",
+      "count": 3,
+      "sample": "20;820;0;IRM;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    },
+    {
+      "template_id": "20:3b2ed0be139b",
+      "count": 3,
+      "sample": "20;827;0;AEG;STK;;0.0;;;SMART;NYSE;USD;;;0;;1 day;20 Y;1;ADJUSTED_LAST;1;0;;]"
+    }
+  ]
+}

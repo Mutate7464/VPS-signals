@@ -1,0 +1,10 @@
+import pyarrow.parquet as pq
+t = pq.read_table("reports/wi017/targets/A.parquet")
+print("targets:", t.num_rows, len(t.schema.names))
+print(t.schema.names[:16])
+d = pq.read_table("reports/wi017/derived/A.parquet")
+print("derived:", d.num_rows, len(d.schema.names))
+print(d.schema.names[:24])
+f = pq.read_table("reports/wi017/features/A.parquet")
+print("features:", f.num_rows, len(f.schema.names))
+print(f.schema.names[:4], f.schema.names[-4:])

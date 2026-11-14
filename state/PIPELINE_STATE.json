@@ -1,5 +1,5 @@
 {
-  "current_sprint": "EP-04",
+  "current_sprint": "EP-03",
   "gates_approved": {
     "gate_1": true,
     "gate_2": true,
@@ -19,15 +19,15 @@
     },
     "gate_2": {
       "markets": {
-        "USD": {
-          "n_features": 63,
-          "n_rows": 533017
+        "CAD": {
+          "n_features": 89,
+          "n_rows": 701599
         }
       }
     },
     "gate_3": {
       "markets": {
-        "USD": 28
+        "CAD": 42
       }
     },
     "training": {
@@ -68,6 +68,6 @@
       "top_n": 30
     }
   },
-  "last_updated_utc": "2026-10-23T13:06:50.890644+00:00",
+  "last_updated_utc": "2026-10-25T00:14:07.598375+00:00",
   "last_error": null
 }

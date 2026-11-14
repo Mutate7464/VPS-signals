@@ -40,6 +40,84 @@ ENTROPY_WINDOWS = [10, 20]
 ATR_WINDOW = 20
 FRAC_DIFF_D = 0.40
 FRAC_DIFF_WINDOW = 100
+# Fibonacci-scaled range windows (admin spec 2026-10-23): base 3 trading days
+# × [1, 2, 3, 5, 8, 13, 21, 34] → 3..102 bars (smallest 3d, largest < 1 year).
+FIB_WINDOWS = [3, 6, 9, 15, 24, 39, 63, 102]
+FIB_LEVELS = (0.382, 0.5, 0.618)  # retracement fractions of the window swing
+RANGE_FIB_ENABLED = True
+FIB_FEATURE_NAMES = (
+    [f"range_pos_f{w}" for w in FIB_WINDOWS]
+    + [f"range_width_f{w}" for w in FIB_WINDOWS]
+    + ["donchian_break_f6", "donchian_break_f15"]
+    + ["range_compression_f6_39", "range_compression_f15_102"]
+    + ["pct_from_high_f102", "pct_from_low_f102"]
+    + [f"fib_dist_f{w}" for w in (15, 39, 102)]
+    + ["gap_z"]
+)
+
+
+# --------------------------------------------------------------------------- #
+# WI-016 unified window grid (D-016 §2)
+# --------------------------------------------------------------------------- #
+# One grid, two ladders. Smooth families (adjacent-window |rho| 0.89-0.99 on the
+# old classic/fib grids -- near-clones) share the every-other fib ladder; fast
+# families (kama_er, hurst, entropy, vwap_zscore; adjacent |rho| 0.03-0.59) keep
+# the dense fib ladder. Cross-grid near-duplicates (classic 5/10/20/50/100,
+# fib-scaled 3/6/9/15/24/39/63/102, WI-015 5/8/13/21/34/55 overlap) are removed
+# by construction: each family emits exactly one ladder.
+WI016_SMOOTH_WINDOWS = (3, 8, 21, 55, 144, 233)
+WI016_FAST_FIB_WINDOWS = (3, 6, 9, 15, 24, 39, 63, 102)
+# hurst/entropy need >= 8 bars (estimator contract); kama_er/vwap_zscore do not.
+WI016_HURST_ENTROPY_MIN_WINDOW = 8
+WI016_FAST_FIB_MIN8_WINDOWS = tuple(w for w in WI016_FAST_FIB_WINDOWS if w >= WI016_HURST_ENTROPY_MIN_WINDOW)
+WI016_SMOOTH_FAMILIES = (
+    "adx",
+    "di_spread",
+    "atr_pct",
+    "bb_pct_b",
+    "bb_width",
+    "obv_zscore",
+    "amihud",
+    "yangzhang",
+    "range_pos",
+    "range_width",
+    "donchian_break",
+    "fib_dist",
+)
+WI016_FAST_FAMILIES = ("kama_er", "hurst", "entropy", "vwap_zscore")
+WI016_RANGE_COMPRESSION_PAIRS = ((8, 55), (21, 144))
+WI016_SINGLETONS = (
+    "rsi_14",
+    "rsi_14_slope_5",
+    "macd_norm_line",
+    "macd_norm_hist",
+    "kalman_spread_atr",
+    "frac_diff_close",
+    "gap_z",
+    "pct_from_high_233",
+    "pct_from_low_233",
+)
+
+
+def wi016_family_windows() -> dict[str, tuple[int, ...]]:
+    """The exact window ladder each WI-016 family emits (ordered)."""
+    reg: dict[str, tuple[int, ...]] = {f: tuple(WI016_SMOOTH_WINDOWS) for f in WI016_SMOOTH_FAMILIES}
+    reg["kama_er"] = tuple(WI016_FAST_FIB_WINDOWS)
+    reg["hurst"] = tuple(WI016_FAST_FIB_MIN8_WINDOWS)
+    reg["entropy"] = tuple(WI016_FAST_FIB_MIN8_WINDOWS)
+    reg["vwap_zscore"] = tuple(WI016_FAST_FIB_WINDOWS)
+    return reg
+
+
+def wi016_feature_names() -> list[str]:
+    """Full, ordered column list of the WI-016 unified feature grid (no `date`)."""
+    names: list[str] = []
+    for fam, windows in wi016_family_windows().items():
+        names += [f"{fam}_{w}" for w in windows]
+    names += [f"range_compression_{s}_{l}" for s, l in WI016_RANGE_COMPRESSION_PAIRS]
+    names += list(WI016_SINGLETONS)
+    return names
+
 
 
 # --------------------------------------------------------------------------- #
@@ -144,6 +222,110 @@ def _shannon_entropy(x: np.ndarray) -> float:
     return float(-np.sum(p * np.log(p)))
 
 
+# --- Vectorized equivalents (exact ports of the reference functions above) ---
+# These replace the `.rolling().apply()` call sites: identical outputs, but
+# sliding-window numpy instead of a Python callback per bar (hours -> minutes).
+
+def _sliding(x: np.ndarray, window: int) -> np.ndarray:
+    return np.lib.stride_tricks.sliding_window_view(x, window)
+
+
+def _hurst_rs_vec(x: np.ndarray, window: int) -> np.ndarray:
+    """Exact vectorized port of `_hurst_rs` over all trailing windows."""
+    x = np.asarray(x, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window or window < 8:
+        return out
+    sw = _sliding(x, window)  # (T, window); row k covers x[k : k+window]
+    max_lag = min(window // 4, 20)
+    lags = np.arange(2, max_lag + 1, dtype="float64")
+    if len(lags) < 2:
+        return out
+    log_lags = np.log(lags)
+    T = sw.shape[0]
+    rs = np.full((T, len(lags)), np.nan)
+    for j, lag_f in enumerate(lags):
+        lag = int(lag_f)
+        n_chunks = window // lag
+        if n_chunks < 1:
+            continue
+        chunks = sw[:, : n_chunks * lag].reshape(T, n_chunks, lag)
+        c_mean = chunks.mean(axis=2)
+        c_std = chunks.std(axis=2)  # ddof=0, matches reference
+        dev = np.cumsum(chunks - c_mean[:, :, None], axis=2)
+        r = dev.max(axis=2) - dev.min(axis=2)
+        ok = c_std > 0.0
+        chunk_rs = np.where(ok, r / np.where(ok, c_std, 1.0), np.nan)
+        with np.errstate(invalid="ignore"):
+            rs[:, j] = np.nanmean(chunk_rs, axis=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        log_rs = np.log(rs)
+    valid = np.isfinite(log_rs) & (rs > 0.0)  # matches ref mask
+    m = valid.astype("float64")
+    n_valid = m.sum(axis=1)
+    y = np.where(valid, log_rs, 0.0)
+    sx = (m * log_lags).sum(axis=1)
+    sy = (m * y).sum(axis=1)
+    sxx = (m * log_lags * log_lags).sum(axis=1)
+    sxy = (m * log_lags * y).sum(axis=1)
+    denom = n_valid * sxx - sx * sx
+    numer = n_valid * sxy - sx * sy
+    with np.errstate(divide="ignore", invalid="ignore"):
+        slope = numer / np.where(denom != 0.0, denom, np.nan)
+    slope = np.where((n_valid >= 2) & (denom > 0.0), slope, np.nan)
+    out[window - 1 :] = slope
+    return out
+
+
+def _shannon_entropy_vec(x: np.ndarray, window: int) -> np.ndarray:
+    """Exact vectorized port of `_shannon_entropy` over all trailing windows."""
+    x = np.asarray(x, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window:
+        return out
+    sw = _sliding(x, window)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        rets = np.diff(np.log(sw), axis=1)  # (T, window-1)
+    finite_rows = np.isfinite(rets).all(axis=1)
+    rets_m = np.where(np.isfinite(rets), rets, np.nan)
+    with np.errstate(invalid="ignore"):
+        mn = np.nanmin(rets_m, axis=1)
+        mx = np.nanmax(rets_m, axis=1)
+    rng = mx - mn
+    safe_rng = np.where(rng > 0.0, rng, 1.0)
+    with np.errstate(invalid="ignore"):
+        idx = np.floor((rets_m - mn[:, None]) / safe_rng[:, None] * 10.0)
+    idx = np.clip(np.where(np.isfinite(idx), idx, -1.0), 0.0, 9.0)
+    counts = np.zeros((sw.shape[0], 10), dtype="float64")
+    for k in range(10):
+        counts[:, k] = (idx == float(k)).sum(axis=1)
+    p = counts / float(window - 1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        terms = np.where(counts > 0, -p * np.log(p), 0.0)
+    H = terms.sum(axis=1)
+    H[~finite_rows] = np.nan
+    out[window - 1 :] = H
+    return out
+
+
+def _frac_diff_vec(vals: np.ndarray, d: float, window: int) -> np.ndarray:
+    """Exact vectorized port of `_frac_diff_fixed` (fixed-weight convolution)."""
+    weights = [1.0]
+    for k in range(1, window):
+        weights.append(-weights[-1] * (d - k + 1) / k)
+    w_rev = np.asarray(weights, dtype="float64")[::-1]
+    x = np.asarray(vals, dtype="float64")
+    n = len(x)
+    out = np.full(n, np.nan)
+    if n < window:
+        return out
+    sw = _sliding(x, window)
+    out[window - 1 :] = sw @ w_rev
+    return out
+
+
 def _kalman_filter(x: np.ndarray, q: float = 1e-4, r: float = 1e-2) -> np.ndarray:
     """1D Kalman filter (random-walk state + noise), forward recursion (causal)."""
     x = np.asarray(x, dtype="float64")
@@ -195,6 +377,68 @@ def _yang_zhang_vol(df: pd.DataFrame, window: int) -> pd.Series:
 # --------------------------------------------------------------------------- #
 # Feature assembly
 # --------------------------------------------------------------------------- #
+def _range_fib_features(df: pd.DataFrame, close: pd.Series) -> pd.DataFrame:
+    """Fibonacci-window range-structure features (all dimensionless, float32).
+
+    Windows are FIB_WINDOWS = 3 × [1,2,3,5,8,13,21,34] trading bars. Every
+    output is a ratio / [0,1] position / z-score / binary flag — no absolute
+    price or volume values — so the features are comparable across tickers and
+    safe for tree splits (XGBoost compliance requirement, plan WI-002 E3–E5).
+    """
+    high = df["high"].astype("float64")
+    low = df["low"].astype("float64")
+    open_ = df["open"].astype("float64")
+
+    feats = pd.DataFrame(index=df.index)
+    widths: dict[int, pd.Series] = {}
+    for w in FIB_WINDOWS:
+        hh = high.rolling(w, min_periods=w).max()
+        ll = low.rolling(w, min_periods=w).min()
+        rng = (hh - ll).astype("float64")
+        widths[w] = rng / (close + 1e-12)  # range width relative to price
+        # Position inside the range: 0 = at the window low, 1 = at the high.
+        feats[f"range_pos_f{w}"] = ((close - ll) / (rng + 1e-12)).clip(0.0, 1.0).astype("float32")
+        feats[f"range_width_f{w}"] = widths[w].astype("float32")
+        if w in (6, 15):  # Donchian breakout vs the PRIOR window's high
+            feats[f"donchian_break_f{w}"] = (close > hh.shift(1)).astype("float32")
+
+    # Range compression: short-window width relative to a longer one.
+    feats["range_compression_f6_39"] = (widths[6] / (widths[39] + 1e-12)).astype("float32")
+    feats["range_compression_f15_102"] = (widths[15] / (widths[102] + 1e-12)).astype("float32")
+
+    # Long-anchor extremes over the largest fib window (102 < 1 year).
+    hh102 = high.rolling(102, min_periods=102).max()
+    ll102 = low.rolling(102, min_periods=102).min()
+    feats["pct_from_high_f102"] = (close / (hh102 + 1e-12) - 1.0).astype("float32")
+    feats["pct_from_low_f102"] = (close / (ll102 + 1e-12) - 1.0).astype("float32")
+
+    # Signed distance to the nearest Fibonacci retracement level of the
+    # window's swing, normalized by the range width (≈ [-0.5, 0.5]).
+    for w in (15, 39, 102):
+        hh = high.rolling(w, min_periods=w).max()
+        ll = low.rolling(w, min_periods=w).min()
+        rng = (hh - ll).astype("float64")
+        flat = rng < 1e-9
+        dists = []
+        for f in FIB_LEVELS:
+            level = ll + f * rng
+            dists.append(((close - level) / (rng + 1e-12)).abs())
+        nearest = np.minimum.reduce([d.to_numpy() for d in dists])
+        # sign: + above the nearest level, - below (via mid-level comparison)
+        mid = ll + 0.5 * rng
+        signed = np.sign((close - mid).to_numpy()) * nearest
+        out = pd.Series(np.where(flat.to_numpy(), 0.0, signed), index=df.index)
+        feats[f"fib_dist_f{w}"] = out.astype("float32")
+
+    # Overnight gap, rolling z-scored (dimensionless).
+    gap = open_ / close.shift(1) - 1.0
+    m = gap.rolling(20, min_periods=20).mean()
+    s = gap.rolling(20, min_periods=20).std(ddof=1)
+    feats["gap_z"] = ((gap - m) / (s + 1e-12)).astype("float32")
+
+    return feats
+
+
 def compute_features(df: pd.DataFrame) -> pd.DataFrame:
     """Compute the full point-in-time feature matrix (float32).
 
@@ -251,16 +495,19 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
         s = obv_slope.rolling(w, min_periods=w).std(ddof=1)
         feats[f"obv_zscore_{w}"] = ((obv_slope - m) / (s + 1e-12)).astype("float32")
 
-    # Frontier: Hurst exponent
+    # Frontier: Hurst exponent (vectorized — exact port of _hurst_rs)
+    close_arr = close.to_numpy(dtype="float64")
     for w in HURST_WINDOWS:
-        feats[f"hurst_{w}"] = close.rolling(w, min_periods=w).apply(_hurst_rs, raw=True).astype("float32")
+        feats[f"hurst_{w}"] = _hurst_rs_vec(close_arr, w).astype("float32")
 
-    # Frontier: fractional differentiation of log close
-    feats["frac_diff_close"] = _frac_diff_fixed(np.log(close), FRAC_DIFF_D, FRAC_DIFF_WINDOW).astype("float32")
+    # Frontier: fractional differentiation of log close (vectorized)
+    feats["frac_diff_close"] = _frac_diff_vec(
+        np.log(close_arr), FRAC_DIFF_D, FRAC_DIFF_WINDOW
+    ).astype("float32")
 
-    # Frontier: Shannon entropy
+    # Frontier: Shannon entropy (vectorized — exact port of _shannon_entropy)
     for w in ENTROPY_WINDOWS:
-        feats[f"entropy_{w}"] = close.rolling(w, min_periods=w).apply(_shannon_entropy, raw=True).astype("float32")
+        feats[f"entropy_{w}"] = _shannon_entropy_vec(close_arr, w).astype("float32")
 
     # Frontier: Kalman filter spread / ATR
     kf = _kalman_filter(close.to_numpy())
@@ -282,7 +529,146 @@ def compute_features(df: pd.DataFrame) -> pd.DataFrame:
     for w in WINDOWS:
         feats[f"yangzhang_{w}"] = _yang_zhang_vol(df, w).astype("float32")
 
+    # Fibonacci-window range structure (admin spec, WI-002 E3)
+    if RANGE_FIB_ENABLED:
+        feats = pd.concat([feats, _range_fib_features(df, close)], axis=1)
+
     return feats
+
+
+def _range_features_wi016(df: pd.DataFrame, close: pd.Series) -> pd.DataFrame:
+    """WI-016 range-structure features on the unified smooth ladder (float32)."""
+    high = df["high"].astype("float64")
+    low = df["low"].astype("float64")
+    open_ = df["open"].astype("float64")
+
+    feats = pd.DataFrame(index=df.index)
+    widths: dict[int, pd.Series] = {}
+    for w in WI016_SMOOTH_WINDOWS:
+        hh = high.rolling(w, min_periods=w).max()
+        ll = low.rolling(w, min_periods=w).min()
+        rng = (hh - ll).astype("float64")
+        widths[w] = rng / (close + 1e-12)
+        feats[f"range_pos_{w}"] = ((close - ll) / (rng + 1e-12)).clip(0.0, 1.0).astype("float32")
+        feats[f"range_width_{w}"] = widths[w].astype("float32")
+        feats[f"donchian_break_{w}"] = (close > hh.shift(1)).astype("float32")
+        # Signed distance to the nearest fib retracement of the window swing.
+        flat = rng < 1e-9
+        dists = (((close - (ll + f * rng)) / (rng + 1e-12)).abs() for f in FIB_LEVELS)
+        nearest = np.minimum.reduce([d.to_numpy() for d in dists])
+        mid = ll + 0.5 * rng
+        signed = np.sign((close - mid).to_numpy()) * nearest
+        feats[f"fib_dist_{w}"] = pd.Series(np.where(flat.to_numpy(), 0.0, signed), index=df.index).astype("float32")
+
+    for s, l in WI016_RANGE_COMPRESSION_PAIRS:
+        feats[f"range_compression_{s}_{l}"] = (widths[s] / (widths[l] + 1e-12)).astype("float32")
+
+    anchor = WI016_SMOOTH_WINDOWS[-1]
+    hh_a = high.rolling(anchor, min_periods=anchor).max()
+    ll_a = low.rolling(anchor, min_periods=anchor).min()
+    feats[f"pct_from_high_{anchor}"] = (close / (hh_a + 1e-12) - 1.0).astype("float32")
+    feats[f"pct_from_low_{anchor}"] = (close / (ll_a + 1e-12) - 1.0).astype("float32")
+
+    gap = open_ / close.shift(1) - 1.0
+    m = gap.rolling(20, min_periods=20).mean()
+    s_ = gap.rolling(20, min_periods=20).std(ddof=1)
+    feats["gap_z"] = ((gap - m) / (s_ + 1e-12)).astype("float32")
+    return feats
+
+
+def compute_features_wi016(df: pd.DataFrame) -> pd.DataFrame:
+    """WI-016 unified feature grid (D-016 §2) — point-in-time, float32.
+
+    Same contract as `compute_features` (trailing-only, clean 0..n-1 index) but
+    on the unified window grid `wi016_feature_names()`. The legacy
+    `compute_features` grid is retained unchanged for frozen WI-014 artifacts and
+    the shipped screener.
+    """
+    close = df["close"].astype("float64")
+    high = df["high"].astype("float64")
+    low = df["low"].astype("float64")
+
+    cols: dict[str, pd.Series | np.ndarray] = {}
+    if "date" in df.columns:
+        cols["date"] = df["date"]
+
+    atr20 = wilder_atr(df, ATR_WINDOW).astype("float64")
+
+    # Smooth family: adx_{w}, di_spread_{w}
+    for w in WI016_SMOOTH_WINDOWS:
+        adx, di_spread = _adx(df, w)
+        cols[f"adx_{w}"] = adx.astype("float32")
+        cols[f"di_spread_{w}"] = di_spread.astype("float32")
+
+    # Smooth family: atr_pct_{w}
+    for w in WI016_SMOOTH_WINDOWS:
+        cols[f"atr_pct_{w}"] = (wilder_atr(df, w) / (close + 1e-12)).astype("float32")
+
+    # Smooth family: bb_pct_b_{w}, bb_width_{w}
+    for w in WI016_SMOOTH_WINDOWS:
+        sma = close.rolling(w, min_periods=w).mean()
+        std = close.rolling(w, min_periods=w).std(ddof=1)
+        upper = sma + 2.0 * std
+        lower = sma - 2.0 * std
+        cols[f"bb_pct_b_{w}"] = ((close - lower) / (upper - lower + 1e-12)).astype("float32")
+        cols[f"bb_width_{w}"] = ((upper - lower) / (sma + 1e-12)).astype("float32")
+
+    # Smooth family: obv_zscore_{w}
+    obv = (np.sign(close.diff()).fillna(0.0) * df["volume"]).cumsum()
+    obv_slope = obv.diff()
+    for w in WI016_SMOOTH_WINDOWS:
+        m = obv_slope.rolling(w, min_periods=w).mean()
+        s = obv_slope.rolling(w, min_periods=w).std(ddof=1)
+        cols[f"obv_zscore_{w}"] = ((obv_slope - m) / (s + 1e-12)).astype("float32")
+
+    # Smooth family: amihud_{w}, yangzhang_{w}
+    for w in WI016_SMOOTH_WINDOWS:
+        cols[f"amihud_{w}"] = _amihud(df, w).astype("float32")
+        cols[f"yangzhang_{w}"] = _yang_zhang_vol(df, w).astype("float32")
+
+    # Smooth-family range structure + compression pairs (order matches the registry)
+    range_feats = _range_features_wi016(df, close)
+    for w in WI016_SMOOTH_WINDOWS:
+        cols[f"range_pos_{w}"] = range_feats[f"range_pos_{w}"]
+        cols[f"range_width_{w}"] = range_feats[f"range_width_{w}"]
+        cols[f"donchian_break_{w}"] = range_feats[f"donchian_break_{w}"]
+        cols[f"fib_dist_{w}"] = range_feats[f"fib_dist_{w}"]
+    for s, l in WI016_RANGE_COMPRESSION_PAIRS:
+        cols[f"range_compression_{s}_{l}"] = range_feats[f"range_compression_{s}_{l}"]
+
+    # Fast family: kama_er_{w}
+    for w in WI016_FAST_FIB_WINDOWS:
+        cols[f"kama_er_{w}"] = _efficiency_ratio(close, w).astype("float32")
+
+    # Fast family: hurst_{w}, entropy_{w} (both need >= 8-bar windows)
+    close_arr = close.to_numpy(dtype="float64")
+    for w in WI016_FAST_FIB_MIN8_WINDOWS:
+        cols[f"hurst_{w}"] = _hurst_rs_vec(close_arr, w).astype("float32")
+        cols[f"entropy_{w}"] = _shannon_entropy_vec(close_arr, w).astype("float32")
+
+    # Fast family: vwap_zscore_{w}
+    for w in WI016_FAST_FIB_WINDOWS:
+        cols[f"vwap_zscore_{w}"] = _vwap_zscore(df, w).astype("float32")
+
+    # Singletons
+    rsi14 = _rsi(close, 14).astype("float32")
+    cols["rsi_14"] = rsi14
+    cols["rsi_14_slope_5"] = rsi14.diff(5).astype("float32")
+    ema12 = close.ewm(span=12, adjust=False).mean()
+    ema26 = close.ewm(span=26, adjust=False).mean()
+    macd_line = ema12 - ema26
+    macd_hist = macd_line - macd_line.ewm(span=9, adjust=False).mean()
+    cols["macd_norm_line"] = (macd_line / (atr20 + 1e-12)).astype("float32")
+    cols["macd_norm_hist"] = (macd_hist / (atr20 + 1e-12)).astype("float32")
+    kf = _kalman_filter(close.to_numpy())
+    cols["kalman_spread_atr"] = ((close - kf) / (atr20 + 1e-12)).astype("float32")
+    cols["frac_diff_close"] = _frac_diff_vec(np.log(close_arr), FRAC_DIFF_D, FRAC_DIFF_WINDOW).astype("float32")
+    anchor = WI016_SMOOTH_WINDOWS[-1]
+    cols["gap_z"] = range_feats["gap_z"]
+    cols[f"pct_from_high_{anchor}"] = range_feats[f"pct_from_high_{anchor}"]
+    cols[f"pct_from_low_{anchor}"] = range_feats[f"pct_from_low_{anchor}"]
+    return pd.DataFrame(cols, index=df.index)
+
 
 
 # --------------------------------------------------------------------------- #
@@ -347,9 +733,13 @@ def iter_market_symbols(
         if len(df) < 125:
             continue
         df["date"] = pd.to_datetime(df["date"]).astype("datetime64[ns]")
-        df = df.sort_values("date").reset_index(drop=True)
+        df = df.sort_values("date")
         if read_from is not None:
             df = df[df["date"] >= pd.Timestamp(read_from)]
+        df = df.reset_index(drop=True)  # clean 0..n-1 index — callers compute
+        # features on df.index and targets on a RangeIndex; an index with gaps
+        # silently misaligns pd.concat([features, targets], axis=1) (the
+        # 533,017-row truncation bug found in the E3 rebuild, 2026-10-23).
         if len(df) < 125:
             continue
         df["symbol"] = symbol

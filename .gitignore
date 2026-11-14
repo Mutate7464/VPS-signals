@@ -35,9 +35,13 @@ IBKRDownload/api-exported-logs.txt
 IBKRDownload/*.log.txt
 
 # ── Regenerable artifacts ──
-models/
+# Anchored: an unanchored `models/` also matched src/models/ (WI-009 source
+# modules), which would have silently excluded them from every commit.
+/models/
+data/models/
 reports/*.pdf
 data/features/
+data/perfanalytics/
 data/train_meta_*.json
 data/metadata_catalog_*.json
 data/sync_manifest.json
@@ -49,7 +53,7 @@ data/audit_ingestion_*.csv
 ibkrdownload/settings.yaml
 
 # ── Python / IDE / OS ──
-logs/
+/logs/
 *.pyc
 __pycache__/
 .ipynb_checkpoints/
@@ -58,3 +62,11 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# WI-017 brute-force per-symbol target parquets (469MB regenerated in ~60s)
+/reports/wi017/targets/
+/reports/wi017/derived/
+/reports/wi017/features/
+
+# kanban lock registry (transient, Hermes-managed)
+.hermes/locks.json

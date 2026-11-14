@@ -1,0 +1,4 @@
+# .cursorrules — defer to AGENT.md (canonical agent router for this repo)
+Read AGENT.md first: stack constraints, canonical commands, context routing
+(INDEX.md per dir, docs/architecture/DECISIONS_AND_NEGATIVE_KNOWLEDGE.md before
+architecture changes), 250-line file law. Process rules: AGENTS.md + docs/workflow/WORKFLOW.md.

@@ -9,6 +9,9 @@ thresholds — they only observe the forward price path they are meant to predic
   Y_15d_Low  : 15-day durable floor or V-bottom spring (buy).
   Y_20d_Up   : 20-day sustained upward trend (OLS slope > 0, R^2 >= 0.60).
   Y_20d_Down : 20-day sustained downward trend (OLS slope < 0, R^2 >= 0.60).
+  Y_20d_Stay : 20-day close within +/- STAY_RET_MAX (default 5%) of the current
+               close, and NOT an Up/Down label (mutually exclusive 3-class band:
+               up / down / stay). Raw-percent band by admin direction 2026-10-25.
 
 Output columns are float64 with NaN where the forward window is incomplete
 (the trailing k rows); the dataset builder drops those rows and casts to int8.
@@ -27,8 +30,9 @@ SPRING_MIN_HORIZON = 10
 TREND_HORIZON = 20
 TREND_MIN_R2 = 0.60
 TREND_ATR_MULT = 2.0
+STAY_RET_MAX = 0.05
 
-TARGET_COLUMNS = ["y_15d_high", "y_15d_low", "y_20d_up", "y_20d_down"]
+TARGET_COLUMNS = ["y_15d_high", "y_15d_low", "y_20d_up", "y_20d_down", "y_20d_stay"]
 
 
 def wilder_atr(df: pd.DataFrame, window: int = ATR_WINDOW) -> pd.Series:
@@ -133,6 +137,11 @@ def compute_targets(df: pd.DataFrame) -> pd.DataFrame:
     y_up = (fwd_ret >= TREND_ATR_MULT * atr) & (slope > 0.0) & (r2 >= TREND_MIN_R2)
     y_down = (fwd_ret <= -TREND_ATR_MULT * atr) & (slope < 0.0) & (r2 >= TREND_MIN_R2)
 
+    # Y_20d_Stay: 20d close within +/- STAY_RET_MAX (relative) of the current
+    # close, excluding rows already labeled Up/Down (mutually exclusive band).
+    # NB: fwd_ret above is a *dollar* move (ATR-scaled); stay is *relative*.
+    y_stay = (np.abs(fwd_close_20 / close - 1.0) <= STAY_RET_MAX) & ~y_up & ~y_down
+
     # Mask rows where the forward window is incomplete -> NaN (undefined).
     valid_15 = ~np.isnan(fwd_close_15)
     valid_20 = ~np.isnan(fwd_close_20)
@@ -143,5 +152,6 @@ def compute_targets(df: pd.DataFrame) -> pd.DataFrame:
             "y_15d_low": np.where(valid_15, y_low.astype("float64"), np.nan),
             "y_20d_up": np.where(valid_20, y_up.astype("float64"), np.nan),
             "y_20d_down": np.where(valid_20, y_down.astype("float64"), np.nan),
+            "y_20d_stay": np.where(valid_20, y_stay.astype("float64"), np.nan),
         }
     )

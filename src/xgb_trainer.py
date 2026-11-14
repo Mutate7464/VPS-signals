@@ -32,6 +32,7 @@ import datetime as dt
 import gc
 import json
 import pickle
+import re
 import sys
 import time
 from pathlib import Path
@@ -69,6 +70,11 @@ CB04_MIN_POSITIVES = 25
 N_PLACEBO_SEEDS = 5
 EARLY_STOPPING_ROUNDS = 30
 
+# WI-009's flat embargo floor (trading days). A per-target embargo never goes
+# below this, but grows to cover the label horizon (D-016 precondition fix):
+# a forward label spanning `horizon` bars cannot straddle a fold boundary.
+EMBARGO_FLOOR_TD = 20
+
 TARGET_HORIZON = {"y_15d_high": 15, "y_15d_low": 15, "y_20d_up": 20, "y_20d_down": 20}
 # Sign that maps each target onto "realized forward ATR return in the predicted direction".
 TARGET_DIRECTION = {"y_15d_high": -1, "y_15d_low": 1, "y_20d_up": 1, "y_20d_down": -1}
@@ -77,7 +83,52 @@ PROB_COLUMN = {
     "y_15d_low": "p_15d_low",
     "y_20d_up": "p_20d_up",
     "y_20d_down": "p_20d_down",
+    "y_20d_stay": "p_20d_stay",
 }
+
+# exit_urgency = max P(event) over the four *event* targets. y_20d_stay (added
+# 2026-10-25) is a do-nothing band, deliberately excluded from this max.
+EVENT_PROB_COLUMNS = ("p_15d_high", "p_15d_low", "p_20d_up", "p_20d_down")
+
+
+# --------------------------------------------------------------------------- #
+# Horizon-specific embargo (D-016 precondition fix)
+# --------------------------------------------------------------------------- #
+def horizon_embargo(horizon: int, floor: int = EMBARGO_FLOOR_TD) -> int:
+    """Per-target embargo = `max(floor, horizon)`.
+
+    A forward label spanning `horizon` trading days cannot straddle a fold
+    boundary, so the purge must cover at least the label horizon. The WI-009
+    flat 20-bar floor is retained for short targets.
+    """
+    return int(max(int(floor), int(horizon)))
+
+
+def target_horizon(target: str) -> int:
+    """Label horizon for a target column.
+
+    Mapping first (`TARGET_HORIZON`), then a `y_<N>d_*` name parse so targets
+    added by future work items (e.g. the WI-016 fib-ladder names) resolve their
+    own horizon instead of silently inheriting the flat floor.
+    """
+    if target in TARGET_HORIZON:
+        return int(TARGET_HORIZON[target])
+    m = re.match(r"^y_(\d+)d", str(target))
+    if m:
+        return int(m.group(1))
+    raise KeyError(f"no horizon known for target {target!r}")
+
+
+def resolve_embargo(target: str, cli_embargo: int | None = None) -> int:
+    """Effective per-target embargo for `target`.
+
+    An explicit CLI/config value may only *strengthen* the per-target horizon
+    embargo — the flat default (20) can never weaken it, so `--embargo 20` on a
+    144-bar target still yields 144.
+    """
+    configured = int(cli_embargo) if cli_embargo is not None else EMBARGO_FLOOR_TD
+    return max(configured, horizon_embargo(target_horizon(target)))
+
 
 
 # --------------------------------------------------------------------------- #
@@ -195,17 +246,50 @@ def load_catalog(market: str) -> dict:
     return json.loads((DATA_DIR / f"metadata_catalog_{market}.json").read_text())
 
 
+def _load_persisted_artifacts(market: str) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
+    """Load the persisted Sprint-2 features/targets parquets, or (None, None)."""
+    f_path = DATA_DIR / "features" / f"features_{market}.parquet"
+    t_path = DATA_DIR / "features" / f"targets_{market}.parquet"
+    if not (f_path.exists() and t_path.exists()):
+        return None, None
+    try:
+        f_all = pd.read_parquet(f_path)
+        t_all = pd.read_parquet(t_path)
+    except Exception:
+        return None, None
+    return f_all, t_all
+
+
 def build_panel(
     market: str, catalog: dict, allow_fixture: bool = False, min_date: str | None = None,
+    recompute_features: bool = False,
 ) -> pd.DataFrame:
     """Build the panel using streaming symbol iteration.
 
-    Per symbol: compute features+targets, keep only *surviving* feature columns
-    plus labels, fwd_atr_ret columns and identifiers.  Casts float32 immediately.
+    Default path: JOIN the persisted Sprint-2 `features_{mkt}.parquet` /
+    `targets_{mkt}.parquet` on (symbol, date) and compute only `close` +
+    `fwd_atr_ret_{15,20}` from raw (fast — no rolling.apply). This removes the
+    ~4 h full feature recompute measured in the E2 run (plan WI-002 E3–E5,
+    Step 3). `--recompute-features` (or fixture runs) falls back to the legacy
+    in-loop `compute_features()` path. The persisted parquets must have been
+    built with `min_date` <= the trainer's `min_date`.
+
+    Per symbol: keep only *surviving* feature columns plus labels,
+    fwd_atr_ret columns and identifiers.  Casts float32 immediately.
     `symbol` is stored as a category column.
     """
     surviving = catalog["surviving_features"]
     flagged = [c for c in surviving if catalog["stationarity"].get(c, {}).get("flagged")]
+
+    use_join = (not recompute_features) and (not allow_fixture)
+    f_all = t_all = None
+    if use_join:
+        f_all, t_all = _load_persisted_artifacts(market)
+        if f_all is None or any(c not in f_all.columns for c in surviving):
+            use_join = False
+            f_all = t_all = None
+            print(f"[xgb_trainer] persisted features/targets unavailable or stale for {market}; "
+                  "falling back to in-loop feature computation")
 
     parts: list[pd.DataFrame] = []
     sym_count = 0
@@ -213,25 +297,40 @@ def build_panel(
         sym_count += 1
         g = raw_df.sort_values("date").reset_index(drop=True)
 
-        f = compute_features(g)
-        # Keep only date + surviving features
-        keep_f = [c for c in surviving if c in f.columns]
-        f = f[["date"] + keep_f] if "date" in f.columns else f[keep_f]
-
-        t = compute_targets(g)
-        combined = pd.concat([f, t], axis=1)
-        combined["symbol"] = symbol
-        combined["market"] = market
-
-        # fwd ATR return columns (used for evaluation)
         close = g["close"].astype("float64").to_numpy()
         atr = wilder_atr(g).astype("float64").to_numpy()
+        base = pd.DataFrame({"date": g["date"]})
         for h in (15, 20):
             fwd = np.full(len(close), np.nan)
             if len(close) > h:
                 fwd[:-h] = close[h:]
-            combined[f"fwd_atr_ret_{h}"] = ((fwd - close) / (atr + 1e-12)).astype("float32")
-        combined["close"] = close.astype("float32")
+            base[f"fwd_atr_ret_{h}"] = ((fwd - close) / (atr + 1e-12)).astype("float32")
+        base["close"] = close.astype("float32")
+        base_cols = ["fwd_atr_ret_15", "fwd_atr_ret_20", "close"]
+
+        if use_join:
+            f_sub = f_all[f_all["symbol"] == symbol]
+            feat_cols_all = [c for c in f_all.columns if c not in ("date", "symbol", "market")]
+            f_sub = f_sub[["date"] + feat_cols_all]
+            t_sub = t_all[t_all["symbol"] == symbol][["date"] + TARGET_COLUMNS]
+            combined = (
+                base.merge(f_sub, on="date", how="inner")
+                .merge(t_sub, on="date", how="inner")
+            )
+            combined["symbol"] = symbol
+            combined["market"] = market
+            if len(combined) < 0.98 * len(f_sub):
+                print(f"[xgb_trainer] WARN: {symbol}: join kept {len(combined)}/{len(f_sub)} "
+                      "feature rows — persisted parquets may be stale vs min_date")
+        else:
+            f = compute_features(g)
+            # Keep the full feature matrix (E3 ablation masks select subsets later)
+            t = compute_targets(g)
+            combined = pd.concat([f, t], axis=1)
+            combined["symbol"] = symbol
+            combined["market"] = market
+            for c in base_cols:
+                combined[c] = base[c].to_numpy()
 
         # Trim to min_date (data was read from min_date-250d for warmup)
         if min_date is not None:
@@ -242,9 +341,13 @@ def build_panel(
         if len(combined) > 0:
             parts.append(combined)
 
-        del g, f, t, combined
+        del g, combined
         if sym_count % 50 == 0:
             gc.collect()
+
+    if f_all is not None:
+        del f_all, t_all
+        gc.collect()
 
     if not parts:
         raise RuntimeError(f"No labeled rows for market={market}")
@@ -268,9 +371,60 @@ def build_panel(
     return panel
 
 
-def target_features(catalog: dict, target: str) -> list[str]:
-    wl = catalog["whitelist_per_target"][target]
-    return wl + [f"{c}_cs_pct" for c in wl]
+def target_features(
+    catalog: dict, target: str, feature_set: str = "full",
+    panel_cols: set[str] | None = None,
+) -> list[str]:
+    """Feature columns for a target under an E3 ablation mask.
+
+    full        — the Gate-3 whitelist for the target (E2-faithful baseline)
+    no_static   — whitelist minus ADF-flagged (non-stationary) features
+    fib_only    — all Fibonacci-window range features present in the panel
+    legacy19    — union of the E2-era whitelists (VIF-5 / MI-30 catalog)
+    cs_pct_only — whitelist features, cross-sectional percentile ranks only
+    """
+    cols = panel_cols if panel_cols is not None else set()
+    if target not in catalog["whitelist_per_target"]:
+        # y_20d_stay (added 2026-10-25) has no Gate-3 whitelist entry yet — a
+        # Sprint-3 metadata pass is WI-009c work. Fall back to the full panel so
+        # trainer loops resolve non-empty instead of KeyError (WI-009b lesson:
+        # masks must resolve, never silently-empty).
+        import logging
+
+        logging.getLogger("xgb_trainer").warning(
+            "[xgb_trainer] no Gate-3 whitelist for target '%s' — using all panel features", target
+        )
+        wl = sorted(cols) if cols else None
+        if wl is None:
+            raise KeyError(target)  # no panel columns either: genuinely unusable
+    else:
+        wl = catalog["whitelist_per_target"][target]
+
+    def _existing(names: list[str]) -> list[str]:
+        return [f for f in names if cols is None or f in cols]
+
+    if feature_set == "no_static":
+        base = [f for f in wl if not catalog["stationarity"].get(f, {}).get("flagged")]
+    elif feature_set == "fib_only":
+        from src.feature_engine import FIB_FEATURE_NAMES
+        base = _existing(FIB_FEATURE_NAMES)
+    elif feature_set == "legacy19":
+        base = _existing(LEGACY_WHITELIST_UNION)
+    elif feature_set == "cs_pct_only":
+        base = _existing(wl)
+        return [f"{f}_cs_pct" for f in base]
+    else:  # full
+        base = _existing(wl)
+    return base + [f"{f}_cs_pct" for f in base if cols is None or f"{f}_cs_pct" in cols]
+
+
+LEGACY_WHITELIST_UNION = [
+    "adx_100", "adx_20", "adx_5", "amihud_10", "amihud_20", "amihud_50",
+    "atr_pct_100", "bb_width_10", "bb_width_5", "entropy_10", "entropy_20",
+    "frac_diff_close", "hurst_20", "kama_er_10", "kama_er_100", "kama_er_20",
+    "kama_er_5", "kama_er_50", "obv_zscore_50", "rsi_14", "rsi_14_slope_5",
+    "vwap_zscore_10", "vwap_zscore_5", "yangzhang_100",
+]
 
 
 # --------------------------------------------------------------------------- #
@@ -338,7 +492,8 @@ def train_market(
     placebo_seeds: int = 1, targets: list[str] | None = None,
     allow_fixture: bool = False, min_date: str | None = None,
     min_avail_mb: float = 1000.0, resume: bool = False,
-    xgb_verbose: bool = False,
+    xgb_verbose: bool = False, recompute_features: bool = False,
+    feature_set: str = "full",
 ) -> dict:
     import logging as _logging_mod
 
@@ -350,12 +505,12 @@ def train_market(
     logger, _log_path, _jsonl_path = setup_logging("xgb_trainer", market)
     catalog = load_catalog(market)
     params = xgb_params(cfg)
-    splitter = PurgedWalkForwardSplit(n_splits=n_splits, embargo_td=embargo_td)
 
     target_list = targets if targets else list(TARGET_COLUMNS)
+    suffix = "" if feature_set == "full" else f"_{feature_set}"
     # --resume: skip targets already in meta
     if resume:
-        meta_path = DATA_DIR / f"train_meta_{market}.json"
+        meta_path = DATA_DIR / f"train_meta_{market}{suffix}.json"
         if meta_path.exists():
             existing_meta = json.loads(meta_path.read_text())
             done_targets = set(existing_meta.get("targets", {}).keys())
@@ -363,12 +518,25 @@ def train_market(
             logger.info("resume: done=%s remaining=%s", sorted(done_targets), target_list)
 
     with log_phase(logger, "build_panel"):
-        panel = build_panel(market, catalog, allow_fixture=allow_fixture, min_date=min_date)
+        panel = build_panel(market, catalog, allow_fixture=allow_fixture, min_date=min_date,
+                            recompute_features=recompute_features)
 
     latest_date = panel["date"].max()
-    labeled = panel.dropna(subset=TARGET_COLUMNS).reset_index(drop=True)
-    infer = panel[panel["date"] == latest_date].reset_index(drop=True)
+    # Slim the panel to the union of E3 ablation masks + bookkeeping columns
+    # before training (the full 89-col panel x2 copies contributed to the OOM
+    # kill of the first E3 attempt on this 8 GB host).
+    from src.feature_engine import FIB_FEATURE_NAMES
+    keep_cols = (set(catalog["surviving_features"])
+                 | {f"{c}_cs_pct" for c in catalog["surviving_features"]}
+                 | set(FIB_FEATURE_NAMES) | set(LEGACY_WHITELIST_UNION)
+                 | set(TARGET_COLUMNS)
+                 | {"date", "symbol", "market", "close", "fwd_atr_ret_15", "fwd_atr_ret_20"})
+    slim = panel[[c for c in panel.columns if c in keep_cols]]
+    labeled = slim.dropna(subset=TARGET_COLUMNS).reset_index(drop=True)
+    infer = slim[slim["date"] == latest_date].reset_index(drop=True)
     dates = labeled["date"].to_numpy()
+    del panel, slim
+    gc.collect()
 
     universe = {
         "n_symbols": int(labeled["symbol"].nunique()),
@@ -384,7 +552,7 @@ def train_market(
                 universe["date_min"], universe["date_max"], universe["source"])
 
     # Load or initialize meta
-    meta_path = DATA_DIR / f"train_meta_{market}.json"
+    meta_path = DATA_DIR / f"train_meta_{market}{suffix}.json"
     if resume and meta_path.exists():
         meta = json.loads(meta_path.read_text())
     else:
@@ -394,14 +562,15 @@ def train_market(
             "n_splits": n_splits,
             "embargo_td": embargo_td,
             "n_placebo_seeds": placebo_seeds,
+            "feature_set": feature_set,
             "latest_date": str(pd.Timestamp(latest_date).date()),
             "universe": universe,
             "targets": {},
         }
 
     # Load or initialize OOF
-    oof_path = DATA_DIR / f"oof_{market}.parquet"
-    preds_path = DATA_DIR / f"predictions_{market}_latest.parquet"
+    oof_path = DATA_DIR / f"oof_{market}{suffix}.parquet"
+    preds_path = DATA_DIR / f"predictions_{market}{suffix}_latest.parquet"
     if resume and oof_path.exists():
         oof = pd.read_parquet(oof_path)
         preds = pd.read_parquet(preds_path)
@@ -416,7 +585,14 @@ def train_market(
         logger.info("=== target: %s ===", target)
         check_memory(logger, min_avail_mb)
 
-        feats = target_features(catalog, target)
+        # Per-target embargo: floor at the flat WI-009 value, grow to the label
+        # horizon, and never let the CLI/default weaken it (D-016).
+        target_embargo_td = resolve_embargo(target, embargo_td)
+        splitter = PurgedWalkForwardSplit(n_splits=n_splits, embargo_td=target_embargo_td)
+        logger.info("target %s: horizon=%d embargo_td=%d", target, target_horizon(target), target_embargo_td)
+
+        panel_cols = set(labeled.columns)
+        feats = target_features(catalog, target, feature_set=feature_set, panel_cols=panel_cols)
         # Ensure features exist in the panel (some may have been dropped)
         feats = [f for f in feats if f in labeled.columns]
         if not feats:
@@ -447,10 +623,16 @@ def train_market(
 
         # Final model on all labeled dates
         all_idx = np.arange(len(y))
-        fit_i, cal_i = purged_holdout(dates, all_idx, CALIB_FRACTION, embargo_td)
+        fit_i, cal_i = purged_holdout(dates, all_idx, CALIB_FRACTION, target_embargo_td)
         final = fit_calibrated(X[fit_i], y[fit_i], X[cal_i], y[cal_i], params)
 
-        tmeta: dict[str, object] = {"features": feats, "folds": stats, "final_model": None}
+        tmeta: dict[str, object] = {
+            "features": feats,
+            "folds": stats,
+            "final_model": None,
+            "horizon": target_horizon(target),
+            "embargo_td": target_embargo_td,
+        }
         if final is not None:
             with open(model_dir / f"{target}.pkl", "wb") as fh:
                 pickle.dump({"model": final, "features": feats, "market": market, "target": target}, fh)
@@ -485,7 +667,11 @@ def train_market(
 
         # Checkpoint after each target
         oof.to_parquet(oof_path, index=False)
-        preds["exit_urgency"] = preds[[PROB_COLUMN[t] for t in TARGET_COLUMNS if PROB_COLUMN[t] in preds.columns]].max(axis=1) if any(PROB_COLUMN[t] in preds.columns for t in TARGET_COLUMNS) else np.nan
+        preds["exit_urgency"] = (
+            preds[[c for c in EVENT_PROB_COLUMNS if c in preds.columns]].max(axis=1)
+            if any(c in preds.columns for c in EVENT_PROB_COLUMNS)
+            else np.nan
+        )
         preds.to_parquet(preds_path, index=False)
         meta_path.write_text(json.dumps(meta, indent=2))
         logger.info("checkpoint saved: %s", target)
@@ -515,6 +701,11 @@ def main() -> int:
     parser.add_argument("--min-avail-mb", type=float, default=1000.0, help="Abort if MemAvailable drops below this")
     parser.add_argument("--xgb-verbose", action="store_true")
     parser.add_argument("--resume", action="store_true", help="Skip targets already in train_meta JSON")
+    parser.add_argument("--recompute-features", action="store_true",
+                        help="Ignore persisted features/targets parquets; recompute in-loop (legacy path)")
+    parser.add_argument("--feature-set", default="full",
+                        choices=["full", "no_static", "fib_only", "legacy19", "cs_pct_only"],
+                        help="E3 ablation mask over the panel columns (default full = Gate-3 whitelist)")
     args = parser.parse_args()
     target_list = [t.strip() for t in args.targets.split(",")] if args.targets else None
 
@@ -525,7 +716,8 @@ def main() -> int:
             placebo_seeds=args.placebo_seeds, targets=target_list,
             allow_fixture=args.allow_fixture, min_date=args.min_date,
             min_avail_mb=args.min_avail_mb, resume=args.resume,
-            xgb_verbose=args.xgb_verbose,
+            xgb_verbose=args.xgb_verbose, recompute_features=args.recompute_features,
+            feature_set=args.feature_set,
         )
     update_state("EP-04", "training", {"markets": markets, "embargo_td": args.embargo, "n_splits": args.n_splits})
     return 0

@@ -21,6 +21,7 @@ import psutil
 BASE_DIR = Path(__file__).resolve().parents[1]
 STATE_FILE = BASE_DIR / "state" / "PIPELINE_STATE.json"
 DEAD_LETTER_FILE = BASE_DIR / "data" / "dead_letter_tickers.csv"
+ADJUDICATED_FILE = BASE_DIR / "data" / "adjudicated_tickers.csv"
 LOG_DIR = BASE_DIR / "logs"
 
 
@@ -73,8 +74,31 @@ def log_telemetry(step_name: str, status: str, duration_sec: float, extra: dict 
         f.write(json.dumps(payload) + "\n")
 
 
+def is_adjudicated_reinstate(symbol: str, market: str) -> bool:
+    """True if (symbol, market) carries a REINSTATE verdict in `data/adjudicated_tickers.csv`.
+
+    WI-010: human-gate adjudications are recorded there; `quarantine_ticker` must not
+    re-quarantine a ticker the gate reinstated (audit CB-01 spikes would otherwise
+    bounce it straight back into the dead-letter CSV). Read-only.
+    """
+    if not ADJUDICATED_FILE.exists():
+        return False
+    try:
+        with open(ADJUDICATED_FILE, newline="") as f:
+            return any(
+                row.get("symbol", "").upper() == symbol.upper()
+                and row.get("market", "").upper() == market.upper()
+                and row.get("verdict", "").upper() == "REINSTATE"
+                for row in csv.DictReader(f)
+            )
+    except OSError:
+        return False
+
+
 def quarantine_ticker(symbol: str, market: str, sprint: str, reason: str) -> None:
     """Log a broken/insufficient-history ticker to dead_letter_tickers.csv and continue."""
+    if is_adjudicated_reinstate(symbol, market):
+        return
     DEAD_LETTER_FILE.parent.mkdir(parents=True, exist_ok=True)
     file_exists = DEAD_LETTER_FILE.exists()
     with open(DEAD_LETTER_FILE, "a", newline="") as f:
