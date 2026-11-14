@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048e
 title: T2 full grid — `vol_expand` family (24 cells: 2 learners × 6 horizons × 2 markets)
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-14, Layer 1) — all 24 BH-FDR survivors accepted into the L1 pickle library (predictive-only); NOTE the `vol_expand` label itself stays QUARANTINED per D-026 ruling 2 (backward-looking window): pickles are predictive artifacts, no trading or forward use; re-integration potential is carried by the forward re-target (`vol_expand_fwd`) and the admin's larger-scale lower-threshold variant work (recorded 2026-11-14, not dispatched)
 agent: pm
 depends_on: [WI-048b]
 gate_layer: "1"

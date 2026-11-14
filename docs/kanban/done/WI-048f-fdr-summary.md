@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048f
 title: T2 cross-family summary — target-ranking table, FDR consolidation, winner-cell attribution
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-14, Layer 1) — consolidation stands; the `vol_expand` ranking row (0.7068) is QUARANTINED per D-026 ruling 2 (backward-looking label) — ranking excludes it for any forward use; winner-cell attribution retained as provenance
 agent: pm
 depends_on: [WI-048c, WI-048d, WI-048e]
 gate_layer: "1"

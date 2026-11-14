@@ -317,7 +317,10 @@ def test_xsec_vol_rank_reads_only_the_forward_window():
 def test_xsec_families_are_registered_as_their_own_fdr_grids():
     assert tg.XSEC_FAMILIES == ("xsec_vol_rank_bin", "xsec_vol_rank_cont")
     assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
-    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    # PM-owned grid wiring (2026-11-14): the WI-058..060 families join ALL_FAMILIES
+    # so the grid driver can score them; each stays its own BH-FDR family (m=24).
+    assert tg.ALL_FAMILIES == (tg.FAMILIES + tg.XSEC_FAMILIES
+                               + tg.MFE_MAE_FAMILIES + tg.MOVE_FAMILIES)
     assert 0.5 < tg.XSEC_TOP_FRAC < 1.0
     for family in tg.XSEC_FAMILIES:
         assert family in grid.FAMILY_REPORT
@@ -363,9 +366,10 @@ def test_mfe_mae_families_are_their_own_fdr_grids():
     assert tg.MFE_MAE_FAMILIES == ("mfe_mae_bin", "mfe_mae_cont")
     assert tg.MFE_MAE_RATIO_THRESHOLD == 1.0
     assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
-    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    assert tg.ALL_FAMILIES == (tg.FAMILIES + tg.XSEC_FAMILIES
+                               + tg.MFE_MAE_FAMILIES + tg.MOVE_FAMILIES)
     for family in tg.MFE_MAE_FAMILIES:
-        assert family not in tg.ALL_FAMILIES
+        assert family in tg.ALL_FAMILIES  # wired by the PM-owned grid step, 2026-11-14
         assert family in grid.FAMILY_REPORT
         assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24  # one BH-FDR family each
     assert grid.FAMILY_REPORT["mfe_mae_bin"] == "t2_grid_mfemaebin_summary.md"
@@ -437,9 +441,10 @@ def test_mfe_mae_tail_rows_are_nan_and_bin_zero():
 def test_move_families_are_their_own_fdr_grids():
     assert tg.MOVE_FAMILIES == ("move_occur", "move_dir_up")
     assert tg.FAMILIES == ("up", "high_low", "vol_expand", "vol_expand_fwd")
-    assert tg.ALL_FAMILIES == tg.FAMILIES + tg.XSEC_FAMILIES
+    assert tg.ALL_FAMILIES == (tg.FAMILIES + tg.XSEC_FAMILIES
+                               + tg.MFE_MAE_FAMILIES + tg.MOVE_FAMILIES)
     for family in tg.MOVE_FAMILIES:
-        assert family not in tg.ALL_FAMILIES
+        assert family in tg.ALL_FAMILIES  # wired by the PM-owned grid step, 2026-11-14
         assert family in grid.FAMILY_REPORT
         assert len(tg.HORIZONS) * len(grid.LEARNERS) * 2 == 24  # one BH-FDR family each
     assert grid.FAMILY_REPORT["move_occur"] == "t2_grid_moveoccur_summary.md"

@@ -1,7 +1,8 @@
 ---
 wi_id: WI-048d
 title: T2 full grid — `high_low` family (24 cells: 2 learners × 6 horizons × 2 markets)
-status: draft
+status: done
+verdict: RATIFIED (admin in chat 2026-11-14, Layer 1) — all 24 BH-FDR survivors accepted into the L1 pickle library (predictive-only rule, no effect-size floor, EVAL unburned)
 agent: pm
 depends_on: [WI-048b]
 gate_layer: "1"

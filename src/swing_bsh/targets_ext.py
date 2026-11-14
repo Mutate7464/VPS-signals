@@ -60,20 +60,25 @@ XSEC_FAMILIES: tuple[str, ...] = ("xsec_vol_rank_bin", "xsec_vol_rank_cont")
 MFE_MAE_FAMILIES: tuple[str, ...] = ("mfe_mae_bin", "mfe_mae_cont")
 """WI-059 — payoff-ratio families (ATR-normalized MFE/MAE over `[t0+1, t0+h]`).
 
-Built by :func:`mfe_mae_bin_labels` / :func:`mfe_mae_cont_labels`; kept outside
-`FAMILIES` / `ALL_FAMILIES` because the full-panel wiring is the PM-owned grid WI."""
+Built by :func:`mfe_mae_bin_labels` / :func:`mfe_mae_cont_labels`; wired into
+`ALL_FAMILIES` by the PM-owned grid step (WI-059/060 left the full-panel wiring
+to PM)."""
 MFE_MAE_RATIO_THRESHOLD = 1.0
 """Cut of the `mfe_mae_bin` family: favourable / adverse excursion must exceed this."""
 MOVE_FAMILIES: tuple[str, ...] = ("move_occur", "move_dir_up")
 """WI-060 — expansion-direction decomposition: A = a move happens (`move_occur`,
 `high_low`-like), B = its direction is up (`move_dir_up`, conditional on a move).
 
-Built by :func:`move_occur_labels` / :func:`move_dir_up_labels`; kept outside
-`FAMILIES` / `ALL_FAMILIES` because the full-panel wiring is the PM-owned grid WI.
-The pair is reported as the fixed product `P(A)·P(B|A)`, never as a stacked OOF
-feature.
+Built by :func:`move_occur_labels` / :func:`move_dir_up_labels`; wired into
+`ALL_FAMILIES` by the PM-owned grid step (WI-059/060 left the full-panel wiring
+to PM). The pair is reported as the fixed product `P(A)·P(B|A)`, never as a stacked
+OOF feature.
 """
-ALL_FAMILIES: tuple[str, ...] = FAMILIES + XSEC_FAMILIES
+# PM-owned grid wiring (WI-058..060): all T2 families scoreable via the grid
+# driver. `vol_expand` stays registered (quarantined verdict, D-026 ruling 2) so
+# the family remains scoreable/re-runnable.
+ALL_FAMILIES: tuple[str, ...] = (FAMILIES + XSEC_FAMILIES + MFE_MAE_FAMILIES
+                                 + MOVE_FAMILIES)
 HORIZONS: tuple[int, ...] = (5, 8, 13, 21, 34, 55)
 EVENT_MODES: tuple[str, ...] = ext.EVENT_MODES
 PINNED_EVENT: dict[str, str] = {"USD": "exact", "CAD": "tol2"}
