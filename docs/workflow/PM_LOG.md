@@ -11,6 +11,7 @@
 - **Not kept (admin-directed flags, report §6):** 21 of 27 block cols excluded from the L1/L2 candidate set — L0-1 (3 absorbed + 2 no-delta), L0-2 (8 absorbed), L0-3 (3 no-delta), L0-4 (4 absorbed), L0-5 `disp_atr_pct_21` (absorbed), L0-6 (4 no-delta). Only addition: `disp_entropy_39`.
 - **Admin direction recorded (not dispatched):** larger variant run at a lower rho-prune threshold to maximize parameters for L1/L2 grids — a NEW pre-registered family/variant, never merged into the ρ=0.3 verdicts; the flagged not-kept cols are its re-admission population.
 - **Open items:** WI-048d/e/f verdicts still PROVISIONAL (ratification pending); L1 grid runs WI-058…061 pending, `ALL_FAMILIES` lacks `mfe_mae_*`/`move_*` wiring (PM-owned); scripts/run_l0_r12.py + reports/l0_r12_v2/ uncommitted (this cycle's commit).
+- **Correction (later 2026-11-14):** WI-048d/e/f, WI-058 (bin) and WI-059a RATIFIED (admin in chat, Layer 1) — board rows + card `verdict:` lines updated; `mfe_mae_*`/`move_*` wiring into `ALL_FAMILIES` landed same session (tests 38 passed). Board then compacted to pointer-only rows (≤6 KB from 22 KB) with cards indexed in `docs/execution/WI_AND_RUN_LEDGER.md`; row discipline + close-out compaction now codified in WORKFLOW §2.
 - **Cursor:** next cycle ingests sessions from 2026-11-13T17:00Z forward.
 
 ## 2026-11-13 — Cycle 33 (WI-048 d→e→f chain closed — PM-verified; verdicts PROVISIONAL)

@@ -45,3 +45,49 @@
 - **Accepted MVP** — verified against acceptance criteria, tested, merged to main (all on `main`; gate decisions in `docs/human/briefings/`).
 - **Necessary Carryover** — deferred capability with documented entry point (see backlog in `PHASE2_HANDOVER_RUNBOOK.md`).
 - **Attempted & Rejected** — failed/rejected approach; root causes extracted into `docs/architecture/DECISIONS_AND_NEGATIVE_KNOWLEDGE.md`.
+
+## Kanban card archive (2026-11-14 compaction — cards moved from `docs/kanban/done/` to `docs/archive/wi/`; full narratives in the pre-lean board `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md` and in each card)
+
+| Card | Verdict (one line) |
+|---|---|
+| WI-021-fib-pass4-accounting-fix | fib overnight chain stage, DONE |
+| WI-022-fib-regime-overlay | fib overnight chain stage, DONE |
+| WI-023-fib-trade-labels-exit-grid | fib overnight chain stage, DONE |
+| WI-024-fib-meta-label | BLOCKED_PRECONDITION (policy-null) |
+| WI-025-fib-quantile-magnitude | fib overnight chain stage, DONE; chain report `reports/fib_swings/OVERNIGHT_REPORT.md` |
+| WI-027-fib-regime-labels | PASS — up_high/USD +22.75pp; chop_normal/ALL +3.89pp |
+| WI-027b-fib-regime-unsupervised | FAIL — rule-based labels chosen |
+| WI-028-fib-entry-window | INCONCLUSIVE; at-bottom entry recommended |
+| WI-030-fib-exit-policy | FAIL — frozen t15_s10_d39_close stands |
+| WI-031-synthetic-validation | PASS — ADOPT_LOOSE_4OF5 adopted (cycle 27) |
+| WI-032-swing-bsh-probe | PASS — probe CLEAR both markets (`reports/wi032_probe.md`) |
+| WI-033-swing-bsh-model | REJECT both markets; frozen fib rules stand |
+| WI-035-three-binary-xgb-gate | PASS — no-edge theory confirmed |
+| WI-036-extended-run-loosened | PASS — 57 FDR survivors, all b_hold short-h (`reports/wi036_summary.md`) |
+| WI-036-ESCALATION | archived with WI-036 |
+| WI-037-hold-filter-tradeable-gate | REJECT both markets, RATIFIED Layer-2 (`reports/wi037_summary.md`) |
+| WI-037-ESCALATION | archived with WI-037 |
+| WI-038-long-horizon-gap-fill | PASS RATIFIED — long-h b_hold survivors h∈{34,55,89} join L1 (`reports/wi038_summary.md`) |
+| WI-039-regime-audit-hold | PASS — b_hold robust both markets (`reports/wi039_summary.md`) |
+| WI-040-bhold-library-consolidation | DONE — manifest 9,745 rows (`reports/wi040_library_manifest.md`) |
+| WI-041-l2-harness | DONE — batch approved; synthetic smoke only, PROVISIONAL |
+| WI-042-rerun-modern-l2s | RATIFIED — {ADOPT 20 econ-nil, INERT 49, REJECT 21}; no deployment (`reports/l2/rerun_modern.md`) |
+| WI-043-rerun-legacy-l2s | RATIFIED — wi012/018/011 closed permanently (`reports/l2/rerun_legacy.md`) |
+| WI-044-learner-extension | RATIFIED — 6 survivors join L1 (`reports/wi044_summary.md`) |
+| WI-045-edge-decay-probe | DONE — T3 prep |
+| WI-046-tiered-workflow-docs | DONE — doc-only |
+| WI-047-feature-gap-research | DONE — shortlist delivered |
+| WI-048a-target-labels | DONE — label builders + tests + smoke |
+| WI-048b-label-density-probe | DONE — denser market USD; geometry pinned |
+| WI-048c-grid-directional | RATIFIED — 11 `up` survivors join L1 (`reports/t2_grid_up_summary.md`) |
+| WI-048d-grid-highlow | RATIFIED — 24/24 survivors join L1 (`reports/t2_grid_highlow_summary.md`) |
+| WI-048e-grid-volexpand | RATIFIED — 24/24 join L1; label QUARANTINED per D-026 ruling 2 (`reports/t2_grid_volexpand_summary.md`) |
+| WI-048f-fdr-summary | RATIFIED — cross-family ranking recorded (`reports/t2_targets_ext_summary.md`) |
+| WI-050 | DONE PM-verified — precision@k harness |
+| WI-051 | DONE PM-verified — forward `vol_expand_fwd` label |
+| WI-052 | DONE PM-verified — L0-1 swing-structure block |
+| WI-053 | DONE PM-verified — L0-2 realized asymmetry; R12: absorbed |
+| WI-054 | DONE PM-verified — L0-3 regime age/run-length; R12: 0/12 |
+| WI-055 | DONE PM-verified — L0-4 jump intensity; R12: absorbed |
+| WI-056 | DONE PM-verified — L0-5 vol-dispersion; **L0-5 survives (`disp_entropy_39`)** — card kept in `done/` |
+| WI-057 | DONE PM-verified — L0-6 effort-vs-result; R12: 0/12 — card kept in `done/` |

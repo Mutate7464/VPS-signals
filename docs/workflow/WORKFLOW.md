@@ -38,7 +38,8 @@ GOAL ──► DESIGN ──► PLAN ──► EXECUTE ──► QA/GATE ──�
 
 - `docs/workflow/BOARD.md` is the only board. Kanban dirs under `docs/kanban/` hold WI files and lock bookkeeping, never a second board.
 - **Flat rows** (D-020 §5): `[TODO] | [WIP] | [BLOCKED] | [DONE]` · `WI-### | title | G-## | write_files or plan | evidence (1 line)`.
-- **Target size ≤5 KB.** DONE rows older than 7 days collapse to one line at the weekly review.
+- **Target size ≤5 KB (working target ~3–6 KB).** Rows are **pointer-only**: a DONE row is one line — title, gate, verdict tag (e.g. `RATIFIED L1 2026-11-14`), evidence path. Verdict narratives, test counts, and ratification quotes live in the WI card and the cited report; `PM_LOG.md` stays the canonical decision record. Write the row one-line at close-out — do not wait for the weekly collapse.
+- **Card compaction at close-out, not as a weekly chore:** when `docs/kanban/done/` exceeds 10 cards, append one summary row per card to `docs/execution/WI_AND_RUN_LEDGER.md` and `git mv` the oldest to `docs/archive/wi/` in the same close-out commit. (2026-11-14 retro-fix: the rule had never fired — `done/` reached 46 cards while the board grew to 22 KB.)
 - **Pull:** the top TODO row is "do next". Expedite (`⚡`) max 1, reserved for breakage that blocks the daily shortlist.
 - **Aging:** BLOCKED >7 days or EXECUTING >3 days is flagged at the weekly review.
 - **File locks:** before a WI enters `in_progress/`, its `write_files` must be free in `.hermes/locks.json` (gitignored, Hermes-managed). Release on DONE or BLOCKED.
