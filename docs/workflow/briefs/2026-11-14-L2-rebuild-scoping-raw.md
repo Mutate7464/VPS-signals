@@ -8,8 +8,10 @@
 
 Produce an L2 (trading-overlay) rebuild scoping plan — a design-level D-0XX brief
 with a WI decomposition — that converts the frozen, ratified L1 predictive library
-into a manually-operated screener judged on economic expected value, while never
-re-proposing any overlay question already permanently closed under D-024.
+into a manually-operated screener judged on economic expected value, treating the
+D-024 overlay closures as binding to their original inputs: closed questions may
+re-enter ONLY via a named structural change or a materially new input (new L1
+families, meta-label layer, regression read-out, extended feature panel).
 
 ## PRODUCT OBJECTIVE (objective function — optimise THIS, not AUC)
 
@@ -192,20 +194,20 @@ A design brief (D-0XX) containing:
 
 ## OPEN QUESTIONS (SCQA — ratify or overturn in one line)
 
-1. **Primary construction bet.** S: The L1 library's strength is ranking +
+1. **Primary construction bet (RESOLVED by admin 2026-11-14: yes, proceed stepwise).** S: The L1 library's strength is ranking +
    calibration (IC +0.65, AUC 0.82) but every threshold-based overlay died of thin
    mass; prevalence at the frozen fib entries is ~0.4%. C: Thresholding calibrated
    probabilities converts a ranking asset into a decision-grid liability.
    Q: Should the rebuild lead with mechanism (b) cross-sectional top/bottom-decile
    ranking (cost-amortizing, plays to ranking strength) rather than any
-   probability-threshold overlay? **A/REC: yes — make (b) the primary WI and
-   (a) time-based exits the second; (c)/(d) are follow-ons only if (a)/(b) show
-   life.**
-2. **Fold-concentration attack.** S: 55% of measured decay is fold-concentration
+   probability-threshold overlay? **A/DECIDED: yes — (b) leads the WI chain
+   stepwise, (a) time-based exits second; (c)/(d) are follow-ons only if
+   (a)/(b) show life.**
+2. **Fold-concentration attack (RESOLVED by admin 2026-11-14: yes).** S: 55% of measured decay is fold-concentration
    (edge lives in 1–2 folds). C: Any single-split CALIB/EVAL verdict inherits it.
    Q: Should the rebuild mandate fold-distribution reporting (per-fold edge +
    concentration share) as a mandatory L2 report column before EVAL burn?
-   **A/REC: yes — cheap, harness-level, prevents repeating WI-042's illusion.**
+   **A/DECIDED: yes — harness-level mandate, prevents repeating WI-042's illusion.**
 3. **Meta-label sequencing (RESOLVED by admin 2026-11-14).** S: WI-062 machinery is
    ratified but unrun on the full universe; a precision filter is most valuable
    inside a ranking construction. C: `meta_label_ext.py` is library-only — a
@@ -213,11 +215,12 @@ A design brief (D-0XX) containing:
    run? **A/DECIDED: now, as the rebuild's FIRST input-prep WI (driver WI first,
    ~0.2–0.5 core-h), before the L2 chain — the run feeds the L2 stack as an
    additional probability input.**
-4. **EVAL virginity budget.** S: EVAL remains unburned for the new families.
+4. **EVAL virginity budget (RESOLVED by admin 2026-11-14: yes).** S: EVAL remains
+   unburned for the new families.
    C: The rebuild may want more than one EVAL look across its WIs.
    Q: One pre-registered EVAL spend for the whole rebuild (single consolidated
-   gate), or per-WI? **A/REC: single consolidated EVAL gate at the end of the WI
-   chain; per-WI EVAL only via explicit admin waiver.**
+   gate), or per-WI? **A/DECIDED: single consolidated EVAL gate at the end of the
+   WI chain; per-WI EVAL only via explicit admin waiver.**
 
 ## ALREADY PLANNED — do NOT re-propose
 
