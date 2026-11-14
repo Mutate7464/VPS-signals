@@ -3,6 +3,13 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-14 — Cycle 37 (D-027 issued — L2 rebuild scoping approved; Phase-1 chain dispatched)
+
+- **D-027 created + committed** (`docs/workflow/designs/D-027-l2-rebuild.md`, commit ec39c78): (b)-led stepwise screener chain, WI-064…071, ≈11–14 core-h total, decay attribution (fold-concentration 55% / cost-floor 44.8%) as design driver. Source: batch-planner fullpack `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md`.
+- **Phase 0 defaults ADOPTED + Approval Matrix APPROVED (admin in chat).** Phase-1 chain (WI-064 meta-label driver → WI-065 harness upgrade) dispatched as ONE detached chain (PID 77422, `logs/phase1_chain.sh`, EXIT_64/EXIT_65 markers); watchdog cron 5088aa7d559e every 20m delivers close-out to this chat and STOPS before WI-066.
+- **WI-066 BLOCKED on admin gate values** (D-027 §11): materiality floor, fold-ceiling confirmation (50% max-share / majority-positive), min names per date. Also open: shorting feasibility, sector map (WI-070), INCONCLUSIVE standing, FDR pooling choice.
+- **Cursor:** next cycle ingests sessions from 2026-11-14T22:00Z forward.
+
 ## 2026-11-14 — Cycle 36 (RATIFICATION: WI-059b/060/061/062 — admin in chat, Layer 1)
 
 - **Ratified (doc-only commit):** WI-059b (cont families, quarantine superseded), WI-060 (move_occur/move_dir_up), WI-061 (method variant, no cells by design), WI-062 (meta-label machinery; full-universe run remains a separate future gate). Board rows stripped of PROVISIONAL, card frontmatter `status: done` + `verdict:` lines, stale WI-061 `[TODO]` row replaced with its DONE row (the queued "variant grid" was never part of the card's m=12 scope). WI-058/WI-059 card verdicts (ratified earlier today, uncommitted) landed in the same commit.
