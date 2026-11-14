@@ -28,8 +28,11 @@ manual on the operator's Mac.
 ## CURRENT CONDITIONS (verified 2026-11-14)
 
 ### Layer 1 library — FROZEN for this rebuild (admin ruling 2026-11-14)
-- Manifest `data/models/wi040/manifest.parquet`, superset **1,015 rows** (WI-059b
-  consolidation); original WI-040 core 9,745-row manifest lineage.
+- Manifest `data/models/wi040/manifest.parquet` — **9,745 rows** (original L1
+  library core: b_hold, up, high_low, vol_expand lineage); plus
+  `data/models/wi048/manifest.parquet` — **1,015 rows** (post-WI-058 new-family
+  superset: xsec_vol_rank, mfe_mae, move_*). Both are frozen L2 inputs (see the
+  L2 inputs ruling below).
 - Strongest cells (all BH-FDR survivors, cross-market min statistics, Layer-1
   predictive-only verdicts — NO trading claim licensed):
   - `xsec_vol_rank_bin` (WI-058): 24/24 survivors, **min cross-market AUC 0.8226**
@@ -49,15 +52,19 @@ manual on the operator's Mac.
   purged CV (WI-062, machinery ratified; **full-universe meta-label run NOT yet
   run** — a separate future gate); regression read-out path
   (`cell_cv(regression=True)`, float32 labels, OOF `fit_regressor`, WI-060).
-- **L2 inputs ruling (admin 2026-11-14):** L2 models consume the **FULL frozen L1
-  manifest — the 1,015-row consolidated superset** (`data/models/wi040/manifest.parquet`
-  as consolidated by WI-059b; the 9,745-row WI-040 core is superseded lineage) plus the
+- **L2 inputs ruling (admin 2026-11-14, corrected 2026-11-14 after intake audit):**
+  L2 models consume the **UNION of both frozen manifests** —
+  `data/models/wi040/manifest.parquet` (9,745 rows: the original L1 library —
+  b_hold, up, high_low, vol_expand lineage) AND
+  `data/models/wi048/manifest.parquet` (1,015 rows: the post-WI-058 new-family
+  superset — xsec_vol_rank, mfe_mae, move_* families) — plus the
   **full causal feature panel + regime metafeatures** via `--infer` — not just the
   top cells. More inputs = more correlation signal for the L2 layer, provided the
   L2 fit stays CALIB-only and regularised; redundancy across correlated cells is
   handled by regularisation/stack pruning inside the harness, never by silently
   dropping library inputs. This must be EARNED in the plan (regularisation /
-  pruning design), not asserted.
+  pruning design), not asserted. Fits must be sized to the 2.5 core-h per-WI cap
+  on 2 vCPU / 8 GB.
 - `vol_expand` label is BACKWARD-looking — quarantined (D-026 ruling); forward use
   only via `vol_expand_fwd`. The WI-058 cont top-of-date indicator artifact is
   retained for later use per admin (flagged not-continuous).
@@ -128,6 +135,30 @@ vs short bottom-decile — cost-amortizing);
   reporting (per-fold edge + concentration share) as a mandatory column, full-L1
   manifest input support, and any other upgrade the plan justifies — extend, don't
   rebuild.
+
+## INTAKE ANSWERS (round-2 editor questions, resolved by admin 2026-11-14)
+
+1. **~10%/trade target:** design aspiration ONLY — explicitly NOT a gate on any
+   gate or step (see Product Objective). Measured edges are ≤1 bp net; the plan
+   must state the magnitude path honestly.
+2. **25 bps cost floor:** **per side** (inside `r_frozen`), consistent with all
+   D-024 edge comparisons; round-trip ≈ 50 bps. Edge comparisons use the same
+   convention as the frozen baseline.
+3. **Manifests:** BOTH are inputs, union — wi040 (9,745 rows, original library)
+   and wi048 (1,015 rows, new-family superset). Neither is discarded; the earlier
+   "1,015-row superset of wi040" phrasing was an error, corrected above.
+4. **D-024 closures:** binding **to the inputs they were computed on**. REJECT
+   closes a question as-run; it re-enters ONLY via a named structural change or a
+   materially new input (new L1 families, meta-label layer, regression read-out,
+   extended feature panel). INERT likewise (an INERT caused by a coverage gap —
+   e.g. missing manifest cells — is reconsiderable once the gap is filled).
+5. **Meta-label output standing:** the L1.5 meta-label is a **D-026 fixed product**
+   (not-stacking ruling intact at L1.5), AND its OOF probabilities are a
+   **permitted L2 stack input** (stacking in L2 is authorized — Decision 8).
+   Both statements hold simultaneously; no contradiction.
+6. **Rebuild stop condition:** the whole rebuild stops (hands back to admin) when
+   every lead construction fails its CALIB gate under the single consolidated
+   EVAL discipline; per-WI EVAL burns require explicit admin waiver.
 
 ## IDEAL RESULT
 
