@@ -6,7 +6,7 @@
 ## 2026-11-14 — Cycle 36 (RATIFICATION: WI-059b/060/061/062 — admin in chat, Layer 1)
 
 - **Ratified (doc-only commit):** WI-059b (cont families, quarantine superseded), WI-060 (move_occur/move_dir_up), WI-061 (method variant, no cells by design), WI-062 (meta-label machinery; full-universe run remains a separate future gate). Board rows stripped of PROVISIONAL, card frontmatter `status: done` + `verdict:` lines, stale WI-061 `[TODO]` row replaced with its DONE row (the queued "variant grid" was never part of the card's m=12 scope). WI-058/WI-059 card verdicts (ratified earlier today, uncommitted) landed in the same commit.
-- **Delegated cleanup (this cycle's open items):** WI-034 deferred card still in `ready/`; stale umbrella draft `docs/kanban/draft/WI-048-prediction-expansion.md` (split + completed 2026-11-10); WI-049 TODO (T3 survey, 0.1 core-h, dep WI-045 done). All to clear before the L2 rebuild per admin.
+- **Delegated cleanup DONE (admin 2026-11-14, same commit):** WI-034 card archived to `docs/archive/wi/` + ledger row; stale umbrella draft `docs/kanban/draft/WI-048-prediction-expansion.md` deleted; WI-049 `[TODO]` → `[FOLDED]` into L2 rebuild scope (card retained in `draft/` as source material); **L1 FREEZE recorded on BOARD** — larger-variant lower-ρ family parked as a post-rebuild WI. Board now has zero dispatchable old items; next deliverable is the L2 rebuild scoping brief.
 - **Cursor:** next cycle ingests sessions from 2026-11-14T19:00Z forward.
 
 ## 2026-11-14 — Cycle 35 (WI-060/061/062 closed — meta-label + uniqueness + move grids; PROVISIONAL)

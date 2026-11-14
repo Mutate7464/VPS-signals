@@ -90,4 +90,4 @@
 | WI-054 | DONE PM-verified — L0-3 regime age/run-length; R12: 0/12 |
 | WI-055 | DONE PM-verified — L0-4 jump intensity; R12: absorbed |
 | WI-056 | DONE PM-verified — L0-5 vol-dispersion; **L0-5 survives (`disp_entropy_39`)** — card kept in `done/` |
-| WI-057 | DONE PM-verified — L0-6 effort-vs-result; R12: 0/12 — card kept in `done/` |
+| WI-057 | DONE PM-verified — L0-6 effort-vs-result; R12: 0/12 — card kept in `done/` || WI-034 | DEFERRED by admin 2026-11-09 (superseded by WI-035/036; never dispatched) — archived to docs/archive/wi/ 2026-11-14 |

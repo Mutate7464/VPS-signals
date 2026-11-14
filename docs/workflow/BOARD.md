@@ -4,7 +4,7 @@
 > Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/` (cards hold detail); archived cards: `docs/archive/wi/` (indexed in `docs/execution/WI_AND_RUN_LEDGER.md`).
 > Full pre-lean board (2026-11-14, all per-WI narratives preserved): `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md`; older: `docs/workflow/archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-14 (PM cycle 36) — RATIFICATION: WI-059b (cont families on regression read-out, min IC +0.6475 / +0.1665), WI-060 (move_occur 0.6033 / move_dir_up 0.6407), WI-061 (method variant), WI-062 (meta-label machinery) all RATIFIED (admin in chat, Layer 1). D-026 Phase 1 DONE + RATIFIED: L0 R12 (L0-5 survives; `disp_entropy_39` in), WI-058 bin (min AUC 0.8226, library best), WI-059a (weak), WI-048d/e/f (`vol_expand` quarantine upheld). Admin direction recorded, NOT dispatched: larger variant at lower rho-prune threshold (new pre-registered family). Locks EMPTY; nothing in `in_progress/`. Next: clear old items before L2 rebuild — WI-049 (T3 survey, 0.1 core-h), archive deferred WI-034 card, then L2 rebuild planning.
+**Last updated:** 2026-11-14 (PM cycle 36) — RATIFICATION: WI-059b (cont families on regression read-out, min IC +0.6475 / +0.1665), WI-060 (move_occur 0.6033 / move_dir_up 0.6407), WI-061 (method variant), WI-062 (meta-label machinery) all RATIFIED (admin in chat, Layer 1). D-026 Phase 1 DONE + RATIFIED: L0 R12 (L0-5 survives; `disp_entropy_39` in), WI-058 bin (min AUC 0.8226, library best), WI-059a (weak), WI-048d/e/f (`vol_expand` quarantine upheld). **Cleanup (admin 2026-11-14):** WI-034 archived; WI-048 umbrella draft deleted; WI-049 folded into L2 rebuild scope; **L1 library FROZEN for the L2 rebuild** — larger-variant lower-ρ family PARKED post-rebuild. Locks EMPTY; `ready/` EMPTY; nothing in `in_progress/`. Next: L2 rebuild scoping brief.
 
 ## ACTIVE
 ### D-026 SPRINT (L0/L1 extension — T1/T2; plan `docs/plans/26-W46-L0L1-extension-review-v2.md`, design `docs/workflow/designs/D-026-l0l1-extension.md`; order Phase 0 → L0 → L1 → L1.5)
@@ -20,14 +20,15 @@
 - [DONE] WI-059a | L1-2 `mfe_mae_bin` grid — 24/24 survivors RATIFIED L1 (weak lift, min AUC 0.5515) | T2 | `reports/t2_grid_mfemaebin_summary.md`; card `done/`
 - [DONE] WI-062 | L1.5 meta-label (swing-side primary) + permuted-label leakage test — not-stacking per D-026 | T2 | **RATIFIED (admin in chat 2026-11-14, Layer 1)** — machinery accepted; full-universe meta-label run is a separate future gate; card `done/`
 
-### D-025 SPRINT (tiered workflow T1→T2→T3, admin approved 2026-11-10) — complete except WI-049
-- [TODO] WI-049 | mechanism survey doc (depends WI-045) | T3 | 0.1 core-h
+### D-025 SPRINT (tiered workflow T1→T2→T3, admin approved 2026-11-10) — complete; WI-049 folded into L2 rebuild scope
+- [FOLDED] WI-049 | mechanism survey doc (depends WI-045, done) | T3 | folded into the L2 rebuild brief as its framing section (admin 2026-11-14) — do NOT dispatch standalone; card `docs/kanban/draft/WI-049-trade-mechanism-survey.md` retained as source material
+- **L1 FREEZE (admin 2026-11-14):** the L1 library is FROZEN for the L2 rebuild — the larger-variant family (lower ρ-prune threshold, parameter-max; re-admission population = the 21 not-kept L0 block cols) is PARKED as a post-rebuild WI, dispatch only after the L2 read-out shows parameter count is the binding constraint.
 - [DONE] WI-045…048f | tier map · edge-decay probe · feature-gap inventory · label builders + density probe · grids `up`/`high_low`/`vol_expand` + cross-family FDR consolidation — all PM-verified; survivors RATIFIED into the L1 library (`vol_expand` quarantined per D-026 ruling 2; re-integration carried by `vol_expand_fwd` + the admin's larger-scale lower-threshold variant) | T2 | `reports/t2_grid_up_summary.md`, `reports/t2_grid_highlow_summary.md`, `reports/t2_grid_volexpand_summary.md`, `reports/t2_targets_ext_summary.md`; cards `docs/archive/wi/`
 
 ### CLOSED
 - D-024 batch (WI-032…044) — all DONE + RATIFIED 2026-11-09/10: L2 reruns closed per D-024 pre-committed closure (REJECT/INERT permanent; 20 ADOPTs statistically real, economically nil — NO deployment); L1 library consolidated (WI-040 manifest 9,745 rows) | `reports/l2/rerun_modern.md`, `reports/l2/rerun_legacy.md`, `reports/wi040_library_manifest.md`; cards `docs/archive/wi/`
 - D-023 and earlier (WI-001…031) — closed; cards `docs/archive/wi/`, briefs `docs/human/briefings/`, per-WI one-liners in this file's git history
-- [DONE] WI-034 | binary-decompose probe | DEFERRED by admin 2026-11-09 (superseded by WI-035/036 outcome; kept for the record only) — card in `ready/`
+- [DONE] WI-034 | binary-decompose probe | DEFERRED by admin 2026-11-09 (superseded by WI-035/036; question re-answered by WI-060's move decomposition) — card archived 2026-11-14 to `docs/archive/wi/`
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 
 ## BACKLOG
