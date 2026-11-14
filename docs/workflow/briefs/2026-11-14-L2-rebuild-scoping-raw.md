@@ -156,9 +156,17 @@ vs short bottom-decile — cost-amortizing);
    (not-stacking ruling intact at L1.5), AND its OOF probabilities are a
    **permitted L2 stack input** (stacking in L2 is authorized — Decision 8).
    Both statements hold simultaneously; no contradiction.
-6. **Rebuild stop condition:** the whole rebuild stops (hands back to admin) when
-   every lead construction fails its CALIB gate under the single consolidated
-   EVAL discipline; per-WI EVAL burns require explicit admin waiver.
+6. **Rebuild stop condition:** CALIB failure ALONE fires the stop for a
+   construction (no EVAL burn on a dead CALIB gate); the consolidated EVAL gate
+   fires only at the end for constructions that survived CALIB. The whole rebuild
+   hands back to admin when every lead construction has failed CALIB.
+7. **Manifest dedup:** the wi040 ∪ wi048 union is **deduplicated on the cell key**
+   (market/learner/variant/family/horizon/fold) inside the harness — no cell
+   enters an L2 fit twice.
+8. **EV convention:** **25 bps per side** everywhere, the D-024 convention
+   (round-trip ≈ 50 bps as a derived note only).
+9. **~10%/trade role:** qualitative aspiration that RANKS designs — not an
+   optimisation objective, not a gate.
 
 ## IDEAL RESULT
 
