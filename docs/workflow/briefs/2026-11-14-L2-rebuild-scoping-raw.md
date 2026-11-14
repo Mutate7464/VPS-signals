@@ -44,6 +44,13 @@ single-user; IBKR Gateway stays manual on the operator's Mac.
   purged CV (WI-062, machinery ratified; **full-universe meta-label run NOT yet
   run** — a separate future gate); regression read-out path
   (`cell_cv(regression=True)`, float32 labels, OOF `fit_regressor`, WI-060).
+- **L2 inputs ruling (admin 2026-11-14):** L2 models consume the **FULL frozen L1
+  manifest** (all families, horizons, learners — the 1,015-row superset) plus the
+  **full causal feature panel + regime metafeatures** via `--infer` — not just the
+  top cells. More inputs = more correlation signal for the L2 layer, provided the
+  L2 fit stays CALIB-only and regularised; redundancy across correlated cells is
+  handled by regularisation/stack pruning inside the harness, never by silently
+  dropping library inputs.
 - `vol_expand` label is BACKWARD-looking — quarantined (D-026 ruling); forward use
   only via `vol_expand_fwd`. The WI-058 cont top-of-date indicator artifact is
   retained for later use per admin (flagged not-continuous).
@@ -91,7 +98,23 @@ vs short bottom-decile — cost-amortizing);
 ### Parked (explicitly out of scope for this rebuild)
 - Larger-variant L1 family (lower ρ-prune threshold, parameter-max; re-admission
   population = 21 not-kept L0 block cols) — parked post-rebuild; L1 is FROZEN.
-- WI-062 full-universe meta-label run — separate future L1.5 gate.
+- **Meta-label full-universe run — AUTHORIZED NOW (admin 2026-11-14):** run as the
+  rebuild's first input-prep WI, BEFORE the L2 chain. Note: `meta_label_ext.py` is
+  library-only — a small PM-owned driver WI is required first (wire primary swing
+  sides + outcomes from the frozen fib baseline, features from the `--infer`
+  panel, run `meta_oof` on both markets; ~0.2–0.5 core-h).
+
+### Old-artifact relevance (admin question, 2026-11-14)
+- Older runs/models remain relevant as **evidence, not as verdicts**: gate records,
+  failure mechanisms, and frozen artifacts carry forward; verdicts bind only to the
+  inputs they were computed on. A closed question may be re-opened when materially
+  NEW inputs exist (L1 families WI-058…062 post-date every D-024 rerun; the
+  regression read-out and meta-label layer did not exist then) — the re-open must
+  name the new input AND the old failure mechanism it changes.
+- **WI-041 harness upgrade is IN SCOPE** (admin 2026-11-14): fold-distribution
+  reporting (per-fold edge + concentration share) as a mandatory column, full-L1
+  manifest input support, and any other upgrade the plan justifies — extend, don't
+  rebuild.
 
 ## IDEAL RESULT
 
@@ -101,22 +124,36 @@ A design brief (D-0XX) containing:
    condition each.
 2. **A ranked, scoped WI decomposition** (draft-ready for kanban cards): per WI —
    objective, layer (L2), core-hour cap (default 2.5), write_files, test_command,
-   DoD, dependency order.
-3. **Gate design:** how each WI is judged (CALIB-only tuning, one-shot EVAL
-   discipline, FDR family definition, INERT precheck thresholds) and what would
-   make the whole rebuild stop.
-4. **A decision memo**: REC first, options with outcome + risk-cost, "do nothing"
+   DoD, dependency order. First WI = the meta-label full-universe run (input prep,
+   admin-authorized to run BEFORE the L2 chain).
+3. **Brainstorm (admin direction 2026-11-14):** beyond the four WI-049 mechanisms,
+   enumerate ADDITIONAL trade-construction options for profit-taking and
+   loss-prevention implied by L1 predictions + the feature/metafeature panel —
+   e.g. probability-decay exits, hold-probability-conditioned trailing stops,
+   time-stops vs event-stops hybrids, regime-switched sizing, sector-relative
+   long/short pairing, decile-spreading for cost amortization. For each: the L1
+   input it consumes, cost math at 25 bps, attacked failure mechanism, and whether
+   it is NEW or a re-proposal of a closed question (re-proposals need the
+   new-input justification). The batch model should reason from its trained
+   knowledge of trading-strategy design; label any concrete external citation a
+   recollection to verify.
+4. **Gate design:** how each WI is judged (CALIB-only tuning, one-shot EVAL
+   discipline, FDR family definition, INERT precheck thresholds, fold-report
+   mandate) and what would make the whole rebuild stop.
+5. **A decision memo**: REC first, options with outcome + risk-cost, "do nothing"
    counted, tagged (domain / one-way vs two-way door).
 
 ## CONSTRAINTS
 
 - L1 library FROZEN — the rebuild consumes it via `--infer`/manifest; no L1 refits
   inside L2 WIs.
-- Permanently closed overlay questions (D-024 §2): WI-037 b_hold veto, WI-033
-  3-class overlay, WI-030 learned exit chooser, WI-028 entry-window chooser,
-  WI-012 cross-market transfer (as ported), WI-018 first-touch 34 overlay,
-  WI-011 condition-first meta overlay — re-propose ONLY with a named structural
-  change vs the recorded failure mechanism.
+- Permanently closed overlay questions (D-024 §2, as-run): WI-037 b_hold veto,
+  WI-033 3-class overlay, WI-030 learned exit chooser, WI-028 entry-window
+  chooser, WI-012 cross-market transfer (as ported), WI-018 first-touch 34
+  overlay, WI-011 condition-first meta overlay — re-propose ONLY with a named
+  structural change OR a materially new input (admin 2026-11-14: new L1 families
+  and the meta-label/regression layer qualify as candidate new inputs; see
+  Old-artifact relevance above).
 - Compute: 2 vCPU / 8 GB, no swap; `n_jobs=2` everywhere; per-WI cap 2.5 core-h
   (raise only on explicit admin approval); checkpointed + pausable; credit-balance
   pause rule (<25% → hand back). float32 immediately after calculation. No
@@ -141,6 +178,17 @@ A design brief (D-0XX) containing:
 6. Not-stacking ruling (D-026): fixed product of separately-fitted models is NOT
    stacking.
 7. Manual screener product; no order automation in MVP.
+8. **Stacking is permitted in L2** (admin 2026-11-14) — stacked meta-learners over
+   L1 probability vectors fit CALIB-only, inside the harness FDR family. (The
+   D-026 not-stacking ruling is untouched: it governs the L1.5 fixed-product
+   construction, not L2 stacks.)
+9. **Closed items are re-evaluable on new data** (admin 2026-11-14): a D-024
+   closure binds to the inputs it was computed on; re-evaluation requires naming
+   the materially new input (post-WI-058 L1 families, meta-label layer,
+   regression read-out, extended feature panel) and the old failure mechanism it
+   changes. Evidence-only reuse of old runs needs no justification.
+10. **WI-041 harness upgrade is in scope** (admin 2026-11-14) — fold-report
+   mandate, full-L1 manifest input, plus plan-justified extensions.
 
 ## OPEN QUESTIONS (SCQA — ratify or overturn in one line)
 
@@ -158,12 +206,13 @@ A design brief (D-0XX) containing:
    Q: Should the rebuild mandate fold-distribution reporting (per-fold edge +
    concentration share) as a mandatory L2 report column before EVAL burn?
    **A/REC: yes — cheap, harness-level, prevents repeating WI-042's illusion.**
-3. **Meta-label sequencing.** S: WI-062 machinery is ratified but unrun on the
-   full universe; a precision filter is most valuable inside a ranking
-   construction. C: Running it now spends L1-adjacent budget while L1 is frozen.
-   Q: Run the full-universe meta-label as the rebuild's first input-prep WI, or
-   defer until mechanism (b) shows a raw edge? **A/REC: defer — run only if (b)
-   survives its CALIB gate; the filter cannot rescue a nil edge.**
+3. **Meta-label sequencing (RESOLVED by admin 2026-11-14).** S: WI-062 machinery is
+   ratified but unrun on the full universe; a precision filter is most valuable
+   inside a ranking construction. C: `meta_label_ext.py` is library-only — a
+   driver WI is needed before any run. Q: When does the full-universe meta-label
+   run? **A/DECIDED: now, as the rebuild's FIRST input-prep WI (driver WI first,
+   ~0.2–0.5 core-h), before the L2 chain — the run feeds the L2 stack as an
+   additional probability input.**
 4. **EVAL virginity budget.** S: EVAL remains unburned for the new families.
    C: The rebuild may want more than one EVAL look across its WIs.
    Q: One pre-registered EVAL spend for the whole rebuild (single consolidated
