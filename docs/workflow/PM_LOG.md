@@ -7,7 +7,7 @@
 
 - **D-027 created + committed** (`docs/workflow/designs/D-027-l2-rebuild.md`, commit ec39c78): (b)-led stepwise screener chain, WI-064…071, ≈11–14 core-h total, decay attribution (fold-concentration 55% / cost-floor 44.8%) as design driver. Source: batch-planner fullpack `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md`.
 - **Phase 0 defaults ADOPTED + Approval Matrix APPROVED (admin in chat).** Phase-1 chain (WI-064 meta-label driver → WI-065 harness upgrade) dispatched as ONE detached chain (PID 77422, `logs/phase1_chain.sh`, EXIT_64/EXIT_65 markers); watchdog cron 5088aa7d559e every 20m delivers close-out to this chat and STOPS before WI-066.
-- **WI-066 BLOCKED on admin gate values** (D-027 §11): materiality floor, fold-ceiling confirmation (50% max-share / majority-positive), min names per date. Also open: shorting feasibility, sector map (WI-070), INCONCLUSIVE standing, FDR pooling choice.
+- **Gate-value rulings RECORDED (admin "proceed with recommendations" 2026-11-14, D-027 §11):** materiality floor **10 bps net**; fold ceiling **50% max-fold share + majority-positive** (confirmed as proposed); **min 20 names/date** for the xsec INERT precheck; **long-only first pass** (L/S awaits borrow confirmation); sector map assumed absent (WI-070 conditional); INCONCLUSIVE closed as-run; FDR family separate from D-024. Watchdog prompt updated to chain WI-066 (code+smoke) dispatch after a green Phase-1 close; PM CALIB runs and stop/continue decisions remain interactive-session gates.
 - **Cursor:** next cycle ingests sessions from 2026-11-14T22:00Z forward.
 
 ## 2026-11-14 — Cycle 36 (RATIFICATION: WI-059b/060/061/062 — admin in chat, Layer 1)

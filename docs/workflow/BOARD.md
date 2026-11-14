@@ -8,10 +8,10 @@
 
 ## ACTIVE
 ### D-027 SPRINT (L2 rebuild — (b)-led stepwise screener chain; design `docs/workflow/designs/D-027-l2-rebuild.md`; source plan `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md`)
-- Phase 0 defaults ADOPTED + Approval Matrix APPROVED (admin in chat 2026-11-14). Phase-1 chain (WI-064 → WI-065) dispatched detached (PID 77422, watchdog cron 5088aa7d559e); close-out pauses before WI-066 pending admin gate values (materiality floor, fold ceiling, min-names-per-date).
+- Phase 0 defaults ADOPTED + Approval Matrix APPROVED (admin in chat 2026-11-14). Phase-1 chain (WI-064 → WI-065) dispatched detached (PID 77422, watchdog cron 5088aa7d559e). **Gate-value rulings (admin "proceed with recommendations" 2026-11-14, D-027 §11):** materiality floor 10 bps net; fold ceiling 50% max-share + majority-positive; min names/date 20; long-only first pass; sector map assumed absent; INCONCLUSIVE closed as-run; FDR family separate. Watchdog chains into WI-066 (code+smoke) after a green Phase-1 close; PM CALIB runs + stop/continue stay with the interactive session.
 - [WIP] WI-064 | meta-label driver + synthetic tests (code+smoke only) | L1.5 input-prep | cap 0.5 core-h | card `in_progress/`
 - [WIP] WI-065 | harness upgrade: union loader+dedup, fold report, cost model, prereg+EVAL lock | infra | cap 1.0 core-h | card `in_progress/`
-- [TODO] WI-066 | single-signal xsec top-k screener | L2 | card `draft/` — BLOCKED on admin gate values (D-027 §11)
+- [TODO] WI-066 | single-signal xsec top-k screener | L2 | card `draft/` — gate values now ruled (D-027 §11); watchdog chains dispatch after green Phase-1 close
 - [TODO] WI-067 | regularised stack ranker | L2 | card `draft/` — depends 064/065/066
 - [TODO] WI-068 | fixed time exits vs event exits (WI-030 re-entry paragraph in card) | L2 | card `draft/` — depends 065
 - [TODO] WI-069 | (c) vol-target sizing — CONDITIONAL (admin go after CALIB survivor) | L2 | card `draft/`

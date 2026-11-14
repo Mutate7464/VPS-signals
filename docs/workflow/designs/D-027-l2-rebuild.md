@@ -84,16 +84,16 @@ n_jobs=2; float32 immediately; symbol-sequential reads; purged/embargoed CV; CAL
 2. Leakage/duplicate inputs corrupt the stack — dedup assertion, synthetic leakage tests (064/065), hashed pre-registration + EVAL lock; all unit-test cost.
 3. Compute/memory overrun on the union stack — correlation-cluster pruning before fitting, chunked float32 loading, smoke-scaled extrapolation gate in WI-067 DoD; pause rather than raise cap.
 
-## 11. Open questions for admin (non-blocking except where noted)
+## 11. Open questions — RULINGS (admin "proceed with recommendations", 2026-11-14)
 
-1. Materiality floor value (blocks WI-066 dispatch — needed at pre-registration).
-2. Fold-ceiling numbers: 50% max-fold share / majority-positive — confirm or override (blocks WI-066).
-3. Min names per date for the xsec INERT precheck (blocks WI-066).
-4. xsec_vol_rank directional or not (checked in WI-066 recon; lead switch rule in §5 covers the failure case).
-5. Shorting feasibility + borrow cost for the operator (decides L/S leg of 066 and (d)).
-6. Sector map existence (blocks WI-070 only).
-7. Standing of the single INCONCLUSIVE D-024 outcome: closed / reconsiderable / coverage gap.
-8. FDR pooling with D-024 family: separate (default) or pooled.
+1. **Materiality floor: ADOPT requires net edge ≥ 10 bps** after costs (10× the library's ≤1 bp best; blocks a repeat of the D-024 nil-ADOPT). Applied at CALIB stop/continue and at EVAL.
+2. **Fold ceiling CONFIRMED as proposed:** max single fold ≤ 50% of CALIB net edge AND net edge positive in a majority of folds; failure = CALIB failure.
+3. **Min names per date: 20** for the xsec INERT precheck (conservative vs the full-universe cross-section; revisit only if the precheck trips on real data and the universe is genuinely thinner).
+4. xsec_vol_rank directionality: checked in WI-066 recon; lead-switch rule in §5 covers the failure case.
+5. **Shorting: default LONG-ONLY for the WI-066 first pass** (plan order already long-only first); L/S leg only after admin confirms borrow feasibility/cost.
+6. **Sector map: assumed ABSENT** until confirmed — WI-070 stays conditional and is skipped+logged if no map lands.
+7. **Single INCONCLUSIVE D-024 outcome: closed as-run** (same rule as REJECT/INERT); reopenable only via the registry protocol.
+8. **FDR pooling: rebuild family kept SEPARATE from the D-024 family** (reported alongside).
 
 ## 12. What would change this plan
 
