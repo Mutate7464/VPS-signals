@@ -178,6 +178,32 @@ class CalibratedBinary:
         return int(getattr(self.model, "best_iteration", -1) or -1)
 
 
+def fit_regressor(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal):
+    """Fit one uncalibrated regressor for the continuous-target families (plan §7).
+
+    No calibration step (isotonic/sigmoid are classifier-only); the purged fold
+    split and dead-column handling are identical to the binary path. Supported
+    learners: `xgboost` (reg:squarederror, early-stops on the cal block) and
+    `lightgbm` (WI-044 registry hyper-parameters, regression objective).
+    """
+    if len(y_fit) == 0 or len(y_cal) == 0:
+        return None
+    X_fit, X_cal = fill_dead_columns(dead_columns(X_fit), X_fit, X_cal)
+    if learner == "xgboost":
+        from xgboost import XGBRegressor
+        model = XGBRegressor(**params, objective="reg:squarederror", eval_metric="rmse",
+                             early_stopping_rounds=EARLY_STOPPING_ROUNDS)
+        model.fit(X_fit, y_fit, eval_set=[(X_cal, y_cal)], verbose=False)
+        return model
+    if learner == "lightgbm":
+        from lightgbm import LGBMRegressor
+        from src.swing_bsh import learner_ext
+        model = LGBMRegressor(**learner_ext.learner_kwargs(learner, params))
+        model.fit(X_fit, y_fit)
+        return model
+    raise ValueError(f"regression read-out not supported for learner: {learner}")
+
+
 def fit_calibrated_binary(learner: str, X_fit, y_fit, X_cal, y_cal, params: dict,
                           min_pos: int = CB04_MIN_POSITIVES) -> CalibratedBinary | None:
     """Fit + calibrate one binary model; `None` when the fit set is single-class."""

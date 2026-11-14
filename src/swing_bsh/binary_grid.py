@@ -160,8 +160,15 @@ def _logit(p) -> np.ndarray:
 
 
 def fit_learner(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal,
-                min_pos: int = CB04_MIN_POSITIVES):
-    """Fit + calibrate one learner; `mlp_torch` gets the WI-036 MLP, the rest reuse WI-035."""
+                min_pos: int = CB04_MIN_POSITIVES, regression: bool = False):
+    """Fit (+calibrate) one learner; `mlp_torch` gets the WI-036 MLP, the rest reuse WI-035.
+
+    `regression=True` fits an uncalibrated regressor instead (continuous-target
+    families, D-026 plan §7): no int8 cast, no isotonic/sigmoid calibrator — the
+    calibration machinery is classifier-only by construction.
+    """
+    if regression:
+        return binary_train.fit_regressor(learner, params, X_fit, y_fit, X_cal, y_cal)
     if learner != "mlp_torch":
         return binary_train.fit_calibrated_binary(learner, X_fit, y_fit, X_cal, y_cal,
                                                   params, min_pos)
@@ -194,9 +201,18 @@ def _pickle(model, model_dir, tag: str, fold) -> None:
             "tag": tag, "fold": fold, "calibration": getattr(model, "method", None)}}, fh)
 
 
-def cell_cv(X, y, dates, learner, params, splitter, model_dir=None, tag: str = "cell") -> dict:
-    """Purged walk-forward CV for one cell; returns pooled OOF predictions + fold models."""
-    y = np.asarray(y, dtype="int8")
+def cell_cv(X, y, dates, learner, params, splitter, model_dir=None, tag: str = "cell",
+            regression: bool = False) -> dict:
+    """Purged walk-forward CV for one cell; returns pooled OOF predictions + fold models.
+
+    `regression=True` keeps `y` as float32 and scores via `model.predict` — the
+    int8 cast (the classifier path) would silently binarize continuous labels
+    (e.g. cross-sectional ranks <1.0 -> 0, ==1.0 -> 1); never mix the two paths.
+    """
+    if regression:
+        y = np.asarray(y, dtype="float32")
+    else:
+        y = np.asarray(y, dtype="int8")
     oof = np.full(len(y), np.nan)
     fold_id = np.full(len(y), -1, dtype="int16")
     models: dict[int, object] = {}
@@ -204,10 +220,14 @@ def cell_cv(X, y, dates, learner, params, splitter, model_dir=None, tag: str = "
         fit_i, cal_i = purged_holdout(dates, tr, CALIB_FRACTION, splitter.embargo_td)
         if len(fit_i) == 0 or len(cal_i) == 0:
             continue
-        m = fit_learner(learner, params, X[fit_i], y[fit_i], X[cal_i], y[cal_i])
+        m = fit_learner(learner, params, X[fit_i], y[fit_i], X[cal_i], y[cal_i],
+                        regression=regression)
         if m is None:
             continue
-        oof[va] = m.predict_proba(X[va])
+        if regression:
+            oof[va] = np.asarray(m.predict(X[va]), dtype="float64")
+        else:
+            oof[va] = m.predict_proba(X[va])
         fold_id[va] = k
         models[k] = m
         _pickle(m, model_dir, tag, k)

@@ -240,10 +240,12 @@ def fit_new_learner(learner: str, params: dict, X_fit, y_fit, X_cal, y_cal, samp
 
 
 def _extended_fit_learner(orig):
-    def _wrapped(learner, params, X_fit, y_fit, X_cal, y_cal):
+    def _wrapped(learner, params, X_fit, y_fit, X_cal, y_cal, **kwargs):
+        if kwargs.get("regression") and learner in NEW_LEARNERS:
+            raise ValueError(f"regression read-out not supported for {learner} (WI-044 learners are classifiers)")
         if learner in NEW_LEARNERS:
             return fit_new_learner(learner, params, X_fit, y_fit, X_cal, y_cal)
-        return orig(learner, params, X_fit, y_fit, X_cal, y_cal)
+        return orig(learner, params, X_fit, y_fit, X_cal, y_cal, **kwargs)
     _wrapped._wi044_wrapped = True
     return _wrapped
 

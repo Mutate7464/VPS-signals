@@ -184,7 +184,8 @@ def run_market(family: str, market: str, cfg: dict, *, cache_dir=None, limit=Non
             if budget.spent() - t_grid > grid_seconds:
                 skipped.append(tag)
                 continue
-            cv = binary_grid.cell_cv(Xh, yh, dh, learner, params[learner], splitters[h], None, tag)
+            cv = binary_grid.cell_cv(Xh, yh, dh, learner, params[learner], splitters[h], None, tag,
+                                     regression=cont)
             if cont:
                 pooled_ic, _date_mean, folds, p = _cont_stats(yh, cv["oof"], cv["fold_id"], dh)
                 auc, z = float("nan"), float("nan")
