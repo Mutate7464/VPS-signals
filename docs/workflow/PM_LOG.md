@@ -3,6 +3,16 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-14 — Cycle 34 (D-026 L0 R12 runs closed — bug found+fixed, RATIFIED)
+
+- **L0 R12 grid runs DONE + RATIFIED (admin in chat 2026-11-14, Layer 1).** Consolidated evidence: `reports/l0_r12_v2/l0_r12_consolidated.md` (supersedes nothing on disk).
+- **First run contaminated (implementation bug, not theory):** `scripts/run_l0_r12.py` `_features_for` defined base = candidates minus *this* block's cols, so each block's fit included the other five blocks' surviving columns → all six blocks byte-identical fold AUCs; delta measured the union, not the block. Run retained (0.59 core-h, `reports/l0_r12_summary.md`, ckpt `/tmp/l0_r12_ckpt/` 84 cells) and relabeled as the **union test** (3/12 survivors, ΔAUC +0.002–0.005 — the ceiling).
+- **Fix + corrected run:** base excludes all six blocks' cols; per-block delta re-run on a copied ckpt (`/tmp/l0_r12_ckpt_v2/`, nothing deleted) — 0.25 core-h. **L0-5 survives 4/12** (`disp_entropy_39`, all `xsec_vol_rank_bin`, ΔAUC +0.002–0.004, cross-market consistent); L0-2/L0-4 fully absorbed by ρ-prune (Q1 rule, delta ≡0 by construction, absorption table in report); L0-1/L0-3/L0-6 0/12.
+- **Not kept (admin-directed flags, report §6):** 21 of 27 block cols excluded from the L1/L2 candidate set — L0-1 (3 absorbed + 2 no-delta), L0-2 (8 absorbed), L0-3 (3 no-delta), L0-4 (4 absorbed), L0-5 `disp_atr_pct_21` (absorbed), L0-6 (4 no-delta). Only addition: `disp_entropy_39`.
+- **Admin direction recorded (not dispatched):** larger variant run at a lower rho-prune threshold to maximize parameters for L1/L2 grids — a NEW pre-registered family/variant, never merged into the ρ=0.3 verdicts; the flagged not-kept cols are its re-admission population.
+- **Open items:** WI-048d/e/f verdicts still PROVISIONAL (ratification pending); L1 grid runs WI-058…061 pending, `ALL_FAMILIES` lacks `mfe_mae_*`/`move_*` wiring (PM-owned); scripts/run_l0_r12.py + reports/l0_r12_v2/ uncommitted (this cycle's commit).
+- **Cursor:** next cycle ingests sessions from 2026-11-13T17:00Z forward.
+
 ## 2026-11-13 — Cycle 33 (WI-048 d→e→f chain closed — PM-verified; verdicts PROVISIONAL)
 
 - **Chain complete:** detached PM-run chain (PID 3971052, log `logs/wi-048def_run.out`) finished 05:30–05:59 UTC; watchdog FINISHED, all three stage markers EXIT:0 (`EXIT_D/E/F:`). Chain PID confirmed dead via `kill -0` before close-out.
@@ -16,11 +26,3 @@
 - **Open:** admin ratification of d/e/f verdicts in chat (PROVISIONAL until then); EVAL split still virgin; WI-049 (T3 mechanism survey) is next queued.
 - cursor: no opencode sessions — all three stages were PM-run (uv run python -m src.swing_bsh.grid_targets_ext), no builder dispatched.
 - **Rotation:** Cycle 31 (2026-11-10) rotated to `docs/workflow/archive/PM_LOG-2026-11-10_cycle31.md`.
-
-## 2026-11-13 — Cycle 32 (L1 predictive-only rule; WI-048c ratified; WI-048d dispatched)
-
-- **Admin direction (2026-11-13): T1/T2 gate evidence is PREDICTIVE-ONLY.** Gate evidence at Tier 1 and Tier 2 (Layer 1) = OOF AUC/IC + BH-FDR + calibration. No economic-magnitude or cost analysis is presented at T1/T2 — cost/edge analysis belongs to T3/Layer 2 only. Any FDR-surviving predictor is ACCEPTED and integrated into the L1 pickle library: no effect-size floor, no economic bar at L1. Landed doc-only in `AGENTS.md` (hard constraints) + `WORKFLOW.md` §7 (tier map) in one commit.
-- **WI-048c RATIFIED (admin in chat 2026-11-13, Layer 1):** 24 cells, 0 truncated, 11 BH-FDR survivors (8 CAD `up` h5–h21 both learners + 3 USD h5/h8). All 11 accepted into the L1 library (55 fold pickles + `data/models/wi048/manifest.parquet`, WI-040 schema). Predictive license only — no trading claim; EVAL split unburned. Card frontmatter set `verdict: RATIFIED`; PROVISIONAL prefix stripped from the BOARD row.
-- **Kanban bookkeeping (commit f40a92a):** WI-048a/b/c cards closed (`status: done` + `verdict:` lines; stale telemetry-footer SHAs corrected 048a→bd80bd5, 048b→3e4fb18, 048c 5880906→f94d5e3); WI-048d/e/f drafts staged into git (were untracked); duplicate WI-045/046/047 cards in `draft/` removed (identical cards already in `done/`, so HEAD carried both copies); BOARD header + D-025 rows refreshed.
-- **Dispatched (admin: "ratify and dispatch"):** WI-048d grid `high_low` — PM full-universe run, detached Popen + monitor watchdog cron; close-out chain d → e → f. Credit check before launch: balance 100%, burst_left 3.00 h @100% (each sub-grid ≈ 0.53 core-h, under the 1 core-h pause threshold).
-- cursor: opencode session cursor unchanged; pending = WI-048d watchdog cron.
