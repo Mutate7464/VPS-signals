@@ -3,6 +3,16 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-14 — Cycle 35 (WI-060/061/062 closed — meta-label + uniqueness + move grids; PROVISIONAL)
+
+- **Status audit trigger (admin):** WIs completed silently — no PM_LOG/board entry after the chain; this cycle is the make-up close-out. No WIP: `in_progress/` empty, locks registry EMPTY, nothing running (no opencode builder, no PM job).
+- **WI-060 (PROVISIONAL, Layer 1):** move_occur/move_dir_up grids DONE 24/24 each, min AUC 0.6033/0.6407; cell_cv regression read-out landed (float32 labels, `model.predict` OOF, `fit_regressor`, no calibration) — cont families unblocked; commit 75e160f.
+- **WI-061 (code WI):** `learner_ext.py` `concurrency()`/`average_uniqueness()` + `sample_weight=` pass-through; 30 passed; commit 2bbbedd.
+- **WI-062 (code WI, L1.5):** `meta_label_ext.py` meta-label layer with purged walk-forward + hard no-OOF-as-feature guard; permuted-label leakage test (permuted ≈ 0.5 vs real 0.7396); 10 passed; commit 0be4018.
+- **Process note (root cause of the silent gap):** WI-060 attempt 1 ended red (test_targets_ext.py:464) and was resumed scoped (attempt 2 green) — correct behavior; the gap was that the post-chain close-out (board header + this log) had no owner once the watchdog cron was removed. Fix: PM-cycle drift check (board/PM_LOG/locks vs git log) is now a standing step — see BOARD `Last updated`.
+- **Verdicts PROVISIONAL pending admin ratification (Layer 1).**
+- **Cursor:** next cycle ingests sessions from 2026-11-14T06:00Z forward.
+
 ## 2026-11-14 — Cycle 34 (D-026 L0 R12 runs closed — bug found+fixed, RATIFIED)
 
 - **L0 R12 grid runs DONE + RATIFIED (admin in chat 2026-11-14, Layer 1).** Consolidated evidence: `reports/l0_r12_v2/l0_r12_consolidated.md` (supersedes nothing on disk).
