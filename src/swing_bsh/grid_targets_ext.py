@@ -28,6 +28,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy.stats import spearmanr, ttest_1samp
 
 from src.swing_bsh import binary_features_ext as ext
 from src.swing_bsh import binary_grid, binary_labels, binary_train, learner_ext, library_audit, train
@@ -119,6 +120,34 @@ def load_panel(market: str, *, cache_dir=None, limit: int | None = None,
 # --------------------------------------------------------------------------- #
 # Market driver
 # --------------------------------------------------------------------------- #
+def _cont_stats(y, oof, fold_id, dates) -> tuple[float, float, list[float], float]:
+    """Continuous-target read-out (D-026 plan §7): pooled + per-fold rank-IC; the
+    BH p-value comes from a t-stat over per-date Spearman ICs (dates with >=10
+    events). Pooled AUC is undefined for a continuous label and is not computed."""
+    y = np.asarray(y, dtype="float64")
+    oof = np.asarray(oof, dtype="float64")
+    fold_id = np.asarray(fold_id)
+    dates = np.asarray(dates)
+    m = (fold_id >= 0) & np.isfinite(oof) & np.isfinite(y)
+    if m.sum() < 30:
+        return float("nan"), float("nan"), [], float("nan")
+    pooled = float(spearmanr(oof[m], y[m])[0])
+    folds: list[float] = []
+    for f in np.unique(fold_id[m]):
+        sel = m & (fold_id == f)
+        if sel.sum() > 30 and np.unique(y[sel]).size > 1:
+            folds.append(float(spearmanr(oof[sel], y[sel])[0]))
+    df = pd.DataFrame({"d": dates[m], "p": oof[m], "y": y[m]})
+    per_date = df.groupby("d").apply(
+        lambda g: spearmanr(g["p"], g["y"])[0]
+        if len(g) >= 10 and g["y"].nunique() > 1 else np.nan,
+        include_groups=False).dropna().to_numpy()
+    if per_date.size < 5:
+        return pooled, pooled, folds, float("nan")
+    _t, p = ttest_1samp(per_date, 0.0)
+    return pooled, float(np.mean(per_date)), folds, float(p)
+
+
 def run_market(family: str, market: str, cfg: dict, *, cache_dir=None, limit=None,
                allow_fixture=False, budget=None, grid_seconds=None,
                learners=LEARNERS) -> dict:
@@ -142,20 +171,32 @@ def run_market(family: str, market: str, cfg: dict, *, cache_dir=None, limit=Non
     if grid_seconds is None:
         grid_seconds = max(0.0, budget.left() * (1.0 - PLACEBO_RESERVE))
     for h in tg.HORIZONS:
-        y = labels[tg.label_key(family, event, h)]
+        y_raw = np.asarray(labels[tg.label_key(family, event, h)])
+        finite = np.isfinite(y_raw)
+        # continuous families carry NaN tail rows (no forward window); fit/score
+        # only on finite-label rows (binary labels are 0/1 int8 — mask is a no-op)
+        Xh = X[finite] if not finite.all() else X
+        yh = y_raw[finite] if not finite.all() else y_raw
+        dh = dates[finite] if not finite.all() else dates
+        cont = not np.isin(np.unique(yh), (0, 1)).all()
         for learner in learners:
             tag = f"{market}_{learner}_{variant}_{family}_h{h}"
             if budget.spent() - t_grid > grid_seconds:
                 skipped.append(tag)
                 continue
-            cv = binary_grid.cell_cv(X, y, dates, learner, params[learner], splitters[h], None, tag)
-            auc, ic, folds = binary_grid.auc_ic(y, cv["oof"], cv["fold_id"])
+            cv = binary_grid.cell_cv(Xh, yh, dh, learner, params[learner], splitters[h], None, tag)
+            if cont:
+                pooled_ic, _date_mean, folds, p = _cont_stats(yh, cv["oof"], cv["fold_id"], dh)
+                auc, z = float("nan"), float("nan")
+            else:
+                auc, ic, folds = binary_grid.auc_ic(yh, cv["oof"], cv["fold_id"])
+                pooled_ic, z, p = ic, float("nan"), float("nan")
             cells.append({"market": market, "family": family, "variant": variant, "event": event,
                           "window": "full", "k": PINNED_K, "h": int(h), "binary": family,
-                          "learner": learner, "tag": tag, "auc": auc, "ic": ic,
-                          "fold_auc": folds, "n_oof": int(np.isfinite(cv["oof"]).sum()),
-                          "n_pos": int(np.asarray(y).sum()), "z": float("nan"),
-                          "p": float("nan"), "models": cv["models"]})
+                          "learner": learner, "tag": tag, "auc": auc, "ic": pooled_ic,
+                          "fold_auc": folds, "cont": cont, "n_oof": int(np.isfinite(cv["oof"]).sum()),
+                          "n_pos": int(yh.sum()) if not cont else int(yh.size),
+                          "z": z, "p": p, "models": cv["models"]})
     return {"market": market, "family": family, "variant": variant, "n_rows": int(len(panel)),
             "n_symbols": int(panel["symbol"].nunique()), "features": feats,
             "n_features_pruned": len(kept), "n_features_input": len(kept) + len(dropped),
@@ -165,7 +206,8 @@ def run_market(family: str, market: str, cfg: dict, *, cache_dir=None, limit=Non
 
 def run_placebo(results: list[dict], budget, seeds: int = N_PLACEBO_SEEDS) -> int:
     """5-seed AUC permutation placebo, most extreme cells first, budget-gated."""
-    cells = [(r, c) for r in results for c in r["cells"] if np.isfinite(c["auc"])]
+    cells = [(r, c) for r in results for c in r["cells"]
+             if np.isfinite(c["auc"]) and not c.get("cont")]
     done = 0
     for r, c in sorted(cells, key=lambda rc: -abs(rc[1]["auc"] - 0.5)):
         if budget.left() < binary_grid.PLACEBO_MIN_LEFT:
@@ -261,14 +303,15 @@ def rank_cells(cells: list[dict]) -> pd.DataFrame:
 
 
 def _fdr_table(cells: list[dict]) -> list[str]:
-    lines = ["| market | family | learner | h | AUC | z | p |",
-             "| :--- | :--- | :--- | ---: | ---: | ---: | ---: |"]
+    lines = ["| market | family | learner | h | AUC | IC | z | p |",
+             "| :--- | :--- | :--- | ---: | ---: | ---: | ---: | ---: |"]
     surv = [c for c in cells if c.get("fdr")]
     if not surv:
-        lines.append("| — | no cell survived BH-FDR | | | | | |")
-    for c in sorted(surv, key=lambda c: -c["auc"]):
+        lines.append("| — | no cell survived BH-FDR | | | | | | |")
+    for c in sorted(surv, key=lambda c: -(c["auc"] if np.isfinite(c["auc"]) else c["ic"])):
         lines.append(f"| {c['market']} | `{c['family']}` | {c['learner']} | {int(c['h'])} | "
-                     f"{_fmt(c['auc'])} | {_fmt(c['z'], '{:+.2f}')} | {_fmt(c['p'], '{:.2e}')} |")
+                     f"{_fmt(c['auc'])} | {_fmt(c['ic'], '{:+.4f}')} | "
+                     f"{_fmt(c['z'], '{:+.2f}')} | {_fmt(c['p'], '{:.2e}')} |")
     return lines
 
 
