@@ -1,0 +1,11 @@
+{
+  "fold_ceiling_ok": false,
+  "max_fold_share": Infinity,
+  "n_folds": 2,
+  "n_positive_folds": 0,
+  "per_fold_net_edge": {
+    "0": -0.00858746962523732,
+    "1": -0.004614694012906828
+  },
+  "total_net_edge": -0.013202163638144148
+}

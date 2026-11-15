@@ -278,8 +278,10 @@ def build_market(market: str, manifest: pd.DataFrame) -> pd.DataFrame:
     assert fold_xsec is not None
     scores["p_b_hold"] = legacy_b_hold(panel, market)
 
-    # row universe: ALL at_bottom panel events (cross-sectional rank needs the full
-    # per-date name set; the fib screen_bottom subset alone is ~3 events/week)
+    # row universe (admin amendment 2026-11-15, PM_LOG cycle 41): ALL swing events (both
+    # states) on per-date quorum dates (>= MIN_NAMES_PER_DATE candidates). The at_bottom-only
+    # universe cannot fill a >=20-name cross-section (median 10 USD / 7 CAD names per date);
+    # the quorum filter replaces the harness precheck's global kill switch for this panel.
     sb_keys, pol = trade_tables(market)
     pos = pd.DataFrame({"symbol": panel["symbol"].astype(str).to_numpy(), "date": panel["date"],
                         "state": panel["state"].astype(str).to_numpy(), "pos": np.arange(len(panel))})
@@ -293,7 +295,20 @@ def build_market(market: str, manifest: pd.DataFrame) -> pd.DataFrame:
     top_only = um.merge(pos[pos["state"] == "at_top"][["symbol", "date"]].drop_duplicates(),
                         on=["symbol", "date"], how="inner")
     n_top_only = int(len(top_only))
-    uni = bottom.copy()
+    uni_all = pos[pd.to_datetime(pos["date"]) < pd.Timestamp(H.CALIB_END)].copy()
+    n_all = int(len(uni_all))
+    dup = int(uni_all.duplicated(["symbol", "date"]).sum())
+    if dup:
+        NOTES.append(f"{market}: {dup} (symbol, date) rows carry both states; first kept, rest dropped.")
+        uni_all = uni_all.drop_duplicates(["symbol", "date"], keep="first")
+    qcnt = uni_all.groupby(uni_all["date"].astype("object"))["symbol"].transform("size")
+    uni = uni_all[qcnt >= H.MIN_NAMES_PER_DATE].copy()
+    n_quorum_dates = int(uni["date"].nunique())
+    n_thin_dropped = int(uni_all["date"].nunique()) - n_quorum_dates
+    assert not uni.duplicated(["symbol", "date"]).any(), "duplicate universe event keys after dedupe"
+    NOTES.append(f"{market}: universe amendment — all swing events on quorum dates "
+                 f"(>={H.MIN_NAMES_PER_DATE} candidates): {len(uni):,}/{n_all:,} CALIB rows kept, "
+                 f"{n_thin_dropped} thin dates dropped, {n_quorum_dates} quorum dates.")
     r_all = fib_r_for_panel(panel, market)
     uni["r"] = r_all[uni["pos"].to_numpy()]
     # cross-validation: sim replication vs the precomputed fib trade-label rets

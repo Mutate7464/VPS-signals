@@ -122,8 +122,16 @@ def simulate(entries, costs=costs) -> dict:
             "per_fold_net_edge": per_fold, "fold_report": rep}
 
 def build_entries(panel, signal, k, band, horizon) -> pd.DataFrame:
-    """Candidates for one (signal, k, band, horizon): rank, held mask, entry flag — float32."""
+    """Candidates for one (signal, k, band, horizon): rank, held mask, entry flag — float32.
+
+    Rows without a finite OOF score for this signal are NOT candidates (no score ⇒ no decision;
+    PM full-run defect fix, cycle 41 — an all-NaN-score date would otherwise let argsort select
+    arbitrary unscored names)."""
     frame = panel.reset_index(drop=True)
+    v = signal_values(frame, signal)
+    frame = frame.loc[np.isfinite(np.asarray(v, dtype="float64"))].reset_index(drop=True)
+    if frame.empty:
+        raise ValueError(f"no finite scores for signal {signal!r}; nothing to rank")
     scores = rank_scores(frame, signal)
     held = topk_with_hysteresis(scores, k, band, dates=frame["date"].to_numpy(),
                                 symbols=frame["symbol"].to_numpy(), horizon=horizon)

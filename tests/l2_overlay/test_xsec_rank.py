@@ -38,6 +38,22 @@ def test_all_three_named_signals_build_a_score_vector():
         xr.signal_values(panel, "nope")
 
 
+def test_unscored_rows_are_never_candidates():
+    """PM full-run regression (cycle 41): a date whose scores are all NaN must contribute no
+    held rows — argsort over NaN would otherwise select arbitrary unscored names."""
+    panel = _fixture(n_dates=6, n_names=5)
+    panel.loc[panel["date"] == panel["date"].unique()[0], "xsec_vol_rank_cont"] = np.nan
+    entries = xr.build_entries(panel, "xsec_vol_rank_cont", k=2, band=2.0, horizon=13)
+    scored_dates = panel.loc[np.isfinite(panel["xsec_vol_rank_cont"]), "date"].unique()
+    assert set(entries["date"].unique()) <= set(scored_dates)   # no unscored-date rows at all
+    sel = entries.loc[entries["selected"], "date"].unique()
+    assert set(sel) <= set(scored_dates)
+    with pytest.raises(ValueError, match="no finite scores"):
+        nan_panel = panel.copy()
+        nan_panel["xsec_vol_rank_cont"] = np.nan
+        xr.build_entries(nan_panel, "xsec_vol_rank_cont", k=2, band=2.0, horizon=13)
+
+
 def test_planted_signal_is_recovered_net_of_cost():
     panel = _fixture()
     for signal in xr.SIGNALS:
