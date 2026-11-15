@@ -12,6 +12,12 @@
 - **Rotation:** cycles 33–36 rotated to `docs/workflow/archive/PM_LOG-2026-11-14_cycles33-36.md`.
 - **Cursor:** next cycle ingests sessions from 2026-11-14T23:00Z forward.
 
+## 2026-11-15 — Cycle 40 cont. (WI-068 closed GREEN in interactive session)
+
+- **WI-068 (fixed vs event exits, code+smoke) closed GREEN, one attempt (no timeout):** foreground dispatch completed inside the window. Close gate re-run by PM: `pytest tests/l2_overlay/test_time_exit.py` exit 0 (**12 passed**, 1.57s) + `--smoke` EXIT 0. Smoke CALIB read-out on identical entries: USD best fixed_h13 +103 bps vs event −50; CAD same shape → CONTINUE both markets. Smoke artifacts `reports/l2_time_exit_smoke/`. Commit `a2da37f` touched only the two manifest files + card footer (diff-only audit clean); card moved to `done/`, close `0980a69`; locks EMPTY.
+- **Next:** WI-069/070 remain CONDITIONAL (admin go after CALIB survivor / sector map); WI-071 one-shot EVAL gate is PM-owned. The interactive session's next decision is PM CALIB runs or holding for admin direction.
+- **Cursor:** superseded by the WI-068 close — sessions from 2026-11-15T02:00Z forward.
+
 ## 2026-11-15 — Cycle 40 (WI-067 closed GREEN in interactive session)
 
 - **WI-067 (regularised stack ranker, code+smoke) closed GREEN, two attempts:** attempt 1 (foreground dispatch) killed at the harness 420s ceiling mid-run — all three manifest files landed but unverified. Attempt 2 (scoped resume, approved foreground): fixed the verdict/guard logic (smoke had stack beating best single but verdict STOP), test gate exit 0 (**10 passed**, 5.80s) + `--smoke` EXIT 0. Beats-best-single guard holds on CALIB in both markets: USD stack +318.5 vs best single `xsec_vol_rank_cont` +151.4 bps; CAD +324.7 vs +142.8 bps → CONTINUE. Smoke artifacts `reports/l2_stack_rank_smoke/`, `data/models/l2_stack_rank_smoke/`.

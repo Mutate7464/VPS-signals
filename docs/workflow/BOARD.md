@@ -4,7 +4,7 @@
 > Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/` (cards hold detail); archived cards: `docs/archive/wi/` (indexed in `docs/execution/WI_AND_RUN_LEDGER.md`).
 > Full pre-lean board (2026-11-14, all per-WI narratives preserved): `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md`; older: `docs/workflow/archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-15 (PM cycle 40) — WI-067 (regularised stack ranker, code+smoke) closed GREEN: test gate exit 0 (10 passed) + smoke EXIT 0, both markets CONTINUE (stack beats best single: USD +318.5 vs +151.4, CAD +324.7 vs +142.8 bps CALIB), card in `done/`, locks EMPTY, commit 6966a8c. Phase-1 chain WI-064/065 closed GREEN earlier (commits 6126626/7e60406). RATIFIED (admin in chat, Layer 1): WI-059b, WI-060, WI-061, WI-062. D-026 Phase 1 DONE + RATIFIED. **Cleanup (admin 2026-11-14):** WI-034 archived; WI-048 umbrella draft deleted; WI-049 folded into L2 rebuild scope; **L1 library FROZEN for the L2 rebuild** — larger-variant lower-ρ family PARKED post-rebuild. Next: PM CALIB runs + WI-067/068 dispatch stay with the interactive session. Cycle 39: WI-066 closed green; locks EMPTY.
+**Last updated:** 2026-11-15 (PM cycle 40) — WI-068 (fixed vs event exits, code+smoke) closed GREEN: test gate exit 0 (12 passed) + smoke EXIT 0, CONTINUE both markets (fixed h13 +103 bps vs event −50 bps on identical entries), card in `done/`, locks EMPTY, commit a2da37f. Phase-1 chain WI-064/065 closed GREEN earlier (commits 6126626/7e60406). RATIFIED (admin in chat, Layer 1): WI-059b, WI-060, WI-061, WI-062. D-026 Phase 1 DONE + RATIFIED. **Cleanup (admin 2026-11-14):** WI-034 archived; WI-048 umbrella draft deleted; WI-049 folded into L2 rebuild scope; **L1 library FROZEN for the L2 rebuild** — larger-variant lower-ρ family PARKED post-rebuild. Next: PM CALIB runs + WI-067/068 dispatch stay with the interactive session. Cycle 39: WI-066 closed green; locks EMPTY.
 
 ## ACTIVE
 ### D-027 SPRINT (L2 rebuild — (b)-led stepwise screener chain; design `docs/workflow/designs/D-027-l2-rebuild.md`; source plan `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md`)
@@ -13,7 +13,7 @@
 - [DONE] WI-065 | harness upgrade: union loader+dedup, fold report, cost model, prereg+EVAL lock | infra | gate: test_command exit 0 (28 passed + smoke EXIT 0, D-024 guard pinned) | evidence `docs/kanban/done/WI-065-harness-upgrade.md` | commit 7e60406
 - [DONE] WI-066 | single-signal xsec top-k screener | L2 code+smoke | code+smoke PASS 2026-11-14 (pytest 9 passed, smoke EXIT 0) | card `docs/kanban/done/WI-066-xsec-topk-screener.md`, smoke `reports/l2_xsec_rank_smoke/`
 - [DONE] WI-067 | regularised stack ranker (cluster→elastic-net/ridge CALIB-only, meta-OOF + regime features) | L2 code+smoke | gate: test_command exit 0 (10 passed) + smoke EXIT 0, beats-best-single CONTINUE both markets | card `docs/kanban/done/WI-067-stack-ranker.md` | commit 6966a8c
-- [TODO] WI-068 | fixed time exits vs event exits (WI-030 re-entry paragraph in card) | L2 | card `draft/` — depends 065
+- [DONE] WI-068 | fixed time exits (h13/h55) + hybrid vs event exits on identical entries | L2 code+smoke | gate: test_command exit 0 (12 passed) + smoke EXIT 0, CONTINUE both markets | card `docs/kanban/done/WI-068-time-exits.md` | commit a2da37f
 - [TODO] WI-069 | (c) vol-target sizing — CONDITIONAL (admin go after CALIB survivor) | L2 | card `draft/`
 - [TODO] WI-070 | (d) sector pairs — CONDITIONAL (needs sector map) | L2 | card `draft/`
 - [TODO] WI-071 | one-shot EVAL gate (PM-owned run; admin ratifies) | L2 | card `draft/`
