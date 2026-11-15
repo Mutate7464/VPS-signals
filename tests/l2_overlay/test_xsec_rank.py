@@ -1,6 +1,8 @@
-"""WI-066 — xsec top-k screener tests (D-027 §5 (b)): the planted signal is recovered net of cost,
-the placebo shows nothing, the CALIB card carries the fold distribution / turnover / stop flag, and
-the fold report is mandatory. Synthetic only: no reads or writes under `data/`.
+"""WI-066 / WI-072 — xsec top-k screener tests (D-027 §5 (b)): the planted signal is recovered net of
+cost, the placebo shows nothing, the CALIB card carries the fold distribution / turnover / stop flag,
+and the fold report is mandatory. WI-072 adds the generic union-library column, the widened grids, the
+symmetric long/short pass (planted + placebo) and the turnover effect of the wider band. Synthetic only:
+no reads or writes under `data/`.
 """
 from __future__ import annotations
 
@@ -120,3 +122,82 @@ def test_fold_report_is_mandatory_fail_closed():
                           "score": [], "selected": [], "entry": []})
     with pytest.raises(foldrep.FoldReportMissing):
         xr.simulate(empty)
+
+
+# --------------------------------------------------------------------------- WI-072 re-open
+def test_generic_union_library_column_is_scored_by_name():
+    """(a) any union-library cell that is a panel column is scoreable; the named signals stay."""
+    panel = _fixture(n_dates=4, n_names=6)
+    panel["move_occur_raw"] = np.linspace(0.0, 1.0, len(panel)).astype("float32")
+    v = xr.signal_values(panel, "move_occur_raw")
+    assert v.dtype == np.float32
+    assert np.allclose(v, panel["move_occur_raw"].to_numpy("float32"))
+    assert xr.signal_names(panel)[: len(xr.SIGNALS)] == xr.SIGNALS      # named signals first
+    assert "p_b_hold" in xr.signal_names(panel)                        # widened library set
+    with pytest.raises(KeyError, match="unknown signal"):
+        xr.signal_values(panel, "not_a_library_cell")
+
+
+def test_widened_grids_add_the_new_band_and_horizon_values():
+    """(b) the retry grid adds the wider bands (lower turnover) and the longer horizons."""
+    assert {2.0, 3.0} <= set(xr.BAND_GRID) and 1.5 in xr.BAND_GRID
+    assert {10, 21, 34} <= set(xr.HORIZON_GRID)
+    assert list(xr.BAND_GRID) == sorted(xr.BAND_GRID)
+    assert list(xr.HORIZON_GRID) == sorted(xr.HORIZON_GRID) and list(xr.K_GRID) == sorted(xr.K_GRID)
+    assert xr.DIRECTIONS == ("long", "long_short")                      # D-027 §5 first, then second pass
+
+
+def test_long_short_pass_recovers_the_planted_cross_section():
+    """(c) the L/S pass harvests both tails: a pair cycle (100 bps) is cleared before cost."""
+    panel = _fixture()
+    entries = xr.build_entries(panel, "xsec_vol_rank_cont", 4, 2.0, 13, "long_short")
+    sim = xr.simulate(entries, direction="long_short")
+    assert sim["direction"] == "long_short" and sim["n_pairs"] > 0
+    assert set(entries.loc[entries["selected"], "side"].tolist()) == {1, -1}
+    assert sim["gross_edge_bps"] > costs.PAIR_BPS
+    assert sim["cost_bps"] >= costs.PAIR_BPS                            # pair cycle + turnover amortization
+    assert sim["net_edge_bps"] > 0.0
+    long_only = _sim(panel, "xsec_vol_rank_cont")
+    assert long_only["n_pairs"] == 0 and long_only["direction"] == "long"
+
+
+def test_long_short_placebo_shows_nothing():
+    """A shuffled score has no tail information: gross ≈ 0, so the pair cycle bites."""
+    panel = _fixture()
+    shuffled = panel.copy()
+    rng = np.random.default_rng(3)
+    shuffled["xsec_vol_rank_cont"] = rng.permutation(shuffled["xsec_vol_rank_cont"].to_numpy())
+    planted = xr.simulate(xr.build_entries(panel, "xsec_vol_rank_cont", 4, 2.0, 13, "long_short"),
+                          direction="long_short")["net_edge_bps"]
+    placebo = xr.simulate(xr.build_entries(shuffled, "xsec_vol_rank_cont", 4, 2.0, 13, "long_short"),
+                          direction="long_short")["net_edge_bps"]
+    assert placebo < 0.0 and placebo < planted
+
+
+def test_wider_band_lowers_turnover_on_a_high_churn_fixture():
+    """(b) rationale: the wider band holds a name past the top-k, so the held set churns less."""
+    panel = _fixture(seed=5, n_dates=150, n_names=30)
+    rng = np.random.default_rng(99)
+    panel["xsec_vol_rank_cont"] = (panel["xsec_vol_rank_cont"].to_numpy("float32")
+                                   + rng.normal(0.0, 3.0, len(panel)).astype("float32"))  # ranks churn
+    narrow = xr.turnover_fraction(xr.build_entries(panel, "xsec_vol_rank_cont", 4, 1.5, 13))
+    wide = xr.turnover_fraction(xr.build_entries(panel, "xsec_vol_rank_cont", 4, 3.0, 13))
+    assert wide < narrow
+    assert 0.0 < wide < 1.0
+
+
+def test_long_short_positions_hold_both_extremes_with_symmetric_hysteresis():
+    """k=1, band=2.0, 4 names: hold the best long / the worst short, exiting only past the band."""
+    scores = np.array([0.9, 0.6, 0.4, 0.1,      # d1: a best (long), d worst (short)
+                       0.6, 0.9, 0.1, 0.4,      # d2: a keeps its long (rank 2 of 4 < band edge); c joins short
+                       0.1, 0.95, 0.3, 0.5])    # d3: a falls to worst -> long out, short in; d rises -> short out
+    dates = np.array([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3])
+    syms = np.array(["a", "b", "c", "d"] * 3)
+    held, side = xr.topk_positions(scores, 1, 2.0, dates=dates, symbols=syms, direction="long_short")
+    assert side.tolist() == [1, 0, 0, -1, 1, 1, -1, -1, -1, 1, -1, 0]
+    assert held.tolist() == [True, False, False, True, True, True, True, True, True, True, True, False]
+    long_only = xr.topk_with_hysteresis(scores, 1, 2.0, dates=dates, symbols=syms)
+    assert long_only.tolist() == [True, False, False, False, True, True, False, False, False, True,
+                                 False, False]
+    with pytest.raises(ValueError, match="unknown direction"):
+        xr.topk_positions(scores, 1, 2.0, dates=dates, symbols=syms, direction="both")

@@ -17,7 +17,7 @@
 - [DONE] WI-067 | regularised stack ranker (cluster→elastic-net/ridge CALIB-only, meta-OOF + regime features) | L2 code+smoke | gate: test_command exit 0 (10 passed) + smoke EXIT 0, beats-best-single CONTINUE both markets | card `docs/kanban/done/WI-067-stack-ranker.md` | commit 6966a8c
 - [DONE] WI-068 | fixed time exits (h13/h55) + hybrid vs event exits on identical entries | L2 code+smoke | gate: test_command exit 0 (12 passed) + smoke EXIT 0, CONTINUE both markets | card `docs/kanban/done/WI-068-time-exits.md` | commit a2da37f
 - [DONE] WI-069 | (c) vol-target sizing | L2 | test_command exit 0 + smoke EXIT 0 (2026-11-15) | reports/l2_vol_target_smoke/; full CALIB run = PM gate, interactive session; lock release pending interactive session
-- [WIP] WI-072 | (b) retry — amended-universe screener (union signals, wider grids, long/short, b_hold OOF rebuild) | L2 code+smoke | admin GO 2026-11-15 chat (approve+dispatch) | card `docs/kanban/in_progress/WI-072-wi066-retry-amended-universe.md`, locks WI-069 (stale) + WI-072
+- [DONE] WI-072 | (b) retry — amended-universe screener (union signals, wider grids, long/short, b_hold OOF rebuild) | L2 code+smoke | PM-verified 2026-11-15: test_command exit 0 (24 passed), both smokes EXIT 0, smoke artifacts written | card `docs/kanban/done/WI-072-wi066-retry-amended-universe.md`; full CALIB run = PM gate
 - [TODO] WI-070 | (d) sector pairs — CONDITIONAL (needs sector map) | L2 | card `draft/`
 - [TODO] WI-071 | one-shot EVAL gate (PM-owned run; admin ratifies) | L2 | card `draft/`
 
