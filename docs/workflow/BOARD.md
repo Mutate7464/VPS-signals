@@ -16,7 +16,7 @@
 - [DONE] WI-066 | single-signal xsec top-k screener | L2 code+smoke | code+smoke PASS 2026-11-14 (pytest 9 passed, smoke EXIT 0) | card `docs/kanban/done/WI-066-xsec-topk-screener.md`, smoke `reports/l2_xsec_rank_smoke/`
 - [DONE] WI-067 | regularised stack ranker (cluster→elastic-net/ridge CALIB-only, meta-OOF + regime features) | L2 code+smoke | gate: test_command exit 0 (10 passed) + smoke EXIT 0, beats-best-single CONTINUE both markets | card `docs/kanban/done/WI-067-stack-ranker.md` | commit 6966a8c
 - [DONE] WI-068 | fixed time exits (h13/h55) + hybrid vs event exits on identical entries | L2 code+smoke | gate: test_command exit 0 (12 passed) + smoke EXIT 0, CONTINUE both markets | card `docs/kanban/done/WI-068-time-exits.md` | commit a2da37f
-- [TODO] WI-069 | (c) vol-target sizing — CONDITIONAL (admin go after CALIB survivor) | L2 | card `draft/`
+- [WIP] WI-069 | (c) vol-target sizing — admin GO in chat 2026-11-15 on the provisional (a)/WI-068 survivor | L2 | card `in_progress/`, locks registered
 - [TODO] WI-070 | (d) sector pairs — CONDITIONAL (needs sector map) | L2 | card `draft/`
 - [TODO] WI-071 | one-shot EVAL gate (PM-owned run; admin ratifies) | L2 | card `draft/`
 
