@@ -12,6 +12,14 @@
 - **Rotation:** cycles 33–36 rotated to `docs/workflow/archive/PM_LOG-2026-11-14_cycles33-36.md`.
 - **Cursor:** next cycle ingests sessions from 2026-11-14T23:00Z forward.
 
+## 2026-11-15 — Cycle 40 (WI-067 closed GREEN in interactive session)
+
+- **WI-067 (regularised stack ranker, code+smoke) closed GREEN, two attempts:** attempt 1 (foreground dispatch) killed at the harness 420s ceiling mid-run — all three manifest files landed but unverified. Attempt 2 (scoped resume, approved foreground): fixed the verdict/guard logic (smoke had stack beating best single but verdict STOP), test gate exit 0 (**10 passed**, 5.80s) + `--smoke` EXIT 0. Beats-best-single guard holds on CALIB in both markets: USD stack +318.5 vs best single `xsec_vol_rank_cont` +151.4 bps; CAD +324.7 vs +142.8 bps → CONTINUE. Smoke artifacts `reports/l2_stack_rank_smoke/`, `data/models/l2_stack_rank_smoke/`.
+- **Commits:** WI-067 source+tests+card `6966a8c` (footer: Attempts 2/2, Status DONE; no edits outside manifest); dispatch bookkeeping `7b7d529`; close-out `731a68d`. Locks released via python3 json rewrite; `active_locks` EMPTY.
+- **Lesson:** foreground builder dispatch was blocked once on detached-Popen approval timeout (stop sign honored), then admin approved foreground relaunch — landed inside the 420s window. Keep the detached-Popen+watchdog pattern for any run modeled >~5 min.
+- **Next:** WI-068 (fixed vs event exits, card in `draft/`) is the next dispatchable WI; WI-069/070 remain conditional; PM CALIB runs stay with the interactive session.
+- **Cursor:** next cycle ingests sessions from 2026-11-15T01:30Z forward.
+
 ## 2026-11-14 — Cycle 39 (WI-066 closed GREEN by watchdog; chain hands back to interactive session)
 
 - **WI-066 closed GREEN by watchdog cron:** builder finished (footer filled: 3 test-command attempts / 2 defects fixed, Status DONE ≈0.05 core-h) but died at the session layer before the EXIT_66 marker — artifacts all predate the log's last write, so closed PM-verified without a relaunch (WI-064/065 precedent). Close gate: `uv run pytest tests/l2_overlay/test_xsec_rank.py -q --maxfail=1` exit 0 (9 passed, 2.07s) + `--smoke` exit 0 (6 fold JSONs + 6 md reports in `reports/l2_xsec_rank_smoke/`). Diff-only audit clean: card + manifest paths only; card moved `in_progress/`→`done/`, footer Commit field patched to `PENDING (HEAD e72434157d6e; no commit made)`.
