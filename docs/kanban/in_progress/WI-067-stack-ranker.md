@@ -30,11 +30,12 @@ test_command: uv run pytest tests/l2_overlay/test_stack_rank.py -q --tb=short --
 - Tests: synthetic correlated cells cluster as expected; pruning log complete; stack-beats-single guard triggers stop when it should; leakage test (EVAL rows absent from fit).
 
 ## 3. Definition of Done (binary)
-- [ ] No edits outside `write_files`.
-- [ ] `test_command` exits 0; pruning-log completeness test passes.
-- [ ] Beats-best-single guard wired with stop behavior proven by test.
-- [ ] Stdout ≤5 lines.
+- [x] No edits outside `write_files`.
+- [x] `test_command` exits 0; pruning-log completeness test passes.
+- [x] Beats-best-single guard wired with stop behavior proven by test.
+- [x] Stdout ≤5 lines.
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / error tail:** None
+- **Attempts:** 2/2 (attempt 1 killed by harness timeout mid-run, its three files left unverified) | **Commit:** WI-067 resume commit on base 7b7d529 (manifest paths + this card) | **Status:** DONE
+- **Evidence:** `uv run pytest tests/l2_overlay/test_stack_rank.py -q --tb=short --maxfail=1 && uv run python -m src.l2_overlay.constructions.stack_rank --smoke` → exit 0, 10 passed; smoke CONTINUE both markets — USD stack +318.5 bps vs best single `xsec_vol_rank_cont` +151.4 (worst fold +0.0273 vs +0.0098, max-fold share 0.212), CAD +324.7 vs +142.8.
+- **Notes / error tail:** the reported "verdict STOP while the edge beats" came from the pre-final save of `stack_rank.py` (file mtime is the newest of the three); the on-disk guard is neither inverted nor over-strict — `run_market` tunes the stack and `best_single` on the *same* purged-CV OOF window and the stack wins edge, fold ceiling and worst fold, so `STOP` no longer fires. Added a regression test pinning that like-for-like window (the only edit made in attempt 2; no source edit was justified).
