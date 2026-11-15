@@ -33,5 +33,7 @@ test_command: uv run pytest tests/l2_overlay/test_vol_target.py -q --tb=short --
 - [ ] Stdout ≤5 lines.
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 0/2 | **Commit:** PENDING | **Status:** PENDING
-- **Notes / error tail:** None
+- **Attempts:** 1/2 | **Commit:** PENDING (HEAD 1d6d0c8; no commit made) | **Status:** DONE
+**Notes:** PM-verified interactive close-out: pytest exit 0 (9 passed), smoke EXIT 0 (reports/l2_vol_target_smoke/), only-manifest files touched; full CALIB run = PM gate, stays with interactive session.
+- **Evidence:** `uv run pytest tests/l2_overlay/test_vol_target.py -q --tb=short --maxfail=1 && uv run python -m src.l2_overlay.constructions.vol_target --smoke` → exit 0, 9 passed in 1.39s, smoke 2 markets, stdout 4 lines; artifacts `reports/l2_vol_target_smoke/{calib_USD,calib_CAD}_smoke.md` + `fold_{USD,CAD}_smoke.json`.
+- **Notes:** survivor input root constant `ENTRIES_ROOT=data/models/l2_time_exit` (`<market>_fib.parquet`, arm `r_h55`; `xsec_vol_rank_cont` is the forward WI-058 label ⇒ attribution axis only, asserted weight-blind). Read-only real-path check (no non-smoke artifacts written — PM owns the full run, D-027 §6): USD unsized +329.4 → sized +218.3 bps (Δ −111.1), CAD +600.6 → +453.8 (Δ −146.7), fold ceiling FAILS on the single fallback fold id ⇒ STOP both markets; 4 CAD rows take the documented `min_weight` entry-vol policy. File is 350 lines vs the 250-line guidance (siblings time_exit 333 / stack_rank 356). No EVAL read.
