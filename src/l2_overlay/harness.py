@@ -29,6 +29,8 @@ DEFAULT_SMOKE_Q = "wi037"
 UNION_ROOT = BASE_DIR / "data" / "models"
 WI040_MANIFEST, WI048_MANIFEST = UNION_ROOT / "wi040" / "manifest.parquet", UNION_ROOT / "wi048" / "manifest.parquet"
 CELL_KEY = ("market", "learner", "variant", "family", "horizon", "fold")  # D-027 §4: family=`binary`, horizon=`h`
+CELL_SOURCES = {"family": "binary", "horizon": "h"}   # real manifests carry no family/horizon columns
+MISSING_KEY_SENTINEL = "\x00<missing>"                # keying only: never a real manifest value
 N_JOBS = 2                      # repo law; nothing here fans out, kept explicit
 MIN_CALIB_EVENTS = 200          # D-024 §2 per-cell CALIB event floor
 N_PLACEBO_SEEDS = 5             # CB-05 form without refits: probability permutations
@@ -249,13 +251,36 @@ def write_report(result: OverlayResult, path) -> Path:
 
 
 # ---------------------------------------------------- WI-065: union / pre-registration / gates
-def _cell_keys(frame: pd.DataFrame) -> pd.Series:
-    """D-027 §4 cell key: market/learner/variant/family/horizon/fold (family=`binary`, horizon=`h`)."""
-    d = frame.rename(columns={"binary": "family", "h": "horizon"})
-    missing = [c for c in CELL_KEY if c not in d.columns]
+def _key_columns(frame: pd.DataFrame) -> dict:
+    """Resolve every CELL_KEY column, substituting its documented manifest source when absent.
+
+    Real manifests (wi040/wi048) have no `family`/`horizon`: family lives in `binary`, horizon in `h`.
+    A key column that is absent *and* has no source present fails loudly rather than keying on NaN.
+    """
+    out, missing = {}, []
+    for col in CELL_KEY:
+        src = col if col in frame.columns else CELL_SOURCES.get(col)
+        if src in frame.columns:
+            out[col] = frame[src]
+        else:
+            missing.append(f"{col} (source `{CELL_SOURCES.get(col)}`)" if col in CELL_SOURCES else col)
     if missing:
         raise KeyError(f"manifest missing cell-key columns {missing}")
-    return d[list(CELL_KEY)].astype(str).agg("|".join, axis=1)
+    return out
+
+
+def _cell_keys(frame: pd.DataFrame) -> pd.Series:
+    """D-027 §4 cell key: market/learner/variant/family/horizon/fold — family←`binary`, horizon←`h`.
+
+    Blank key fields (e.g. the 96 NaN wi040 variants) are keyed through the reserved
+    `MISSING_KEY_SENTINEL` so they neither crash the join nor collide with real variant strings.
+    """
+    cols = _key_columns(frame)
+    parts = []
+    for col in CELL_KEY:
+        s = pd.Series(cols[col])
+        parts.append(s.astype(object).where(~s.isna(), MISSING_KEY_SENTINEL).astype(str))
+    return pd.concat(parts, axis=1).agg("|".join, axis=1)
 
 
 def assert_no_duplicate_cells(frame: pd.DataFrame) -> pd.Series:

@@ -55,6 +55,56 @@ def test_assert_no_duplicate_cells_needs_the_cell_key_columns():
         h.assert_no_duplicate_cells(pd.DataFrame({"market": ["USD"]}))
 
 
+# ---------------------------- real manifest schema: `binary`/`h`, NaN variants (WI-065-FIX1)
+REAL_COLS = ["pickle_path", "market", "learner", "variant", "binary", "h", "fold"]
+
+
+def _real_rows():
+    """wi040/wi048 shape: no family/horizon; one NaN variant and a literal "nan" string variant."""
+    return [
+        ["a", "USD", "lightgbm", "exact_full_k0.8", "up", 5, 0],
+        ["b", "USD", "lightgbm", "exact_full_k0.8", "up", 5, 1],
+        ["c", "CAD", "hist_gbm", np.nan, "b_hold", 5, 0],          # wi040's 96 NaN-variant rows
+        ["d", "CAD", "hist_gbm", "nan", "b_hold", 5, 0],           # a real string: must not collide
+        ["e", "CAD", "hist_gbm", "unspecified", "b_hold", 5, 0],
+    ]
+
+
+def _write_real(tmp_path, name: str, rows) -> "object":
+    path = tmp_path / name / "manifest.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows, columns=REAL_COLS).to_parquet(path)
+    return path
+
+
+def test_cell_keys_derive_family_from_binary_and_horizon_from_h():
+    keys = h._cell_keys(pd.DataFrame(_real_rows(), columns=REAL_COLS))
+    assert keys.map(lambda k: isinstance(k, str)).all()
+    assert keys.is_unique
+    parts = keys.iloc[0].split("|")
+    assert len(parts) == 6 and parts[0] == "USD" and parts[1] == "lightgbm"
+    assert parts[3] == "up"                                        # family ← `binary`
+    assert parts[4].startswith("5") and parts[5] == "0"            # horizon ← `h`, fold
+    assert [k.split("|")[2] for k in keys.iloc[2:4]] == [h.MISSING_KEY_SENTINEL, "nan"]
+
+
+def test_cell_keys_fail_loudly_when_a_key_source_column_is_absent():
+    with pytest.raises(KeyError, match="cell-key columns"):
+        h._cell_keys(pd.DataFrame({"market": ["USD"], "learner": ["xgboost"], "variant": ["v1"],
+                                   "fold": [0]}))
+
+
+def test_union_of_real_schema_manifests_keeps_unique_string_cell_keys(tmp_path):
+    wi040 = _write_real(tmp_path, "wi040", _real_rows())
+    wi048 = _write_real(tmp_path, "wi048", [["z", "USD", "lightgbm", "exact_full_k0.8", "up", 5, 1]])
+    union = h.load_union((wi040, wi048))                           # the duplicate key is dropped
+    assert len(union) == 5 and union["cell_key"].is_unique
+    assert union["cell_key"].map(lambda k: isinstance(k, str)).all()
+    assert h.MISSING_KEY_SENTINEL in union["cell_key"].iloc[2]     # sentinel keyed, never NaN-crashed
+    rep = union.attrs["union_report"]
+    assert rep["n_raw"] == 6 and rep["n_union"] == 5 and rep["n_dropped"] == 1
+
+
 # --------------------------------------------------- pre-registration (sha256) + EVAL lock
 def test_preregistration_hash_round_trips_and_detects_tampering(tmp_path):
     path = h.write_preregistration(h.preregistration_template(), tmp_path / "prereg.json")
