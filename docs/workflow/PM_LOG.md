@@ -12,6 +12,13 @@
 - **Rotation:** cycles 33–36 rotated to `docs/workflow/archive/PM_LOG-2026-11-14_cycles33-36.md`.
 - **Cursor:** next cycle ingests sessions from 2026-11-14T23:00Z forward.
 
+## 2026-11-16 — Cycle 42 (WI-071 code+smoke closed GREEN by watchdog; EVAL split still UNREAD)
+
+- **WI-071 (one-shot EVAL gate machinery) closed GREEN:** builder ran detached (PID 385938, ~20 min), EXIT:0; PM re-ran the close gate: `uv run pytest tests/l2_overlay/test_eval_gate.py -q --maxfail=1` exit 0 (**10 passed**, 5.44s). Smoke writes `verdicts.md`/`verdicts.json` + frozen prereg under /tmp only; no-EVAL-read proven by I/O traps (`Path.read_text`/`read_bytes`, `pandas.read_parquet` — no `data/` path touched). Deliverables: `src/l2_overlay/constructions/eval_gate.py` (249 lines: `verify_prereg_hash`, `score_eval_once`, `bh_fdr_across_family`, `emit_verdicts`; refuses on prereg-hash mismatch or unreleased harness EVAL lock; FDR across the FULL pre-registered family, never per-construction; verdict labels always PROVISIONAL) + `tests/l2_overlay/test_eval_gate.py` (159 lines). Builder fix cycles: 2/2 (test-helper DID-NOT-RAISE bug; missing verdict payload keys). Commit `4e3e125`; bookkeeping `93f34eb`/`34981ab` (watchdog close-out had left the staged card-move deletion uncommitted and the lock registered — PM completed both). Locks EMPTY. Watchdog cron `wi071-watchdog` self-removed; monitor script deleted. INDEX.md not updated (outside manifest — noted for next lock holder).
+- **EVAL split still UNREAD — no burn this session.** The one-shot run (WI-071-EVAL on the board) requires: prereg file filled (constructions/params/FDR family/materiality floor 10 bps), hashed and committed BEFORE any EVAL read; candidate set currently = fixed_h55 only (WI-068, admin-ratified into the candidate set).
+- **Pre-EVAL gaps still open (PM-owned, cycle 41):** WI-068 5-seed placebo (driver `placebo_net_edge` not wired into the full card) and WI-069 vol-target full CALIB read.
+- **Cursor:** next cycle ingests sessions from 2026-11-16T18:30Z forward.
+
 ## 2026-11-15 — Cycle 41 (r ruling + universe amendment; full CALIB runs: (b) killed, (a) provisional survivor)
 
 - **r ruling recorded (admin in chat 2026-11-15):** the L2 prepared panel's `r` = **`t10_s5_d39_close`** — the ASPIRATIONAL trade label (10% target / 5% stop / 39d / close exit), stored GROSS (`ret + 0.0025`). Supersedes the frozen `t15_s10_d39_close` convention for the L2 panel only; the WI-035 baseline artifact keeps its own frozen convention.
