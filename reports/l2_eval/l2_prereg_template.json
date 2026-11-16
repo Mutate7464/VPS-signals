@@ -1,0 +1,28 @@
+{
+  "constructions": [
+    "(a) fixed time exits \u2014 fixed_h55 UNSIZED on identical fib-baseline entries"
+  ],
+  "eval_lock_released": true,
+  "family_id": "l2_rebuild_eval_2026_11_16",
+  "fdr_family": [
+    "a_fixed_time_exits|USD|fixed_h55_unsized",
+    "a_fixed_time_exits|CAD|fixed_h55_unsized"
+  ],
+  "fdr_pooled_with_d024": false,
+  "fold_ceiling_share": 0.5,
+  "hash": "aeaa195a4d2db440b94a5b2111258181e84c8df25200f5da0cbb17239e5552ec",
+  "materiality_floor_bps": 10,
+  "notes": "Scope narrowing vs the D-027 template, recorded BEFORE the freeze: (b) xsec top-k KILLED on CALIB (both falsifiers, cycle 41); stack ranker dropped per the D-027 \u00a75 pre-commitment; (c) vol-target sizing PROVISIONAL REJECT on CALIB (risk-adjusted flat, both markets); (d) sector pairs was never built (no implementation exists) and is therefore NOT part of this family \u2014 a future (d) EVAL requires a NEW pre-registration. This family = fixed_h55 unsized x {USD, CAD} = 2 members, the only construction that survived CALIB. Fold-ceiling leg applies here for the first time (single-fold CALIB was ruled inapplicable; fold diversity deferred to this WI per admin ruling 2, cycle 41).",
+  "params": {
+    "baseline": "the frozen event exit on the identical rows (r_event, OR of fib_exit/b_stop)",
+    "calib_end": "2022-05-02",
+    "cost_model": "50 bps single-leg round trip (costs.single_leg_cost)",
+    "entries": "data/models/l2_time_exit/{USD,CAD}_fib.parquet (fib-baseline fallback entries, cycle 41)",
+    "eval_rule": "EVAL rows = entry date >= 2022-07-01; paired per-entry diff d = r_h55 - r_event; net edge = net_edge_bps(edge_bps(mean(d)), 50); one-sided analytic z from mean(d)/(sd(d)/sqrt(n)) -> p; fold report = per-fold mean paired net edge",
+    "eval_start": "2022-07-01",
+    "horizon_dates": 55,
+    "r_label": "t10_s5_d39_close (aspirational r, admin ruling 2026-11-15), stored gross",
+    "sizing": "none (unsized \u2014 WI-069 sizing rejected on CALIB)"
+  },
+  "schema_version": 1
+}
