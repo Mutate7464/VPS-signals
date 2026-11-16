@@ -18,7 +18,7 @@
 - [DONE] WI-068 | fixed time exits (h13/h55) + hybrid vs event exits on identical entries | L2 code+smoke | gate: test_command exit 0 (12 passed) + smoke EXIT 0, CONTINUE both markets | verdict ACCEPTED (admin in chat 2026-11-16 — fixed_h55 carried forward into the EVAL-gate candidate set) | card `docs/kanban/done/WI-068-time-exits.md` | commit a2da37f
 - [DONE] WI-069 | (c) vol-target sizing | L2 | test_command exit 0 + smoke EXIT 0 (2026-11-15) | reports/l2_vol_target_smoke/; full CALIB run = PM gate, interactive session; lock release pending interactive session
 - [DONE] WI-072 | (b) retry — amended-universe screener (union signals, wider grids, long/short, b_hold OOF rebuild) | L2 code+smoke | PM-verified 2026-11-15: test_command exit 0 (24 passed), both smokes EXIT 0, smoke artifacts written | card `docs/kanban/done/WI-072-wi066-retry-amended-universe.md`; full CALIB run = PM gate
-- [DONE] WI-073 | sector map consolidation (config precedence + IBKR gap-fill) | L2 code+smoke | gate: test_command exit 0 (9 passed) + smoke EXIT 0; 59 blanks residual named, WI-070 readiness CONDITIONAL | card `docs/kanban/done/WI-073-sector-map-consolidate.md`, report `reports/sector_map_consolidation.md`
+- [DONE] WI-073 | sector map consolidation (config precedence + IBKR gap-fill) | L2 code+smoke | gate: test_command exit 0 (9 passed) + smoke EXIT 0; 59 blanks residual named, WI-070 readiness CONDITIONAL | card `docs/kanban/done/WI-073-sector-map-consolidate.md`, report `reports/sector_map_consolidation.md` | commit cdf02a9
 - [TODO] WI-070 | (d) sector pairs — CONDITIONAL (needs sector map) | L2 | card `draft/`
 - [TODO] WI-071 | one-shot EVAL gate (PM-owned run; admin ratifies) | L2 | card `draft/`
 
