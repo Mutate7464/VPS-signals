@@ -33,6 +33,6 @@ test_command: uv run pytest tests/l2_overlay/test_eval_gate.py -q --tb=short --m
 - [ ] Stdout ≤5 lines.
 
 ## 4. Telemetry footer (executor fills, ≤3 lines)
-- **Attempts:** 2/2 | **Commit:** PENDING (HEAD 43fdd32; no commit made) | **Status:** DONE — `uv run pytest tests/l2_overlay/test_eval_gate.py -q --tb=short --maxfail=1` → 10 passed, exit 0
+- **Attempts:** 2/2 | **Commit:** 4e3e125 (close-out commit; footer patched by PM) | **Status:** DONE — `uv run pytest tests/l2_overlay/test_eval_gate.py -q --tb=short --maxfail=1` → 10 passed, exit 0
 - **Notes / error tail:** fix cycle 1 = test-helper default-family bug (DID NOT RAISE); cycle 2 = missing `verdicts` payload keys (`family_size`/`n_tested`/`n_untested`) + None-safe cell formatting. Final smoke: 1 stdout line, `verdicts.md`/`verdicts.json` + frozen prereg under /tmp only; no-EVAL-read proven by traps on `Path.read_text`/`read_bytes` + `pandas.read_parquet` (no `data/` path touched).
 - **Files:** `src/l2_overlay/constructions/eval_gate.py` (249 lines), `tests/l2_overlay/test_eval_gate.py` (159 lines); `src/l2_overlay/INDEX.md` NOT updated (outside `write_files` — new module left for the next lock holder).
