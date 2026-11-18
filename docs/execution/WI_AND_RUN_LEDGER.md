@@ -91,3 +91,21 @@
 | WI-055 | DONE PM-verified — L0-4 jump intensity; R12: absorbed |
 | WI-056 | DONE PM-verified — L0-5 vol-dispersion; **L0-5 survives (`disp_entropy_39`)** — card kept in `done/` |
 | WI-057 | DONE PM-verified — L0-6 effort-vs-result; R12: 0/12 — card kept in `done/` || WI-034 | DEFERRED by admin 2026-11-09 (superseded by WI-035/036; never dispatched) — archived to docs/archive/wi/ 2026-11-14 |
+| WI-058 | DONE PM-verified — L1-1 forward xsec vol-rank label + grid (PM owns full grid) |
+| WI-059 | DONE PM-verified — L1-2 payoff-ratio MFE/MAE label + grid |
+| WI-060 | DONE PM-verified — L1-3 expansion-direction decomposition (A·B); 30 passed after attempt-3 fix |
+| WI-061 | DONE PM-verified — L1-4 sample-uniqueness weighting (training variant) |
+| WI-062 | DONE PM-verified — L1.5 meta-label (swing-side primary) + seed-averaging companion |
+| WI-063 | DONE PM-verified — meta-label full-universe driver + smoke (7 passed) |
+| WI-064 | DONE PM-verified — meta-label driver synthetic tests (5 passed; smoke AUC USD 0.554 / CAD 0.543) |
+| WI-065 | DONE PM-verified — harness upgrade: union loader, fold report, cost model, pre-registration + EVAL lock (28 passed) |
+| WI-066 | DONE code+smoke — xsec top-k screener; full CALIB killed (b_hold coverage gap) → retry WI-072 |
+| WI-067 | DONE PM-verified — regularised L2 stack ranker over union + meta OOF (10 passed; smoke CONTINUE both markets) |
+| WI-068 | DONE PM-verified — fixed time-based exits vs event exits (12 passed; fixed_h55 provisional survivor) |
+| WI-069 | DONE PM-verified — vol-target entry-only sizing on CALIB survivor (9 passed) |
+| WI-071 | DONE PM-verified — one-shot EVAL gate machinery: prereg hash, score-once lock, full-family BH-FDR, PROVISIONAL tags (10 passed; no-EVAL-read proven by I/O traps) |
+| WI-072 | DONE PM-verified — WI-066 retry: amended-universe xsec top-k screener (24 passed; both smokes EXIT 0); full CALIB killed (b) |
+| WI-073 | DONE PM-verified — sector map consolidation, config precedence + IBKR gap-fill (9 passed; 59 blanks residual named) |
+| WI-071-EVAL | RATIFIED ADOPT (admin in chat 2026-11-16, Layer 2) — fixed_h55 unsized × {USD,CAD}: net +452.1/+445.7, both folds positive, BH q≈0; computed ceiling REJECT overridden as discretization artifact; EVAL split SPENT (`reports/l2_eval/`, commit 846ce5d) |
+| WI-073-ESCALATION | Strike-1 record (builder exited incomplete 2026-11-16) — resolved: WI-073 resumed and closed GREEN same day (commit cdf02a9) |
+| — | Card compaction 2026-11-18: all D-027/D-026 closed cards moved `docs/kanban/done/` → `docs/archive/wi/` (rows above); done/ empty for next sprint |

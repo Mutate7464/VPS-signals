@@ -1,0 +1,30 @@
+{
+  "constructions": [
+    "(b) xsec top-k rank screener + hysteresis (LONG-ONLY first pass)",
+    "(a) fixed time exits h13/h55 + hybrid on identical entries",
+    "(c) vol-target entry-only sizing",
+    "(d) within-market sector pairs"
+  ],
+  "eval_lock_released": false,
+  "family_id": "l2_rebuild",
+  "fdr_family": [],
+  "fdr_pooled_with_d024": false,
+  "fold_ceiling_share": 0.5,
+  "hash": "c07b1dd5f67788ff9595a560b4d229abe63649ccf91ad543edc1e2f0680dbf7a",
+  "materiality_floor_bps": 10.0,
+  "params": {
+    "calib_end": "2022-05-02",
+    "eval_start": "2022-07-01",
+    "long_only": true,
+    "min_names_per_date": 20,
+    "tau_grid": [
+      0.1,
+      0.2,
+      0.3,
+      0.5,
+      0.7
+    ],
+    "xsec_min_calib_events": 200
+  },
+  "schema_version": 1
+}

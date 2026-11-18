@@ -1,0 +1,62 @@
+{
+  "family_id": "l2_rebuild_eval_2026_11_16",
+  "family_size": 2,
+  "fdr_alpha": 0.05,
+  "generated": "2026-11-16T20:55:09Z",
+  "layer": "2 (overlay/trading)",
+  "n_records": 2,
+  "n_tested": 2,
+  "n_untested": 0,
+  "provisional": true,
+  "ratification": "admin chat ratification required (AGENTS.md provisional-verdict rule)",
+  "tag": "PROVISIONAL",
+  "verdict_counts": {
+    "REJECT": 2
+  },
+  "verdicts": [
+    {
+      "construction": "a_fixed_time_exits",
+      "fold_report": {
+        "fold_ceiling_ok": false,
+        "max_fold_share": 0.5326624129771014,
+        "n_folds": 2,
+        "n_positive_folds": 2,
+        "per_fold_net_edge": {
+          "0": 422.5780999472085,
+          "1": 481.64640859099086
+        },
+        "total_net_edge": 904.2245085381994
+      },
+      "key": "a_fixed_time_exits|USD|fixed_h55_unsized",
+      "label": "REJECT",
+      "label_tagged": "REJECT (PROVISIONAL)",
+      "market": "USD",
+      "net_edge_bps": 452.0947317806263,
+      "q_value": 3.6723815678568187e-205,
+      "signal": "fixed_h55_unsized",
+      "status": "PROVISIONAL"
+    },
+    {
+      "construction": "a_fixed_time_exits",
+      "fold_report": {
+        "fold_ceiling_ok": false,
+        "max_fold_share": 0.597294747064632,
+        "n_folds": 2,
+        "n_positive_folds": 2,
+        "per_fold_net_edge": {
+          "0": 359.0034731744478,
+          "1": 532.476015999402
+        },
+        "total_net_edge": 891.4794891738497
+      },
+      "key": "a_fixed_time_exits|CAD|fixed_h55_unsized",
+      "label": "REJECT",
+      "label_tagged": "REJECT (PROVISIONAL)",
+      "market": "CAD",
+      "net_edge_bps": 445.676880827974,
+      "q_value": 1.4044701468549251e-180,
+      "signal": "fixed_h55_unsized",
+      "status": "PROVISIONAL"
+    }
+  ]
+}

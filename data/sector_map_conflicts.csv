@@ -1,0 +1,68 @@
+symbol,market,config_sector,ibkr_sector,source_won
+AAPL,CAD,Technology,Hardware,config
+AAUC,CAD,Basic Materials,Metals & Mining,config
+ABX,CAD,Basic Materials,Metals & Mining,config
+ACO.X,CAD,Utilities,Utilities - Regulated,config
+AG,CAD,Basic Materials,Metals & Mining,config
+AGI,CAD,Basic Materials,Metals & Mining,config
+AMZN,CAD,Consumer Cyclical,Retail - Cyclical,config
+ARE,CAD,Industrials,Construction,config
+ARIS,CAD,Basic Materials,Metals & Mining,config
+ATH,CAD,Energy,Oil & Gas,config
+ATZ,CAD,Consumer Cyclical,Retail - Cyclical,config
+BB,CAD,Technology,Software,config
+BBD.B,CAD,Industrials,Aerospace & Defense,config
+BHC,CAD,Healthcare,Drug Manufacturers,config
+BIR,CAD,Energy,Oil & Gas,config
+BN,CAD,Financial Services,Asset Management,config
+BTO,CAD,Basic Materials,Metals & Mining,config
+CEU,CAD,Energy,Oil & Gas,config
+CFP,CAD,Basic Materials,Forest Products,config
+CLS,CAD,Technology,Hardware,config
+CURA,CAD,Healthcare,Drug Manufacturers,config
+CVE,CAD,Energy,Oil & Gas,config
+DOL,CAD,Consumer Defensive,Retail - Defensive,config
+DPM,CAD,Basic Materials,Metals & Mining,config
+DSV,CAD,Basic Materials,Metals & Mining,config
+EDR,CAD,Basic Materials,Metals & Mining,config
+EFR,CAD,Energy,Other Energy Sources,config
+ELD,CAD,Basic Materials,Metals & Mining,config
+ERO,CAD,Basic Materials,Metals & Mining,config
+FNV,CAD,Basic Materials,Metals & Mining,config
+FTT,CAD,Industrials,Industrial Distribution,config
+GMIN,CAD,Basic Materials,Metals & Mining,config
+GOOG,CAD,Communication Services,Interactive Media,config
+HBM,CAD,Basic Materials,Metals & Mining,config
+IFC,CAD,Financial Services,Insurance,config
+IMG,CAD,Basic Materials,Metals & Mining,config
+IVN,CAD,Basic Materials,Metals & Mining,config
+K,CAD,Basic Materials,Metals & Mining,config
+MSFT,CAD,Technology,Software,config
+MTL,CAD,Industrials,Transportation,config
+MU,CAD,Technology,Semiconductors,config
+MX,CAD,Basic Materials,Chemicals,config
+NFI,CAD,Consumer Cyclical,Vehicles & Parts,config
+NFLX,CAD,Communication Services,Media - Diversified,config
+NVDA,CAD,Technology,Semiconductors,config
+NXE,CAD,Energy,Other Energy Sources,config
+OR,CAD,Basic Materials,Metals & Mining,config
+PAAS,CAD,Basic Materials,Metals & Mining,config
+PET,CAD,Consumer Cyclical,Retail - Cyclical,config
+PLTR,CAD,Technology,Software,config
+RUS,CAD,Industrials,Industrial Distribution,config
+SHOP,CAD,Technology,Software,config
+SKE,CAD,Basic Materials,Metals & Mining,config
+SSRM,CAD,Basic Materials,Metals & Mining,config
+STN,CAD,Industrials,Construction,config
+SVM,CAD,Basic Materials,Metals & Mining,config
+TA,CAD,Utilities,Utilities - Independent Power Producers,config
+TIH,CAD,Industrials,Industrial Distribution,config
+TNZ,CAD,Energy,Oil & Gas,config
+TRI,CAD,Industrials,Business Services,config
+VNP,CAD,Basic Materials,Chemicals,config
+WCN,CAD,Industrials,Waste Management,config
+WDO,CAD,Basic Materials,Metals & Mining,config
+WPM,CAD,Basic Materials,Metals & Mining,config
+X,CAD,Financial Services,Capital Markets,config
+LULU,USD,Consumer Cyclical,Retail - Cyclical,config
+WYNN,USD,Consumer Cyclical,Travel & Leisure,config

@@ -4,30 +4,41 @@
 > Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/` (cards hold detail); archived cards: `docs/archive/wi/` (indexed in `docs/execution/WI_AND_RUN_LEDGER.md`).
 > Full pre-lean board (2026-11-14, all per-WI narratives preserved): `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md`; older: `docs/workflow/archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-14 (PM cycle 36) — RATIFICATION: WI-059b (cont families on regression read-out, min IC +0.6475 / +0.1665), WI-060 (move_occur 0.6033 / move_dir_up 0.6407), WI-061 (method variant), WI-062 (meta-label machinery) all RATIFIED (admin in chat, Layer 1). D-026 Phase 1 DONE + RATIFIED: L0 R12 (L0-5 survives; `disp_entropy_39` in), WI-058 bin (min AUC 0.8226, library best), WI-059a (weak), WI-048d/e/f (`vol_expand` quarantine upheld). **Cleanup (admin 2026-11-14):** WI-034 archived; WI-048 umbrella draft deleted; WI-049 folded into L2 rebuild scope; **L1 library FROZEN for the L2 rebuild** — larger-variant lower-ρ family PARKED post-rebuild. Locks EMPTY; `ready/` EMPTY; nothing in `in_progress/`. Next: L2 rebuild scoping brief.
+**Last updated:** 2026-11-18 (housekeeping trim — board was over its 5 KB cap; the full ratified
+D-027/D-026 closure narrative is preserved verbatim in `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`).
+D-027 sprint CLOSED + RATIFIED: WI-071-EVAL **ADOPT** (fixed_h55 unsized = L2 overlay exit rule; net +452.1 USD / +445.7 CAD, both folds positive, BH q≈0; EVAL split SPENT; shortlist-only, no live trading). (b) KILLED, (c) vol-target REJECT, (d) descoped (new prereg + new split required for any future EVAL). D-026 sprint DONE + RATIFIED (L1 extension: 5 families integrated). L1 library FROZEN for the L2 rebuild.
 
 ## ACTIVE
-### D-026 SPRINT (L0/L1 extension — T1/T2; plan `docs/plans/26-W46-L0L1-extension-review-v2.md`, design `docs/workflow/designs/D-026-l0l1-extension.md`; order Phase 0 → L0 → L1 → L1.5)
-- Integrity ruling (PM-verified 2026-11-13): `vol_expand` label is BACKWARD-looking (`src/swing_bsh/targets_ext.py:111-133`) — survivors quarantined; forward use only via `vol_expand_fwd` (WI-051). `close`/`atr` levels confirmed excluded from feature lists (PASS).
-- [DONE] WI-059b | L1-2/1-1 continuous families on the regression read-out — PM-run full-universe | T2 | **PM-verified 2026-11-14** — `cell_cv(regression=True)` path (float32 labels, `model.predict` OOF, `fit_regressor`, no calibration; WI-044 wrapper forwards + guards); xsec_vol_rank_cont: 24 cells, 0 truncated, 24/24 BH survivors, best min cross-market rank-IC **+0.6475** (xgboost/h55; CAD +0.7135) — supersedes the quarantined binarized numbers; mfe_mae_cont: 24 cells, 24/24 survivors, best min IC **+0.1665** (xgboost/h55) — moderate payoff-ratio signal; reports `reports/l1_ext_cont/` (quarantined sidecar retained as `*_quarantined.json`), 240 pickles; manifest superset **1015 rows** via consolidate; cont p from the date-block t-stat (per-date ICs, plan §7; p underflows to 0 at ~4k dates), placebo skipped for cont by design; **RATIFIED (admin in chat 2026-11-14, Layer 1)**
-- [DONE] WI-060 | L1-3 `move_occur` + `move_dir_up` grids — PM-run full-universe | T2 | **PM-verified 2026-11-14** — chain EXIT:0; move_occur: 24 cells, 0 truncated, 24/24 BH-FDR survivors (placebo 24), best min cross-market AUC **0.6033** (xgboost/h5; min IC +0.1782), 0.54 core-h; move_dir_up: 24 cells, 0 truncated, 24/24 survivors (placebo 24), best min cross-market AUC **0.6407** (xgboost/h5; min IC +0.2230), 0.50 core-h — conditional direction B is better than chance (vs `up`'s 0.5038 unconditional), consistent with the plan's decomposition hypothesis; reports `reports/t2_grid_move{occur,dirup}_summary.md`, 240 pickles; **RATIFIED (admin in chat 2026-11-14, Layer 1)**; note: the A·B fixed-product screener score is a Phase-3/L2 read-out, not part of this verdict
-- [DONE] WI-061 | L1-4 average-uniqueness weighting (training variant: code+tests, `sample_weight=` opt-in, no cells by design per card m=12) | T2 | **RATIFIED (admin in chat 2026-11-14)** — card `done/`; a weighted-variant driver pass is NOT part of WI-061
-- [DONE] WI-050 | Phase 0 precision@k / top-decile diagnostic harness | N/A | card `docs/archive/wi/`
-- [DONE] WI-051 | forward `vol_expand_fwd` label + `vol_expand` quarantine note | N/A | card `docs/archive/wi/`
-- [DONE] WI-052 | L0-1 swing-structure history block | T1 | card `docs/archive/wi/`
-- [DONE] WI-053…057 | L0-2…L0-6 blocks — R12 verdict: L0-5 survives (`disp_entropy_39`), L0-2/L0-4 absorbed (Q1), L0-1/L0-3/L0-6 0/12; 21 of 27 block cols flagged not-kept | T1 | `reports/l0_r12_v2/l0_r12_consolidated.md`; cards `docs/archive/wi/`
-- [DONE] WI-058 | L1-1 xsec vol-rank grids — bin 24/24 survivors RATIFIED L1 (library best, min AUC 0.8226; manifest superset 535 rows); cont QUARANTINED (int8-cast top-of-date indicator retained under predictive license, admin "not unuseful for later use"; proper re-run = WI-059b) | T2 | `reports/t2_grid_xsecvolrankbin_summary.md`, `reports/t2_grid_xsecvolrankcont_summary.md`, `reports/l1_ext/`; card `done/`
-- [DONE] WI-059a | L1-2 `mfe_mae_bin` grid — 24/24 survivors RATIFIED L1 (weak lift, min AUC 0.5515) | T2 | `reports/t2_grid_mfemaebin_summary.md`; card `done/`
-- [DONE] WI-062 | L1.5 meta-label (swing-side primary) + permuted-label leakage test — not-stacking per D-026 | T2 | **RATIFIED (admin in chat 2026-11-14, Layer 1)** — machinery accepted; full-universe meta-label run is a separate future gate; card `done/`
+No WIP, no open sprint brief (D-027 sprint closed 2026-11-16). Next sprint is admin-ordered.
+Any future (d)/vol-target EVAL needs a NEW prereg + NEW split. Full narrative: `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`.
 
-### D-025 SPRINT (tiered workflow T1→T2→T3, admin approved 2026-11-10) — complete; WI-049 folded into L2 rebuild scope
-- [FOLDED] WI-049 | mechanism survey doc (depends WI-045, done) | T3 | folded into the L2 rebuild brief as its framing section (admin 2026-11-14) — do NOT dispatch standalone; card `docs/kanban/draft/WI-049-trade-mechanism-survey.md` retained as source material
-- **L1 FREEZE (admin 2026-11-14):** the L1 library is FROZEN for the L2 rebuild — the larger-variant family (lower ρ-prune threshold, parameter-max; re-admission population = the 21 not-kept L0 block cols) is PARKED as a post-rebuild WI, dispatch only after the L2 read-out shows parameter count is the binding constraint.
-- [DONE] WI-045…048f | tier map · edge-decay probe · feature-gap inventory · label builders + density probe · grids `up`/`high_low`/`vol_expand` + cross-family FDR consolidation — all PM-verified; survivors RATIFIED into the L1 library (`vol_expand` quarantined per D-026 ruling 2; re-integration carried by `vol_expand_fwd` + the admin's larger-scale lower-threshold variant) | T2 | `reports/t2_grid_up_summary.md`, `reports/t2_grid_highlow_summary.md`, `reports/t2_grid_volexpand_summary.md`, `reports/t2_targets_ext_summary.md`; cards `docs/archive/wi/`
+
+### D-027 SPRINT — CLOSED + RATIFIED 2026-11-16 (design `designs/D-027-l2-rebuild.md`, outcome §13; full detail `archive/BOARD-2026-11-16-D027-active-detail.md`)
+- [DONE] WI-064/065/066/067/071/072/073 | infra, harness, screeners, EVAL machinery, sector map — all code+smoke PASS | cards `docs/archive/wi/` (compacted 2026-11-18; ledger `docs/execution/WI_AND_RUN_LEDGER.md`) | commits 6126626 7e60406 6966a8c 4e3e125 cdf02a9
+- [DONE] WI-068 | fixed time exits h13/h55 vs event on identical entries | ACCEPTED — fixed_h55 carried to EVAL | card `docs/archive/wi/WI-068-time-exits.md` | commit a2da37f
+- [DONE] WI-069 | (c) vol-target sizing | full CALIB: sizing REDUCES net edge both markets → (c) REJECT RATIFIED | `reports/l2_vol_target/`
+- [DONE] WI-071-EVAL | one-shot EVAL, fixed_h55 unsized, split SPENT | computed REJECT (ceiling knife-edge 0.533/0.597, 2 folds positive) → **RATIFIED ADOPT (admin in chat, Layer 2)** | `reports/l2_eval/` | commit 846ce5d
+- [DESCOPED] WI-070 | (d) sector pairs — any future (d) EVAL needs a NEW prereg + NEW split | card `draft/`
+
+
+### D-026 SPRINT — DONE + RATIFIED 2026-11-14 (design `designs/D-026-l0l1-extension.md`; full detail `archive/BOARD-2026-11-16-D027-active-detail.md`)
+- Ruling: `vol_expand` label backward-looking — quarantined; forward use only via `vol_expand_fwd` (WI-051)
+- [DONE] WI-059b | L1-1/1-2 continuous families, regression read-out | 24/24 survivors, best min rank-IC +0.6475 (xgboost/h55) RATIFIED L1 | `reports/l1_ext_cont/`
+- [DONE] WI-060 | `move_occur` + `move_dir_up` grids | 24/24 survivors each, min AUC 0.6033 / 0.6407 RATIFIED L1 | `reports/t2_grid_move{occur,dirup}_summary.md`
+- [DONE] WI-061 | L1-4 average-uniqueness weighting (code+tests, `sample_weight=` opt-in) | RATIFIED | card `docs/archive/wi/`
+- [DONE] WI-050/051/052 | Phase 0 harness + fwd label + L0-1 block | cards `docs/archive/wi/`
+- [DONE] WI-053…057 | L0-2…L0-6 blocks — only L0-5 survives (`disp_entropy_39`); 21/27 cols not-kept | `reports/l0_r12_v2/l0_r12_consolidated.md`
+- [DONE] WI-058/059a | L1-1 xsec vol-rank bin + `mfe_mae_bin` grids | RATIFIED L1 (min AUC 0.8226 / 0.5515) | `reports/t2_grid_*_summary.md`, `reports/l1_ext/`
+- [DONE] WI-062 | L1.5 meta-label machinery + permuted-label leakage test | RATIFIED (full-universe run = separate future gate) | card `docs/archive/wi/`
+
+### D-025 SPRINT — complete (design `designs/D-025-tiered-workflow.md`)
+- [FOLDED] WI-049 | mechanism survey → folded into the L2 rebuild brief; card `draft/` retained as source material
+- **L1 FREEZE (admin 2026-11-14)** stands: larger-variant lower-ρ family PARKED post-rebuild
+- [DONE] WI-045…048f | tier map · edge-decay probe · feature-gap inventory · label builders + grids up/high_low/vol_expand | survivors RATIFIED into L1 library | `reports/t2_grid_*.md`, `reports/t2_targets_ext_summary.md`
 
 ### CLOSED
 - D-024 batch (WI-032…044) — all DONE + RATIFIED 2026-11-09/10: L2 reruns closed per D-024 pre-committed closure (REJECT/INERT permanent; 20 ADOPTs statistically real, economically nil — NO deployment); L1 library consolidated (WI-040 manifest 9,745 rows) | `reports/l2/rerun_modern.md`, `reports/l2/rerun_legacy.md`, `reports/wi040_library_manifest.md`; cards `docs/archive/wi/`
-- D-023 and earlier (WI-001…031) — closed; cards `docs/archive/wi/`, briefs `docs/human/briefings/`, per-WI one-liners in this file's git history
+- D-023 and earlier (WI-001…031) — closed; cards `docs/archive/wi/`, briefs `docs/archive/old-files/human-briefings/`, per-WI one-liners in this file's git history
 - [DONE] WI-034 | binary-decompose probe | DEFERRED by admin 2026-11-09 (superseded by WI-035/036; question re-answered by WI-060's move decomposition) — card archived 2026-11-14 to `docs/archive/wi/`
 - [BLOCKED] none (`docs/kanban/blocked/` empty)
 

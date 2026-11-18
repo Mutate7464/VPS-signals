@@ -54,8 +54,9 @@
 - Docs & backlog live in `/docs/`; human-facing stream in `docs/human/GUIDE.md`
   (never loaded into agent context; refreshed by scribe).
 - Sprint entry point (token-optimized state + next-series specs): the newest *sprint*
-  brief in `docs/workflow/briefs/` (currently `2026-11-10-D-025-tiered-sprint-brief.md`).
-  Batch-planner *input* briefs also sit in this dir — ignore them when picking the
+  brief in `docs/workflow/briefs/` (newest file = the open sprint; currently NONE open —
+  D-025 sprint closed 2026-11-16; the board's ACTIVE row is the entry point until a new
+  sprint brief lands). Batch-planner *input* briefs also sit in this dir — ignore them when picking the
   sprint entry point.
 - Roles, mode gates, token caps (WI spec ≤400 tokens, BOARD ≤5 KB, PM_LOG keep 2):
   `docs/workflow/designs/D-020-lean-hitl-tri-role-workflow.md`. Mode prompts:

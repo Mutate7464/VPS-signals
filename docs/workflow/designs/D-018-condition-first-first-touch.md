@@ -3,7 +3,7 @@
 Status: **accepted** (all 5 definition-gate questions answered by admin 2026-11-01:
 Q1 both binnings · Q2 CAD skipped · Q3 depth ≤2 · Q4 BH-FDR 5% · Q5 memo-only)
 Admin direction 2026-11-01: WI-017 gate REC A+C accepted in chat. Parent evidence:
-`docs/human/briefings/2026-11-01-gate-WI-017-brute-force.md` (WI-017 confirmation).
+`docs/archive/old-files/human-briefings/2026-11-01-gate-WI-017-brute-force.md` (WI-017 confirmation).
 
 ## Context / why this WI
 

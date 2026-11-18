@@ -1,0 +1,523 @@
+{
+  "files": {
+    "/home/yycuser/.hermes/attachments/gateway-exported-logs.txt": 30145,
+    "IBKRDownload/OldList/api-exported-logs.txt": 10404
+  },
+  "lines_parsed": 40549,
+  "lines_unparsed": 0,
+  "distinct_templates": 26563,
+  "errors_flagged": 519,
+  "noise_flagged": 19,
+  "error_codes": {
+    "WARN": 12,
+    "ERROR": 3,
+    "200": 14,
+    "0": 3,
+    "162": 485,
+    "366": 2
+  },
+  "errors_tail": [
+    {
+      "ts": "22:23:12:455",
+      "code": "162",
+      "msg": "4;2;473;162;Historical Market Data Service error message:API historical data query cancelled: 473;]"
+    },
+    {
+      "ts": "22:23:32:946",
+      "code": "162",
+      "msg": "4;2;474;162;Historical Market Data Service error message:API historical data query cancelled: 474;]"
+    },
+    {
+      "ts": "22:23:39:947",
+      "code": "162",
+      "msg": "4;2;475;162;Historical Market Data Service error message:API historical data query cancelled: 475;]"
+    },
+    {
+      "ts": "22:23:40:409",
+      "code": "162",
+      "msg": "4;2;476;162;Historical Market Data Service error message:API historical data query cancelled: 476;]"
+    },
+    {
+      "ts": "22:23:44:400",
+      "code": "162",
+      "msg": "4;2;477;162;Historical Market Data Service error message:API historical data query cancelled: 477;]"
+    },
+    {
+      "ts": "22:23:50:981",
+      "code": "162",
+      "msg": "4;2;478;162;Historical Market Data Service error message:API historical data query cancelled: 478;]"
+    },
+    {
+      "ts": "22:23:51:110",
+      "code": "162",
+      "msg": "4;2;479;162;Historical Market Data Service error message:API historical data query cancelled: 479;]"
+    },
+    {
+      "ts": "22:23:55:098",
+      "code": "162",
+      "msg": "4;2;480;162;Historical Market Data Service error message:API historical data query cancelled: 480;]"
+    },
+    {
+      "ts": "22:23:57:187",
+      "code": "162",
+      "msg": "4;2;481;162;Historical Market Data Service error message:API historical data query cancelled: 481;]"
+    },
+    {
+      "ts": "22:23:57:458",
+      "code": "162",
+      "msg": "4;2;482;162;Historical Market Data Service error message:API historical data query cancelled: 482;]"
+    },
+    {
+      "ts": "22:23:57:735",
+      "code": "162",
+      "msg": "4;2;483;162;Historical Market Data Service error message:API historical data query cancelled: 483;]"
+    },
+    {
+      "ts": "22:24:17:946",
+      "code": "162",
+      "msg": "4;2;484;162;Historical Market Data Service error message:API historical data query cancelled: 484;]"
+    },
+    {
+      "ts": "22:24:24:948",
+      "code": "162",
+      "msg": "4;2;485;162;Historical Market Data Service error message:API historical data query cancelled: 485;]"
+    },
+    {
+      "ts": "22:24:25:416",
+      "code": "162",
+      "msg": "4;2;486;162;Historical Market Data Service error message:API historical data query cancelled: 486;]"
+    },
+    {
+      "ts": "22:24:29:402",
+      "code": "162",
+      "msg": "4;2;487;162;Historical Market Data Service error message:API historical data query cancelled: 487;]"
+    },
+    {
+      "ts": "22:24:35:983",
+      "code": "162",
+      "msg": "4;2;488;162;Historical Market Data Service error message:API historical data query cancelled: 488;]"
+    },
+    {
+      "ts": "22:24:36:111",
+      "code": "162",
+      "msg": "4;2;489;162;Historical Market Data Service error message:API historical data query cancelled: 489;]"
+    },
+    {
+      "ts": "22:24:40:095",
+      "code": "162",
+      "msg": "4;2;490;162;Historical Market Data Service error message:API historical data query cancelled: 490;]"
+    },
+    {
+      "ts": "22:24:42:185",
+      "code": "162",
+      "msg": "4;2;491;162;Historical Market Data Service error message:API historical data query cancelled: 491;]"
+    },
+    {
+      "ts": "22:24:42:459",
+      "code": "162",
+      "msg": "4;2;492;162;Historical Market Data Service error message:API historical data query cancelled: 492;]"
+    },
+    {
+      "ts": "22:24:42:741",
+      "code": "162",
+      "msg": "4;2;493;162;Historical Market Data Service error message:API historical data query cancelled: 493;]"
+    },
+    {
+      "ts": "22:25:02:948",
+      "code": "162",
+      "msg": "4;2;494;162;Historical Market Data Service error message:API historical data query cancelled: 494;]"
+    },
+    {
+      "ts": "22:25:09:955",
+      "code": "162",
+      "msg": "4;2;495;162;Historical Market Data Service error message:API historical data query cancelled: 495;]"
+    },
+    {
+      "ts": "22:25:10:413",
+      "code": "162",
+      "msg": "4;2;496;162;Historical Market Data Service error message:API historical data query cancelled: 496;]"
+    },
+    {
+      "ts": "22:25:14:404",
+      "code": "162",
+      "msg": "4;2;497;162;Historical Market Data Service error message:API historical data query cancelled: 497;]"
+    },
+    {
+      "ts": "22:25:20:989",
+      "code": "162",
+      "msg": "4;2;498;162;Historical Market Data Service error message:API historical data query cancelled: 498;]"
+    },
+    {
+      "ts": "22:25:21:112",
+      "code": "162",
+      "msg": "4;2;499;162;Historical Market Data Service error message:API historical data query cancelled: 499;]"
+    },
+    {
+      "ts": "22:25:25:097",
+      "code": "162",
+      "msg": "4;2;500;162;Historical Market Data Service error message:API historical data query cancelled: 500;]"
+    },
+    {
+      "ts": "22:25:27:192",
+      "code": "162",
+      "msg": "4;2;501;162;Historical Market Data Service error message:API historical data query cancelled: 501;]"
+    },
+    {
+      "ts": "22:25:27:461",
+      "code": "162",
+      "msg": "4;2;502;162;Historical Market Data Service error message:API historical data query cancelled: 502;]"
+    },
+    {
+      "ts": "22:25:47:950",
+      "code": "162",
+      "msg": "4;2;504;162;Historical Market Data Service error message:API historical data query cancelled: 504;]"
+    },
+    {
+      "ts": "22:25:54:951",
+      "code": "162",
+      "msg": "4;2;505;162;Historical Market Data Service error message:API historical data query cancelled: 505;]"
+    },
+    {
+      "ts": "22:25:55:415",
+      "code": "162",
+      "msg": "4;2;506;162;Historical Market Data Service error message:API historical data query cancelled: 506;]"
+    },
+    {
+      "ts": "22:25:59:432",
+      "code": "162",
+      "msg": "4;2;507;162;Historical Market Data Service error message:API historical data query cancelled: 507;]"
+    },
+    {
+      "ts": "22:26:05:993",
+      "code": "162",
+      "msg": "4;2;508;162;Historical Market Data Service error message:API historical data query cancelled: 508;]"
+    },
+    {
+      "ts": "22:26:06:113",
+      "code": "162",
+      "msg": "4;2;509;162;Historical Market Data Service error message:API historical data query cancelled: 509;]"
+    },
+    {
+      "ts": "22:26:11:496",
+      "code": "162",
+      "msg": "4;2;511;162;Historical Market Data Service error message:API historical data query cancelled: 511;]"
+    },
+    {
+      "ts": "22:26:12:189",
+      "code": "162",
+      "msg": "4;2;512;162;Historical Market Data Service error message:API historical data query cancelled: 512;]"
+    },
+    {
+      "ts": "22:26:12:468",
+      "code": "162",
+      "msg": "4;2;513;162;Historical Market Data Service error message:API historical data query cancelled: 513;]"
+    },
+    {
+      "ts": "22:26:32:954",
+      "code": "162",
+      "msg": "4;2;514;162;Historical Market Data Service error message:API historical data query cancelled: 514;]"
+    },
+    {
+      "ts": "22:26:39:954",
+      "code": "162",
+      "msg": "4;2;515;162;Historical Market Data Service error message:API historical data query cancelled: 515;]"
+    },
+    {
+      "ts": "22:26:40:417",
+      "code": "162",
+      "msg": "4;2;516;162;Historical Market Data Service error message:API historical data query cancelled: 516;]"
+    },
+    {
+      "ts": "22:26:44:407",
+      "code": "162",
+      "msg": "4;2;517;162;Historical Market Data Service error message:API historical data query cancelled: 517;]"
+    },
+    {
+      "ts": "22:26:51:002",
+      "code": "162",
+      "msg": "4;2;518;162;Historical Market Data Service error message:API historical data query cancelled: 518;]"
+    },
+    {
+      "ts": "22:26:51:113",
+      "code": "162",
+      "msg": "4;2;519;162;Historical Market Data Service error message:API historical data query cancelled: 519;]"
+    },
+    {
+      "ts": "22:26:54:156",
+      "code": "162",
+      "msg": "4;2;520;162;Historical Market Data Service error message:API historical data query cancelled: 520;]"
+    },
+    {
+      "ts": "22:26:56:499",
+      "code": "162",
+      "msg": "4;2;521;162;Historical Market Data Service error message:API historical data query cancelled: 521;]"
+    },
+    {
+      "ts": "22:26:57:187",
+      "code": "162",
+      "msg": "4;2;522;162;Historical Market Data Service error message:API historical data query cancelled: 522;]"
+    },
+    {
+      "ts": "22:26:57:464",
+      "code": "162",
+      "msg": "4;2;523;162;Historical Market Data Service error message:API historical data query cancelled: 523;]"
+    },
+    {
+      "ts": "22:27:17:955",
+      "code": "162",
+      "msg": "4;2;524;162;Historical Market Data Service error message:API historical data query cancelled: 524;]"
+    }
+  ],
+  "rare_templates": [
+    {
+      "template_id": "LINFO:1b480443d79e",
+      "count": 3,
+      "sample": "SPLASH 0552 step 5 JConQueryTool.processNormalLogon1-1"
+    },
+    {
+      "template_id": "LINFO:de4966381555",
+      "count": 3,
+      "sample": "AB-DEBUG: Connection is initialized from ConnectionEndPoint: ndc1.ibllc.com:4000"
+    },
+    {
+      "template_id": "LINFO:69a6a8996930",
+      "count": 3,
+      "sample": "Farm usfarm/UNCONNECTED: Starting connection thread"
+    },
+    {
+      "template_id": "LINFO:33b6b6a3b40a",
+      "count": 3,
+      "sample": "CONN CALC: Last connection set as now:17:49:59:611"
+    },
+    {
+      "template_id": "LINFO:d956e9ef385e",
+      "count": 3,
+      "sample": "Added to valid hosts list: ndc1.ibllc.com"
+    },
+    {
+      "template_id": "LINFO:02267c733728",
+      "count": 3,
+      "sample": "AuthTimeoutMonitor-ushmds: timeout=20000"
+    },
+    {
+      "template_id": "LINFO:28328e41b0ca",
+      "count": 3,
+      "sample": "Terminating auth timeout monitor thread for ushmds"
+    },
+    {
+      "template_id": "LINFO:a2dbb0828b8c",
+      "count": 3,
+      "sample": "Done sending saved messages."
+    },
+    {
+      "template_id": "LINFO:c13caba95415",
+      "count": 3,
+      "sample": "Casting default site:ndc1.ibllc.com dataType:any points:[ndc1.ibllc.com:4000] to ccp dataType:NONE points:[useccphost]"
+    },
+    {
+      "template_id": "LINFO:9b8c68edf9e7",
+      "count": 3,
+      "sample": "Starting compressor"
+    },
+    {
+      "template_id": "LINFO:5f527cae7379",
+      "count": 3,
+      "sample": "Shutting down compressor. FlatLen:0"
+    },
+    {
+      "template_id": "LINFO:a974721d3f23",
+      "count": 3,
+      "sample": "WebAppSsoService: sso token <REDACT> still fresh"
+    },
+    {
+      "template_id": "LINFO:33c27afba7a1",
+      "count": 3,
+      "sample": "FixDailyPnLFrozenPrice received: requestId=PLR.3 referenceRequestId=null account=<REDACT>"
+    },
+    {
+      "template_id": "LINFO:258719a7767c",
+      "count": 3,
+      "sample": "DailyPnL: applyMidnightPriceMapPhase2 session=<REDACT> account=<REDACT> for Account=<REDACT> snapshotReceived=[2] useCMPosition=false hasDailyPnl=true hasDailyPnlAndPrice=true destroyed=false position"
+    },
+    {
+      "template_id": "LINFO:ffd1e3f729fb",
+      "count": 3,
+      "sample": "Received Trading Hours Response: reqId=SubMsgXMLQuery61 \"2026-10-28 18:02:48.826 INFO  [JTS-CCPDispatcherS2-37] - LOG Client 101 Output exceeded limit (was: 100851), removed first half\""
+    },
+    {
+      "template_id": "LINFO:e39927cdff0c",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf8@79e14d4c | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:4169d81f9019",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf20@44e6bdf3 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:9a4ce9c134b1",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf24@2ea4932a | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:5b78469f4cce",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf36@21e5e3a3 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:a900f96ed2ea",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf40@6e6c7abb | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:c9b24cfb2993",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf44@5ca12736 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:eed976140445",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf48@31defb4b | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:a5edd09aa059",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf52@6f8cf18b | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:2d50cfc5bb1e",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf32@4b50338c | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:b75a86aac007",
+      "count": 3,
+      "sample": "The EBuffer buffer has grown to 358831 bytes"
+    },
+    {
+      "template_id": "LINFO:c2cdd9102b08",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf68@f2954f0 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:2fc0946bc9ef",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf72@66275c2b | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:581e9239d3ac",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf80@22ea8cd8 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:b7f231ef88bb",
+      "count": 3,
+      "sample": "cdebug: QUERY | jmdclient.paced.k@575d63d0 | PacedHMDSConnection state change from: NEW to: REQUESTED success: true | ContractAdjustment22;; CON_ADJUSTMENT;;0;;true;;0;;U"
+    },
+    {
+      "template_id": "LINFO:f7b97fd40443",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf92@6acd2e0c | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:c3229be9ea8c",
+      "count": 3,
+      "sample": "cdebug: QUERY | indicativeData90@1302c63d | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:ae40bf551caa",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf96@1bdea1ac | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:84856d1595c5",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf88@2cea1a20 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:45382cc99b52",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf112@3fc7cdb5 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:d65bcdf533e8",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf120@e1efa94 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:8d9288569997",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf124@4b38cda9 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:783ef83b9d9a",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf128@742ab72f | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:a1d9dd20f267",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf132@1cab3f31 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:6d3064f08892",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf148@1be2f956 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:697024187981",
+      "count": 3,
+      "sample": "cdebug: DATA | hmdscore.az@1907da07 | Removing all series"
+    },
+    {
+      "template_id": "LINFO:b76e6a658f6d",
+      "count": 3,
+      "sample": "cdebug: DATA | hmdscore.az@6cb39912 | Removing all series"
+    },
+    {
+      "template_id": "LINFO:d41d1c8639b9",
+      "count": 3,
+      "sample": "Keeping ec arround just in case it may be needed: 498843743/SMART"
+    },
+    {
+      "template_id": "LINFO:369afc3291fa",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf164@2a01e4d1 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:059b09f8875e",
+      "count": 3,
+      "sample": "cdebug: DATA | hmdscore.az@1081f39a | Removing all series"
+    },
+    {
+      "template_id": "LINFO:2ee54eb6cb34",
+      "count": 3,
+      "sample": "cdebug: QUERY | indicativeData166@6b8c3606 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:1222e6d25c14",
+      "count": 3,
+      "sample": "cdebug: QUERY | indicativeData174@5338e1b7 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:8e7e1938a921",
+      "count": 3,
+      "sample": "cdebug: QUERY | jmdclient.paced.k@245e360a | PacedHMDSConnection state change from: NEW to: REQUESTED success: true | ContractAdjustment46;; CON_ADJUSTMENT;;0;;true;;0;;U"
+    },
+    {
+      "template_id": "LINFO:16b1020e8f9a",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf184@2b4b63b6 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:cd47e6bb5287",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf192@eb0caa4 | Clear | 0"
+    },
+    {
+      "template_id": "LINFO:1172760e32ed",
+      "count": 3,
+      "sample": "cdebug: QUERY | cf172@2772bd3b | Clear | 0"
+    }
+  ]
+}
