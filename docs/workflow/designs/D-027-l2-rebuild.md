@@ -1,6 +1,6 @@
 # D-027 — L2 rebuild: (b)-led stepwise screener chain
 
-Status: DRAFT (admin ratification pending) · Source: batch-planner output `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md` + intake brief `docs/workflow/briefs/2026-11-14-L2-rebuild-scoping-raw.md` · Date: 2026-11-14
+Status: EXECUTED + CLOSED 2026-11-16 (admin ratified the terminal EVAL verdict in chat; outcome in §13) · Source: batch-planner output `docs/plans/26-W47-L2-rebuild-scoping-fullpack.md` + intake brief `docs/workflow/briefs/2026-11-14-L2-rebuild-scoping-raw.md` · Date: 2026-11-14
 
 ## 1. Goal
 
@@ -98,3 +98,13 @@ n_jobs=2; float32 immediately; symbol-sequential reads; purged/embargoed CV; CAL
 ## 12. What would change this plan
 
 Lead switch to (a), drop WI-067, promote meta-label filter ahead of the stack (if 064 OOF shows clear precision gain at fib entries), move (c) up (if fold report attributes concentration to vol regimes), narrow to long-only and drop (d) if shorting unavailable. Second REJECT on a re-proposed thread closes it permanently per the closure rule.
+
+## 13. OUTCOME (2026-11-16, sprint closed; verdicts in BOARD.md + PM_LOG.md cycle 42)
+
+- **(b) xsec top-k screener — KILLED on CALIB** (WI-066 full run, cycle 41): both pre-registered falsifiers tripped (USD net −62.8 bps, 0/2 folds; CAD fold 0 +248.8 / fold 1 −150.9). WI-072 retry on the amended universe (wider grids, L/S, rebuilt b_hold OOF) also closed as code+smoke only; the CALIB full run stayed green-lighted for WI-066/068 only — the retry's full read was never gated. No EVAL burn.
+- **Stack ranker (WI-067) — dropped per the §5 pre-commitment** ("stacking failed signals = WI-033 pattern").
+- **(a) fixed time exits — fixed_h55 unsized: ADOPTED (Layer 2, admin in chat 2026-11-16).** The only construction that survived CALIB (+231.8 USD / +473.0 CAD net vs event; placebo passed 5-seed; h13 arms negative; hybrid_h55 ≡ event exit) and the one-shot EVAL: net +452.1 USD (z +30.6) / +445.7 CAD (z +28.6), both pre-registered date-block folds positive (USD +422.6/+481.6; CAD +359.0/+532.5), BH q ≈ 0. Computed ceiling FAIL (max-share 0.533/0.597 vs ≤0.50 on 2 folds) was overridden at ratification as a 2-fold discretization artifact — ceiling content (no single-fold dependence) demonstrably satisfied; extends the §11 fold-ceiling inapplicability ruling one step. EVAL split SPENT; prereg `reports/l2_eval/l2_prereg_template.json` (frozen aeaa195a → amended pre-burn cf39228e, fold leg = 2 date-blocks at median EVAL date, admin choice (a)). Verdict artifacts `reports/l2_eval/`.
+- **(c) vol-target entry-only sizing — REJECT on CALIB** (WI-069 full run): sizing REDUCES net edge both markets (USD −111.1 / CAD −146.7 bps delta; risk-adjusted flat); §5 falsifier "no risk-adjusted improvement" tripped. Mechanism: sizing is edge-neutral on the atr axis but shreds 96–160 bps per bucket on disp_entropy_39, where h55 returns are structurally larger — vol is orthogonal to where this edge lives. Still tagged PROVISIONAL pending explicit admin strip (recorded 2026-11-16).
+- **(d) within-market sector pairs — descoped unbuilt** (sector map landed via WI-073 with 59 blanks residual named; the construction never reached code). Any future (d) EVAL requires a NEW pre-registration AND a new split.
+- **What enters the workflow:** fixed_h55 unsized as the adopted L2 overlay exit rule, both markets — research shortlist with human gate only; no live trading, no automated orders (product boundaries).
+- **Gate ledger (§7 vs outcome):** materiality floor passed everywhere it applied; 5-seed placebo passed on CALIB (placebo report `reports/l2_time_exit/placebo_{USD,CAD}.md`) and the EVAL read used a pre-registered analytic z instead (declared in the prereg amendment); fold ceiling — binding as written, tripped on discretization at EVAL, overridden by admin; FDR family = 2 members (fixed_h55 × USD/CAD), reported separately from D-024 as ruled; stop rules — no EVAL burn occurred before the one-shot.
