@@ -1,6 +1,6 @@
 # D-002 — Model signal diagnostics (WI-002, goal G-001)
 
-> Status: **proposed** (awaiting admin acceptance). Executable plan for E2: `docs/plans/2026-10-22-WI-002-e2-full-universe-rerun.md`.
+> Status: **proposed** (awaiting admin acceptance). Executable plan for E2: `docs/archive/old-files/plans/2026-10-22-WI-002-e2-full-universe-rerun.md`.
 
 ## Context
 

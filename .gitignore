@@ -70,3 +70,11 @@ Thumbs.db
 
 # kanban lock registry (transient, Hermes-managed)
 .hermes/locks.json
+
+# ── Runtime cache/scratch (housekeeping 2026-11-18) ──
+catboost_info/
+reports/**/_src_snapshot/
+reports/**/_pass*_v*/
+reports/**/_ind_store.npz
+reports/**/_rand_precision.csv
+data/*.backup-*.csv

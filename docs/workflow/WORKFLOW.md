@@ -101,7 +101,7 @@ Kebab-case filenames. One topic per file. Mandatory header: `ID`, `Title`, `Goal
 
 **T1/T2 predictive-only (admin direction, 2026-11-13):** gate evidence at Tier 1 and Tier 2 (Layer 1) is predictive statistics only — OOF AUC/IC + BH-FDR + calibration. No economic-magnitude or cost analysis is presented at T1/T2 (cost/edge analysis belongs to T3/Layer 2). Every FDR-surviving predictor is accepted into the L1 pickle library and integrated into the workflow — there is no effect-size floor at L1.
 
-Cross-tier rules (carried unchanged): pre-committed closures; probe-first with core-hour caps; BH-FDR family = every tested cell; conditioning axes fold into the same family; two-strike breaker; computed verdicts PROVISIONAL until admin ratifies. Decisions and protocol detail: `designs/D-023-two-layer-ml-gate.md`, `designs/D-024-l2-overlay-rebuild.md`. Sprint brief: `docs/workflow/briefs/2026-11-10-D-025-tiered-sprint-brief.md`.
+Cross-tier rules (carried unchanged): pre-committed closures; probe-first with core-hour caps; BH-FDR family = every tested cell; conditioning axes fold into the same family; two-strike breaker; computed verdicts PROVISIONAL until admin ratifies. Decisions and protocol detail: `designs/D-023-two-layer-ml-gate.md`, `designs/D-024-l2-overlay-rebuild.md`. Sprint brief: newest file in `docs/workflow/briefs/` (the D-025 brief closed with its sprint 2026-11-16; BOARD says whether one is open).
 
 ## 8. Ceremonies (light)
 

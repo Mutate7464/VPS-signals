@@ -103,3 +103,9 @@
 | WI-067 | DONE PM-verified — regularised L2 stack ranker over union + meta OOF (10 passed; smoke CONTINUE both markets) |
 | WI-068 | DONE PM-verified — fixed time-based exits vs event exits (12 passed; fixed_h55 provisional survivor) |
 | WI-069 | DONE PM-verified — vol-target entry-only sizing on CALIB survivor (9 passed) |
+| WI-071 | DONE PM-verified — one-shot EVAL gate machinery: prereg hash, score-once lock, full-family BH-FDR, PROVISIONAL tags (10 passed; no-EVAL-read proven by I/O traps) |
+| WI-072 | DONE PM-verified — WI-066 retry: amended-universe xsec top-k screener (24 passed; both smokes EXIT 0); full CALIB killed (b) |
+| WI-073 | DONE PM-verified — sector map consolidation, config precedence + IBKR gap-fill (9 passed; 59 blanks residual named) |
+| WI-071-EVAL | RATIFIED ADOPT (admin in chat 2026-11-16, Layer 2) — fixed_h55 unsized × {USD,CAD}: net +452.1/+445.7, both folds positive, BH q≈0; computed ceiling REJECT overridden as discretization artifact; EVAL split SPENT (`reports/l2_eval/`, commit 846ce5d) |
+| WI-073-ESCALATION | Strike-1 record (builder exited incomplete 2026-11-16) — resolved: WI-073 resumed and closed GREEN same day (commit cdf02a9) |
+| — | Card compaction 2026-11-18: all D-027/D-026 closed cards moved `docs/kanban/done/` → `docs/archive/wi/` (rows above); done/ empty for next sprint |

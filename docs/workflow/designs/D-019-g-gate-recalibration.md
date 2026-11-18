@@ -5,7 +5,7 @@ G-gate recalibration direction; R5's IBKR-schedule validation **dropped by admin
 (20+5 bps stays a labeled assumption in every G3 memo; no ticker-download work).
 Planner folds R1+R2 into the next G2-touching plan; R7 goes to WORKFLOW.md §1.
 Evidence parent: WI-018 gate brief + memo
-(`docs/human/briefings/2026-11-01-gate-WI-018-condition-first.md`,
+(`docs/archive/old-files/human-briefings/2026-11-01-gate-WI-018-condition-first.md`,
 `reports/wi018/summary_USD.md`). Context: WI-018 was the last research run before
 MVP publish — this recalibration governs any *post-MVP* research WI.
 
