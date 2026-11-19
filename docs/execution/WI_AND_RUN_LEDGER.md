@@ -109,3 +109,13 @@
 | WI-071-EVAL | RATIFIED ADOPT (admin in chat 2026-11-16, Layer 2) — fixed_h55 unsized × {USD,CAD}: net +452.1/+445.7, both folds positive, BH q≈0; computed ceiling REJECT overridden as discretization artifact; EVAL split SPENT (`reports/l2_eval/`, commit 846ce5d) |
 | WI-073-ESCALATION | Strike-1 record (builder exited incomplete 2026-11-16) — resolved: WI-073 resumed and closed GREEN same day (commit cdf02a9) |
 | — | Card compaction 2026-11-18: all D-027/D-026 closed cards moved `docs/kanban/done/` → `docs/archive/wi/` (rows above); done/ empty for next sprint |
+| WI-074 | L0 feature batch NR4/NR7 — code+tests+smoke PASS | `docs/archive/wi/WI-074.md` | commit 5bcd41b |
+| WI-075 | L0 feature CUSUM — code+tests+smoke PASS | `docs/archive/wi/WI-075.md` | commit 9ef7a4c |
+| WI-076 | L0 feature CLV — code+tests+smoke PASS | `docs/archive/wi/WI-076.md` | commit 4300c9e |
+| WI-077 | L0 feature StochRSI — code+tests+smoke PASS | `docs/archive/wi/WI-077.md` | commit 72e4191 |
+| WI-078 | L0 feature Connors RSI — code+tests+smoke PASS | `docs/archive/wi/WI-078.md` | commit c034805 |
+| WI-079 | L0 feature fail_count — code+tests+smoke PASS | `docs/archive/wi/WI-079.md` | commit 68a966a |
+| WI-085 | Scaffold visualizer: loader, schema contracts, latency benchmark — machinery accepted | `docs/archive/wi/WI-085.md` | commits b93935f 2606baf |
+| WI-086 | Join index, global filter bar, KPI strip — machinery accepted | `docs/archive/wi/WI-086.md` | commit 5ca9578 |
+| WI-087 | View 1 legacy-target histograms, decile hit rate, CIs, null — machinery accepted | `docs/archive/wi/WI-087.md` | commit 202cd12 |
+| WI-088 | View 3 OHLC drill-down, barrier overlays, mismatch badge — machinery accepted | `docs/archive/wi/WI-088.md` | commit 9cc2997 |
