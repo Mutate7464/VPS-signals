@@ -6,10 +6,10 @@
 
 **Last updated:** 2026-11-18 (housekeeping trim — board was over its 5 KB cap; the full ratified
 D-027/D-026 closure narrative is preserved verbatim in `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`).
-D-027 sprint CLOSED + RATIFIED: WI-071-EVAL **ADOPT** (fixed_h55 unsized = L2 overlay exit rule; net +452.1 USD / +445.7 CAD, both folds positive, BH q≈0; EVAL split SPENT; shortlist-only, no live trading). (b) KILLED, (c) vol-target REJECT, (d) descoped (new prereg + new split required for any future EVAL). D-026 sprint DONE + RATIFIED (L1 extension: 5 families integrated). L1 library FROZEN for the L2 rebuild.
+D-027 sprint CLOSED + RATIFIED: WI-071-EVAL **ADOPT** (fixed_h55 unsized = L2 overlay exit rule; net +452.1 USD / +445.7 CAD, both folds positive, BH q≈0; EVAL split SPENT; shortlist-only, no live trading). (b) KILLED, (c) vol-target REJECT, (d) descoped (new prereg + new split required for any future EVAL). D-026 sprint DONE + RATIFIED (L1 extension: 5 families integrated). ~~L1 library FROZEN~~ — **UNFROZEN (admin 2026-11-19): L0/L1/L2 all open for new research WIs.**
 
 ## ACTIVE
-No WIP, no open sprint brief (D-027 sprint closed 2026-11-16). Next sprint is admin-ordered.
+No WIP, no open sprint brief. Admin 2026-11-19: next = **Track B (L0/L1/L2 research) BEFORE Track A (visualizer)**; plan `docs/plans/26-W47-visualizer-audit-workbench.md`, brief `docs/workflow/briefs/2026-11-19-visualizer-audit-workbench-raw.md`.
 Any future (d)/vol-target EVAL needs a NEW prereg + NEW split. Full narrative: `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`.
 
 
