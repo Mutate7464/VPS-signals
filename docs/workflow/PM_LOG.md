@@ -3,6 +3,12 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-19 — Cycle 39 (WI-085 closed GREEN by watchdog; WI-086 dispatched)
+
+- **WI-085 (visualizer scaffold) closed GREEN:** builder ran to a real DONE footer; `uv run pytest tests/visualizer -q --tb=short --maxfail=1` re-run by PM after the builder's post-test compression edits — **25 passed exit 0**. Artifacts verified: `state/viz/bench.json` + `manifest.json` (peak RSS 575.3 MB, 5-slider filter median 5.88 ms, idle server 0.035% of one core over 10 min, http 200, no `dcc.Interval`). `git status` matched manifest only. Commits: code `b93935f`, close-out `2606baf`. Locks released (active_locks now EMPTY). Builder-reported leftovers, accepted as-is: `schema.py` (~300 L) and `loader.py` (309 L) exceed the <250-line guardrail (frozen column tuples dominate) — documented exception.
+- **WI-086 dispatched (join index, global filter bar, KPI strip; depends_on WI-085):** detached opencode surgical-builder, log `logs/wi086.out`, watchdog cron `wi085-watchdog` re-keyed to new PID (`logs/wi086_watch.pid`, monitor `~/.hermes/scripts/wi086_watch.sh`).
+- **Rotation:** cycles 37–38 remain newest-2; older in archive.
+
 ## 2026-11-14 — Cycle 38 (Phase-1 chain WI-064/065 closed GREEN; WI-066 dispatched)
 
 - **Phase-1 chain (PID 77422) closed GREEN by watchdog cron:** both builders finished (EXIT_64:0, EXIT_65:0, CHAIN_DONE), footers filled, no live builder. Diff-only audit clean — dirty files matched the two manifests exactly (plus pre-existing untracked `data/`/`reports/` noise). WI-064 test gate exit 0 (5 passed + smoke EXIT 0, 2.4s); WI-065 test gate exit 0 (28 passed + smoke EXIT 0, D-024 guard pinned: tau 0.7, calib 0.0314, eval 0.0357, z 38.90). Cards in `done/`, locks EMPTY (released via python3 rewrite — no write-protection this time).
