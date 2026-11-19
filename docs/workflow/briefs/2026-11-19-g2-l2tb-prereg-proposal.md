@@ -1,8 +1,21 @@
-# G2 proposal — WI-084 L2-TB engine: new prereg + new split (drafted for admin ratification 2026-11-19)
+# G2 proposal — WI-084 L2-TB engine: new prereg + new split
 
-**REC (BLUF):** dispatch the WI-084 engine BUILD now (machinery; touches no EVAL data);
-hold the one-shot L2-TB EVAL burn until the virgin window has grown — refresh ingest
-~end of Dec 2026, then freeze the prereg and burn. Draft prereg below, frozen at burn time.
+**RATIFIED (admin in chat 2026-11-19):**
+1. **(b) with a tightening — defer AND do not burn:** WI-084 build proceeds now; the EVAL
+   burn waits until the virgin window has grown (ingest refresh ~end of Dec 2026). No burn
+   on the 24-trading-day window.
+2. **Candidate set CONFIRMED:** `tb_s10` / `tb_s15` / `tb_s20` (m = 6 family).
+3. **Fold leg: multi-leg ratified** — 4 date-block folds at deterministic entry-date quantiles.
+4. **Decision rule: BOTH read-outs, side by side** — paired delta net edge (arm − fixed_h55,
+   5-seed paired sign-flip placebo) AND the arm's absolute net edge vs the 25 bps cost floor,
+   so the admin can compare mechanism vs magnitude. Gate computes on the paired delta;
+   magnitude collapse is reported explicitly, never hidden behind an ADOPT count.
+   Admin direction: "trying everything right now before visualization for human confirmation"
+   — exhaust the eval machinery before Track A visualizer phases.
+
+Prereg freezes (hash + commit) at burn time; pre-burn amendments legitimate, post-burn never.
+
+**REC (original draft, superseded by the ratification above):** dispatch the WI-084 engine BUILD now (machinery; touches no EVAL data); hold the one-shot L2-TB EVAL burn until the virgin window has grown — refresh ingest ~end of Dec 2026, then freeze the prereg and burn. Draft prereg below, frozen at burn time.
 
 ## Situation
 WI-084 (gap-aware triple-barrier engine, L2) is G2-gated: the D-027 EVAL split

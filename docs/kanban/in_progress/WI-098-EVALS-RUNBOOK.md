@@ -41,7 +41,20 @@ its checkpoint state; re-arm nothing else.
 Report CREDIT_STOP balance, which stages completed (markers present + reports),
 which remain; ask admin for pacing. Do not auto-relaunch.
 
-## Never
+## WI-084 builder close-out (FINISHED_BUILDER path — the monitor transitions when `logs/wi084_build.out` carries an EXIT marker and `logs/wi084_builder_closed` does not exist)
+1. Judge by artifacts, not the log tail: `ls src/l2_tb/barriers.py tests/l2_tb/test_barriers.py`;
+   PM re-run the gate `uv run pytest tests/l2_tb/test_barriers.py -q --tb=short --maxfail=1`.
+2. If the builder died pre-footer (PENDING), dispatch a scoped resume (verify test + fill
+   footer only) — the pattern used on WI-082/098.
+3. Close-out: commit code+tests by explicit path (feat(WI-084)), patch the card footer
+   Commit field to the real SHA + frontmatter status done, `mv` card to `docs/kanban/done/`,
+   release the WI-084 lock via python json rewrite, board row + PM_LOG bullets, `touch
+   logs/wi084_builder_closed` so the monitor reverts to RUNNING.
+4. G2 is ratified BUILD-ONLY: the EVAL burn stays deferred; do NOT materialize or score any
+   EVAL-window data (`date >= 2026-08-21`). The builder smoke must have used pre-2022 dates.
+5. If `FINISHED_DEAD` names the builder instead of the chain, sameStrike rules: artifacts
+   first, scoped resume, two strikes → blocked/.
+
 - Never tail a full json-format opencode log or dump whole report files into context.
 - Never `git add -A`; commit by explicit path only.
 - Never edit frozen gate reports in place; new findings go to new paths.
