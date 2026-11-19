@@ -19,6 +19,9 @@ dependencies = [
     "torch>=2.1.0",
     "lightgbm>=4.5",
     "catboost>=1.2",
+    "dash>=4.5.0",
+    "plotly>=7.1.0",
+    "gunicorn>=27.0.1",
 ]
 
 [[tool.uv.index]]
