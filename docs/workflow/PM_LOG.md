@@ -24,6 +24,15 @@
 - **(c) RATIFIED (admin in chat 2026-11-16):** the vol-target REJECT's PROVISIONAL tag is stripped — D-027 §5 falsifier verdict stands as final (sizing reduces net edge both markets, risk-adjusted flat, mechanism = edge shredded on the disp_entropy_39 axis). No open provisional tags remain in the D-027 sprint.
 - **Cursor:** next cycle ingests sessions from 2026-11-16T18:30Z forward.
 
+## 2026-11-19 — Cycle 43 (Track B L0 batch: WI-074..079 all closed GREEN)
+
+- **Admin gate discharged 2026-11-19:** Approval Matrix for the six independent L0 build cards presented in chat; admin approved "current batch". WI-080/081/082/083/084 NOT in batch (083 conditional on redundancy report; 084 blocked on G2 prereg).
+- **Chain:** one WI per terminal call, foreground dispatch (timeout 540s), close gated on the WI test_command — all six closed first-pass except WI-079. Commits 5bcd41b (074), 9ef7a4c (075), 4300c9e (076), 72e4191 (077), c034805 (078), 68a966a (079). Locks empty; cards in done/.
+- **WI-079 strike-1 resolved:** first dispatch killed at session layer mid-log; both manifest files landed unverified. Direct test run failed (1/2). Scoped resume verdict: the TEST was the wrong side (window=20 at bar 80 spans 61..80; the bar-60 resolution aged out → 2.0, not 3.0); impl counts failures only at t+HORIZON (no leakage). Meanwhile the original builder had in fact finished and applied the same fix (dispatch race, ses_e0e7389b8ffeKZGeeXhY98C7u0 vs resume) — resume verified artifacts stable, footer filled with measured numbers. Gate green 7 passed; only manifest files in commits.
+- **Normalization audit (admin ask, smoke-verified):** NR4/NR7 binary 0/1; CLV + ma14 bounded [-1,1]; StochRSI [0,1]; ConnorsRSI [0,100]; cusum_stat unitless (z = r/sigma) but unbounded heavy-tail; fail_count_20 raw count 0..window. No raw price/volume units in any output — all scale-free across tickers/markets; tree-ML ready as-is, standardize only if later fed to linear/NN. Predictability not yet measured — family eval jobs are separate gates.
+- **Next:** WI-080 (+081 chained) available to dispatch on admin go; family evaluation jobs for the six L0 features need sizing/prereg per card; WI-082/084 pending.
+- **Cursor:** next cycle ingests sessions from 2026-11-19T02:00Z forward.
+
 ## 2026-11-15 — Cycle 41 (r ruling + universe amendment; full CALIB runs: (b) killed, (a) provisional survivor)
 
 - **r ruling recorded (admin in chat 2026-11-15):** the L2 prepared panel's `r` = **`t10_s5_d39_close`** — the ASPIRATIONAL trade label (10% target / 5% stop / 39d / close exit), stored GROSS (`ret + 0.0025`). Supersedes the frozen `t15_s10_d39_close` convention for the L2 panel only; the WI-035 baseline artifact keeps its own frozen convention.
