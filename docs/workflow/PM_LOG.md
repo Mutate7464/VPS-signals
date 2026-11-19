@@ -3,6 +3,11 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-19 — Cycle 40 (WI-086 closed GREEN by watchdog; WI-087 dispatched)
+
+- **WI-086 (join index, global filter bar, KPI strip) closed GREEN:** builder finished with a complete DONE final message but its process exited at the session layer without an `EXIT:` echo in `logs/wi086.out` — judged by artifacts per the skill: all manifest files landed (3 modules + test file), `state/viz/{join_USD,join_CAD}.parquet` + `manifest.json` + `bench.json` written (USD filter p95 63.19 ms, 1,240,275 join rows), PM re-ran the gate `uv run pytest tests/visualizer -q --tb=short --maxfail=1` → **35 passed, exit 0**; `git status` clean beyond the manifest + pre-existing untracked `reports/*`. Commit `5ca9578` (code + card, footer Commit field set to the real SHA). Locks released; `active_locks` EMPTY. `state/viz/` caches intentionally left untracked (data dir, not in the WI manifest).
+- **WI-087 dispatched (View 1: legacy-target histograms, decile hit rate, CIs, null; depends_on WI-086):** detached opencode surgical-builder, log `logs/wi087.out`, locks registered under WI-087 (4 code paths + in-progress card), watchdog cron `wi087-watchdog` (b7def769ebd7, monitor `~/.hermes/scripts/wi087_watch.sh`, PID file `logs/wi087_watch.pid`). wi086-watchdog removed with its monitor script.
+
 ## 2026-11-19 — Cycle 39 (WI-085 closed GREEN by watchdog; WI-086 dispatched)
 
 - **WI-085 (visualizer scaffold) closed GREEN:** builder ran to a real DONE footer; `uv run pytest tests/visualizer -q --tb=short --maxfail=1` re-run by PM after the builder's post-test compression edits — **25 passed exit 0**. Artifacts verified: `state/viz/bench.json` + `manifest.json` (peak RSS 575.3 MB, 5-slider filter median 5.88 ms, idle server 0.035% of one core over 10 min, http 200, no `dcc.Interval`). `git status` matched manifest only. Commits: code `b93935f`, close-out `2606baf`. Locks released (active_locks now EMPTY). Builder-reported leftovers, accepted as-is: `schema.py` (~300 L) and `loader.py` (309 L) exceed the <250-line guardrail (frozen column tuples dominate) — documented exception.

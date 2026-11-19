@@ -4,13 +4,13 @@
 > Kanban dirs: `docs/kanban/{ready,in_progress,blocked,done}/` (cards hold detail); archived cards: `docs/archive/wi/` (indexed in `docs/execution/WI_AND_RUN_LEDGER.md`).
 > Full pre-lean board (2026-11-14, all per-WI narratives preserved): `docs/workflow/archive/BOARD-2026-11-14-pre-lean.md`; older: `docs/workflow/archive/BOARD-2026-11-07-pre-flat.md`.
 
-**Last updated:** 2026-11-19 (Track A visualizer chain running: WI-085 DONE, WI-086 dispatched; Track B batch WI-074..079 built+closed; housekeeping trim 2026-11-18 — board was over its 5 KB cap; the full ratified
+**Last updated:** 2026-11-19 (Track A visualizer chain running: WI-085/086 DONE, WI-087 dispatched; Track B batch WI-074..079 built+closed; housekeeping trim 2026-11-18 — board was over its 5 KB cap; the full ratified
 D-027/D-026 closure narrative is preserved verbatim in `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`).
 D-027 sprint CLOSED + RATIFIED: WI-071-EVAL **ADOPT** (fixed_h55 unsized = L2 overlay exit rule; net +452.1 USD / +445.7 CAD, both folds positive, BH q≈0; EVAL split SPENT; shortlist-only, no live trading). (b) KILLED, (c) vol-target REJECT, (d) descoped (new prereg + new split required for any future EVAL). D-026 sprint DONE + RATIFIED (L1 extension: 5 families integrated). ~~L1 library FROZEN~~ — **UNFROZEN (admin 2026-11-19): L0/L1/L2 all open for new research WIs.**
 
 ## ACTIVE
 - [DONE] WI-085 | Scaffold visualizer: loader, schema contracts, latency benchmark | gate 0 (machinery) | no verdict numbers — machinery accepted | `docs/kanban/done/WI-085.md` | commits b93935f 2606baf
-- [WIP] WI-086 | Join index, global filter bar, KPI strip | gate 0 machinery | card `docs/kanban/in_progress/`
+- [DONE] WI-086 | Join index, global filter bar, KPI strip | gate 0 (machinery) | no verdict numbers — machinery accepted | `docs/kanban/done/WI-086.md` | commit 5ca9578
 - [DONE] WI-074..079 | L0 feature batch (NR4/NR7, CUSUM, CLV, StochRSI, Connors RSI, fail_count) — all code+tests+smoke PASS, gates green | RATIFIED-eligible machinery (no gate numbers — eval jobs are separate BH-FDR family gates) | cards `docs/kanban/done/` | commits 5bcd41b 9ef7a4c 4300c9e 72e4191 c034805 68a966a
 No WIP, no open sprint brief. Admin 2026-11-19: next = **Track B (L0/L1/L2 research) BEFORE Track A (visualizer)**; plan `docs/plans/26-W47-visualizer-audit-workbench.md`, brief `docs/workflow/briefs/2026-11-19-visualizer-audit-workbench-raw.md`.
 Any future (d)/vol-target EVAL needs a NEW prereg + NEW split. Full narrative: `docs/workflow/archive/BOARD-2026-11-16-D027-active-detail.md`.
