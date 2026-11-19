@@ -3,6 +3,14 @@
 > One entry per PM cycle, newest first. The newest entry's cursor (`cursor:` line)
 > defines which opencode sessions the next cycle ingests. Kam's trigger: tell Hermes
 > "run PM cycle". Full procedure: `docs/human/PM-CYCLE.md`.
+## 2026-11-19 — Cycle 45 (WI-080 + WI-081 closed GREEN; Track B L1-BIF started)
+
+- **Scope ratified in chat (admin, 2026-11-19):** WI-080 ships code + tests + standalone design doc (D-029; D-028 taken by the visualizer design), and WI-081 chains immediately after green. The original WI-080 card's I/O section carried template leakage (a `bif_boundary_{MKT}.parquet` output with N/A placeholder cols + a stale `D-028-l1-bifurcation.md` reference) — card corrected to the ratified scope before dispatch (no data artifact for WI-080).
+- **WI-080 (L1 bifurcation boundary) closed GREEN, first pass:** `bif_boundary.py` (147 L, `assert_boundary`) + `test_bif_boundary.py` (159 L, causality/float32/NaN-edge) + `docs/workflow/designs/D-029-l1-bifurcation.md` (86 L). PM re-ran the gate → **18 passed, exit 0**. Commits: code+doc `038a49d`, card move `a5e0990`.
+- **WI-081 (causal trailing swing/retracement levels) chained and closed GREEN:** `swing_levels.py` + tests (10 passed, exit 0, PM re-run); levels emitted at CONFIRMATION date per D-029, distances ATR(20)-normalised (Wilder, causal); smoke `/tmp/WI-081_smoke/` = USD 39,221 / CAD 31,599 rows, ≤10 symbols/market, ~0.01 core-h. Builder attempts 2/2 (its own zero-width-retrace fixture fix). Commits: code `af55d25`, card move `e1f3ad0` (also staged the dangling WI-080 `in_progress/` deletion the prior close-out left unstaged). Locks EMPTY.
+- **Still open for this family:** WI-081's full-universe feature build + the `l1-swing-levels` BH-FDR eval job are PM-owned, prereg-sized ≤2.5 core-h, NOT yet run — no verdict numbers exist. Credits at 100% (checked pre-dispatch).
+- **Cursor:** next cycle ingests sessions from 2026-11-19T16:30Z forward.
+
 ## 2026-11-19 — Cycle 44 (WI-089 closed GREEN by PM; Track A visualizer chain closed)
 
 - **WI-089 (View 2: threshold sweep on OOF p_* + fwd_*) closed GREEN:** original builder hit the step ceiling with 5 tasks remaining (Strike 1; `docs/kanban/done/WI-089-ESCALATION.md`); scoped resume finished `__EXIT_WI089_RESUME:0` — `v2_sweep.py` 256→247 lines (`reference_line` inlined into `compute_view`), new `test_years_in_range_matches_the_kpi_definition` (rel 1e-12; fixes the ~1 s `kpi.years_in_range` budget hit), footer filled with measured numbers. PM re-ran the gate `uv run pytest tests/visualizer -q --tb=short --maxfail=1` → **76 passed, exit 0**. Commits: code+tests `14c66d8`; card move + footer SHA + board/PM_LOG in this doc commit. Locks released via python json rewrite; `active_locks` EMPTY.
